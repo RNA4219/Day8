@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import subprocess
@@ -89,49 +90,35 @@ def read_event_body(event_path: Path) -> str | None:
     return body
 
 
-def validate_priority_score(body: str | None) -> bool:
-    setattr(validate_priority_score, "error", None)
-    if body is None:
-        validate_priority_score.error = "PR body is missing"
-        return False
+def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
+    if not body:
+        return False, "Priority Score セクションが見つかりません"
 
-    stripped_body = body.strip()
-    if not stripped_body:
-        validate_priority_score.error = "Priority Score entry is missing"
-        return False
+    pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
+    match = pattern.search(body)
+    if not match:
+        return False, "Priority Score の記載が見つかりません"
 
-    prefix = "Priority Score:"
-    for raw_line in stripped_body.splitlines():
-        line = raw_line.strip()
-        normalized_line = BULLET_PATTERN.sub("", line, count=1)
-        if not normalized_line.startswith(prefix):
-            continue
-        content = normalized_line[len(prefix) :].strip()
-        if not content:
-            validate_priority_score.error = "Priority Score value and reason are missing"
-            return False
-        if "/" not in content:
-            validate_priority_score.error = "Priority Score reason is missing"
-            return False
-        value_part, reason_part = (segment.strip() for segment in content.split("/", 1))
-        if not value_part:
-            validate_priority_score.error = "Priority Score value is missing"
-            return False
-        try:
-            float(value_part)
-        except ValueError:
-            validate_priority_score.error = "Priority Score value must be numeric"
-            return False
-        if not reason_part:
-            validate_priority_score.error = "Priority Score reason is missing"
-            return False
-        if reason_part.startswith("<!--"):
-            validate_priority_score.error = "Priority Score reason must be provided"
-            return False
-        return True
+    content = match.group("content")
+    if "/" not in content:
+        return False, "Priority Score の根拠が不足しています"
 
-    validate_priority_score.error = "Priority Score entry is missing"
-    return False
+    score_raw, reason_raw = [segment.strip() for segment in content.split("/", 1)]
+
+    if not score_raw:
+        return False, "Priority Score の数値が不足しています"
+    if not reason_raw:
+        return False, "Priority Score の根拠が不足しています"
+
+    try:
+        score_value = float(score_raw)
+    except ValueError:
+        return False, "Priority Score の数値が不正です"
+
+    if not math.isfinite(score_value):
+        return False, "Priority Score の数値が有限ではありません"
+
+    return True, None
 
 
 def main() -> int:
@@ -157,15 +144,9 @@ def main() -> int:
         print("GITHUB_EVENT_PATH is not set", file=sys.stderr)
         return 1
     body = read_event_body(Path(event_path_value))
-    if not validate_priority_score(body):
-        error_message = getattr(validate_priority_score, "error", None)
-        if error_message:
-            print(
-                f"Priority score validation failed: {error_message}",
-                file=sys.stderr,
-            )
-        else:
-            print("Priority score validation failed", file=sys.stderr)
+    is_valid, error = validate_priority_score(body)
+    if not is_valid:
+        print(error or "Priority Score が無効です", file=sys.stderr)
         return 1
 
     return 0
