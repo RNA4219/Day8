@@ -85,5 +85,11 @@ def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, c
     exit_code = module.main()
     captured = capsys.readouterr()
 
-    assert exit_code == 1
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+    monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
+    monkeypatch.setattr("tools.ci.check_governance_gate.validate_priority_score", fake_validate)
+
+    assert main() == 1
+    captured = capsys.readouterr()
     assert "Priority score validation failed" in captured.err
+    assert "Priority Score value must be a number" in captured.err
