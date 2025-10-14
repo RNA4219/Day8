@@ -4,6 +4,7 @@ import importlib.util
 import json
 import py_compile
 import statistics
+from importlib.abc import Loader
 from pathlib import Path
 from types import ModuleType
 
@@ -18,8 +19,11 @@ def load_analyze_module() -> ModuleType:
     spec = importlib.util.spec_from_file_location("analyze", module_path)
     if spec is None or spec.loader is None:
         pytest.fail("Failed to load analyze.py spec")
+    loader = spec.loader
+    if not isinstance(loader, Loader):
+        pytest.fail("analyze.py loader does not support exec_module")
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    loader.exec_module(module)
     return module
 
 
@@ -72,4 +76,7 @@ def test_load_results_handles_null_duration(
 
     assert durs
     assert all(isinstance(dur, int) for dur in durs)
-    analyze.p95(durs)
+    assert durs[0] == 0
+    assert durs[1] == 0
+    percentile = analyze.p95(durs)
+    assert isinstance(percentile, int)
