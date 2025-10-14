@@ -78,3 +78,20 @@ def test_load_results_sanitizes_non_numeric_durations(
 
     p95_value = analyze.p95(durs)
     assert isinstance(p95_value, int)
+
+
+def test_main_reports_zero_when_no_log(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    report_path = tmp_path / "reports" / "today.md"
+    monkeypatch.setattr(analyze, "LOG", tmp_path / "missing.jsonl")
+    monkeypatch.setattr(analyze, "REPORT", report_path)
+
+    analyze.main()
+
+    contents = report_path.read_text(encoding="utf-8")
+
+    assert "Total tests: 0" in contents
+    assert "Pass rate:" in contents and "100.00%" not in contents
