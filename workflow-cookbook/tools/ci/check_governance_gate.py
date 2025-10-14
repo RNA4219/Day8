@@ -86,7 +86,42 @@ def read_event_body(event_path: Path) -> str | None:
 
 
 def validate_priority_score(body: str | None) -> bool:
-    return True
+    setattr(validate_priority_score, "error", None)
+    if body is None:
+        validate_priority_score.error = "PR body is missing"
+        return False
+    if not body.strip():
+        validate_priority_score.error = "Priority Score entry is missing"
+        return False
+
+    for raw_line in body.splitlines():
+        stripped_line = raw_line.strip()
+        if not stripped_line.startswith("Priority Score:"):
+            continue
+        content = stripped_line[len("Priority Score:") :].strip()
+        if not content:
+            validate_priority_score.error = "Priority Score value and reason are missing"
+            return False
+        if "/" not in content:
+            validate_priority_score.error = "Priority Score reason is missing"
+            return False
+        value_part, reason_part = (segment.strip() for segment in content.split("/", 1))
+        if not value_part:
+            validate_priority_score.error = "Priority Score value is missing"
+            return False
+        if not value_part.isdigit():
+            validate_priority_score.error = "Priority Score value must be a number"
+            return False
+        if not reason_part:
+            validate_priority_score.error = "Priority Score reason is missing"
+            return False
+        if reason_part.startswith("<!--"):
+            validate_priority_score.error = "Priority Score reason must be provided"
+            return False
+        return True
+
+    validate_priority_score.error = "Priority Score entry is missing"
+    return False
 
 
 def main() -> int:
