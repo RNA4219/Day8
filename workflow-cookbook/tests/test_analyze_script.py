@@ -1,8 +1,6 @@
-import py_compile
 from pathlib import Path
+import py_compile
 
 
-def test_analyze_script_is_syntax_valid():
-    repo_root = Path(__file__).resolve().parents[2]
-    script_path = repo_root / "scripts" / "analyze.py"
-    py_compile.compile(str(script_path), doraise=True)
+def test_analyze_script_compiles() -> None:
+    py_compile.compile(Path("scripts/analyze.py"), doraise=True)
