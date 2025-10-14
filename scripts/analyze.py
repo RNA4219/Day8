@@ -1,4 +1,3 @@
-\
 import json, statistics, pathlib, datetime
 from collections import Counter
 
