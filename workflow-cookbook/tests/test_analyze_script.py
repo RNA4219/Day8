@@ -151,3 +151,36 @@ def test_main_reports_flaky_rate(
     contents = report_path.read_text(encoding="utf-8")
 
     assert "- Flaky rate: 33.33%" in contents
+
+
+def test_main_removes_issue_notes_when_no_failures(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "success.jsonl"
+    log_path.parent.mkdir(parents=True)
+    entries = [
+        {"name": "test_a", "status": "pass", "duration_ms": 5},
+        {"name": "test_b", "status": "pass", "duration_ms": 7},
+    ]
+    log_path.write_text(
+        "\n".join(json.dumps(entry) for entry in entries) + "\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+    issue_path.parent.mkdir(parents=True)
+    issue_path.write_text("既存のメモ", encoding="utf-8")
+
+    monkeypatch.setattr(analyze, "LOG", log_path)
+    monkeypatch.setattr(analyze, "REPORT", report_path)
+    monkeypatch.setattr(analyze, "ISSUE_OUT", issue_path)
+
+    analyze.main()
+
+    if issue_path.exists():
+        assert issue_path.read_text(encoding="utf-8").strip() == ""
+    else:
+        assert not issue_path.exists()
