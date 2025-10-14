@@ -148,7 +148,14 @@ def main() -> int:
         return 1
     body = read_event_body(Path(event_path_value))
     if not validate_priority_score(body):
-        print("Priority score validation failed", file=sys.stderr)
+        error_message = getattr(validate_priority_score, "error", None)
+        if error_message:
+            print(
+                f"Priority score validation failed: {error_message}",
+                file=sys.stderr,
+            )
+        else:
+            print("Priority score validation failed", file=sys.stderr)
         return 1
 
     return 0

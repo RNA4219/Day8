@@ -94,3 +94,29 @@ def test_main_returns_error_when_priority_score_invalid(monkeypatch, tmp_path):
     )
 
     assert main() == 1
+
+
+def test_main_reports_priority_score_error_reason(monkeypatch, tmp_path, capsys):
+    event_path = tmp_path / "event.json"
+    event_path.write_text(
+        """
+{
+  "pull_request": {
+    "body": "Priority Score: 5 / Example"
+  }
+}
+"""
+    )
+
+    def fake_validate(body):
+        fake_validate.error = "Priority Score value must be a number"
+        return False
+
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+    monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
+    monkeypatch.setattr("tools.ci.check_governance_gate.validate_priority_score", fake_validate)
+
+    assert main() == 1
+    captured = capsys.readouterr()
+    assert "Priority score validation failed" in captured.err
+    assert "Priority Score value must be a number" in captured.err
