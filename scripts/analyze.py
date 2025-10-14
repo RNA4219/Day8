@@ -5,7 +5,6 @@ import pathlib
 import statistics
 from collections import Counter
 
-
 LOG = pathlib.Path("logs/test.jsonl")
 REPORT = pathlib.Path("reports/today.md")
 ISSUE_OUT = pathlib.Path("reports/issue_suggestions.md")
