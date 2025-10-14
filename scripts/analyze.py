@@ -1,18 +1,25 @@
+from __future__ import annotations
+
 import datetime
 import json
 import math
 import pathlib
 import statistics
 from collections import Counter
+from typing import Final
 
-LOG = pathlib.Path("logs/test.jsonl")
-REPORT = pathlib.Path("reports/today.md")
-ISSUE_OUT = pathlib.Path("reports/issue_suggestions.md")
+StatusMap = dict[str, set[str]]
+
+LOG: Final[pathlib.Path] = pathlib.Path("logs/test.jsonl")
+REPORT: Final[pathlib.Path] = pathlib.Path("reports/today.md")
+ISSUE_OUT: Final[pathlib.Path] = pathlib.Path("reports/issue_suggestions.md")
 
 
-def load_results():
-    tests, durs, fails = [], [], []
-    statuses = {}
+def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:
+    tests: list[str] = []
+    durs: list[int] = []
+    fails: list[str] = []
+    statuses: StatusMap = {}
     if not LOG.exists():
         return tests, durs, fails, statuses
     with LOG.open() as f:
@@ -35,7 +42,7 @@ def load_results():
     return tests, durs, fails, statuses
 
 
-def p95(values):
+def p95(values: list[int]) -> int:
     if not values:
         return 0
     try:
@@ -48,7 +55,7 @@ def p95(values):
         return int(values_sorted[capped_idx])
 
 
-def main():
+def main() -> None:
     tests, durs, fails, statuses = load_results()
     total = len(tests)
     if total == 0:
