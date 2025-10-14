@@ -143,8 +143,11 @@ def test_main_reports_flaky_rate(
     monkeypatch.setattr(analyze, "REPORT", report_path)
     monkeypatch.setattr(analyze, "ISSUE_OUT", issue_path)
 
+    _tests, _durs, _fails, statuses = analyze.load_results()
+    assert statuses["test_a"] == {"pass", "fail"}
+
     analyze.main()
 
     contents = report_path.read_text(encoding="utf-8")
 
-    assert "Flaky rate: 33.33%" in contents
+    assert "- Flaky rate: 33.33%" in contents
