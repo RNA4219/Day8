@@ -1,5 +1,7 @@
-\
-import json, statistics, pathlib, datetime
+import datetime
+import json
+import pathlib
+import statistics
 from collections import Counter
 
 LOG = pathlib.Path("logs/test.jsonl")
