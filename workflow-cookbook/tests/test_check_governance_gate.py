@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -31,32 +32,26 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
 
 
 @pytest.mark.parametrize(
-    "body",
+    "body, expected",
     [
-        "Priority Score: 5 / 安全性強化",
-        "前文\nPriority Score: 1 / 即応性向上\n後文",
+        ("Priority Score: 5 / 安全性強化", True),
+        ("前文\nPriority Score: 1 / 即応性向上\n後文", True),
+        ("Priority Score: 3", False),
+        ("Priority Score: / 理由", False),
+        ("Priority Score: abc / 理由", False),
+        ("Priority Score: <!-- 例: 5 / prioritization.yaml#phase1 -->", False),
+        ("priority score: 3 / something", False),
+        ("", False),
+        (None, False),
     ],
 )
-def test_validate_priority_score_valid(body):
-    assert validate_priority_score(body) is True
-    assert getattr(validate_priority_score, "error", None) is None
-
-
-@pytest.mark.parametrize(
-    "body",
-    [
-        "Priority Score: 3",
-        "Priority Score: / 理由",
-        "Priority Score: abc / 理由",
-        "Priority Score: <!-- 例: 5 / prioritization.yaml#phase1 -->",
-        "priority score: 3 / something",
-        "",
-        None,
-    ],
-)
-def test_validate_priority_score_invalid(body):
-    assert validate_priority_score(body) is False
-    assert isinstance(getattr(validate_priority_score, "error", None), str)
+def test_validate_priority_score_table(body, expected):
+    assert validate_priority_score(body) is expected
+    error = getattr(validate_priority_score, "error", None)
+    if expected:
+        assert error is None
+    else:
+        assert isinstance(error, str)
 
 
 def test_load_forbidden_patterns(tmp_path):
@@ -75,22 +70,16 @@ self_modification:
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
 
 
-def test_main_returns_error_when_priority_score_invalid(monkeypatch, tmp_path):
+def test_main_returns_failure_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
     event_path = tmp_path / "event.json"
     event_path.write_text(
-        """
-{
-  "pull_request": {
-    "body": "Priority Score: 5 / Example"
-  }
-}
-"""
+        json.dumps({"pull_request": {"body": "Priority Score: missing"}}),
+        encoding="utf-8",
     )
-
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-    monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
     monkeypatch.setattr(
-        "tools.ci.check_governance_gate.validate_priority_score", lambda _body: False
+        "tools.ci.check_governance_gate.get_changed_paths",
+        lambda refspec: [],
     )
 
     assert main() == 1
