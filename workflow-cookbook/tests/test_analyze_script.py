@@ -95,3 +95,24 @@ def test_main_reports_zero_when_no_log(
 
     assert "Total tests: 0" in contents
     assert "Pass rate:" in contents and "100.00%" not in contents
+
+
+def test_main_reports_zero_when_log_empty(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "empty.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text("", encoding="utf-8")
+
+    report_path = tmp_path / "reports" / "today.md"
+    monkeypatch.setattr(analyze, "LOG", log_path)
+    monkeypatch.setattr(analyze, "REPORT", report_path)
+
+    analyze.main()
+
+    contents = report_path.read_text(encoding="utf-8")
+
+    assert "Total tests: 0" in contents
+    assert "Pass rate: 0.00%" in contents
