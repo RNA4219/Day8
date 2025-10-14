@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -61,3 +62,22 @@ self_modification:
     )
 
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
+
+
+def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
+    from tools.ci import check_governance_gate as module
+
+    event_path = tmp_path / "event.json"
+    event_path.write_text(
+        json.dumps({"pull_request": {"body": "Priority Score: invalid"}}),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+    monkeypatch.setattr(module, "get_changed_paths", lambda refspec: [])
+    monkeypatch.setattr(module, "validate_priority_score", lambda body: False)
+
+    exit_code = module.main()
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert "Priority score validation failed" in captured.err
