@@ -12,21 +12,27 @@ ISSUE_OUT = pathlib.Path("reports/issue_suggestions.md")
 
 def load_results():
     tests, durs, fails = [], [], []
+    statuses = {}
     if not LOG.exists():
-        return tests, durs, fails
+        return tests, durs, fails, statuses
     with LOG.open() as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue
             obj = json.loads(line)
-            tests.append(obj.get("name", "unknown"))
+            name = obj.get("name", "unknown")
+            tests.append(name)
             value = obj.get("duration_ms")
             duration = int(value) if isinstance(value, (int, float)) else 0
             durs.append(duration)
-            if obj.get("status") == "fail":
-                fails.append(obj.get("name", "unknown"))
-    return tests, durs, fails
+            status = obj.get("status")
+            entry_statuses = statuses.setdefault(name, set())
+            if status is not None:
+                entry_statuses.add(str(status))
+                if status == "fail":
+                    fails.append(name)
+    return tests, durs, fails, statuses
 
 
 def p95(values):
@@ -43,12 +49,18 @@ def p95(values):
 
 
 def main():
-    tests, durs, fails = load_results()
+    tests, durs, fails, statuses = load_results()
     total = len(tests)
     if total == 0:
         pass_rate: float = 0.0
     else:
         pass_rate = (total - len(fails)) / total
+    unique_tests = len(statuses)
+    flaky_tests = sum(1 for vals in statuses.values() if {"pass", "fail"}.issubset(vals))
+    if unique_tests == 0:
+        flaky_rate = 0.0
+    else:
+        flaky_rate = flaky_tests / unique_tests
     dur_p95 = p95(durs)
     now = datetime.datetime.utcnow().isoformat()
 
@@ -57,6 +69,7 @@ def main():
         f.write(f"# Reflection Report ({now} UTC)\n\n")
         f.write(f"- Total tests: {total}\n")
         f.write(f"- Pass rate: {pass_rate:.2%}\n")
+        f.write(f"- Flaky rate: {flaky_rate:.2%}\n")
         f.write(f"- Duration p95: {dur_p95} ms\n")
         f.write(f"- Failures: {len(fails)}\n\n")
         if fails:

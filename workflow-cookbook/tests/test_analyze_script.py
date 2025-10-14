@@ -71,13 +71,14 @@ def test_load_results_sanitizes_non_numeric_durations(
     )
     monkeypatch.setattr(analyze, "LOG", log_path)
 
-    _tests, durs, _fails = analyze.load_results()
+    _tests, durs, _fails, statuses = analyze.load_results()
 
     assert durs == [0, 0, 5, 0]
     assert all(isinstance(dur, int) for dur in durs)
 
     p95_value = analyze.p95(durs)
     assert isinstance(p95_value, int)
+    assert statuses["case-null"] == {"pass"}
 
 
 def test_main_reports_zero_when_no_log(
@@ -116,3 +117,34 @@ def test_main_reports_zero_when_log_empty(
 
     assert "Total tests: 0" in contents
     assert "Pass rate: 0.00%" in contents
+
+
+def test_main_reports_flaky_rate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "flaky.jsonl"
+    log_path.parent.mkdir(parents=True)
+    entries = [
+        {"name": "test_a", "status": "pass", "duration_ms": 10},
+        {"name": "test_a", "status": "fail", "duration_ms": 12},
+        {"name": "test_b", "status": "pass", "duration_ms": 8},
+        {"name": "test_c", "status": "fail", "duration_ms": 7},
+    ]
+    log_path.write_text(
+        "\n".join(json.dumps(entry) for entry in entries) + "\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue.md"
+    monkeypatch.setattr(analyze, "LOG", log_path)
+    monkeypatch.setattr(analyze, "REPORT", report_path)
+    monkeypatch.setattr(analyze, "ISSUE_OUT", issue_path)
+
+    analyze.main()
+
+    contents = report_path.read_text(encoding="utf-8")
+
+    assert "Flaky rate: 33.33%" in contents
