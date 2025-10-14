@@ -90,15 +90,18 @@ def validate_priority_score(body: str | None) -> bool:
     if body is None:
         validate_priority_score.error = "PR body is missing"
         return False
-    if not body.strip():
+
+    stripped_body = body.strip()
+    if not stripped_body:
         validate_priority_score.error = "Priority Score entry is missing"
         return False
 
-    for raw_line in body.splitlines():
-        stripped_line = raw_line.strip()
-        if not stripped_line.startswith("Priority Score:"):
+    prefix = "Priority Score:"
+    for raw_line in stripped_body.splitlines():
+        line = raw_line.strip()
+        if not line.startswith(prefix):
             continue
-        content = stripped_line[len("Priority Score:") :].strip()
+        content = line[len(prefix) :].strip()
         if not content:
             validate_priority_score.error = "Priority Score value and reason are missing"
             return False
@@ -109,8 +112,10 @@ def validate_priority_score(body: str | None) -> bool:
         if not value_part:
             validate_priority_score.error = "Priority Score value is missing"
             return False
-        if not value_part.isdigit():
-            validate_priority_score.error = "Priority Score value must be a number"
+        try:
+            float(value_part)
+        except ValueError:
+            validate_priority_score.error = "Priority Score value must be numeric"
             return False
         if not reason_part:
             validate_priority_score.error = "Priority Score reason is missing"
@@ -147,8 +152,18 @@ def main() -> int:
         print("GITHUB_EVENT_PATH is not set", file=sys.stderr)
         return 1
     body = read_event_body(Path(event_path_value))
-    if not validate_priority_score(body):
-        print("Priority score validation failed", file=sys.stderr)
+    validation_result = validate_priority_score(body)
+
+    failure_reason: str | None = None
+    is_valid: bool
+    if isinstance(validation_result, tuple):
+        is_valid, failure_reason = validation_result
+    else:
+        is_valid = bool(validation_result)
+
+    if not is_valid:
+        message = failure_reason or "Priority score validation failed"
+        print(message, file=sys.stderr)
         return 1
 
     return 0
