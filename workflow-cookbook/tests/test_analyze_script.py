@@ -36,3 +36,14 @@ def test_p95_fallback_returns_max_when_quantiles_fail(monkeypatch: pytest.Monkey
     monkeypatch.setattr(analyze.statistics, "quantiles", _raise_statistics_error)
 
     assert analyze.p95([10, 20]) == 20
+
+
+def test_p95_fallback_uses_ceiling(monkeypatch: pytest.MonkeyPatch) -> None:
+    analyze = load_analyze_module()
+
+    def _raise_statistics_error(*_args: object, **_kwargs: object) -> list[float]:
+        raise statistics.StatisticsError("forced failure")
+
+    monkeypatch.setattr(analyze.statistics, "quantiles", _raise_statistics_error)
+
+    assert analyze.p95([100, 200]) == 200
