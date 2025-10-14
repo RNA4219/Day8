@@ -1,5 +1,4 @@
-import json, statistics, pathlib, datetime
-import math
+import json, statistics, pathlib, datetime, math
 import statistics
 from collections import Counter
 
@@ -34,11 +33,9 @@ def p95(values):
         return int(statistics.quantiles(values, n=20)[18])
     except Exception:
         values_sorted = sorted(values)
-        if not values_sorted:
-            return 0
         idx = math.ceil(0.95 * (len(values_sorted) - 1))
-        idx = min(idx, len(values_sorted) - 1)
-        return int(values_sorted[idx])
+        capped_idx = min(idx, len(values_sorted) - 1)
+        return int(values_sorted[capped_idx])
 
 
 def main():
