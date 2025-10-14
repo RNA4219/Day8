@@ -8,6 +8,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from tools.ci.check_governance_gate import (
     find_forbidden_matches,
     load_forbidden_patterns,
+    main,
     validate_priority_score,
 )
 
@@ -72,3 +73,24 @@ self_modification:
     )
 
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
+
+
+def test_main_returns_error_when_priority_score_invalid(monkeypatch, tmp_path):
+    event_path = tmp_path / "event.json"
+    event_path.write_text(
+        """
+{
+  "pull_request": {
+    "body": "Priority Score: 5 / Example"
+  }
+}
+"""
+    )
+
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+    monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
+    monkeypatch.setattr(
+        "tools.ci.check_governance_gate.validate_priority_score", lambda _body: False
+    )
+
+    assert main() == 1
