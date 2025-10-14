@@ -1,9 +1,14 @@
-import json, statistics, pathlib, datetime
+import datetime
+import json
+import pathlib
+import statistics
 from collections import Counter
+
 
 LOG = pathlib.Path("logs/test.jsonl")
 REPORT = pathlib.Path("reports/today.md")
 ISSUE_OUT = pathlib.Path("reports/issue_suggestions.md")
+
 
 def load_results():
     tests, durs, fails = [], [], []
@@ -21,6 +26,7 @@ def load_results():
                 fails.append(obj.get("name", "unknown"))
     return tests, durs, fails
 
+
 def p95(values):
     if not values:
         return 0
@@ -29,8 +35,9 @@ def p95(values):
         return int(statistics.quantiles(values, n=20)[18])
     except Exception:
         values_sorted = sorted(values)
-        idx = int(0.95 * (len(values_sorted)-1))
+        idx = int(0.95 * (len(values_sorted) - 1))
         return int(values_sorted[idx])
+
 
 def main():
     tests, durs, fails = load_results()
@@ -49,7 +56,9 @@ def main():
         if fails:
             f.write("## Why-Why (draft)\n")
             for name, cnt in Counter(fails).items():
-                f.write(f"- {name}: 仮説=前処理の不安定/依存の競合/境界値不足\n")
+                f.write(
+                    f"- {name}: 仮説=前処理の不安定/依存の競合/境界値不足\n"
+                )
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
     if fails:
@@ -57,6 +66,7 @@ def main():
             f.write("### 反省TODO\n")
             for name in sorted(set(fails)):
                 f.write(f"- [ ] {name} の再現手順/前提/境界値を追加\n")
+
 
 if __name__ == "__main__":
     main()
