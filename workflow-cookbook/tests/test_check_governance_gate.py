@@ -36,6 +36,8 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
     [
         ("Priority Score: 5 / 安全性強化", True, None),
         ("Priority Score: 1 / 即応性向上", True, None),
+        ("- Priority Score: 7 / 箇条書き", True, None),
+        ("- [x] Priority Score: 8 / チェック済み", True, None),
         ("Priority Score: 3", False, "根拠"),
         ("Priority Score: / 理由", False, "数値"),
         ("Priority Score: abc / 理由", False, "数値"),
@@ -69,7 +71,9 @@ def test_validate_priority_score(body, expected, message):
     ],
 )
 def test_validate_priority_score_valid(body):
-    assert validate_priority_score(body) is True
+    is_valid, error = validate_priority_score(body)
+    assert is_valid is True
+    assert error is None
 
 
 def test_load_forbidden_patterns(tmp_path):
