@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import py_compile
 import statistics
 from pathlib import Path
@@ -47,3 +48,28 @@ def test_p95_fallback_uses_ceiling(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(analyze.statistics, "quantiles", _raise_statistics_error)
 
     assert analyze.p95([100, 200]) == 200
+
+
+def test_load_results_handles_null_duration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+    log_path = tmp_path / "results.jsonl"
+    log_path.write_text(
+        "\n".join(
+            [
+                json.dumps({"name": "case-null", "duration_ms": None, "status": "pass"}),
+                json.dumps({"name": "case-str", "duration_ms": "7"}),
+                json.dumps({"name": "case-int", "duration_ms": 5}),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(analyze, "LOG", log_path)
+
+    _tests, durs, _fails = analyze.load_results()
+
+    assert durs
+    assert all(isinstance(dur, int) for dur in durs)
+    analyze.p95(durs)

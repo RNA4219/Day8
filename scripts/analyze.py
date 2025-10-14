@@ -21,7 +21,14 @@ def load_results():
                 continue
             obj = json.loads(line)
             tests.append(obj.get("name", "unknown"))
-            durs.append(obj.get("duration_ms", 0))
+            raw_duration = obj.get("duration_ms", 0)
+            try:
+                if raw_duration is None:
+                    raise TypeError
+                duration = int(raw_duration)
+            except (TypeError, ValueError):
+                duration = 0
+            durs.append(duration)
             if obj.get("status") == "fail":
                 fails.append(obj.get("name", "unknown"))
     return tests, durs, fails
