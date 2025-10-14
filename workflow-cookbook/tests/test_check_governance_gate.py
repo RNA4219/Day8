@@ -54,6 +54,18 @@ def test_validate_priority_score_table(body, expected):
         assert isinstance(error, str)
 
 
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Priority Score: 5 / 安全性強化",
+        "- Priority Score: 5 / 例示",
+        "- [x] Priority Score: 8 / チェック済み",
+    ],
+)
+def test_validate_priority_score_valid(body):
+    assert validate_priority_score(body) is True
+
+
 def test_load_forbidden_patterns(tmp_path):
     policy = tmp_path / "policy.yaml"
     policy.write_text(

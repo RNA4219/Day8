@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Iterable, List, Sequence
+
+
+BULLET_PATTERN = re.compile(r"^[-*+]\s*(?:\[[xX ]\])?\s*")
 
 
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
@@ -99,9 +103,10 @@ def validate_priority_score(body: str | None) -> bool:
     prefix = "Priority Score:"
     for raw_line in stripped_body.splitlines():
         line = raw_line.strip()
-        if not line.startswith(prefix):
+        normalized_line = BULLET_PATTERN.sub("", line, count=1)
+        if not normalized_line.startswith(prefix):
             continue
-        content = line[len(prefix) :].strip()
+        content = normalized_line[len(prefix) :].strip()
         if not content:
             validate_priority_score.error = "Priority Score value and reason are missing"
             return False
