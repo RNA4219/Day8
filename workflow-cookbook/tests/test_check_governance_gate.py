@@ -31,32 +31,26 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
 
 
 @pytest.mark.parametrize(
-    "body",
+    "body, expected",
     [
-        "Priority Score: 5 / 安全性強化",
-        "前文\nPriority Score: 1 / 即応性向上\n後文",
+        ("Priority Score: 5 / 安全性強化", True),
+        ("前文\nPriority Score: 1 / 即応性向上\n後文", True),
+        ("Priority Score: 3", False),
+        ("Priority Score: / 理由", False),
+        ("Priority Score: abc / 理由", False),
+        ("Priority Score: <!-- 例: 5 / prioritization.yaml#phase1 -->", False),
+        ("priority score: 3 / something", False),
+        ("", False),
+        (None, False),
     ],
 )
-def test_validate_priority_score_valid(body):
-    assert validate_priority_score(body) is True
-    assert getattr(validate_priority_score, "error", None) is None
-
-
-@pytest.mark.parametrize(
-    "body",
-    [
-        "Priority Score: 3",
-        "Priority Score: / 理由",
-        "Priority Score: abc / 理由",
-        "Priority Score: <!-- 例: 5 / prioritization.yaml#phase1 -->",
-        "priority score: 3 / something",
-        "",
-        None,
-    ],
-)
-def test_validate_priority_score_invalid(body):
-    assert validate_priority_score(body) is False
-    assert isinstance(getattr(validate_priority_score, "error", None), str)
+def test_validate_priority_score_table(body, expected):
+    assert validate_priority_score(body) is expected
+    error = getattr(validate_priority_score, "error", None)
+    if expected:
+        assert error is None
+    else:
+        assert isinstance(error, str)
 
 
 def test_load_forbidden_patterns(tmp_path):
