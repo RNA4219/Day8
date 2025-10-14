@@ -47,3 +47,19 @@ def test_p95_fallback_uses_ceiling(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(analyze.statistics, "quantiles", _raise_statistics_error)
 
     assert analyze.p95([100, 200]) == 200
+
+
+def test_load_results_ignores_null_duration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+    log_path = tmp_path / "analyze.log"
+    log_path.write_text('{"name": "case", "duration_ms": null, "status": "pass"}\n')
+    monkeypatch.setattr(analyze, "LOG", log_path)
+
+    tests, durs, fails = analyze.load_results()
+
+    assert tests == ["case"]
+    assert fails == []
+    assert durs == [0]
+    assert analyze.p95(durs) == 0
