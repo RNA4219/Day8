@@ -147,8 +147,18 @@ def main() -> int:
         print("GITHUB_EVENT_PATH is not set", file=sys.stderr)
         return 1
     body = read_event_body(Path(event_path_value))
-    if not validate_priority_score(body):
-        print("Priority score validation failed", file=sys.stderr)
+    validation_result = validate_priority_score(body)
+
+    failure_reason: str | None = None
+    is_valid: bool
+    if isinstance(validation_result, tuple):
+        is_valid, failure_reason = validation_result
+    else:
+        is_valid = bool(validation_result)
+
+    if not is_valid:
+        message = failure_reason or "Priority score validation failed"
+        print(message, file=sys.stderr)
         return 1
 
     return 0

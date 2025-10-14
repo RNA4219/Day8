@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -75,22 +76,28 @@ self_modification:
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
 
 
-def test_main_returns_error_when_priority_score_invalid(monkeypatch, tmp_path):
+def test_main_returns_failure_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
     event_path = tmp_path / "event.json"
     event_path.write_text(
-        """
-{
-  "pull_request": {
-    "body": "Priority Score: 5 / Example"
-  }
-}
-"""
+        json.dumps({"pull_request": {"body": "Priority Score: missing"}}),
+        encoding="utf-8",
     )
-
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-    monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
     monkeypatch.setattr(
-        "tools.ci.check_governance_gate.validate_priority_score", lambda _body: False
+        "tools.ci.check_governance_gate.get_changed_paths",
+        lambda refspec: [],
     )
 
-    assert main() == 1
+    def _fake_validate_priority_score(body: str | None) -> tuple[bool, str]:
+        return False, "Priority score validation failed"
+
+    monkeypatch.setattr(
+        "tools.ci.check_governance_gate.validate_priority_score",
+        _fake_validate_priority_score,
+    )
+
+    exit_code = main()
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert "Priority score validation failed" in captured.err
