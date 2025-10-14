@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import math
 import os
+import re
 import subprocess
 import sys
 from fnmatch import fnmatch
@@ -85,8 +87,35 @@ def read_event_body(event_path: Path) -> str | None:
     return body
 
 
-def validate_priority_score(body: str | None) -> bool:
-    return True
+def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
+    if not body:
+        return False, "Priority Score セクションが見つかりません"
+
+    pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
+    match = pattern.search(body)
+    if not match:
+        return False, "Priority Score の記載が見つかりません"
+
+    content = match.group("content")
+    if "/" not in content:
+        return False, "Priority Score の根拠が不足しています"
+
+    score_raw, reason_raw = [segment.strip() for segment in content.split("/", 1)]
+
+    if not score_raw:
+        return False, "Priority Score の数値が不足しています"
+    if not reason_raw:
+        return False, "Priority Score の根拠が不足しています"
+
+    try:
+        score_value = float(score_raw)
+    except ValueError:
+        return False, "Priority Score の数値が不正です"
+
+    if not math.isfinite(score_value):
+        return False, "Priority Score の数値が有限ではありません"
+
+    return True, None
 
 
 def main() -> int:
@@ -112,7 +141,10 @@ def main() -> int:
         print("GITHUB_EVENT_PATH is not set", file=sys.stderr)
         return 1
     body = read_event_body(Path(event_path_value))
-    validate_priority_score(body)
+    is_valid, error = validate_priority_score(body)
+    if not is_valid:
+        print(error or "Priority Score が無効です", file=sys.stderr)
+        return 1
 
     return 0
 
