@@ -50,26 +50,27 @@ def test_p95_fallback_uses_ceiling(monkeypatch: pytest.MonkeyPatch) -> None:
     assert analyze.p95([100, 200]) == 200
 
 
-def test_load_results_handles_null_duration(
+def test_load_results_sanitizes_non_numeric_durations(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     analyze = load_analyze_module()
     log_path = tmp_path / "results.jsonl"
+    log_entries = [
+        {"name": "case-null", "duration_ms": None, "status": "pass"},
+        {"name": "case-str", "duration_ms": "7", "status": "pass"},
+        {"name": "case-float", "duration_ms": 5.6, "status": "pass"},
+        {"name": "case-missing", "status": "pass"},
+    ]
     log_path.write_text(
-        "\n".join(
-            [
-                json.dumps({"name": "case-null", "duration_ms": None, "status": "pass"}),
-                json.dumps({"name": "case-str", "duration_ms": "7"}),
-                json.dumps({"name": "case-int", "duration_ms": 5}),
-            ]
-        )
-        + "\n",
+        "\n".join(json.dumps(entry) for entry in log_entries) + "\n",
         encoding="utf-8",
     )
     monkeypatch.setattr(analyze, "LOG", log_path)
 
     _tests, durs, _fails = analyze.load_results()
 
-    assert durs
+    assert durs == [0, 0, 5, 0]
     assert all(isinstance(dur, int) for dur in durs)
-    analyze.p95(durs)
+
+    p95_value = analyze.p95(durs)
+    assert isinstance(p95_value, int)
