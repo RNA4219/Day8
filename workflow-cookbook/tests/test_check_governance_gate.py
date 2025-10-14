@@ -60,6 +60,18 @@ def test_validate_priority_score(body, expected, message):
             assert message in reason
 
 
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Priority Score: 5 / 安全性強化",
+        "- Priority Score: 5 / 例示",
+        "- [x] Priority Score: 8 / チェック済み",
+    ],
+)
+def test_validate_priority_score_valid(body):
+    assert validate_priority_score(body) is True
+
+
 def test_load_forbidden_patterns(tmp_path):
     policy = tmp_path / "policy.yaml"
     policy.write_text(
@@ -76,36 +88,20 @@ self_modification:
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
 
 
-def test_main_returns_failure_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
+def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
+    from tools.ci import check_governance_gate as module
+
     event_path = tmp_path / "event.json"
     event_path.write_text(
-        json.dumps({"pull_request": {"body": "Priority Score: missing"}}),
+        json.dumps({"pull_request": {"body": "Priority Score: invalid"}}),
         encoding="utf-8",
     )
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-    monkeypatch.setattr(
-        "tools.ci.check_governance_gate.get_changed_paths",
-        lambda refspec: [],
-    )
+    monkeypatch.setattr(module, "get_changed_paths", lambda refspec: [])
+    monkeypatch.setattr(module, "validate_priority_score", lambda body: False)
 
-    assert main() == 1
-
-
-def test_main_reports_priority_score_error_reason(monkeypatch, tmp_path, capsys):
-    event_path = tmp_path / "event.json"
-    event_path.write_text(
-        """
-{
-  "pull_request": {
-    "body": "Priority Score: 5 / Example"
-  }
-}
-"""
-    )
-
-    def fake_validate(body):
-        fake_validate.error = "Priority Score value must be a number"
-        return False
+    exit_code = module.main()
+    captured = capsys.readouterr()
 
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
     monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
