@@ -32,6 +32,14 @@ def test_analyze_script_compiles() -> None:
     py_compile.compile(str(script_path), doraise=True)
 
 
+def test_analyze_paths_use_workflow_root() -> None:
+    analyze = load_analyze_module()
+
+    assert analyze.LOG == WORKFLOW_ROOT / "logs" / "test.jsonl"
+    assert analyze.REPORT == WORKFLOW_ROOT / "reports" / "today.md"
+    assert analyze.ISSUE_OUT == WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
+
+
 def test_p95_fallback_returns_max_when_quantiles_fail(monkeypatch: pytest.MonkeyPatch) -> None:
     analyze = load_analyze_module()
 
