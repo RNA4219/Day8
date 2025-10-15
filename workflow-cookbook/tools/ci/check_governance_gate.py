@@ -81,12 +81,17 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
             continue
 
         if in_forbidden_paths and stripped_line.startswith("- "):
-            value = stripped_line[2:].strip()
-            value = _strip_inline_comment(value).strip()
-            if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
-                value = value[1:-1]
-            if value:
-                patterns.append(_normalize_pattern(value))
+            raw_value = stripped_line[2:]
+            without_comments = _strip_inline_comment(raw_value).strip()
+            unquoted_value = without_comments
+            if (
+                len(unquoted_value) >= 2
+                and unquoted_value[0] in {'"', "'"}
+                and unquoted_value[-1] == unquoted_value[0]
+            ):
+                unquoted_value = unquoted_value[1:-1].strip()
+            if unquoted_value:
+                patterns.append(_normalize_pattern(unquoted_value))
             continue
 
         if in_forbidden_paths and indent <= (forbidden_indent or indent):
