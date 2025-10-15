@@ -105,11 +105,10 @@ def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, c
     )
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
     monkeypatch.setattr(module, "get_changed_paths", lambda refspec: [])
-    monkeypatch.setattr(
-        module,
-        "validate_priority_score",
-        lambda body: (False, "Priority Score validation failed"),
-    )
+    def stub_validate_priority_score(body: str | None) -> tuple[bool, str | None]:
+        return False, "Priority Score validation failed"
+
+    monkeypatch.setattr(module, "validate_priority_score", stub_validate_priority_score)
 
     exit_code = module.main()
     captured = capsys.readouterr()
