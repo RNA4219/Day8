@@ -6,8 +6,7 @@ import os
 import re
 import subprocess
 import sys
-from fnmatch import fnmatch
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
@@ -68,10 +67,20 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
     matches: List[str] = []
     for path in paths:
         normalized_path = path.lstrip("./")
+        candidate = PurePosixPath(normalized_path)
         for pattern in patterns:
-            if fnmatch(normalized_path, pattern):
+            if candidate.match(pattern):
                 matches.append(normalized_path)
                 break
+            if pattern.endswith("/**"):
+                prefix = pattern[:-3]
+                if not prefix:
+                    matches.append(normalized_path)
+                    break
+                prefix_path = PurePosixPath(prefix)
+                if candidate.is_relative_to(prefix_path) and candidate != prefix_path:
+                    matches.append(normalized_path)
+                    break
     return matches
 
 
