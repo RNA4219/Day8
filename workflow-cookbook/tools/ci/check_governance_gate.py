@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Iterable, List, Sequence
 
 
-BULLET_PATTERN = re.compile(r"^[-*+]\s*(?:\[[xX ]\])?\s*")
+BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
 
 
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
@@ -94,16 +94,12 @@ def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
     if not body:
         return False, "Priority Score セクションが見つかりません"
 
-    pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$")
-    match_content: str | None = None
-    for raw_line in body.splitlines():
-        normalized_line = BULLET_PATTERN.sub("", raw_line.lstrip(), count=1)
-        match = pattern.match(normalized_line)
-        if match:
-            match_content = match.group("content")
-            break
-
-    if match_content is None:
+    normalized_body = "\n".join(
+        BULLET_PATTERN.sub("", line) for line in body.splitlines()
+    )
+    pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
+    match = pattern.search(normalized_body)
+    if not match:
         return False, "Priority Score の記載が見つかりません"
 
     content = match_content
