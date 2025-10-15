@@ -63,6 +63,14 @@ def get_changed_paths(refspec: str) -> List[str]:
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
+def _normalize_pattern(pattern: str) -> str:
+    normalized = pattern.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    normalized = normalized.lstrip("/")
+    return normalized
+
+
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
     matches: List[str] = []
@@ -70,8 +78,7 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
         normalized_path = path.lstrip("./")
         normalized_path = normalized_path.replace("\\", "/")
         posix_path = PurePosixPath(normalized_path)
-        for pattern in patterns:
-            normalized_pattern = pattern.lstrip("./")
+        for normalized_pattern in normalized_patterns:
             if normalized_pattern.endswith("/**"):
                 base_pattern = normalized_pattern[:-3].rstrip("/")
                 if not base_pattern:
@@ -84,15 +91,6 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
             elif posix_path.match(normalized_pattern):
                 matches.append(normalized_path)
                 break
-            if pattern.endswith("/**"):
-                prefix = pattern[:-3]
-                if not prefix:
-                    matches.append(normalized_path)
-                    break
-                prefix_path = PurePosixPath(prefix)
-                if posix_path.is_relative_to(prefix_path) and posix_path != prefix_path:
-                    matches.append(normalized_path)
-                    break
     return matches
 
 
