@@ -25,14 +25,9 @@ from tools.ci.check_governance_gate import (
             ["auth/service.py", "core/schema/definitions.yml"],
         ),
         (
-            """core/schema/v1/model.yaml\nnotes/todo.md""".splitlines(),
-            ["/core/schema/**"],
-            ["core/schema/v1/model.yaml"],
-        ),
-        (
-            """auth/sub/module.py\nfrontend/app.jsx""".splitlines(),
-            ["/auth/**"],
-            ["auth/sub/module.py"],
+            """core/schema/v1/model.yaml\nauth/service/internal/api.py""".splitlines(),
+            ["/core/schema/**", "/auth/**"],
+            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],
         ),
     ],
 )
