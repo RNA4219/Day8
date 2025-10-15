@@ -4,7 +4,7 @@
 最低限必要なのは次の通り：
 
 - `governance/policy.yaml`
-- `reflection.yaml`
+- `workflow-cookbook/reflection.yaml`
 - `workflow-cookbook/scripts/analyze.py`
 - `.github/workflows/test.yml`
 - `.github/workflows/reflection.yml`
@@ -24,5 +24,5 @@
 
 ## 注意
 - `CODEOWNERS` を適切なユーザー/チームに設定してください。
-- `reflection.yaml` の `analysis.max_tokens` を 0 にしているため、初日は LLM を使いません。
+- `workflow-cookbook/reflection.yaml` の `analysis.max_tokens` を 0 にしているため、初日は LLM を使いません。
   必要に応じて `engine: llm` と合わせて有効化してください。
