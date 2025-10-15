@@ -13,6 +13,11 @@ from typing import Iterable, List, Sequence
 BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
 
 
+def _normalize_pattern(pattern: str) -> str:
+    normalized = pattern.lstrip("./")
+    return normalized.replace("\\", "/")
+
+
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
     patterns: List[str] = []
     in_self_modification = False
@@ -70,8 +75,7 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
         normalized_path = path.lstrip("./")
         normalized_path = normalized_path.replace("\\", "/")
         posix_path = PurePosixPath(normalized_path)
-        for pattern in patterns:
-            normalized_pattern = pattern.lstrip("./")
+        for normalized_pattern in normalized_patterns:
             if normalized_pattern.endswith("/**"):
                 base_pattern = normalized_pattern[:-3].rstrip("/")
                 if not base_pattern:
