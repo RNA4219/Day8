@@ -76,6 +76,10 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
         if not line_without_comments:
             continue
 
+        line_without_comments = _strip_inline_comment(stripped_line).rstrip()
+        if not line_without_comments:
+            continue
+
         if line_without_comments.endswith(":"):
             key = line_without_comments[:-1].strip()
             if indent == 0:

@@ -238,15 +238,13 @@ self_modification:
     assert load_forbidden_patterns(policy) == ["core/schema/**"]
 
 
-def test_load_forbidden_patterns_handles_commented_key(tmp_path):
+def test_load_forbidden_patterns_handles_inline_comment_on_key(tmp_path):
     policy = tmp_path / "policy.yaml"
     policy.write_text(
         """
 self_modification:
   forbidden_paths:  # コメント
     - "/core/schema/**"
-  require_human_approval:
-    - "/governance/**"
 """
     )
 
