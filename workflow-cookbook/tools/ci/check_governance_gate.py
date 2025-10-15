@@ -64,14 +64,13 @@ def get_changed_paths(refspec: str) -> List[str]:
 
 
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
-    normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
+    normalized_patterns = [pattern.lstrip("./") for pattern in patterns]
     matches: List[str] = []
     for path in paths:
         normalized_path = path.lstrip("./")
         normalized_path = normalized_path.replace("\\", "/")
         posix_path = PurePosixPath(normalized_path)
-        for pattern in patterns:
-            normalized_pattern = pattern.lstrip("./")
+        for normalized_pattern in normalized_patterns:
             if normalized_pattern.endswith("/**"):
                 base_pattern = normalized_pattern[:-3].rstrip("/")
                 if not base_pattern:
