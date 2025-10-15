@@ -10,10 +10,11 @@ from typing import Final
 
 StatusMap = dict[str, set[str]]
 
-BASE_DIR: Final[Path] = Path(__file__).resolve().parents[1]
-LOG: Final[Path] = BASE_DIR / "logs" / "test.jsonl"
-REPORT: Final[Path] = BASE_DIR / "reports" / "today.md"
-ISSUE_OUT: Final[Path] = BASE_DIR / "reports" / "issue_suggestions.md"
+WORKFLOW_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
+BASE_DIR: Final[Path] = WORKFLOW_ROOT
+LOG: Final[Path] = WORKFLOW_ROOT / "logs" / "test.jsonl"
+REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
+ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
 
 
 def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:
