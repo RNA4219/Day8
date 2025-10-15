@@ -133,6 +133,9 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
                             break
                     if matched:
                         break
+                    if posix_path.match(normalized_pattern):
+                        matches.append(normalized_path)
+                        break
                 else:
                     base_path = PurePosixPath(base_pattern)
                     if posix_path == base_path or posix_path.is_relative_to(base_path):
