@@ -31,6 +31,30 @@ def _normalize_path(path: str) -> str:
     return normalized
 
 
+def _strip_inline_comment(value: str) -> str:
+    in_single_quote = False
+    in_double_quote = False
+    escaped = False
+
+    for index, char in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\" and in_double_quote:
+            escaped = True
+            continue
+        if char == "'" and not in_double_quote:
+            in_single_quote = not in_single_quote
+            continue
+        if char == '"' and not in_single_quote:
+            in_double_quote = not in_double_quote
+            continue
+        if char == "#" and not in_single_quote and not in_double_quote:
+            if index == 0 or value[index - 1].isspace():
+                return value[:index]
+    return value
+
+
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
     patterns: List[str] = []
     in_self_modification = False
@@ -58,10 +82,11 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
 
         if in_forbidden_paths and stripped_line.startswith("- "):
             value = stripped_line[2:].strip()
+            value = _strip_inline_comment(value).strip()
             if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
                 value = value[1:-1]
             if value:
-                patterns.append(value.lstrip("/"))
+                patterns.append(_normalize_pattern(value))
             continue
 
         if in_forbidden_paths and indent <= (forbidden_indent or indent):
