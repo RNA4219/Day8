@@ -25,10 +25,11 @@ from tools.ci.check_governance_gate import (
             ["/auth/**", "/core/schema/**"],
             ["auth/service.py", "core/schema/definitions.yml"],
         ),
-        (
+        pytest.param(
             ["core/schema/model.yaml"],
             ["**/schema/**"],
             ["core/schema/model.yaml"],
+            id="double_glob_schema",
         ),
         (
             """core/schema/v1/model.yaml\nauth/service/internal/api.py""".splitlines(),
