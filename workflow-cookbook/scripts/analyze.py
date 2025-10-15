@@ -10,7 +10,7 @@ from typing import Final
 
 StatusMap = dict[str, set[str]]
 
-BASE_DIR: Final[pathlib.Path] = pathlib.Path(__file__).resolve().parents[1]
+BASE_DIR: Final[pathlib.Path] = pathlib.Path(__file__).resolve().parents[2]
 LOG: Final[pathlib.Path] = BASE_DIR / "logs" / "test.jsonl"
 REPORT: Final[pathlib.Path] = BASE_DIR / "reports" / "today.md"
 ISSUE_OUT: Final[pathlib.Path] = BASE_DIR / "reports" / "issue_suggestions.md"
