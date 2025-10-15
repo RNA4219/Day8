@@ -10,9 +10,10 @@ from typing import Final
 
 StatusMap = dict[str, set[str]]
 
-LOG: Final[pathlib.Path] = pathlib.Path("logs/test.jsonl")
-REPORT: Final[pathlib.Path] = pathlib.Path("reports/today.md")
-ISSUE_OUT: Final[pathlib.Path] = pathlib.Path("reports/issue_suggestions.md")
+BASE_DIR: Final[pathlib.Path] = pathlib.Path(__file__).resolve().parents[1]
+LOG: Final[pathlib.Path] = BASE_DIR / "logs" / "test.jsonl"
+REPORT: Final[pathlib.Path] = BASE_DIR / "reports" / "today.md"
+ISSUE_OUT: Final[pathlib.Path] = BASE_DIR / "reports" / "issue_suggestions.md"
 
 
 def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:

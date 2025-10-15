@@ -29,17 +29,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: test-logs
-          path: logs
+          path: workflow-cookbook/logs
           run-id: ${{ steps.artifact-meta.outputs.run_id }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Analyze logs → report
+        working-directory: workflow-cookbook
         run: |
           python -m pip install --upgrade pip
           python scripts/analyze.py
       - name: Commit report
+        working-directory: workflow-cookbook
         run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
@@ -47,11 +49,11 @@ jobs:
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed (draft memo)
-        if: ${{ hashFiles('reports/issue_suggestions.md') != '' }}
+        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '' }}
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "反省TODO ${{ github.run_id }}"
-          content-filepath: reports/issue_suggestions.md
+          content-filepath: workflow-cookbook/reports/issue_suggestions.md
           labels: reflection, needs-triage
       - name: Open draft PR with doc/test tweaks (disabled)
         if: ${{ false }}  # デチューン：無効化
