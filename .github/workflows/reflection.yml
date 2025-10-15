@@ -14,10 +14,23 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Resolve artifact run id
+        id: artifact-meta
+        run: |
+          if [ -n "${RUN_ID}" ]; then
+            echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice title=artifact::No linked workflow_run; skip download"
+          fi
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id || '' }}
+      - name: Download test logs
+        if: ${{ steps.artifact-meta.outputs.run_id != '' }}
+        uses: actions/download-artifact@v4
         with:
           name: test-logs
           path: logs
+          run-id: ${{ steps.artifact-meta.outputs.run_id }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
