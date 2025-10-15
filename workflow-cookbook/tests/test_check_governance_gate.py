@@ -24,6 +24,16 @@ from tools.ci.check_governance_gate import (
             ["/auth/**", "/core/schema/**"],
             ["auth/service.py", "core/schema/definitions.yml"],
         ),
+        (
+            """core/schema/v1/model.yaml\nnotes/todo.md""".splitlines(),
+            ["/core/schema/**"],
+            ["core/schema/v1/model.yaml"],
+        ),
+        (
+            """auth/sub/module.py\nfrontend/app.jsx""".splitlines(),
+            ["/auth/**"],
+            ["auth/sub/module.py"],
+        ),
     ],
 )
 def test_find_forbidden_matches(changed_paths, patterns, expected):
