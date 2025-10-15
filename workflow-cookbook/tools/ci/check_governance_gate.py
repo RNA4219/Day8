@@ -12,6 +12,9 @@ from typing import Iterable, List, Sequence
 
 BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT_NAME = REPO_ROOT.name
+
 
 def _normalize_pattern(pattern: str) -> str:
     normalized = pattern.replace("\\", "/")
@@ -28,6 +31,9 @@ def _normalize_path(path: str) -> str:
         normalized = normalized[2:]
     if normalized.startswith("/"):
         normalized = normalized[1:]
+    prefix = f"{REPO_ROOT_NAME}/"
+    if normalized.startswith(prefix):
+        normalized = normalized[len(prefix) :]
     return normalized
 
 
@@ -100,15 +106,27 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
     return patterns
 
 
-def get_changed_paths(refspec: str) -> List[str]:
+def get_changed_paths(refspec: str, repo_root: Path | None = None) -> List[str]:
     result = subprocess.run(
         ["git", "diff", "--name-only", refspec],
         check=True,
         capture_output=True,
         text=True,
         encoding="utf-8",
+        cwd=str(repo_root) if repo_root else None,
     )
-    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    changed: List[str] = []
+    for line in result.stdout.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        normalized = _normalize_path(stripped)
+        if repo_root is not None:
+            prefix = f"{repo_root.name}/"
+            if normalized.startswith(prefix):
+                normalized = normalized[len(prefix) :]
+        changed.append(normalized)
+    return changed
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
     matches: List[str] = []
@@ -202,7 +220,7 @@ def main() -> int:
     forbidden_patterns = load_forbidden_patterns(policy_path)
 
     try:
-        changed_paths = get_changed_paths("origin/main...")
+        changed_paths = get_changed_paths("origin/main...", repo_root=repo_root)
     except subprocess.CalledProcessError as error:
         print(f"Failed to collect changed paths: {error}", file=sys.stderr)
         return 1
