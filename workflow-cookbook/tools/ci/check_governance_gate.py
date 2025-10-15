@@ -94,12 +94,19 @@ def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
     if not body:
         return False, "Priority Score セクションが見つかりません"
 
-    pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
-    match = pattern.search(body)
-    if not match:
+    pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$")
+    match_content: str | None = None
+    for raw_line in body.splitlines():
+        normalized_line = BULLET_PATTERN.sub("", raw_line.lstrip(), count=1)
+        match = pattern.match(normalized_line)
+        if match:
+            match_content = match.group("content")
+            break
+
+    if match_content is None:
         return False, "Priority Score の記載が見つかりません"
 
-    content = match.group("content")
+    content = match_content
     if "/" not in content:
         return False, "Priority Score の根拠が不足しています"
 

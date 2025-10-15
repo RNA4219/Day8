@@ -64,12 +64,15 @@ def test_validate_priority_score(body, expected, message):
     "body",
     [
         "Priority Score: 5 / 安全性強化",
-        "- Priority Score: 5 / 例示",
+        "- Priority Score: 5 / 箇条書き",
+        "* Priority Score: 7 / 別記号",
+        "+ Priority Score: 9 / プラス記号",
+        "- [ ] Priority Score: 4 / 未チェック",
         "- [x] Priority Score: 8 / チェック済み",
     ],
 )
 def test_validate_priority_score_valid(body):
-    assert validate_priority_score(body) is True
+    assert validate_priority_score(body) == (True, None)
 
 
 def test_load_forbidden_patterns(tmp_path):
@@ -98,16 +101,14 @@ def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, c
     )
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
     monkeypatch.setattr(module, "get_changed_paths", lambda refspec: [])
-    monkeypatch.setattr(module, "validate_priority_score", lambda body: False)
+    monkeypatch.setattr(
+        module,
+        "validate_priority_score",
+        lambda body: (False, "Priority Score validation failed"),
+    )
 
     exit_code = module.main()
     captured = capsys.readouterr()
 
-    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-    monkeypatch.setattr("tools.ci.check_governance_gate.get_changed_paths", lambda _ref: [])
-    monkeypatch.setattr("tools.ci.check_governance_gate.validate_priority_score", fake_validate)
-
-    assert main() == 1
-    captured = capsys.readouterr()
-    assert "Priority score validation failed" in captured.err
-    assert "Priority Score value must be a number" in captured.err
+    assert exit_code == 1
+    assert "Priority Score validation failed" in captured.err
