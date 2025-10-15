@@ -13,6 +13,11 @@ from typing import Iterable, List, Sequence
 BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
 
 
+def _normalize_pattern(pattern: str) -> str:
+    normalized = pattern.lstrip("./")
+    return normalized.replace("\\", "/")
+
+
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
     patterns: List[str] = []
     in_self_modification = False
