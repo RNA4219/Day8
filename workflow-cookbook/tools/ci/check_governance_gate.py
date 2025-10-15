@@ -63,40 +63,49 @@ def get_changed_paths(refspec: str) -> List[str]:
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
+def _normalize_pattern(pattern: str) -> str:
+    normalized = pattern.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    if normalized == "/**":
+        return "**"
+    if normalized == "/":
+        return "/"
+    if normalized.startswith("/"):
+        normalized = normalized.lstrip("/")
+    return normalized
+
+
 def _matches_forbidden_pattern(path: PurePosixPath, pattern: str) -> bool:
-    if path.match(pattern):
-        return True
+    try:
+        if path.match(pattern):
+            return True
+    except ValueError:
+        return False
     if pattern.endswith("/**"):
         base_pattern = pattern[:-3].rstrip("/")
         if not base_pattern:
             return True
         base_path = PurePosixPath(base_pattern)
-        try:
-            path.relative_to(base_path)
-        except ValueError:
-            return False
+        if path == base_path:
+            return True
+        return base_path in path.parents
+    if pattern == "**":
         return True
     return False
 
 
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
+    normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
     matches: List[str] = []
     for path in paths:
-        normalized_path = path.lstrip("./").replace("\\", "/")
+        normalized_path = path.lstrip("./")
+        normalized_path = normalized_path.replace("\\", "/")
         posix_path = PurePosixPath(normalized_path)
-        for pattern in patterns:
+        for pattern in normalized_patterns:
             if _matches_forbidden_pattern(posix_path, pattern):
                 matches.append(normalized_path)
                 break
-            if pattern.endswith("/**"):
-                prefix = pattern[:-3]
-                if not prefix:
-                    matches.append(normalized_path)
-                    break
-                prefix_path = PurePosixPath(prefix)
-                if candidate.is_relative_to(prefix_path) and candidate != prefix_path:
-                    matches.append(normalized_path)
-                    break
     return matches
 
 
