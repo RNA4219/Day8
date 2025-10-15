@@ -95,7 +95,7 @@ def test_get_changed_paths_normalizes_subdirectory_paths(monkeypatch):
 
     monkeypatch.setattr(subprocess, "run", fake_run)
 
-    paths = get_changed_paths("origin/main...")
+    paths = get_changed_paths("origin/main...", repo_root=repo_root)
     assert paths == ["core/schema/model.yaml"]
     assert find_forbidden_matches(paths, ["/core/schema/**"]) == ["core/schema/model.yaml"]
 
@@ -177,6 +177,34 @@ def test_main_accepts_repo_root_argument(monkeypatch, tmp_path):
 
     exit_code = main()
     assert exit_code == 0
+
+
+def test_main_returns_success_with_real_get_changed_paths(monkeypatch, tmp_path):
+    from tools.ci import check_governance_gate as module
+
+    event_path = tmp_path / "event.json"
+    event_payload = {
+        "pull_request": {
+            "body": "- Priority Score: 5 / 自動テスト",
+        }
+    }
+    event_path.write_text(json.dumps(event_payload), encoding="utf-8")
+
+    calls: list[tuple[list[str], Path]] = []
+
+    def fake_run(command, **kwargs):
+        cwd = kwargs.get("cwd")
+        assert cwd == module.REPO_ROOT
+        calls.append((command, cwd))
+        return type("Result", (), {"stdout": "workflow-cookbook/docs/readme.md\n"})()
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+
+    exit_code = module.main()
+
+    assert exit_code == 0
+    assert calls and calls[0][0][:3] == ["git", "diff", "--name-only"]
 
 
 def test_load_forbidden_patterns(tmp_path):
