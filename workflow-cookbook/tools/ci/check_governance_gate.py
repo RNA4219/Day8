@@ -72,6 +72,9 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
         if not stripped_line or stripped_line.startswith("#"):
             continue
         indent = len(raw_line) - len(raw_line.lstrip(" "))
+        line_without_comments = _strip_inline_comment(stripped_line).rstrip()
+        if not line_without_comments:
+            continue
 
         line_without_comments = _strip_inline_comment(stripped_line).rstrip()
         if not line_without_comments:
