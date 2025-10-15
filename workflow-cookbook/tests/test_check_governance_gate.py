@@ -48,6 +48,12 @@ def test_find_forbidden_matches_normalizes_patterns_and_paths():
     assert find_forbidden_matches(changed_paths, patterns) == ["auth", "auth/service.py"]
 
 
+def test_find_forbidden_matches_handles_windows_style_patterns():
+    changed_paths = ["auth/service.py"]
+    patterns = [".\\auth\\**"]
+    assert find_forbidden_matches(changed_paths, patterns) == ["auth/service.py"]
+
+
 def test_find_forbidden_matches_preserves_result_order():
     changed_paths = ["./auth", "core/schema/model.yaml", "logs/system.log"]
     patterns = ["/auth/**", "/core/schema/**"]

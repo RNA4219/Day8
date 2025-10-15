@@ -14,8 +14,21 @@ BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
 
 
 def _normalize_pattern(pattern: str) -> str:
-    normalized = pattern.lstrip("./")
-    return normalized.replace("\\", "/")
+    normalized = pattern.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    if normalized.startswith("/"):
+        normalized = normalized[1:]
+    return normalized
+
+
+def _normalize_path(path: str) -> str:
+    normalized = path.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    if normalized.startswith("/"):
+        normalized = normalized[1:]
+    return normalized
 
 
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
@@ -66,22 +79,11 @@ def get_changed_paths(refspec: str) -> List[str]:
         encoding="utf-8",
     )
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
-
-
-def _normalize_pattern(pattern: str) -> str:
-    normalized = pattern.replace("\\", "/")
-    while normalized.startswith("./"):
-        normalized = normalized[2:]
-    normalized = normalized.lstrip("/")
-    return normalized
-
-
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
-    normalized_patterns = [pattern.lstrip("./") for pattern in patterns]
+    normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
     matches: List[str] = []
     for path in paths:
-        normalized_path = path.lstrip("./")
-        normalized_path = normalized_path.replace("\\", "/")
+        normalized_path = _normalize_path(path)
         posix_path = PurePosixPath(normalized_path)
         for normalized_pattern in normalized_patterns:
             if normalized_pattern.endswith("/**"):
