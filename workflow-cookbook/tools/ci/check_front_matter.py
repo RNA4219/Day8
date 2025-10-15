@@ -64,8 +64,28 @@ def _parse_fields(front_matter_lines: Iterable[str]) -> Dict[str, str]:
         if not stripped or stripped.startswith("#") or ":" not in stripped:
             continue
         key, value = stripped.split(":", 1)
-        cleaned_value = _strip_inline_comment(value.strip()).strip()
-        data[key.strip()] = cleaned_value
+        value = value.strip()
+        in_single_quote = False
+        in_double_quote = False
+        escaped = False
+        for index, char in enumerate(value):
+            if escaped:
+                escaped = False
+                continue
+            if char == "\\" and in_double_quote:
+                escaped = True
+                continue
+            if char == "'" and not in_double_quote:
+                in_single_quote = not in_single_quote
+                continue
+            if char == '"' and not in_single_quote:
+                in_double_quote = not in_double_quote
+                continue
+            if char == "#" and not in_single_quote and not in_double_quote:
+                if index == 0 or value[index - 1].isspace():
+                    value = value[:index].rstrip()
+                    break
+        data[key.strip()] = value
     return data
 
 
