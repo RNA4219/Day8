@@ -121,10 +121,23 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
                 if not base_pattern:
                     matches.append(normalized_path)
                     break
-                base_path = PurePosixPath(base_pattern)
-                if posix_path == base_path or posix_path.is_relative_to(base_path):
-                    matches.append(normalized_path)
-                    break
+                contains_glob = any(char in base_pattern for char in "*?[]")
+                if contains_glob:
+                    matched = False
+                    for candidate in (posix_path,) + tuple(posix_path.parents):
+                        if candidate == PurePosixPath("."):
+                            continue
+                        if candidate.match(base_pattern):
+                            matches.append(normalized_path)
+                            matched = True
+                            break
+                    if matched:
+                        break
+                else:
+                    base_path = PurePosixPath(base_pattern)
+                    if posix_path == base_path or posix_path.is_relative_to(base_path):
+                        matches.append(normalized_path)
+                        break
             elif posix_path.match(normalized_pattern):
                 matches.append(normalized_path)
                 break
