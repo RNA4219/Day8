@@ -41,6 +41,21 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
     assert find_forbidden_matches(changed_paths, normalized) == expected
 
 
+def test_find_forbidden_matches_normalizes_patterns_and_paths():
+    changed_paths = ["./auth", "auth\\service.py", "docs/readme.md"]
+    patterns = ["/auth/**"]
+    assert find_forbidden_matches(changed_paths, patterns) == ["auth", "auth/service.py"]
+
+
+def test_find_forbidden_matches_preserves_result_order():
+    changed_paths = ["./auth", "core/schema/model.yaml", "logs/system.log"]
+    patterns = ["/auth/**", "/core/schema/**"]
+    assert find_forbidden_matches(changed_paths, patterns) == [
+        "auth",
+        "core/schema/model.yaml",
+    ]
+
+
 @pytest.mark.parametrize(
     "body",
     [
