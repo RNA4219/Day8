@@ -34,6 +34,29 @@ def _extract_front_matter_lines(path: Path) -> List[str]:
     return lines[1:end]
 
 
+def _strip_inline_comment(value: str) -> str:
+    in_single = False
+    in_double = False
+    escaped = False
+    for index, char in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char == "'" and not in_double:
+            in_single = not in_single
+            continue
+        if char == '"' and not in_single:
+            in_double = not in_double
+            continue
+        if char == "#" and not in_single and not in_double:
+            if index == 0 or value[index - 1].isspace():
+                return value[:index].rstrip()
+    return value
+
+
 def _parse_fields(front_matter_lines: Iterable[str]) -> Dict[str, str]:
     data: Dict[str, str] = {}
     for raw in front_matter_lines:
@@ -41,12 +64,8 @@ def _parse_fields(front_matter_lines: Iterable[str]) -> Dict[str, str]:
         if not stripped or stripped.startswith("#") or ":" not in stripped:
             continue
         key, value = stripped.split(":", 1)
-        value = value.strip()
-        for index, char in enumerate(value):
-            if char == "#" and (index == 0 or value[index - 1].isspace()):
-                value = value[:index].rstrip()
-                break
-        data[key.strip()] = value
+        cleaned_value = _strip_inline_comment(value.strip()).strip()
+        data[key.strip()] = cleaned_value
     return data
 
 
