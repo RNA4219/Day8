@@ -8,8 +8,6 @@ from collections import Counter
 from pathlib import Path
 from typing import Final
 
-from pathlib import Path
-
 StatusMap = dict[str, set[str]]
 
 BASE_DIR: Final[Path] = Path(__file__).resolve().parents[1]

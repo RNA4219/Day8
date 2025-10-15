@@ -27,6 +27,14 @@ def load_analyze_module() -> ModuleType:
     return module
 
 
+def test_analyze_paths_within_workflow_root() -> None:
+    analyze = load_analyze_module()
+
+    assert analyze.LOG == WORKFLOW_ROOT / "logs" / "test.jsonl"
+    assert analyze.REPORT == WORKFLOW_ROOT / "reports" / "today.md"
+    assert analyze.ISSUE_OUT == WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
+
+
 def test_analyze_script_compiles() -> None:
     script_path = WORKFLOW_ROOT / "scripts" / "analyze.py"
     py_compile.compile(str(script_path), doraise=True)
