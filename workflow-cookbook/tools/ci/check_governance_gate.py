@@ -102,7 +102,7 @@ def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
     if not match:
         return False, "Priority Score の記載が見つかりません"
 
-    content = match.group("content")
+    content = match_content
     if "/" not in content:
         return False, "Priority Score の根拠が不足しています"
 
