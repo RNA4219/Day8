@@ -54,3 +54,10 @@ def test_workflow_defaults_run_working_directory() -> None:
     for workflow_name in ("test.yml", "reflection.yml"):
         workflow = load_workflow(workflow_name)
         assert workflow["defaults"]["run"]["working-directory"] == "workflow-cookbook"
+
+
+def test_reflection_manifest_present_for_workflow_defaults() -> None:
+    reflection_manifest = Path(__file__).resolve().parents[1] / "reflection.yaml"
+    assert (
+        reflection_manifest.exists()
+    ), "workflow-cookbook/reflection.yaml が存在する必要があります"
