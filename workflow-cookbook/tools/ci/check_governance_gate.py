@@ -94,7 +94,7 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
                     matches.append(normalized_path)
                     break
                 prefix_path = PurePosixPath(prefix)
-                if candidate.is_relative_to(prefix_path) and candidate != prefix_path:
+                if posix_path.is_relative_to(prefix_path) and posix_path != prefix_path:
                     matches.append(normalized_path)
                     break
     return matches
