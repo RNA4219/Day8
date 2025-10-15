@@ -30,9 +30,9 @@ from tools.ci.check_governance_gate import (
             ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],
         ),
         (
-            """./core/schema/v1/model.yaml\n./auth/service/internal/api.py""".splitlines(),
-            ["/core/schema/**", "/auth/**"],
-            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],
+            ["doc/config.yaml"],
+            ["/docs/**"],
+            [],
         ),
     ],
 )
