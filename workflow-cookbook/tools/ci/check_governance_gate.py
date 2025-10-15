@@ -106,14 +106,15 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
     return patterns
 
 
-def get_changed_paths(refspec: str) -> List[str]:
+def get_changed_paths(refspec: str, repo_root: Path | None = None) -> List[str]:
+    root = repo_root or REPO_ROOT
     result = subprocess.run(
         ["git", "diff", "--name-only", refspec],
         check=True,
         capture_output=True,
         text=True,
         encoding="utf-8",
-        cwd=REPO_ROOT,
+        cwd=root,
     )
     normalized_paths: List[str] = []
     for line in result.stdout.splitlines():
