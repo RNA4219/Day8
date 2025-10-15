@@ -153,6 +153,40 @@ def test_main_reports_flaky_rate(
     assert "- Flaky rate: 33.33%" in contents
 
 
+def test_main_records_issue_todos_for_failures(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "failures.jsonl"
+    log_path.parent.mkdir(parents=True)
+    entries = [
+        {"name": "sample::fail", "status": "fail", "duration_ms": 42},
+        {"name": "sample::fail", "status": "fail", "duration_ms": 45},
+    ]
+    log_path.write_text(
+        "\n".join(json.dumps(entry) for entry in entries) + "\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+    monkeypatch.setattr(analyze, "LOG", log_path)
+    monkeypatch.setattr(analyze, "REPORT", report_path)
+    monkeypatch.setattr(analyze, "ISSUE_OUT", issue_path)
+
+    analyze.main()
+
+    contents = issue_path.read_text(encoding="utf-8").splitlines()
+
+    assert (
+        "- [ ] sample::fail の再現手順/前提/境界値を追加" in contents
+    )
+    assert (
+        "- [ ] sample::fail の再現手順/前提/境界値の工程を増やす" in contents
+    )
+
+
 def test_main_removes_issue_notes_when_no_failures(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
