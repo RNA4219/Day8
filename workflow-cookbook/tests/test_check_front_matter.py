@@ -85,6 +85,38 @@ def test_validate_markdown_front_matter_missing_fields(repo_root: Path) -> None:
     }
 
 
+def test_validate_markdown_front_matter_preserves_hash_values(repo_root: Path) -> None:
+    _write_markdown(
+        repo_root / "README.md",
+        (
+            ("intent_id", "INT-321"),
+            ("owner", '"#platform-team"'),
+            ("status", "active"),
+            ("last_reviewed_at", "2024-01-05"),
+            ("next_review_due", "2024-02-05"),
+        ),
+    )
+
+    _write_markdown(
+        repo_root / "GUIDE.md",
+        (
+            ("intent_id", "INT-654"),
+            ("owner", '"ACME #1"'),
+            ("status", "active"),
+            ("last_reviewed_at", "2024-03-05"),
+            ("next_review_due", "2024-04-05"),
+        ),
+    )
+
+    assert validate_markdown_front_matter(repo_root) == {}
+
+    readme_fields = module._parse_fields(module._extract_front_matter_lines(repo_root / "README.md"))
+    guide_fields = module._parse_fields(module._extract_front_matter_lines(repo_root / "GUIDE.md"))
+
+    assert readme_fields["owner"] == '"#platform-team"'
+    assert guide_fields["owner"] == '"ACME #1"'
+
+
 def test_validate_incident_front_matter_pass(repo_root: Path) -> None:
     docs_dir = repo_root / "docs"
     docs_dir.mkdir()
