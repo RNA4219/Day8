@@ -63,38 +63,6 @@ def get_changed_paths(refspec: str) -> List[str]:
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
-def _normalize_pattern(pattern: str) -> str:
-    normalized = pattern.replace("\\", "/")
-    while normalized.startswith("./"):
-        normalized = normalized[2:]
-    if normalized == "/**":
-        return "**"
-    if normalized == "/":
-        return "/"
-    if normalized.startswith("/"):
-        normalized = normalized.lstrip("/")
-    return normalized
-
-
-def _matches_forbidden_pattern(path: PurePosixPath, pattern: str) -> bool:
-    try:
-        if path.match(pattern):
-            return True
-    except ValueError:
-        return False
-    if pattern.endswith("/**"):
-        base_pattern = pattern[:-3].rstrip("/")
-        if not base_pattern:
-            return True
-        base_path = PurePosixPath(base_pattern)
-        if path == base_path:
-            return True
-        return base_path in path.parents
-    if pattern == "**":
-        return True
-    return False
-
-
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
     matches: List[str] = []
@@ -102,8 +70,18 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
         normalized_path = path.lstrip("./")
         normalized_path = normalized_path.replace("\\", "/")
         posix_path = PurePosixPath(normalized_path)
-        for pattern in normalized_patterns:
-            if _matches_forbidden_pattern(posix_path, pattern):
+        for pattern in patterns:
+            normalized_pattern = pattern.lstrip("./")
+            if normalized_pattern.endswith("/**"):
+                base_pattern = normalized_pattern[:-3].rstrip("/")
+                if not base_pattern:
+                    matches.append(normalized_path)
+                    break
+                base_path = PurePosixPath(base_pattern)
+                if posix_path == base_path or posix_path.is_relative_to(base_path):
+                    matches.append(normalized_path)
+                    break
+            elif posix_path.match(normalized_pattern):
                 matches.append(normalized_path)
                 break
             if pattern.endswith("/**"):
