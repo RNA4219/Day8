@@ -50,6 +50,14 @@ def load_workflow(name: str) -> dict:
         return yaml.safe_load(file)
 
 
+def test_reflection_manifest_path() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    reflection_manifest = project_root / "reflection.yaml"
+    assert (
+        reflection_manifest.exists()
+    ), "workflow-cookbook/reflection.yaml が存在する必要があります"
+
+
 def test_workflow_defaults_run_working_directory() -> None:
     for workflow_name in ("test.yml", "reflection.yml"):
         workflow = load_workflow(workflow_name)

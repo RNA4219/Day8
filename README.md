@@ -14,7 +14,7 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 Day8 を新しいリポジトリへ導入する際は、[`INSTALL.md`](INSTALL.md) の手順に従ってワークフローや初期ファイルをルートに配置してください。GitHub Actions では `test` → `reflection` → `pr_gate` の順で実行され、安全デチューンされた反省レポートを生成します。
 
 ## 使い方のヒント
-- 初期状態では `reflection.yaml` の `analysis.max_tokens` が 0 のため LLM 呼び出しは抑制されています。必要に応じて `engine` 設定と合わせて有効化してください。
+- 初期状態では `workflow-cookbook/reflection.yaml` の `analysis.max_tokens` が 0 のため LLM 呼び出しは抑制されています。必要に応じて `engine` 設定と合わせて有効化してください。
 - 生成されたレポート（`reports/` 配下）と提案を確認し、人間が修正 PR を作成する運用を前提としています。
 
 ---
