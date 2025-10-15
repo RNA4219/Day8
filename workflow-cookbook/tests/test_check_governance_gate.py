@@ -1,4 +1,5 @@
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -8,6 +9,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from tools.ci.check_governance_gate import (
     find_forbidden_matches,
+    get_changed_paths,
     load_forbidden_patterns,
     main,
     validate_priority_score,
@@ -68,6 +70,20 @@ def test_find_forbidden_matches_preserves_result_order():
         "auth",
         "core/schema/model.yaml",
     ]
+
+
+def test_get_changed_paths_normalizes_subdirectory_paths(monkeypatch):
+    repo_root = Path(__file__).resolve().parents[1]
+
+    def fake_run(*args, **kwargs):
+        assert kwargs.get("cwd") == repo_root
+        return type("Result", (), {"stdout": "workflow-cookbook/core/schema/model.yaml\n"})()
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    paths = get_changed_paths("origin/main...")
+    assert paths == ["core/schema/model.yaml"]
+    assert find_forbidden_matches(paths, ["/core/schema/**"]) == ["core/schema/model.yaml"]
 
 
 @pytest.mark.parametrize(
