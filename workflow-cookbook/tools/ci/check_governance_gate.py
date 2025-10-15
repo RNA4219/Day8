@@ -77,7 +77,7 @@ def _normalize_pattern(pattern: str) -> str:
 
 
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
-    normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
+    normalized_patterns = [pattern.lstrip("./") for pattern in patterns]
     matches: List[str] = []
     for path in paths:
         normalized_path = path.lstrip("./")
