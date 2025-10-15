@@ -11,12 +11,11 @@ from types import ModuleType
 import pytest
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-COOKBOOK_ROOT = REPO_ROOT / "workflow-cookbook"
+WORKFLOW_ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_analyze_module() -> ModuleType:
-    module_path = COOKBOOK_ROOT / "scripts" / "analyze.py"
+    module_path = WORKFLOW_ROOT / "scripts" / "analyze.py"
     spec = importlib.util.spec_from_file_location("analyze", module_path)
     if spec is None or spec.loader is None:
         pytest.fail("Failed to load analyze.py spec")
@@ -29,7 +28,7 @@ def load_analyze_module() -> ModuleType:
 
 
 def test_analyze_script_compiles() -> None:
-    script_path = COOKBOOK_ROOT / "scripts" / "analyze.py"
+    script_path = WORKFLOW_ROOT / "scripts" / "analyze.py"
     py_compile.compile(str(script_path), doraise=True)
 
 
