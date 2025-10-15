@@ -32,12 +32,23 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
 
 
 @pytest.mark.parametrize(
+    "body",
+    [
+        "- Priority Score: 7 / 箇条書き",
+        "- [x] Priority Score: 8 / チェック済み",
+    ],
+)
+def test_validate_priority_score_accepts_bullet_formats(body):
+    is_valid, reason = validate_priority_score(body)
+    assert is_valid is True
+    assert reason is None
+
+
+@pytest.mark.parametrize(
     "body, expected, message",
     [
         ("Priority Score: 5 / 安全性強化", True, None),
         ("Priority Score: 1 / 即応性向上", True, None),
-        ("- Priority Score: 7 / 箇条書き", True, None),
-        ("- [x] Priority Score: 8 / チェック済み", True, None),
         ("Priority Score: 3", False, "根拠"),
         ("Priority Score: / 理由", False, "数値"),
         ("Priority Score: abc / 理由", False, "数値"),
