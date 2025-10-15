@@ -12,7 +12,7 @@ from pathlib import Path
 
 StatusMap = dict[str, set[str]]
 
-BASE_DIR: Final[Path] = Path(__file__).resolve().parents[2]
+BASE_DIR: Final[Path] = Path(__file__).resolve().parents[1]
 LOG: Final[Path] = BASE_DIR / "logs" / "test.jsonl"
 REPORT: Final[Path] = BASE_DIR / "reports" / "today.md"
 ISSUE_OUT: Final[Path] = BASE_DIR / "reports" / "issue_suggestions.md"
