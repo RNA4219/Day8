@@ -10,7 +10,7 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
-BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
+BULLET_PATTERN = re.compile(r"^\s*(?:[-*+]\s*(?:\[[xX ]\])?\s*|\d+[.)]\s*)")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPO_ROOT_NAME = REPO_ROOT.name

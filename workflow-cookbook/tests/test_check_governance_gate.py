@@ -151,6 +151,7 @@ def test_validate_priority_score(body, expected, message):
         "+ Priority Score: 9 / プラス記号",
         "- [ ] Priority Score: 4 / 未チェック",
         "- [x] Priority Score: 8 / チェック済み",
+        "1. Priority Score: 7 / 番号付きリスト",
     ],
 )
 def test_validate_priority_score_valid(body):
