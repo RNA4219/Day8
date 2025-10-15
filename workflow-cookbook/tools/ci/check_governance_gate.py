@@ -73,8 +73,12 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
             continue
         indent = len(raw_line) - len(raw_line.lstrip(" "))
 
-        if stripped_line.endswith(":"):
-            key = stripped_line[:-1].strip()
+        line_without_comments = _strip_inline_comment(stripped_line).rstrip()
+        if not line_without_comments:
+            continue
+
+        if line_without_comments.endswith(":"):
+            key = line_without_comments[:-1].strip()
             if indent == 0:
                 in_self_modification = key == "self_modification"
                 in_forbidden_paths = False

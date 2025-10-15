@@ -238,6 +238,19 @@ self_modification:
     assert load_forbidden_patterns(policy) == ["core/schema/**"]
 
 
+def test_load_forbidden_patterns_handles_inline_comment_on_key(tmp_path):
+    policy = tmp_path / "policy.yaml"
+    policy.write_text(
+        """
+self_modification:
+  forbidden_paths:  # コメント
+    - "/core/schema/**"
+"""
+    )
+
+    assert load_forbidden_patterns(policy) == ["core/schema/**"]
+
+
 def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
     from tools.ci import check_governance_gate as module
 
