@@ -77,6 +77,14 @@ def test_find_forbidden_matches_preserves_result_order():
     ]
 
 
+def test_find_forbidden_matches_detects_repo_root_prefixed_paths():
+    changed_paths = ["workflow-cookbook/core/schema/model.yaml"]
+    patterns = ["/core/schema/**"]
+    assert find_forbidden_matches(changed_paths, patterns) == [
+        "core/schema/model.yaml"
+    ]
+
+
 def test_get_changed_paths_normalizes_subdirectory_paths(monkeypatch):
     repo_root = Path(__file__).resolve().parents[1]
 
