@@ -63,14 +63,14 @@ def test_validate_priority_score_accepts_bullet_formats(body):
     ],
 )
 def test_validate_priority_score(body, expected, message):
-    is_valid, reason = validate_priority_score(body)
+    is_valid, error = validate_priority_score(body)
     assert is_valid is expected
     if expected:
-        assert reason is None
+        assert error is None
     else:
-        assert reason is not None
+        assert error is not None
         if message is not None:
-            assert message in reason
+            assert message in error
 
 
 @pytest.mark.parametrize(
