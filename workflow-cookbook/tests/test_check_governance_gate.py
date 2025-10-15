@@ -128,7 +128,7 @@ def test_load_forbidden_patterns(tmp_path):
         """
 self_modification:
   forbidden_paths:
-    - "/core/schema/**"
+    - "/core/schema/**"  # コメント付き
     - '/auth/**'
   require_human_approval:
     - "/governance/**"
