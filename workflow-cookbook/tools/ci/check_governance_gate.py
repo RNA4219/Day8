@@ -107,26 +107,20 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
 
 
 def get_changed_paths(refspec: str) -> List[str]:
-    repo_root = Path(__file__).resolve().parents[2]
     result = subprocess.run(
         ["git", "diff", "--name-only", refspec],
         check=True,
         capture_output=True,
         text=True,
         encoding="utf-8",
-        cwd=repo_root,
+        cwd=REPO_ROOT,
     )
     normalized_paths: List[str] = []
-    repo_root_name = repo_root.name
     for line in result.stdout.splitlines():
         stripped = line.strip()
         if not stripped:
             continue
-        posix_path = PurePosixPath(stripped)
-        parts = posix_path.parts
-        if parts and parts[0] == repo_root_name:
-            posix_path = PurePosixPath(*parts[1:])
-        normalized_paths.append(str(posix_path))
+        normalized_paths.append(_normalize_path(stripped))
     return normalized_paths
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     normalized_patterns = [_normalize_pattern(pattern) for pattern in patterns]
