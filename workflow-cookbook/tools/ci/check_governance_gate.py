@@ -12,6 +12,9 @@ from typing import Iterable, List, Sequence
 
 BULLET_PATTERN = re.compile(r"^\s*[-*+]\s*(?:\[[xX ]\])?\s*")
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT_NAME = REPO_ROOT.name
+
 
 def _normalize_pattern(pattern: str) -> str:
     normalized = pattern.replace("\\", "/")
@@ -28,6 +31,9 @@ def _normalize_path(path: str) -> str:
         normalized = normalized[2:]
     if normalized.startswith("/"):
         normalized = normalized[1:]
+    prefix = f"{REPO_ROOT_NAME}/"
+    if normalized.startswith(prefix):
+        normalized = normalized[len(prefix) :]
     return normalized
 
 
@@ -215,7 +221,7 @@ def main() -> int:
     forbidden_patterns = load_forbidden_patterns(policy_path)
 
     try:
-        changed_paths = get_changed_paths("origin/main...")
+        changed_paths = get_changed_paths("origin/main...", repo_root=repo_root)
     except subprocess.CalledProcessError as error:
         print(f"Failed to collect changed paths: {error}", file=sys.stderr)
         return 1

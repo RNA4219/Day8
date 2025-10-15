@@ -21,6 +21,11 @@ from tools.ci.check_governance_gate import (
     [
         ("core/schema".splitlines(), ["/core/schema/**"], ["core/schema"]),
         ("""core/schema/model.yaml\ndocs/guide.md""".splitlines(), ["/core/schema/**"], ["core/schema/model.yaml"]),
+        (
+            ["workflow-cookbook/core/schema/model.yaml"],
+            ["/core/schema/**"],
+            ["core/schema/model.yaml"],
+        ),
         ("""docs/readme.md\nops/runbook.md""".splitlines(), ["/core/schema/**"], []),
         (
             """auth/service.py\ncore/schema/definitions.yml""".splitlines(),
@@ -185,7 +190,7 @@ def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, c
         encoding="utf-8",
     )
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-    monkeypatch.setattr(module, "get_changed_paths", lambda refspec: [])
+    monkeypatch.setattr(module, "get_changed_paths", lambda refspec, **_: [])
     def stub_validate_priority_score(body: str | None) -> tuple[bool, str | None]:
         return False, "Priority Score validation failed"
 
