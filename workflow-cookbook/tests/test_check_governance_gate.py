@@ -27,7 +27,7 @@ from tools.ci.check_governance_gate import (
         (
             """core/schema/v1/model.yaml\nauth/service/internal/api.py""".splitlines(),
             ["/core/schema/**", "/auth/**"],
-            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],
+            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],  # normalized パス。現行ロジックでは検知できずテスト失敗を想定。
         ),
         (
             ["doc/config.yaml"],
