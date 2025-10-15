@@ -2,7 +2,7 @@
 
 ## コンポーネント
 - **Collector**: CI テストやツールから JSONL ログを収集
-- **Analyzer**: `scripts/analyze.py` がメトリクス算出と Why-Why 草案生成
+- **Analyzer**: `workflow-cookbook/scripts/analyze.py` がメトリクス算出と Why-Why 草案生成
 - **Reporter**: `reports/today.md` と `reports/issue_suggestions.md` を生成
 - **Proposer**: Issue/ドラフトPR を“提案のみ”で作成（自動改変なし）
 - **Governance**: `governance/policy.yaml` に行動制約・SLO

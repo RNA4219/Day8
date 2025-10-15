@@ -4,7 +4,7 @@
 - `.github/workflows/` : `test.yml`, `reflection.yml`（必要に応じ `pr_gate.yml`）
 - `workflow-cookbook/`
   - `reflection.yaml` （反省DSL）
-  - `scripts/analyze.py` （ログ→レポート）
+  - `workflow-cookbook/scripts/analyze.py` （ログ→レポート）
   - `logs/` / `reports/` / `docs/`
 
 ## 反省DSL（例）

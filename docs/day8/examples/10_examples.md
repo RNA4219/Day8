@@ -56,12 +56,12 @@ jobs:
       - name: Analyze logs → report
         run: |
           python -m pip install --upgrade pip
-          python scripts/analyze.py
+          python workflow-cookbook/scripts/analyze.py
       - name: Commit report
         run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
-          git add reports/today.md
+          git add workflow-cookbook/reports/today.md
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
 ```

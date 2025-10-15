@@ -5,7 +5,7 @@
 
 - `governance/policy.yaml`
 - `reflection.yaml`
-- `scripts/analyze.py`
+- `workflow-cookbook/scripts/analyze.py`
 - `.github/workflows/test.yml`
 - `.github/workflows/reflection.yml`
 - `.github/workflows/pr_gate.yml`
