@@ -8,6 +8,7 @@ import pytest
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from tools.ci.check_governance_gate import (
+    REPO_ROOT,
     find_forbidden_matches,
     get_changed_paths,
     load_forbidden_patterns,
@@ -156,6 +157,26 @@ def test_validate_priority_score_valid(body):
     is_valid, error = validate_priority_score(body)
     assert is_valid is True
     assert error is None
+
+
+def test_main_accepts_repo_root_argument(monkeypatch, tmp_path):
+    event_path = tmp_path / "event.json"
+    event_payload = {
+        "pull_request": {
+            "body": "- Priority Score: 5 / テスト",
+        }
+    }
+    event_path.write_text(json.dumps(event_payload), encoding="utf-8")
+
+    def fake_run(*args, **kwargs):
+        assert kwargs.get("cwd") == REPO_ROOT
+        return type("Result", (), {"stdout": "workflow-cookbook/docs/readme.md\n"})()
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+
+    exit_code = main()
+    assert exit_code == 0
 
 
 def test_load_forbidden_patterns(tmp_path):
