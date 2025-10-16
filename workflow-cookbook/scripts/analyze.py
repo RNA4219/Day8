@@ -6,7 +6,7 @@ import math
 import statistics
 from collections import Counter
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 StatusMap = dict[str, set[str]]
 
@@ -15,6 +15,64 @@ BASE_DIR: Final[Path] = WORKFLOW_ROOT
 LOG: Final[Path] = WORKFLOW_ROOT / "logs" / "test.jsonl"
 REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
 ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
+REFLECTION_MANIFEST: Final[Path] = WORKFLOW_ROOT / "reflection.yaml"
+
+
+def _coerce_bool(value: object) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        lowered = value.strip().lower()
+        if lowered in {"true", "false"}:
+            return lowered == "true"
+    return None
+
+
+def _fallback_read_suggest_issues(text: str, default: bool) -> bool:
+    in_actions = False
+    actions_indent = 0
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if stripped.startswith("actions:") and indent == 0:
+            in_actions = True
+            actions_indent = indent
+            continue
+        if indent <= actions_indent:
+            in_actions = False
+        if in_actions and stripped.startswith("suggest_issues:"):
+            value = stripped.split(":", 1)[1].split("#", 1)[0]
+            coerced = _coerce_bool(value)
+            return coerced if coerced is not None else default
+    return default
+
+
+def load_actions_suggest_issues(
+    path: Path | None = None, default: bool = True
+) -> bool:
+    target = path or REFLECTION_MANIFEST
+    if not target.exists():
+        return default
+    text = target.read_text(encoding="utf-8")
+    try:
+        import yaml  # type: ignore
+    except ModuleNotFoundError:
+        return _fallback_read_suggest_issues(text, default)
+    try:
+        loaded = yaml.safe_load(text)
+    except Exception:
+        return default
+    if not isinstance(loaded, dict):
+        return default
+    actions: Any = loaded.get("actions")
+    if isinstance(actions, dict):
+        suggest = actions.get("suggest_issues")
+        coerced = _coerce_bool(suggest)
+        if coerced is not None:
+            return coerced
+    return default
 
 
 def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:
@@ -89,14 +147,15 @@ def main() -> None:
                 )
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
-    if fails:
-        with ISSUE_OUT.open("w", encoding="utf-8") as f:
-            f.write("### 反省TODO\n")
-            for name in sorted(set(fails)):
-                f.write(f"- [ ] {name} の再現手順/前提/境界値を追加\n")
-                f.write(f"- [ ] {name} の再現手順/前提/境界値の工程を増やす\n")
-    elif ISSUE_OUT.exists():
-        ISSUE_OUT.unlink()
+    if load_actions_suggest_issues():
+        if fails:
+            with ISSUE_OUT.open("w", encoding="utf-8") as f:
+                f.write("### 反省TODO\n")
+                for name in sorted(set(fails)):
+                    f.write(f"- [ ] {name} の再現手順/前提/境界値を追加\n")
+                    f.write(f"- [ ] {name} の再現手順/前提/境界値の工程を増やす\n")
+        elif ISSUE_OUT.exists():
+            ISSUE_OUT.unlink()
 
 
 if __name__ == "__main__":

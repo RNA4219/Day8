@@ -254,3 +254,33 @@ def test_main_removes_issue_notes_when_no_failures(
         assert issue_path.read_text(encoding="utf-8").strip() == ""
     else:
         assert not issue_path.exists()
+
+
+def test_main_skips_issue_notes_when_suggestions_disabled(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "failures.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text(
+        json.dumps({"name": "disabled::fail", "status": "fail", "duration_ms": 15})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text("actions:\n  suggest_issues: false\n", encoding="utf-8")
+
+    for attr, value in {
+        "LOG": log_path,
+        "REPORT": tmp_path / "reports" / "today.md",
+        "ISSUE_OUT": issue_path,
+        "REFLECTION_MANIFEST": reflection_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    analyze.main()
+
+    assert not issue_path.exists()
