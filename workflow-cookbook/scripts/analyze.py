@@ -13,7 +13,8 @@ StatusMap = dict[str, set[str]]
 WORKFLOW_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 BASE_DIR: Final[Path] = WORKFLOW_ROOT
 LOG: Final[Path] = WORKFLOW_ROOT / "logs" / "test.jsonl"
-REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
+DEFAULT_REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
+REPORT: Final[Path] = DEFAULT_REPORT
 ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
 REFLECTION_MANIFEST: Final[Path] = WORKFLOW_ROOT / "reflection.yaml"
 
@@ -28,9 +29,7 @@ def _coerce_bool(value: object) -> bool | None:
     return None
 
 
-def _fallback_read_section_bool(
-    text: str, section: str, key: str, default: bool
-) -> bool:
+def _fallback_read_section_value(text: str, section: str, key: str) -> str | None:
     in_section = False
     section_indent = 0
     for raw_line in text.splitlines():
@@ -45,10 +44,21 @@ def _fallback_read_section_bool(
         if indent <= section_indent:
             in_section = False
         if in_section and stripped.startswith(f"{key}:"):
-            value = stripped.split(":", 1)[1].split("#", 1)[0]
-            coerced = _coerce_bool(value.strip())
-            return coerced if coerced is not None else default
-    return default
+            value = stripped.split(":", 1)[1].split("#", 1)[0].strip()
+            if value.startswith(("'", '"')) and value.endswith(value[0]) and len(value) >= 2:
+                value = value[1:-1]
+            return value or None
+    return None
+
+
+def _fallback_read_section_bool(
+    text: str, section: str, key: str, default: bool
+) -> bool:
+    value = _fallback_read_section_value(text, section, key)
+    if value is None:
+        return default
+    coerced = _coerce_bool(value)
+    return coerced if coerced is not None else default
 
 
 def _fallback_read_suggest_issues(text: str, default: bool) -> bool:
@@ -65,13 +75,17 @@ def _fallback_manifest_from_text(
     default_suggest_issues: bool,
     default_include_why: bool,
 ) -> dict[str, Any]:
+    report_config: dict[str, Any] = {
+        "include_why_why": _fallback_read_include_why(text, default_include_why)
+    }
+    output = _fallback_read_section_value(text, "report", "output")
+    if output:
+        report_config["output"] = output
     return {
         "actions": {
             "suggest_issues": _fallback_read_suggest_issues(text, default_suggest_issues)
         },
-        "report": {
-            "include_why_why": _fallback_read_include_why(text, default_include_why)
-        },
+        "report": report_config,
     }
 
 
@@ -157,6 +171,36 @@ def load_report_include_why(
     return default
 
 
+def load_report_output_path(
+    path: Path | None = None,
+    *,
+    default: Path | None = None,
+) -> Path:
+    manifest = load_reflection_manifest(
+        path,
+        default_suggest_issues=True,
+        default_include_why=True,
+    )
+    fallback = default or REPORT
+    report_section: Any = manifest.get("report") if manifest else None
+    candidate: object = report_section.get("output") if isinstance(report_section, dict) else None
+    candidate_path: Path | None = None
+    if isinstance(candidate, Path):
+        candidate_path = candidate
+    elif isinstance(candidate, str):
+        stripped = candidate.strip()
+        if stripped:
+            candidate_path = Path(stripped)
+    if candidate_path is not None and not candidate_path.is_absolute():
+        candidate_path = BASE_DIR / candidate_path
+    if candidate_path == DEFAULT_REPORT and fallback != DEFAULT_REPORT:
+        candidate_path = fallback
+    chosen = candidate_path or fallback
+    if not chosen.is_absolute():
+        chosen = BASE_DIR / chosen
+    return chosen
+
+
 def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:
     tests: list[str] = []
     durs: list[int] = []
@@ -213,17 +257,18 @@ def main() -> None:
     dur_p95 = p95(durs)
     now = datetime.datetime.now(datetime.UTC).isoformat()
 
-    manifest = load_reflection_manifest()
+    report_path = load_report_output_path()
+    include_why = load_report_include_why()
 
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
-    with REPORT.open("w", encoding="utf-8") as f:
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    with report_path.open("w", encoding="utf-8") as f:
         f.write(f"# Reflection Report ({now} UTC)\n\n")
         f.write(f"- Total tests: {total}\n")
         f.write(f"- Pass rate: {pass_rate:.2%}\n")
         f.write(f"- Flaky rate: {flaky_rate:.2%}\n")
         f.write(f"- Duration p95: {dur_p95} ms\n")
         f.write(f"- Failures: {len(fails)}\n\n")
-        if fails and load_report_include_why(manifest=manifest):
+        if fails and include_why:
             f.write("## Why-Why (draft)\n")
             for name, cnt in Counter(fails).items():
                 f.write(
