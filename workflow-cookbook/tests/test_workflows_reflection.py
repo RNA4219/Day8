@@ -106,3 +106,41 @@ def test_reflection_workflow_issue_step_condition_checks_hashfiles_zero() -> Non
 
     assert f"{condition_snippet} != '0'" in content
     assert f"{condition_snippet} != ''" not in content
+
+
+def test_reflection_workflow_issue_step_condition_evaluates_false_when_missing() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Open issue if needed (draft memo)":
+            break
+    else:  # pragma: no cover - defensive guard
+        raise AssertionError("Issue creation step not found")
+
+    condition_line = ""
+    for candidate in lines[index + 1 :]:
+        stripped = candidate.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.startswith("if: ${{") and stripped.endswith("}}"):  # expected format
+            condition_line = stripped
+            break
+    else:  # pragma: no cover - defensive guard
+        raise AssertionError("Issue creation step missing if condition")
+
+    prefix = "if: ${{"
+    suffix = "}}"
+    expression = condition_line[len(prefix) : -len(suffix)].strip()
+    placeholder = "hashFiles('workflow-cookbook/reports/issue_suggestions.md')"
+
+    assert expression.startswith(placeholder)
+    simulated = expression.replace(placeholder, "'0'")
+
+    assert simulated == "'0' != '0'"
