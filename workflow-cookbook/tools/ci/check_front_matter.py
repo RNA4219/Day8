@@ -67,6 +67,13 @@ def _parse_fields(front_matter_lines: Iterable[str]) -> Dict[str, str]:
         value = _strip_inline_comment(value.strip())
         if value in {"''", '""'}:
             value = ""
+        elif (
+            len(value) >= 2
+            and value[0] == value[-1]
+            and value[0] in {"'", '"'}
+            and value[1:-1].strip() == ""
+        ):
+            value = ""
         data[key.strip()] = value
     return data
 
