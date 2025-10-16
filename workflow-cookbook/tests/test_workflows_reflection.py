@@ -1,14 +1,35 @@
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
+
+try:
+    import yaml
+except ModuleNotFoundError:  # pragma: no cover - fallback for test envs without PyYAML
+    spec = importlib.util.spec_from_file_location(
+        "workflow_cookbook.tests.test_workflows_defaults",
+        Path(__file__).with_name("test_workflows_defaults.py"),
+    )
+    if spec is None or spec.loader is None:  # pragma: no cover - defensive guard
+        raise ImportError("Failed to load YAML fallback")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)  # type: ignore[arg-type, union-attr]
+    yaml = module.yaml  # type: ignore[attr-defined]
 
 
 def test_reflection_yaml_uses_repo_relative_paths() -> None:
     reflection_path = Path(__file__).resolve().parents[1] / "reflection.yaml"
     content = reflection_path.read_text(encoding="utf-8")
+    data = yaml.safe_load(content)
 
-    assert "logs/test.jsonl" in content
-    assert "../logs/test.jsonl" not in content
+    targets = data["targets"]
+    if isinstance(targets, list):
+        logs = targets[0]["logs"]
+    else:  # pragma: no cover - fallback parser path
+        logs = targets["logs"]
+
+    assert logs == ["logs/test.jsonl"]
+    assert not any(path.startswith("..") for path in logs)
     assert "reports/today.md" in content
     assert "../reports/today.md" not in content
 
