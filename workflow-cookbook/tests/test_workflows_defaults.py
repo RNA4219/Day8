@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import IO, Any, Dict
+from typing import IO, Any, Dict, cast
 
 try:
     import yaml  # type: ignore
@@ -69,3 +69,18 @@ def test_reflection_manifest_present_for_workflow_defaults() -> None:
     assert (
         reflection_manifest.exists()
     ), "workflow-cookbook/reflection.yaml が存在する必要があります"
+
+
+def test_reflection_manifest_report_output() -> None:
+    reflection_manifest = Path(__file__).resolve().parents[1] / "reflection.yaml"
+    with reflection_manifest.open("r", encoding="utf-8") as file:
+        manifest = cast(dict[str, Any], yaml.safe_load(file))
+
+    assert isinstance(manifest, dict), "manifest はマッピングである必要があります"
+    assert "report" in manifest, "report セクションが必要です"
+
+    report_section = manifest["report"]
+    assert isinstance(report_section, dict), "report セクションはマッピングである必要があります"
+    assert (
+        report_section.get("output") == "reports/today.md"
+    ), "report.output は reports/today.md である必要があります"
