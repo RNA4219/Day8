@@ -244,6 +244,13 @@ def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
 
     score_raw, reason_raw = [segment.strip() for segment in content.split("/", 1)]
 
+    score_raw = _strip_markdown_emphasis(score_raw)
+    score_raw = score_raw.strip()
+    score_raw = score_raw.strip("*_")
+    score_raw = score_raw.strip()
+
+    reason_raw = _strip_markdown_emphasis(reason_raw).strip()
+
     if not score_raw:
         return False, "Priority Score の数値が不足しています"
     if not reason_raw:
