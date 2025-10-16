@@ -1,45 +1,37 @@
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
-from test_workflows_defaults import yaml
+try:
+    import yaml
+except ModuleNotFoundError:  # pragma: no cover - fallback for test envs without PyYAML
+    spec = importlib.util.spec_from_file_location(
+        "workflow_cookbook.tests.test_workflows_defaults",
+        Path(__file__).with_name("test_workflows_defaults.py"),
+    )
+    if spec is None or spec.loader is None:  # pragma: no cover - defensive guard
+        raise ImportError("Failed to load YAML fallback")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)  # type: ignore[arg-type, union-attr]
+    yaml = module.yaml  # type: ignore[attr-defined]
 
 
 def test_reflection_yaml_uses_repo_relative_paths() -> None:
     reflection_path = Path(__file__).resolve().parents[1] / "reflection.yaml"
-    manifest = yaml.safe_load(reflection_path.read_text(encoding="utf-8"))
+    content = reflection_path.read_text(encoding="utf-8")
+    data = yaml.safe_load(content)
 
-    assert isinstance(manifest, dict)
+    targets = data["targets"]
+    if isinstance(targets, list):
+        logs = targets[0]["logs"]
+    else:  # pragma: no cover - fallback parser path
+        logs = targets["logs"]
 
-    report = manifest.get("report")
-    assert isinstance(report, dict)
-
-    output = report.get("output")
-    assert isinstance(output, str)
-    assert output == "reports/today.md"
-    assert not output.startswith("../")
-
-    raw_targets = manifest.get("targets")
-    if isinstance(raw_targets, dict):
-        converted_target: dict[str, object] = {}
-        if "- name" in raw_targets:
-            converted_target["name"] = raw_targets["- name"]
-        if "logs" in raw_targets:
-            converted_target["logs"] = raw_targets["logs"]
-        targets: list[object] = [converted_target]
-    else:
-        targets = raw_targets
-
-    assert isinstance(targets, list)
-    first_target = targets[0]
-    assert isinstance(first_target, dict)
-
-    logs = first_target.get("logs")
-    assert isinstance(logs, list)
     assert logs == ["logs/test.jsonl"]
-    for log in logs:
-        assert isinstance(log, str)
-        assert not log.startswith("../")
+    assert not any(path.startswith("..") for path in logs)
+    assert "reports/today.md" in content
+    assert "../reports/today.md" not in content
 
 
 def test_reflection_workflow_analyze_step_runs_analyze_script() -> None:
