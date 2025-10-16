@@ -22,17 +22,12 @@ def test_reflection_workflow_analyze_step_runs_analyze_script() -> None:
     )
     content = workflow_path.read_text(encoding="utf-8")
 
-    expected_block = (
-        "\n".join(
-            [
-                "      - name: Analyze logs → report",
-                "        working-directory: workflow-cookbook",
-                "        run: |",
-                "          python scripts/analyze.py",
-            ]
-        )
-        + "\n"
-    )
+    expected_block = """\
+      - name: Analyze logs → report
+        working-directory: workflow-cookbook
+        run: |
+          python scripts/analyze.py
+    """.rstrip()
 
     assert expected_block in content
 
