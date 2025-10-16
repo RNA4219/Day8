@@ -14,5 +14,5 @@ actions:
   open_pr_as_draft: true
   auto_fix: false         # 自動修正しない（安全デチューン）
 report:
-  output: reports/today.md
+  output: "reports/today.md"
   include_why_why: true

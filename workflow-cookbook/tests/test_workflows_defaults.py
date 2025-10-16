@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import IO, Any, Dict
+from typing import IO, Any, Dict, cast
 
 try:
     import yaml  # type: ignore
