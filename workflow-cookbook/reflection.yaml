@@ -1,7 +1,6 @@
 targets:
   - name: unit
-    logs:
-      - logs/test.jsonl
+    logs: ["logs/test.jsonl"]
 metrics:
   - pass_rate
   - duration_p95
