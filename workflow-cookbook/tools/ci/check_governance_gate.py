@@ -216,6 +216,12 @@ def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
         BULLET_PATTERN.sub("", MARKDOWN_STRONG_PATTERN.sub(r"\1", line)).lstrip()
         for line in body.splitlines()
     )
+    normalized_body = re.sub(
+        r"(Priority Score)\s*[：:]",
+        r"\1:",
+        normalized_body,
+        flags=re.MULTILINE,
+    )
     pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
     match = pattern.search(normalized_body)
     if not match:

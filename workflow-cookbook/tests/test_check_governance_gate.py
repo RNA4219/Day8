@@ -182,6 +182,8 @@ def test_validate_priority_score(body, expected, message):
         "- [x] Priority Score: 8 / チェック済み",
         "1. Priority Score: 7 / 番号付きリスト",
         "**Priority Score:** 5 / 強調付き",
+        "Priority Score : 5 / 理由",
+        "Priority Score：5 / 理由",
     ],
 )
 def test_validate_priority_score_valid(body):
