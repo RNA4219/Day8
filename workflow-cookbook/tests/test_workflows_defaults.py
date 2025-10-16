@@ -34,9 +34,19 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for test envs without
                     stack.append(new_map)
                     indents.append(indent + 2)
                 else:
-                    if value.startswith("\"") and value.endswith("\""):
-                        value = value[1:-1]
-                    stack[-1][key] = value
+                    if value.startswith("[") and value.endswith("]"):
+                        items = []
+                        raw_items = value[1:-1].split(",") if value[1:-1].strip() else []
+                        for raw_item in raw_items:
+                            item = raw_item.strip()
+                            if item.startswith("\"") and item.endswith("\""):
+                                item = item[1:-1]
+                            items.append(item)
+                        stack[-1][key] = items
+                    else:
+                        if value.startswith("\"") and value.endswith("\""):
+                            value = value[1:-1]
+                        stack[-1][key] = value
 
             return root
 
@@ -71,16 +81,20 @@ def test_reflection_manifest_present_for_workflow_defaults() -> None:
     ), "workflow-cookbook/reflection.yaml が存在する必要があります"
 
 
-def test_reflection_manifest_report_output() -> None:
+def test_reflection_manifest_logs_entry() -> None:
     reflection_manifest = Path(__file__).resolve().parents[1] / "reflection.yaml"
     with reflection_manifest.open("r", encoding="utf-8") as file:
-        manifest = cast(dict[str, Any], yaml.safe_load(file))
+        manifest = yaml.safe_load(file)
 
-    assert isinstance(manifest, dict), "manifest はマッピングである必要があります"
-    assert "report" in manifest, "report セクションが必要です"
+    raw_targets = manifest["targets"]
+    if isinstance(raw_targets, dict):
+        converted_target: Dict[str, Any] = {}
+        if "- name" in raw_targets:
+            converted_target["name"] = raw_targets["- name"]
+        if "logs" in raw_targets:
+            converted_target["logs"] = raw_targets["logs"]
+        targets = [converted_target]
+    else:
+        targets = raw_targets
 
-    report_section = manifest["report"]
-    assert isinstance(report_section, dict), "report セクションはマッピングである必要があります"
-    assert (
-        report_section.get("output") == "reports/today.md"
-    ), "report.output は reports/today.md である必要があります"
+    assert targets[0]["logs"] == ["logs/test.jsonl"]
