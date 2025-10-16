@@ -167,15 +167,15 @@ def main() -> None:
                 )
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
-    if load_actions_suggest_issues():
-        if fails:
-            with ISSUE_OUT.open("w", encoding="utf-8") as f:
-                f.write("### 反省TODO\n")
-                for name in sorted(set(fails)):
-                    f.write(f"- [ ] {name} の再現手順/前提/境界値を追加\n")
-                    f.write(f"- [ ] {name} の再現手順/前提/境界値の工程を増やす\n")
-        elif ISSUE_OUT.exists():
-            ISSUE_OUT.unlink()
+    suggest_issues = load_actions_suggest_issues()
+    if fails and suggest_issues:
+        with ISSUE_OUT.open("w", encoding="utf-8") as f:
+            f.write("### 反省TODO\n")
+            for name in sorted(set(fails)):
+                f.write(f"- [ ] {name} の再現手順/前提/境界値を追加\n")
+                f.write(f"- [ ] {name} の再現手順/前提/境界値の工程を増やす\n")
+    elif ISSUE_OUT.exists():
+        ISSUE_OUT.unlink()
 
 
 if __name__ == "__main__":
