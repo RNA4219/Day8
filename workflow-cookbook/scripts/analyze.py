@@ -71,7 +71,7 @@ def main() -> None:
     else:
         flaky_rate = flaky_tests / unique_tests
     dur_p95 = p95(durs)
-    now = datetime.datetime.utcnow().isoformat()
+    now = datetime.datetime.now(datetime.UTC).isoformat()
 
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     with REPORT.open("w", encoding="utf-8") as f:
