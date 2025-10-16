@@ -86,6 +86,35 @@ def test_find_forbidden_matches_detects_repo_root_prefixed_paths():
     ]
 
 
+@pytest.mark.parametrize(
+    "section, expected",
+    [
+        (
+            "\n".join(
+                [
+                    "  forbidden_paths:",
+                    "    - ./core/schema/**",
+                    "    - docs/**",
+                ]
+            ),
+            ["core/schema/**", "docs/**"],
+        ),
+        (
+            '  forbidden_paths: ["./core/schema/**", "docs/**"]',
+            ["core/schema/**", "docs/**"],
+        ),
+    ],
+)
+def test_load_forbidden_patterns_supports_array_styles(tmp_path, section, expected):
+    policy_content = "\n".join(["self_modification:", section, ""])
+    policy_path = tmp_path / "policy.yaml"
+    policy_path.write_text(policy_content, encoding="utf-8")
+
+    patterns = load_forbidden_patterns(policy_path)
+
+    assert patterns == expected
+
+
 def test_get_changed_paths_normalizes_subdirectory_paths(monkeypatch):
     repo_root = Path(__file__).resolve().parents[1]
 
