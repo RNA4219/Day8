@@ -11,9 +11,11 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
-MARKDOWN_STRONG_PATTERN = re.compile(r"(?:\*\*|__)(.+?)(?:\*\*|__)")
+MARKDOWN_EMPHASIS_PATTERN = re.compile(r"(?<!\\)(\*\*|__|\*|_)(?P<content>.*?)(?<!\\)\1")
 
 BULLET_PATTERN = re.compile(r"^\s*(?:[-*+]\s*(?:\[[xX ]\])?\s*|\d+[.)]\s*)")
+
+PRIORITY_LABEL_PATTERN = re.compile(r"^(Priority\s*Score)\s*[:：]\s*")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPO_ROOT_NAME = REPO_ROOT.name
@@ -208,20 +210,29 @@ def read_event_body(event_path: Path) -> str | None:
     return body
 
 
+def _strip_markdown_emphasis(text: str) -> str:
+    previous = None
+    result = text
+    while previous != result:
+        previous = result
+        result = MARKDOWN_EMPHASIS_PATTERN.sub(lambda match: match.group("content"), result)
+    return result
+
+
+def _normalize_priority_line(line: str) -> str:
+    without_emphasis = _strip_markdown_emphasis(line)
+    without_bullet = BULLET_PATTERN.sub("", without_emphasis).lstrip()
+    if not without_bullet:
+        return without_bullet
+    normalized = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", without_bullet, count=1)
+    return normalized
+
+
 def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
     if not body:
         return False, "Priority Score セクションが見つかりません"
 
-    normalized_body = "\n".join(
-        BULLET_PATTERN.sub("", MARKDOWN_STRONG_PATTERN.sub(r"\1", line)).lstrip()
-        for line in body.splitlines()
-    )
-    normalized_body = re.sub(
-        r"(Priority Score)\s*[：:]",
-        r"\1:",
-        normalized_body,
-        flags=re.MULTILINE,
-    )
+    normalized_body = "\n".join(_normalize_priority_line(line) for line in body.splitlines())
     pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
     match = pattern.search(normalized_body)
     if not match:
