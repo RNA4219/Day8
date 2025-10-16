@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
+
+import re
 
 
 def test_reflection_manifest_present() -> None:
@@ -17,18 +18,25 @@ def test_reflection_manifest_paths() -> None:
     manifest_text = reflection_manifest.read_text(encoding="utf-8")
 
     target_logs_pattern = re.compile(
-        r"targets:\s*-\s+name:\s*unit\s+logs:\s*\[\s*\"([^\"]+)\"\s*\]",
-        flags=re.MULTILINE,
+        r"targets:\s*-.*?name:\s*unit.*?logs:\s*(?:\[\s*\"(?P<inline>[^\"]+)\"\s*\]|(?P<block>(?:\n\s*-\s*[\"']?[^\n]+)+))",
+        flags=re.DOTALL,
     )
     target_logs_match = target_logs_pattern.search(manifest_text)
-    assert target_logs_match, "targets[0].logs が定義されている必要があります"
-    assert (
-        target_logs_match.group(1) == "logs/test.jsonl"
-    ), "targets[0].logs は logs/test.jsonl を指す必要があります"
+    assert target_logs_match, "unit ターゲットの logs が定義されている必要があります"
+
+    logs_value: str | None = target_logs_match.group("inline")
+    if logs_value is None:
+        block = target_logs_match.group("block")
+        assert block is not None, "logs ブロックが取得できません"
+        block_match = re.search(r"-\s*[\"']?([^\s\"']+)", block)
+        assert block_match, "logs 配列に要素が必要です"
+        logs_value = block_match.group(1)
+
+    assert logs_value == "logs/test.jsonl", "targets[0].logs は logs/test.jsonl を指す必要があります"
 
     report_output_pattern = re.compile(
-        r"report:\s+output:\s*\"([^\"]+)\"",
-        flags=re.MULTILINE,
+        r"report:\s+.*?output:\s*\"?([^\s\"']+)\"?",
+        flags=re.DOTALL,
     )
     report_output_match = report_output_pattern.search(manifest_text)
     assert report_output_match, "report.output が定義されている必要があります"
