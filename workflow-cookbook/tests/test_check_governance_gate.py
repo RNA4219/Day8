@@ -190,6 +190,21 @@ def test_validate_priority_score_valid(body):
     assert error is None
 
 
+@pytest.mark.parametrize(
+    "body",
+    [
+        "- [ ] **Priority Score:** 5 / 強調付きチェックボックス",
+        "**Priority Score:** 5 / 強調のみ",
+        "- [x] _Priority Score:_ 7 / 斜体付きチェック済み",
+        "_Priority Score:_ 6 / 斜体のみ",
+    ],
+)
+def test_validate_priority_score_accepts_markdown_emphasis(body):
+    is_valid, error = validate_priority_score(body)
+    assert is_valid is True
+    assert error is None
+
+
 def test_main_accepts_repo_root_argument(monkeypatch, tmp_path):
     event_path = tmp_path / "event.json"
     event_payload = {
