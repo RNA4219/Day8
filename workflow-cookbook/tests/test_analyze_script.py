@@ -355,6 +355,31 @@ def test_main_uses_reflection_manifest_to_skip_issue_suggestions(
     assert not issue_path.exists()
 
 
+def test_main_writes_report_to_custom_manifest_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "empty.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text("", encoding="utf-8")
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(
+        "report:\n  output: reports/custom.md\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(analyze, "LOG", log_path)
+    monkeypatch.setattr(analyze, "REPORT", tmp_path / "reports" / "today.md")
+    monkeypatch.setattr(analyze, "REFLECTION_MANIFEST", reflection_path)
+    monkeypatch.setattr(analyze, "BASE_DIR", tmp_path)
+
+    analyze.main()
+    custom_report = tmp_path / "reports" / "custom.md"
+    assert custom_report.exists()
+    contents = custom_report.read_text(encoding="utf-8")
+    assert "Total tests: 0" in contents
+
+
 def test_main_skips_why_why_section_when_disabled(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
