@@ -11,6 +11,8 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
+MARKDOWN_STRONG_PATTERN = re.compile(r"(?:\*\*|__)(.+?)(?:\*\*|__)")
+
 BULLET_PATTERN = re.compile(r"^\s*(?:[-*+]\s*(?:\[[xX ]\])?\s*|\d+[.)]\s*)")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -211,7 +213,8 @@ def validate_priority_score(body: str | None) -> tuple[bool, str | None]:
         return False, "Priority Score セクションが見つかりません"
 
     normalized_body = "\n".join(
-        BULLET_PATTERN.sub("", line).lstrip() for line in body.splitlines()
+        BULLET_PATTERN.sub("", MARKDOWN_STRONG_PATTERN.sub(r"\1", line)).lstrip()
+        for line in body.splitlines()
     )
     pattern = re.compile(r"^Priority Score:\s*(?P<content>.+)$", re.MULTILINE)
     match = pattern.search(normalized_body)
