@@ -92,3 +92,17 @@ def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     )
 
     assert expected_condition in content
+
+
+def test_reflection_workflow_issue_step_condition_checks_hashfiles_zero() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+    condition_snippet = "hashFiles('workflow-cookbook/reports/issue_suggestions.md')"
+
+    assert f"{condition_snippet} != '0'" in content
+    assert f"{condition_snippet} != ''" not in content
