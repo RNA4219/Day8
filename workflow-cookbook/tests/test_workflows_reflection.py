@@ -76,3 +76,19 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
     expected_line = "          if-no-artifact-found: warn\n"
 
     assert expected_line in content
+
+
+def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+
+    expected_condition = (
+        "        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '0' }}\n"
+    )
+
+    assert expected_condition in content

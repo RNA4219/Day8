@@ -52,7 +52,7 @@ jobs:
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed (draft memo)
-        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '' }}
+        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '0' }}
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "反省TODO ${{ github.run_id }}"
