@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 import math
 import os
@@ -61,6 +62,22 @@ def _strip_inline_comment(value: str) -> str:
     return value
 
 
+def _parse_inline_array(value: str) -> List[str]:
+    try:
+        parsed = ast.literal_eval(value)
+    except (SyntaxError, ValueError):
+        return []
+    if not isinstance(parsed, list):
+        return []
+    normalized_values: List[str] = []
+    for item in parsed:
+        if isinstance(item, str):
+            stripped_item = item.strip()
+            if stripped_item:
+                normalized_values.append(_normalize_pattern(stripped_item))
+    return normalized_values
+
+
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
     patterns: List[str] = []
     in_self_modification = False
@@ -76,9 +93,15 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
         if not line_without_comments:
             continue
 
-        line_without_comments = _strip_inline_comment(stripped_line).rstrip()
-        if not line_without_comments:
-            continue
+        if in_self_modification and line_without_comments.startswith("forbidden_paths:"):
+            remainder = line_without_comments[len("forbidden_paths:") :].strip()
+            if remainder:
+                inline_patterns = _parse_inline_array(remainder)
+                if inline_patterns:
+                    patterns.extend(inline_patterns)
+                in_forbidden_paths = False
+                forbidden_indent = None
+                continue
 
         if line_without_comments.endswith(":"):
             key = line_without_comments[:-1].strip()
