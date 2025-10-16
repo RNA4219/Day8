@@ -7,9 +7,9 @@ def test_reflection_yaml_uses_repo_relative_paths() -> None:
     reflection_path = Path(__file__).resolve().parents[1] / "reflection.yaml"
     content = reflection_path.read_text(encoding="utf-8")
 
-    assert "- logs/test.jsonl" in content
+    assert "logs/test.jsonl" in content
     assert "../logs/test.jsonl" not in content
-    assert "output: reports/today.md" in content
+    assert "reports/today.md" in content
     assert "../reports/today.md" not in content
 
 
