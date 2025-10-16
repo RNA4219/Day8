@@ -85,7 +85,7 @@ def main() -> None:
             f.write("## Why-Why (draft)\n")
             for name, cnt in Counter(fails).items():
                 f.write(
-                    f"- {name}: 仮説=前処理の不安定/依存の競合/境界値不足\n"
+                    f"- {name} (x{cnt}): 仮説=前処理の不安定/依存の競合/境界値不足\n"
                 )
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
