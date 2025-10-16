@@ -22,11 +22,22 @@ def test_reflection_yaml_uses_repo_relative_paths() -> None:
     content = reflection_path.read_text(encoding="utf-8")
     data = yaml.safe_load(content)
 
-    targets = data["targets"]
-    if isinstance(targets, list):
-        logs = targets[0]["logs"]
-    else:  # pragma: no cover - fallback parser path
-        logs = targets["logs"]
+    assert isinstance(data, dict)
+    targets_data = data["targets"]
+    if isinstance(targets_data, dict):
+        normalized_target = {}
+        if "- name" in targets_data:
+            normalized_target["name"] = targets_data["- name"]
+        for key, value in targets_data.items():
+            if key == "- name":
+                continue
+            normalized_target[key] = value
+        targets = [normalized_target]
+    else:
+        targets = targets_data
+
+    assert isinstance(targets, list)
+    logs = targets[0]["logs"]
 
     assert logs == ["logs/test.jsonl"]
     assert not any(path.startswith("..") for path in logs)
