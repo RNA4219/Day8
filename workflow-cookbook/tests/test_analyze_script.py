@@ -115,6 +115,22 @@ def test_main_reports_zero_when_no_log(
     assert "Pass rate:" in contents and "100.00%" not in contents
 
 
+def test_main_timestamp_is_timezone_aware(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    report_path = tmp_path / "reports" / "today.md"
+    monkeypatch.setattr(analyze, "LOG", tmp_path / "missing.jsonl")
+    monkeypatch.setattr(analyze, "REPORT", report_path)
+
+    analyze.main()
+
+    header = report_path.read_text(encoding="utf-8").splitlines()[0]
+
+    assert "+00:00 UTC" in header
+
+
 def test_main_reports_zero_when_log_empty(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
