@@ -93,8 +93,8 @@ def test_reflection_manifest_logs_entry() -> None:
             converted_target["name"] = raw_targets["- name"]
         if "logs" in raw_targets:
             converted_target["logs"] = raw_targets["logs"]
-        targets = [converted_target]
+        targets: list[Dict[str, Any]] = [converted_target]
     else:
-        targets = raw_targets
+        targets = cast(list[Dict[str, Any]], raw_targets)
 
     assert targets[0]["logs"] == ["logs/test.jsonl"]
