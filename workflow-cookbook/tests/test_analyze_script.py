@@ -210,6 +210,9 @@ def test_main_records_issue_todos_for_failures(
 
     analyze.main()
 
+    report_contents = report_path.read_text(encoding="utf-8").splitlines()
+    assert "- sample::fail (x2): 仮説=前処理の不安定/依存の競合/境界値不足" in report_contents
+
     contents = issue_path.read_text(encoding="utf-8").splitlines()
 
     assert (
