@@ -28,37 +28,58 @@ def _coerce_bool(value: object) -> bool | None:
     return None
 
 
-def _fallback_read_suggest_issues(text: str, default: bool) -> bool:
-    in_actions = False
-    actions_indent = 0
+def _fallback_read_section_bool(
+    text: str, section: str, key: str, default: bool
+) -> bool:
+    in_section = False
+    section_indent = 0
     for raw_line in text.splitlines():
         stripped = raw_line.strip()
         if not stripped or stripped.startswith("#"):
             continue
         indent = len(raw_line) - len(raw_line.lstrip(" "))
-        if stripped.startswith("actions:") and indent == 0:
-            in_actions = True
-            actions_indent = indent
+        if stripped.startswith(f"{section}:") and indent == 0:
+            in_section = True
+            section_indent = indent
             continue
-        if indent <= actions_indent:
-            in_actions = False
-        if in_actions and stripped.startswith("suggest_issues:"):
+        if indent <= section_indent:
+            in_section = False
+        if in_section and stripped.startswith(f"{key}:"):
             value = stripped.split(":", 1)[1].split("#", 1)[0]
-            coerced = _coerce_bool(value)
+            coerced = _coerce_bool(value.strip())
             return coerced if coerced is not None else default
     return default
 
 
-def _fallback_manifest_from_text(text: str, default_suggest_issues: bool) -> dict[str, Any]:
+def _fallback_read_suggest_issues(text: str, default: bool) -> bool:
+    return _fallback_read_section_bool(text, "actions", "suggest_issues", default)
+
+
+def _fallback_read_include_why(text: str, default: bool) -> bool:
+    return _fallback_read_section_bool(text, "report", "include_why_why", default)
+
+
+def _fallback_manifest_from_text(
+    text: str,
+    *,
+    default_suggest_issues: bool,
+    default_include_why: bool,
+) -> dict[str, Any]:
     return {
         "actions": {
             "suggest_issues": _fallback_read_suggest_issues(text, default_suggest_issues)
-        }
+        },
+        "report": {
+            "include_why_why": _fallback_read_include_why(text, default_include_why)
+        },
     }
 
 
 def load_reflection_manifest(
-    path: Path | None = None, default_suggest_issues: bool = True
+    path: Path | None = None,
+    *,
+    default_suggest_issues: bool = True,
+    default_include_why: bool = True,
 ) -> dict[str, Any]:
     target = path or REFLECTION_MANIFEST
     if not target.exists():
@@ -70,7 +91,11 @@ def load_reflection_manifest(
     try:
         import yaml  # type: ignore
     except ModuleNotFoundError:
-        return _fallback_manifest_from_text(text, default_suggest_issues)
+        return _fallback_manifest_from_text(
+            text,
+            default_suggest_issues=default_suggest_issues,
+            default_include_why=default_include_why,
+        )
     try:
         loaded = yaml.safe_load(text)
     except Exception:
@@ -83,13 +108,36 @@ def load_reflection_manifest(
 def load_actions_suggest_issues(
     path: Path | None = None, default: bool = True
 ) -> bool:
-    manifest = load_reflection_manifest(path, default_suggest_issues=default)
+    manifest = load_reflection_manifest(
+        path,
+        default_suggest_issues=default,
+        default_include_why=True,
+    )
     if not manifest:
         return default
     actions: Any = manifest.get("actions")
     if isinstance(actions, dict):
         suggest = actions.get("suggest_issues")
         coerced = _coerce_bool(suggest)
+        if coerced is not None:
+            return coerced
+    return default
+
+
+def load_report_include_why(
+    path: Path | None = None, default: bool = True
+) -> bool:
+    manifest = load_reflection_manifest(
+        path,
+        default_suggest_issues=True,
+        default_include_why=default,
+    )
+    if not manifest:
+        return default
+    report: Any = manifest.get("report")
+    if isinstance(report, dict):
+        include = report.get("include_why_why")
+        coerced = _coerce_bool(include)
         if coerced is not None:
             return coerced
     return default
@@ -159,7 +207,7 @@ def main() -> None:
         f.write(f"- Flaky rate: {flaky_rate:.2%}\n")
         f.write(f"- Duration p95: {dur_p95} ms\n")
         f.write(f"- Failures: {len(fails)}\n\n")
-        if fails:
+        if fails and load_report_include_why():
             f.write("## Why-Why (draft)\n")
             for name, cnt in Counter(fails).items():
                 f.write(
