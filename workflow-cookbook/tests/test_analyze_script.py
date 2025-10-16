@@ -286,6 +286,47 @@ def test_main_skips_issue_notes_when_suggestions_disabled(
     assert not issue_path.exists()
 
 
+def test_main_omits_why_why_heading_with_manifest_opt_out(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "failures.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text(
+        "\n".join(
+            json.dumps({"name": "disabled::fail", "status": "fail", "duration_ms": value})
+            for value in (11, 13)
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(
+        "report:\n  include_why_why: false\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+
+    for attr, value in {
+        "LOG": log_path,
+        "REPORT": report_path,
+        "ISSUE_OUT": issue_path,
+        "REFLECTION_MANIFEST": reflection_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    analyze.main()
+
+    contents = report_path.read_text(encoding="utf-8")
+
+    assert "- Failures: 2" in contents
+    assert "## Why-Why" not in contents
+
+
 def test_main_removes_existing_issue_notes_when_suggestions_disabled(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

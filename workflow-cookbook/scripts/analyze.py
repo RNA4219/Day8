@@ -106,16 +106,23 @@ def load_reflection_manifest(
 
 
 def load_actions_suggest_issues(
-    path: Path | None = None, default: bool = True
+    path: Path | None = None,
+    default: bool = True,
+    *,
+    manifest: dict[str, Any] | None = None,
 ) -> bool:
-    manifest = load_reflection_manifest(
-        path,
-        default_suggest_issues=default,
-        default_include_why=True,
+    manifest_data = (
+        load_reflection_manifest(
+            path,
+            default_suggest_issues=default,
+            default_include_why=True,
+        )
+        if manifest is None
+        else manifest
     )
-    if not manifest:
+    if not manifest_data:
         return default
-    actions: Any = manifest.get("actions")
+    actions: Any = manifest_data.get("actions")
     if isinstance(actions, dict):
         suggest = actions.get("suggest_issues")
         coerced = _coerce_bool(suggest)
@@ -125,16 +132,23 @@ def load_actions_suggest_issues(
 
 
 def load_report_include_why(
-    path: Path | None = None, default: bool = True
+    path: Path | None = None,
+    default: bool = True,
+    *,
+    manifest: dict[str, Any] | None = None,
 ) -> bool:
-    manifest = load_reflection_manifest(
-        path,
-        default_suggest_issues=True,
-        default_include_why=default,
+    manifest_data = (
+        load_reflection_manifest(
+            path,
+            default_suggest_issues=True,
+            default_include_why=default,
+        )
+        if manifest is None
+        else manifest
     )
-    if not manifest:
+    if not manifest_data:
         return default
-    report: Any = manifest.get("report")
+    report: Any = manifest_data.get("report")
     if isinstance(report, dict):
         include = report.get("include_why_why")
         coerced = _coerce_bool(include)
@@ -199,6 +213,8 @@ def main() -> None:
     dur_p95 = p95(durs)
     now = datetime.datetime.now(datetime.UTC).isoformat()
 
+    manifest = load_reflection_manifest()
+
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     with REPORT.open("w", encoding="utf-8") as f:
         f.write(f"# Reflection Report ({now} UTC)\n\n")
@@ -207,7 +223,7 @@ def main() -> None:
         f.write(f"- Flaky rate: {flaky_rate:.2%}\n")
         f.write(f"- Duration p95: {dur_p95} ms\n")
         f.write(f"- Failures: {len(fails)}\n\n")
-        if fails and load_report_include_why():
+        if fails and load_report_include_why(manifest=manifest):
             f.write("## Why-Why (draft)\n")
             for name, cnt in Counter(fails).items():
                 f.write(
@@ -215,7 +231,7 @@ def main() -> None:
                 )
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
-    suggest_issues = load_actions_suggest_issues()
+    suggest_issues = load_actions_suggest_issues(manifest=manifest)
     if fails and suggest_issues:
         with ISSUE_OUT.open("w", encoding="utf-8") as f:
             f.write("### 反省TODO\n")
