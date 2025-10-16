@@ -49,24 +49,44 @@ def _fallback_read_suggest_issues(text: str, default: bool) -> bool:
     return default
 
 
-def load_actions_suggest_issues(
-    path: Path | None = None, default: bool = True
-) -> bool:
+def _fallback_manifest_from_text(text: str, default_suggest_issues: bool) -> dict[str, Any]:
+    return {
+        "actions": {
+            "suggest_issues": _fallback_read_suggest_issues(text, default_suggest_issues)
+        }
+    }
+
+
+def load_reflection_manifest(
+    path: Path | None = None, default_suggest_issues: bool = True
+) -> dict[str, Any]:
     target = path or REFLECTION_MANIFEST
     if not target.exists():
-        return default
-    text = target.read_text(encoding="utf-8")
+        return {}
+    try:
+        text = target.read_text(encoding="utf-8")
+    except OSError:
+        return {}
     try:
         import yaml  # type: ignore
     except ModuleNotFoundError:
-        return _fallback_read_suggest_issues(text, default)
+        return _fallback_manifest_from_text(text, default_suggest_issues)
     try:
         loaded = yaml.safe_load(text)
     except Exception:
+        return {}
+    if isinstance(loaded, dict):
+        return loaded
+    return {}
+
+
+def load_actions_suggest_issues(
+    path: Path | None = None, default: bool = True
+) -> bool:
+    manifest = load_reflection_manifest(path, default_suggest_issues=default)
+    if not manifest:
         return default
-    if not isinstance(loaded, dict):
-        return default
-    actions: Any = loaded.get("actions")
+    actions: Any = manifest.get("actions")
     if isinstance(actions, dict):
         suggest = actions.get("suggest_issues")
         coerced = _coerce_bool(suggest)
