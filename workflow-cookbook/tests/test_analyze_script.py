@@ -462,6 +462,42 @@ def test_main_writes_report_to_custom_manifest_output(
     assert "Total tests: 0" in contents
 
 
+def test_main_prefers_manifest_output_over_report_constant(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "failures.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text(
+        json.dumps({"name": "case::fail", "status": "fail", "duration_ms": 12})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(
+        "report:\n  output: reports/custom.md\n",
+        encoding="utf-8",
+    )
+
+    default_report = tmp_path / "reports" / "today.md"
+
+    for attr, value in {
+        "LOG": log_path,
+        "REPORT": default_report,
+        "ISSUE_OUT": tmp_path / "reports" / "issue_suggestions.md",
+        "REFLECTION_MANIFEST": reflection_path,
+        "BASE_DIR": tmp_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    analyze.main()
+
+    custom_report = tmp_path / "reports" / "custom.md"
+    assert custom_report.exists()
+    assert not default_report.exists()
+
 def test_main_skips_why_why_section_when_disabled(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

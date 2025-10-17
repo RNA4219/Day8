@@ -235,14 +235,19 @@ def load_report_output_path(
     path: Path | None = None,
     *,
     default: Path | None = None,
+    manifest: dict[str, Any] | None = None,
 ) -> Path:
-    manifest = load_reflection_manifest(
-        path,
-        default_suggest_issues=True,
-        default_include_why=True,
+    manifest_data = (
+        load_reflection_manifest(
+            path,
+            default_suggest_issues=True,
+            default_include_why=True,
+        )
+        if manifest is None
+        else manifest
     )
     fallback = default or REPORT
-    report_section: Any = manifest.get("report") if manifest else None
+    report_section: Any = manifest_data.get("report") if manifest_data else None
     candidate: object = report_section.get("output") if isinstance(report_section, dict) else None
     candidate_path: Path | None = None
     if isinstance(candidate, Path):
@@ -352,14 +357,23 @@ def main() -> None:
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
     suggest_issues = load_actions_suggest_issues(manifest=manifest)
+    issue_output_path = ISSUE_OUT
+    if not issue_output_path.is_absolute():
+        issue_output_path = BASE_DIR / issue_output_path
+    if (
+        issue_output_path.parent == DEFAULT_REPORT.parent
+        and report_path.parent != DEFAULT_REPORT.parent
+    ):
+        issue_output_path = report_path.parent / issue_output_path.name
     if fails and suggest_issues:
-        with ISSUE_OUT.open("w", encoding="utf-8") as f:
+        issue_output_path.parent.mkdir(parents=True, exist_ok=True)
+        with issue_output_path.open("w", encoding="utf-8") as f:
             f.write("### 反省TODO\n")
             for name in sorted(set(fails)):
                 f.write(f"- [ ] {name} の再現手順/前提/境界値を追加\n")
                 f.write(f"- [ ] {name} の再現手順/前提/境界値の工程を増やす\n")
-    elif ISSUE_OUT.exists():
-        ISSUE_OUT.unlink()
+    elif issue_output_path.exists():
+        issue_output_path.unlink()
 
 
 if __name__ == "__main__":
