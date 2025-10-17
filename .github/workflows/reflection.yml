@@ -62,18 +62,12 @@ jobs:
       - name: Download test logs
         if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         id: download-logs
-        continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.7
         with:
           name: test-logs
           path: workflow-cookbook/logs
           run-id: ${{ steps.artifact-meta.outputs.run_id }}
-      - name: Notice unavailable logs
-        if: ${{ steps.artifact-meta.outputs.run_id != '' && steps.artifact-locator.outputs.found != 'true' }}
-        run: echo "::notice title=artifact::test-logs artifact not available; skipping analysis"
-      - name: Notice missing logs
-        if: ${{ steps.download-logs.outcome == 'failure' }}
-        run: echo "::notice title=artifact::test-logs artifact not found; continuing"
+          if-no-artifact-found: warn
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
