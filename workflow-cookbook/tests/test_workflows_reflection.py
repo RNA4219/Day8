@@ -82,6 +82,9 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
     cross_repo_notice = (
         "              core.notice(`run ${runId} belongs to ${repository}; cross-repo artifacts require a PAT with actions:read permissions.`);\n"
     )
+    missing_repo_notice = (
+        "              core.notice(`workflow_run repository unavailable; cross-repo artifacts require a PAT with actions:read permissions.`);\n"
+    )
     download_name_line = "          name: test-logs\n"
     unexpected_artifact_id_reference = (
         "          artifact-id: ${{ steps.artifact-locator.outputs.artifact-id }}\n"
@@ -90,6 +93,7 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
     assert expected_version_line in content
     assert fallback_notice in content
     assert cross_repo_notice in content
+    assert missing_repo_notice in content
     assert download_name_line in content
     assert unexpected_artifact_id_reference not in content
     assert "if-no-artifact-found" not in content
