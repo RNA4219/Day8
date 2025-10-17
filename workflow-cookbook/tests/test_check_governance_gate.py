@@ -114,7 +114,32 @@ Priority Score: 3
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Priority Score must include justification" in captured.err
+    assert "Priority Score must be provided as '<number> / <justification>'" in captured.err
+
+
+def test_validate_pr_body_reports_missing_priority_score(capsys):
+    body = """
+Intent: INT-314
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+"""
+
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "Priority Score must be provided as '<number> / <justification>'" in captured.err
+
+
+def test_validate_pr_body_reports_missing_priority_justification(capsys):
+    body = """
+Intent: INT-271
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 4
+"""
+
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "Priority Score must be provided as '<number> / <justification>'" in captured.err
 
 
 def test_validate_pr_body_missing_intent(capsys):
