@@ -146,9 +146,7 @@ def _normalize_changed_path(path: str) -> str:
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     matches: List[str] = []
     for path in paths:
-        normalized_path = path.lstrip("./")
-        if REPO_ROOT_NAME and normalized_path.startswith(f"{REPO_ROOT_NAME}/"):
-            normalized_path = normalized_path[len(REPO_ROOT_NAME) + 1 :]
+        normalized_path = _normalize_changed_path(path)
         for pattern in patterns:
             if fnmatch(normalized_path, pattern):
                 matches.append(normalized_path)
