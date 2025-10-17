@@ -179,28 +179,48 @@ def _normalize_changed_path(path: str) -> str:
     return "/".join(parts)
 
 
+def _generate_pattern_variants(pattern: str) -> tuple[str, ...]:
+    variants: list[str] = [pattern]
+    stripped = pattern
+    while stripped.startswith("**/"):
+        stripped = stripped[3:]
+        if not stripped:
+            break
+        if stripped not in variants:
+            variants.append(stripped)
+        else:
+            break
+    return tuple(variants)
+
+
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     matches: List[str] = []
-    normalized_patterns: list[str] = []
+    normalized_patterns: list[tuple[str, ...]] = []
     for pattern in patterns:
         normalized_pattern = _normalize_changed_path(pattern)
         if not normalized_pattern:
             continue
-        normalized_patterns.append(normalized_pattern)
+        normalized_patterns.append(_generate_pattern_variants(normalized_pattern))
     for path in paths:
         normalized_path = _normalize_changed_path(path)
         if not normalized_path:
             continue
         posix_path = PurePosixPath(normalized_path)
-        for normalized_pattern in normalized_patterns:
-            if posix_path.match(normalized_pattern):
-                matches.append(normalized_path)
-                break
-            if normalized_pattern.endswith("/**") and "**" in normalized_pattern:
-                base = normalized_pattern[:-3].rstrip("/")
-                if not base or posix_path.is_relative_to(base):
+        for variants in normalized_patterns:
+            matched = False
+            for candidate in variants:
+                if posix_path.match(candidate):
                     matches.append(normalized_path)
+                    matched = True
                     break
+                if candidate.endswith("/**") and "**" in candidate:
+                    base = candidate[:-3].rstrip("/")
+                    if not base or posix_path.is_relative_to(base):
+                        matches.append(normalized_path)
+                        matched = True
+                        break
+            if matched:
+                break
     return matches
 
 
