@@ -4,6 +4,7 @@
 最低限必要なのは次の通り：
 
 - `governance/policy.yaml`
+- `workflow-cookbook/governance/policy.yaml`
 - `workflow-cookbook/reflection.yaml`
 - `workflow-cookbook/scripts/analyze.py`
 - `.github/workflows/test.yml`
@@ -15,6 +16,8 @@
 - `docs/safety.md`
 - `workflow-cookbook/logs/test.jsonl`（ダミー。最初の動作確認用）
 - `workflow-cookbook/reports/.gitkeep`
+
+`workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。
 
 ## 使い方
 1. push or PR → `test` が走り、`logs/test.jsonl` を生成
