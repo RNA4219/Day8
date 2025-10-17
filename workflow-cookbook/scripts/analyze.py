@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import datetime
+import logging
 import json
 import math
 import statistics
@@ -19,6 +20,8 @@ DEFAULT_REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
 REPORT: Final[Path] = DEFAULT_REPORT
 ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
 REFLECTION_MANIFEST: Final[Path] = WORKFLOW_ROOT / "reflection.yaml"
+
+logger = logging.getLogger(__name__)
 
 
 def _coerce_bool(value: object) -> bool | None:
@@ -298,7 +301,15 @@ def load_report_output_path(
         if manifest is None
         else manifest
     )
+    base_resolved = BASE_DIR.resolve()
+
     fallback = default or REPORT
+    fallback_absolute = fallback if fallback.is_absolute() else BASE_DIR / fallback
+    try:
+        fallback_resolved = fallback_absolute.resolve(strict=False)
+    except OSError:
+        fallback_resolved = fallback_absolute
+
     report_section: Any = manifest_data.get("report") if manifest_data else None
     candidate: object = report_section.get("output") if isinstance(report_section, dict) else None
     candidate_path: Path | None = None
@@ -308,11 +319,46 @@ def load_report_output_path(
         stripped = candidate.strip()
         if stripped:
             candidate_path = Path(stripped)
-    if candidate_path is not None and not candidate_path.is_absolute():
-        candidate_path = BASE_DIR / candidate_path
-    if candidate_path == DEFAULT_REPORT and fallback != DEFAULT_REPORT:
-        candidate_path = fallback
-    chosen = candidate_path or fallback
+    if candidate_path is not None:
+        candidate_absolute = candidate_path if candidate_path.is_absolute() else BASE_DIR / candidate_path
+        try:
+            resolved_candidate = candidate_absolute.resolve(strict=False)
+        except OSError:
+            resolved_candidate = candidate_absolute
+        try:
+            resolved_candidate.relative_to(base_resolved)
+        except ValueError:
+            logger.warning(
+                "Report output %s is outside base directory %s; using %s",
+                resolved_candidate,
+                base_resolved,
+                fallback_resolved,
+            )
+            candidate_path = fallback_resolved
+        else:
+            candidate_path = resolved_candidate
+
+    try:
+        default_report_resolved = (
+            DEFAULT_REPORT
+            if DEFAULT_REPORT.is_absolute()
+            else (BASE_DIR / DEFAULT_REPORT)
+        ).resolve(strict=False)
+    except OSError:
+        default_report_resolved = (
+            DEFAULT_REPORT
+            if DEFAULT_REPORT.is_absolute()
+            else BASE_DIR / DEFAULT_REPORT
+        )
+
+    if (
+        candidate_path is not None
+        and candidate_path == default_report_resolved
+        and fallback_resolved != default_report_resolved
+    ):
+        candidate_path = fallback_resolved
+
+    chosen = candidate_path or fallback_resolved
     if not chosen.is_absolute():
         chosen = BASE_DIR / chosen
     return chosen

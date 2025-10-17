@@ -181,6 +181,28 @@ def test_load_results_prefers_manifest_logs_even_when_log_overridden(
     assert "- Failures: 0" in contents
 
 
+def test_load_report_output_rejects_parent_escape(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    analyze = load_analyze_module()
+
+    report_path = tmp_path / "reports" / "today.md"
+
+    for attr, value in {
+        "BASE_DIR": tmp_path,
+        "REPORT": report_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    caplog.set_level("WARNING")
+
+    manifest = {"report": {"output": "../outside.md"}}
+    chosen = analyze.load_report_output_path(manifest=manifest)
+
+    assert chosen == report_path
+    assert any("outside base directory" in record.message for record in caplog.records)
+
+
 def _exercise_missing_yaml_log_detection(
     analyze: ModuleType,
     tmp_path: Path,
@@ -283,6 +305,38 @@ def test_load_results_handles_inline_comment_inline_logs_when_yaml_missing(
     contents = report_path.read_text(encoding="utf-8")
     assert "Total tests: 1" in contents
     assert "- Failures: 0" in contents
+
+
+def test_main_uses_safe_report_output_when_manifest_escapes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    analyze = load_analyze_module()
+
+    manifest_path = tmp_path / "reflection.yaml"
+    manifest_path.write_text(
+        "report:\n  output: \"../outside.md\"\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+
+    for attr, value in {
+        "BASE_DIR": tmp_path,
+        "LOG": tmp_path / "missing.jsonl",
+        "REPORT": report_path,
+        "ISSUE_OUT": issue_path,
+        "REFLECTION_MANIFEST": manifest_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    caplog.set_level("WARNING")
+
+    analyze.main()
+
+    assert report_path.exists()
+    assert not (tmp_path.parent / "outside.md").exists()
+    assert any("outside base directory" in record.message for record in caplog.records)
 
 
 def test_main_reports_zero_when_no_log(
