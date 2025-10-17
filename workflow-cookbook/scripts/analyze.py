@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import datetime
 import json
 import math
@@ -69,6 +70,61 @@ def _fallback_read_include_why(text: str, default: bool) -> bool:
     return _fallback_read_section_bool(text, "report", "include_why_why", default)
 
 
+def _fallback_read_targets_first_log(text: str) -> str | None:
+    in_targets = False
+    targets_indent = 0
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if not in_targets:
+            if stripped.startswith("targets:") and indent == 0:
+                in_targets = True
+                targets_indent = indent
+            continue
+        if indent <= targets_indent:
+            break
+        if not stripped.startswith("logs:"):
+            continue
+        candidate_text = stripped.split(":", 1)[1].strip()
+        if not candidate_text:
+            continue
+        try:
+            parsed = ast.literal_eval(candidate_text)
+        except Exception:
+            parsed = candidate_text
+        if isinstance(parsed, list):
+            for item in parsed:
+                if isinstance(item, str) and item.strip():
+                    return item.strip()
+        elif isinstance(parsed, str) and parsed.strip():
+            return parsed.strip()
+    return None
+
+
+def _manifest_first_log(manifest: dict[str, Any]) -> str | None:
+    raw_targets = manifest.get("targets")
+    if isinstance(raw_targets, dict):
+        targets: list[Any] = [raw_targets]
+    elif isinstance(raw_targets, list):
+        targets = raw_targets
+    else:
+        return None
+    for target in targets:
+        if not isinstance(target, dict):
+            continue
+        logs_value = target.get("logs")
+        if isinstance(logs_value, list):
+            values = logs_value
+        else:
+            values = [logs_value]
+        for item in values:
+            if isinstance(item, str) and item.strip():
+                return item.strip()
+    return None
+
+
 def _fallback_manifest_from_text(
     text: str,
     *,
@@ -81,12 +137,16 @@ def _fallback_manifest_from_text(
     output = _fallback_read_section_value(text, "report", "output")
     if output:
         report_config["output"] = output
-    return {
+    manifest: dict[str, Any] = {
         "actions": {
             "suggest_issues": _fallback_read_suggest_issues(text, default_suggest_issues)
         },
         "report": report_config,
     }
+    first_log = _fallback_read_targets_first_log(text)
+    if first_log:
+        manifest["targets"] = [{"logs": [first_log]}]
+    return manifest
 
 
 def load_reflection_manifest(
@@ -211,9 +271,23 @@ def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:
     durs: list[int] = []
     fails: list[str] = []
     statuses: StatusMap = {}
-    if not LOG.exists():
+    log_path = LOG
+    manifest = load_reflection_manifest(
+        default_suggest_issues=True,
+        default_include_why=True,
+    )
+    first_log = _manifest_first_log(manifest) if manifest else None
+    if (
+        isinstance(first_log, str)
+        and LOG == WORKFLOW_ROOT / "logs" / "test.jsonl"
+    ):
+        candidate_path = Path(first_log)
+        if not candidate_path.is_absolute():
+            candidate_path = BASE_DIR / candidate_path
+        log_path = candidate_path
+    if not log_path.exists():
         return tests, durs, fails, statuses
-    with LOG.open() as f:
+    with log_path.open() as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -263,8 +337,8 @@ def main() -> None:
     now = datetime.datetime.now(datetime.UTC).isoformat()
 
     manifest = load_reflection_manifest()
-    report_path = load_report_output_path(manifest=manifest)
-    include_why = load_report_include_why(manifest=manifest)
+    report_path = load_report_output_path()
+    include_why = load_report_include_why()
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with report_path.open("w", encoding="utf-8") as f:
