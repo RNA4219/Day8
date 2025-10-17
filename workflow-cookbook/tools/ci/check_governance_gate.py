@@ -174,10 +174,13 @@ def _normalize_changed_path(path: str) -> str:
 
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     matches: List[str] = []
+    normalized_patterns = [pattern.lstrip("./") for pattern in patterns]
     for path in paths:
         normalized_path = _normalize_changed_path(path)
-        for pattern in patterns:
-            normalized_pattern = pattern.lstrip("./")
+        if not normalized_path:
+            continue
+        posix_path = PurePosixPath(normalized_path)
+        for normalized_pattern in normalized_patterns:
             if posix_path.match(normalized_pattern):
                 matches.append(normalized_path)
                 break
