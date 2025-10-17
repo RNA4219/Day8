@@ -359,3 +359,31 @@ def test_reflection_workflow_commit_step_fallback_handles_commented_manifest_pat
 
     assert isinstance(result, str)
     assert result == "reports/today.md"
+
+
+def test_reflection_workflow_commit_step_defaults_to_today_when_output_missing(tmp_path: Path) -> None:
+    run_block = _load_commit_run_block()
+    python_script = _extract_python_heredoc(run_block)
+
+    temp_manifest = textwrap.dedent(
+        """
+        report:
+          format: markdown
+        """
+    ).strip()
+
+    manifest_path = tmp_path / "reflection.yaml"
+    manifest_path.write_text(temp_manifest, encoding="utf-8")
+
+    stdout = io.StringIO()
+    original_cwd = os.getcwd()
+    try:
+        os.chdir(tmp_path)
+        with contextlib.redirect_stdout(stdout):
+            exec(python_script, {"__name__": "__main__"})
+    finally:
+        os.chdir(original_cwd)
+
+    derived_output = stdout.getvalue().strip()
+
+    assert derived_output == "reports/today.md"
