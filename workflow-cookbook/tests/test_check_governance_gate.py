@@ -163,16 +163,33 @@ Evaluation anchor is explained here without heading.
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
-def test_validate_pr_body_warns_without_priority_score(capsys):
+def test_validate_pr_body_requires_priority_score(capsys):
     body = """
 Intent: INT-789
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Consider adding 'Priority Score: <number>'" in captured.err
+    assert "Priority Score" in captured.err
+    assert "Acceptance Criteria" in captured.err
+
+
+def test_main_fails_without_priority_score(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv(
+        "PR_BODY",
+        """Intent: INT-123\n## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\n""",
+    )
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "Priority Score" in captured.err
+    assert "Acceptance Criteria" in captured.err
 
 
 def test_pr_template_contains_required_sections():
