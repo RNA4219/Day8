@@ -33,6 +33,11 @@ from tools.ci.check_governance_gate import (
             ["/auth/**", "/core/schema/**"],
             ["auth/service.py", "core/schema/definitions.yml"],
         ),
+        (
+            """core/schema/v1/model.yaml\nauth/service/internal/api.py""".splitlines(),
+            ["/core/schema/**", "/auth/**"],
+            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],
+        ),
     ],
 )
 def test_find_forbidden_matches(changed_paths, patterns, expected):
@@ -306,6 +311,19 @@ self_modification:
     )
 
     assert load_forbidden_patterns(commented_policy) == ["core/schema/**"]
+
+    inline_policy = tmp_path / "policy_inline.yaml"
+    inline_policy.write_text(
+        """
+self_modification:
+  forbidden_paths: ["/core/schema/**", "/auth/**"]
+"""
+    )
+
+    assert load_forbidden_patterns(inline_policy) == [
+        "core/schema/**",
+        "auth/**",
+    ]
 
 
 def test_collect_changed_paths_falls_back(monkeypatch):

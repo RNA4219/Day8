@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+import ast
 from fnmatch import fnmatch
 from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
@@ -46,6 +47,17 @@ def _strip_inline_comment(text: str) -> str:
     return "".join(result).rstrip()
 
 
+def _extend_inline_sequence(sequence_text: str, patterns: list[str]) -> None:
+    try:
+        parsed = ast.literal_eval(sequence_text)
+    except (SyntaxError, ValueError):
+        return
+    if isinstance(parsed, (list, tuple)):
+        for item in parsed:
+            if isinstance(item, str) and item:
+                patterns.append(item.lstrip("/"))
+
+
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
     patterns: List[str] = []
     in_self_modification = False
@@ -70,6 +82,23 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
             elif in_self_modification and key == "forbidden_paths":
                 in_forbidden_paths = True
                 forbidden_indent = indent
+            elif indent <= (forbidden_indent or indent):
+                in_forbidden_paths = False
+            continue
+
+        if ":" in content:
+            key_part, value_part = content.split(":", 1)
+            key = key_part.strip()
+            value = value_part.strip()
+            if indent == 0:
+                in_self_modification = key == "self_modification"
+                in_forbidden_paths = False
+                forbidden_indent = None
+            elif in_self_modification and key == "forbidden_paths":
+                if value.startswith("[") and value.endswith("]"):
+                    _extend_inline_sequence(value, patterns)
+                in_forbidden_paths = False
+                forbidden_indent = None
             elif indent <= (forbidden_indent or indent):
                 in_forbidden_paths = False
             continue
@@ -148,9 +177,15 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
     for path in paths:
         normalized_path = _normalize_changed_path(path)
         for pattern in patterns:
-            if fnmatch(normalized_path, pattern):
+            normalized_pattern = pattern.lstrip("./")
+            if posix_path.match(normalized_pattern):
                 matches.append(normalized_path)
                 break
+            if normalized_pattern.endswith("/**") and "**" in normalized_pattern:
+                base = normalized_pattern[:-3].rstrip("/")
+                if not base or posix_path.is_relative_to(base):
+                    matches.append(normalized_path)
+                    break
     return matches
 
 
