@@ -85,6 +85,43 @@ def _strip_inline_comment(value: str) -> str:
     return value.strip()
 
 
+def _normalize_python_string(value: object) -> str | None:
+    if isinstance(value, str):
+        stripped = value.strip()
+        return stripped or None
+    return None
+
+
+def _normalize_text_token(token: str) -> str | None:
+    stripped = token.strip()
+    if not stripped:
+        return None
+    if (
+        stripped.startswith(("'", '"'))
+        and stripped.endswith(stripped[0])
+        and len(stripped) >= 2
+    ):
+        try:
+            parsed = ast.literal_eval(stripped)
+        except Exception:
+            inner = stripped[1:-1].strip()
+            return inner or None
+        return _normalize_python_string(parsed)
+    return stripped
+
+
+def _manual_first_list_item(text: str) -> str | None:
+    stripped = text.strip()
+    if not stripped.startswith("[") or not stripped.endswith("]"):
+        return None
+    inner = stripped[1:-1]
+    for item in inner.split(","):
+        normalized = _normalize_text_token(item)
+        if normalized:
+            return normalized
+    return None
+
+
 def _fallback_read_section_bool(
     text: str, section: str, key: str, default: bool
 ) -> bool:
@@ -126,21 +163,9 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
             if stripped.startswith("-"):
                 raw_candidate = stripped[1:].strip()
                 candidate = _strip_inline_comment(raw_candidate)
-                if not candidate:
-                    continue
-                if (
-                    candidate.startswith(("'", '"'))
-                    and candidate.endswith(candidate[0])
-                    and len(candidate) >= 2
-                ):
-                    try:
-                        parsed = ast.literal_eval(candidate)
-                    except Exception:
-                        parsed = candidate[1:-1]
-                else:
-                    parsed = candidate
-                if isinstance(parsed, str) and parsed.strip():
-                    return parsed.strip()
+                normalized = _normalize_text_token(candidate)
+                if normalized:
+                    return normalized
             continue
         if not stripped.startswith("logs:"):
             continue
@@ -153,13 +178,22 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
         try:
             parsed = ast.literal_eval(candidate_text)
         except Exception:
-            parsed = candidate_text
+            manual_first = _manual_first_list_item(candidate_text)
+            if manual_first:
+                return manual_first
+            normalized = _normalize_text_token(candidate_text)
+            if normalized:
+                return normalized
+            continue
         if isinstance(parsed, list):
             for item in parsed:
-                if isinstance(item, str) and item.strip():
-                    return item.strip()
-        elif isinstance(parsed, str) and parsed.strip():
-            return parsed.strip()
+                normalized = _normalize_python_string(item)
+                if normalized:
+                    return normalized
+        else:
+            normalized = _normalize_python_string(parsed)
+            if normalized:
+                return normalized
     return None
 
 
