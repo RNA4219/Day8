@@ -10,6 +10,29 @@ from pathlib import Path
 from typing import Iterable, List, Sequence
 
 
+def _strip_inline_comment(text: str) -> str:
+    in_single = False
+    in_double = False
+    result: list[str] = []
+    index = 0
+    length = len(text)
+    while index < length:
+        char = text[index]
+        if char == "#" and not in_single and not in_double:
+            break
+        result.append(char)
+        if char == "'" and not in_double:
+            in_single = not in_single
+        elif char == '"' and not in_single:
+            in_double = not in_double
+        elif char == "\\" and in_double:
+            index += 1
+            if index < length:
+                result.append(text[index])
+        index += 1
+    return "".join(result).rstrip()
+
+
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
     patterns: List[str] = []
     in_self_modification = False
@@ -21,9 +44,12 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
         if not stripped_line or stripped_line.startswith("#"):
             continue
         indent = len(raw_line) - len(raw_line.lstrip(" "))
+        content = _strip_inline_comment(stripped_line)
+        if not content:
+            continue
 
-        if stripped_line.endswith(":"):
-            key = stripped_line[:-1].strip()
+        if content.endswith(":"):
+            key = content[:-1].strip()
             if indent == 0:
                 in_self_modification = key == "self_modification"
                 in_forbidden_paths = False
@@ -35,30 +61,8 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
                 in_forbidden_paths = False
             continue
 
-        if in_forbidden_paths and stripped_line.startswith("- "):
-            value = stripped_line[2:].strip()
-            comment_index: int | None = None
-            in_single_quote = False
-            in_double_quote = False
-            escape_next = False
-            for index, character in enumerate(value):
-                if escape_next:
-                    escape_next = False
-                    continue
-                if character == "\\":
-                    escape_next = True
-                    continue
-                if character == "'" and not in_double_quote:
-                    in_single_quote = not in_single_quote
-                    continue
-                if character == '"' and not in_single_quote:
-                    in_double_quote = not in_double_quote
-                    continue
-                if character == "#" and not in_single_quote and not in_double_quote:
-                    comment_index = index
-                    break
-            if comment_index is not None:
-                value = value[:comment_index].rstrip()
+        if in_forbidden_paths and content.startswith("- "):
+            value = content[2:].strip()
             if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
                 value = value[1:-1]
             if value:
