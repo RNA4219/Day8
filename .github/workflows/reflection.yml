@@ -141,16 +141,17 @@ jobs:
                   if not stripped or stripped.startswith("#"):
                       continue
                   indent = len(raw_line) - len(raw_line.lstrip())
-                  if stripped.startswith("report:"):
+                  cleaned = _strip_inline_comment(stripped)
+                  if not cleaned:
+                      continue
+                  if cleaned.startswith("report:"):
                       report_indent = indent
                       continue
                   if report_indent is not None:
-                      if indent <= report_indent and ":" in stripped:
+                      if indent <= report_indent and ":" in cleaned:
                           report_indent = None
-                      if stripped.startswith("output:"):
-                          value = stripped.split(":", 1)[1].strip()
-                          value = _strip_inline_comment(value)
-                          value = value.strip()
+                      if cleaned.startswith("output:"):
+                          value = cleaned.split(":", 1)[1].strip()
                           if len(value) >= 2 and value[0] == value[-1] and value[0] in quotes:
                               value = value[1:-1]
                           return value

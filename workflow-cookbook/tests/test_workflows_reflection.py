@@ -335,3 +335,27 @@ def test_reflection_workflow_commit_step_fallback_ignores_inline_comment() -> No
 
     assert isinstance(result, str)
     assert result == "reports/daily.md"
+
+
+def test_reflection_workflow_commit_step_fallback_handles_commented_manifest_path() -> None:
+    run_block = _load_commit_run_block()
+    python_script = _extract_python_heredoc(run_block)
+
+    namespace: dict[str, object] = {"__name__": "__fallback_test__"}
+    exec(python_script, namespace)
+
+    fallback = namespace.get("_fallback")
+    assert isinstance(fallback, Callable)
+
+    fallback_fn: Callable[[str], str] = fallback
+    commented_content = textwrap.dedent(
+        """
+        report:
+          output: "reports/today.md"  # note
+        """
+    ).strip()
+
+    result = fallback_fn(commented_content)
+
+    assert isinstance(result, str)
+    assert result == "reports/today.md"
