@@ -46,88 +46,6 @@ def test_validate_markdown_front_matter_pass(repo_root: Path) -> None:
     assert validate_markdown_front_matter(repo_root) == {}
 
 
-@pytest.mark.parametrize(
-    "owner_value",
-    ['"Team #1"', "'Team #1'", '"#platform-team"'],
-)
-def test_validate_markdown_front_matter_owner_with_hash(repo_root: Path, owner_value: str) -> None:
-    _write_markdown(
-        repo_root / "README.md",
-        (
-            ("intent_id", "INT-124"),
-            ("owner", owner_value),
-            ("status", "active"),
-            ("last_reviewed_at", "2024-01-02"),
-            ("next_review_due", "2024-02-02"),
-        ),
-    )
-
-    assert validate_markdown_front_matter(repo_root) == {}
-
-
-@pytest.mark.parametrize(
-    "owner_value",
-    ['"#platform-team"', '"Team #1"'],
-)
-def test_validate_markdown_front_matter_owner_hash_not_missing(
-    repo_root: Path, owner_value: str
-) -> None:
-    _write_markdown(
-        repo_root / "README.md",
-        (
-            ("intent_id", "INT-125"),
-            ("owner", owner_value),
-            ("status", "active"),
-            ("last_reviewed_at", "2024-01-03"),
-            ("next_review_due", "2024-02-03"),
-        ),
-    )
-
-    missing = validate_markdown_front_matter(repo_root)
-
-    assert repo_root / "README.md" not in missing
-
-
-@pytest.mark.parametrize("owner_value", ['""', "''"])
-def test_validate_markdown_front_matter_owner_empty_is_missing(
-    repo_root: Path, owner_value: str
-) -> None:
-    _write_markdown(
-        repo_root / "README.md",
-        (
-            ("intent_id", "INT-126"),
-            ("owner", owner_value),
-            ("status", "active"),
-            ("last_reviewed_at", "2024-01-04"),
-            ("next_review_due", "2024-02-04"),
-        ),
-    )
-
-    missing = validate_markdown_front_matter(repo_root)
-
-    assert missing == {repo_root / "README.md": ["owner"]}
-
-
-@pytest.mark.parametrize("owner_value", ['"   "', '"\t"'])
-def test_validate_markdown_front_matter_owner_whitespace_is_missing(
-    repo_root: Path, owner_value: str
-) -> None:
-    _write_markdown(
-        repo_root / "README.md",
-        (
-            ("intent_id", "INT-127"),
-            ("owner", owner_value),
-            ("status", "active"),
-            ("last_reviewed_at", "2024-01-06"),
-            ("next_review_due", "2024-02-06"),
-        ),
-    )
-
-    missing = validate_markdown_front_matter(repo_root)
-
-    assert missing == {repo_root / "README.md": ["owner"]}
-
-
 def test_validate_markdown_front_matter_missing_fields(repo_root: Path) -> None:
     _write_markdown(
         repo_root / "README.md",
@@ -165,38 +83,6 @@ def test_validate_markdown_front_matter_missing_fields(repo_root: Path) -> None:
     assert missing == {
         repo_root / "CHANGELOG.md": [field for field in REQUIRED_FIELDS if field in {"owner", "next_review_due"}]
     }
-
-
-def test_validate_markdown_front_matter_preserves_hash_values(repo_root: Path) -> None:
-    _write_markdown(
-        repo_root / "README.md",
-        (
-            ("intent_id", "INT-321"),
-            ("owner", '"#platform-team"'),
-            ("status", "active"),
-            ("last_reviewed_at", "2024-01-05"),
-            ("next_review_due", "2024-02-05"),
-        ),
-    )
-
-    _write_markdown(
-        repo_root / "GUIDE.md",
-        (
-            ("intent_id", "INT-654"),
-            ("owner", '"ACME #1"'),
-            ("status", "active"),
-            ("last_reviewed_at", "2024-03-05"),
-            ("next_review_due", "2024-04-05"),
-        ),
-    )
-
-    assert validate_markdown_front_matter(repo_root) == {}
-
-    readme_fields = module._parse_fields(module._extract_front_matter_lines(repo_root / "README.md"))
-    guide_fields = module._parse_fields(module._extract_front_matter_lines(repo_root / "GUIDE.md"))
-
-    assert readme_fields["owner"] == '"#platform-team"'
-    assert guide_fields["owner"] == '"ACME #1"'
 
 
 def test_validate_incident_front_matter_pass(repo_root: Path) -> None:

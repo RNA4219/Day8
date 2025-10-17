@@ -6,14 +6,17 @@
 
 ### 概要
 
-- Intent: INT-??? <!-- 必ず INT-123 の形式で記載 -->
+- Intent: INT-123 <!-- 必ず INT-123 の形式で記載。必ず実際の Intent 番号に置き換えてください -->
 - 種別: feature / fix / chore / docs
 
 ### リンク
 
 - BLUEPRINT: <!-- path or permalink -->
 - TASK: <!-- path -->
-- EVALUATION（検収条件の見出し/アンカー）:
+
+## EVALUATION
+
+- 検収条件の見出し/アンカー:
   - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
   - 受入条件の見出しアンカーを指定
 

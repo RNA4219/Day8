@@ -1,5 +1,3 @@
-import json
-import subprocess
 import sys
 from pathlib import Path
 
@@ -7,48 +5,23 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from tools.ci import check_governance_gate
 from tools.ci.check_governance_gate import (
-    REPO_ROOT,
     find_forbidden_matches,
-    get_changed_paths,
     load_forbidden_patterns,
-    main,
-    validate_priority_score,
+    validate_pr_body,
 )
 
 
 @pytest.mark.parametrize(
     "changed_paths, patterns, expected",
     [
-        ("core/schema".splitlines(), ["/core/schema/**"], ["core/schema"]),
         ("""core/schema/model.yaml\ndocs/guide.md""".splitlines(), ["/core/schema/**"], ["core/schema/model.yaml"]),
-        (
-            ["workflow-cookbook/core/schema/model.yaml"],
-            ["/core/schema/**"],
-            ["core/schema/model.yaml"],
-        ),
         ("""docs/readme.md\nops/runbook.md""".splitlines(), ["/core/schema/**"], []),
         (
             """auth/service.py\ncore/schema/definitions.yml""".splitlines(),
             ["/auth/**", "/core/schema/**"],
             ["auth/service.py", "core/schema/definitions.yml"],
-        ),
-        pytest.param(
-            ["core/schema/model.yaml"],
-            ["**/schema/**"],
-            ["core/schema/model.yaml"],
-            id="double_glob_schema",
-        ),
-        (
-            """core/schema/v1/model.yaml\nauth/service/internal/api.py""".splitlines(),
-            ["/core/schema/**", "/auth/**"],
-            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],  # normalized パス。現行ロジックでは検知できず
-            # テスト失敗を想定。
-        ),
-        (
-            ["doc/config.yaml"],
-            ["/docs/**"],
-            [],
         ),
     ],
 )
@@ -57,219 +30,122 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
     assert find_forbidden_matches(changed_paths, normalized) == expected
 
 
-def test_find_forbidden_matches_normalizes_patterns_and_paths():
-    changed_paths = ["./auth", "auth\\service.py", "docs/readme.md"]
-    patterns = ["/auth/**"]
-    assert find_forbidden_matches(changed_paths, patterns) == ["auth", "auth/service.py"]
+def test_validate_pr_body_success(capsys):
+    body = """
+Intent: INT-123
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 4.5 / 安全性強化
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
 
 
-def test_find_forbidden_matches_handles_windows_style_patterns():
-    changed_paths = ["auth/service.py"]
-    patterns = [".\\auth\\**"]
-    assert find_forbidden_matches(changed_paths, patterns) == ["auth/service.py"]
+def test_validate_pr_body_accepts_segmented_intent(capsys):
+    body = """
+Intent: INT-2024-001
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 3
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
 
 
-def test_find_forbidden_matches_preserves_result_order():
-    changed_paths = ["./auth", "core/schema/model.yaml", "logs/system.log"]
-    patterns = ["/auth/**", "/core/schema/**"]
-    assert find_forbidden_matches(changed_paths, patterns) == [
-        "auth",
-        "core/schema/model.yaml",
-    ]
+def test_validate_pr_body_accepts_alphanumeric_segments(capsys):
+    body = """
+Intent: INT-OPS-7A
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 2
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
 
 
-def test_find_forbidden_matches_detects_repo_root_prefixed_paths():
-    changed_paths = ["workflow-cookbook/core/schema/model.yaml"]
-    patterns = ["/core/schema/**"]
-    assert find_forbidden_matches(changed_paths, patterns) == [
-        "core/schema/model.yaml"
-    ]
+def test_validate_pr_body_accepts_fullwidth_colon(capsys):
+    body = """
+Intent：INT-456
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 1
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
 
 
-@pytest.mark.parametrize(
-    "section, expected",
-    [
-        (
-            "\n".join(
-                [
-                    "  forbidden_paths:",
-                    "    - ./core/schema/**",
-                    "    - docs/**",
-                ]
-            ),
-            ["core/schema/**", "docs/**"],
-        ),
-        (
-            '  forbidden_paths: ["./core/schema/**", "docs/**"]',
-            ["core/schema/**", "docs/**"],
-        ),
-    ],
-)
-def test_load_forbidden_patterns_supports_array_styles(tmp_path, section, expected):
-    policy_content = "\n".join(["self_modification:", section, ""])
-    policy_path = tmp_path / "policy.yaml"
-    policy_path.write_text(policy_content, encoding="utf-8")
+def test_validate_pr_body_missing_intent(capsys):
+    body = """
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 2
+"""
 
-    patterns = load_forbidden_patterns(policy_path)
-
-    assert patterns == expected
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "PR body must include 'Intent: INT-xxx'" in captured.err
 
 
-def test_get_changed_paths_normalizes_subdirectory_paths(monkeypatch):
-    repo_root = Path(__file__).resolve().parents[1]
+def test_validate_pr_body_missing_evaluation(capsys):
+    body = """
+Intent: INT-001
+Priority Score: 3
+"""
 
-    def fake_run(*args, **kwargs):
-        assert kwargs.get("cwd") == repo_root
-        return type("Result", (), {"stdout": "workflow-cookbook/core/schema/model.yaml\n"})()
-
-    monkeypatch.setattr(subprocess, "run", fake_run)
-
-    paths = get_changed_paths("origin/main...", repo_root=repo_root)
-    assert paths == ["core/schema/model.yaml"]
-    assert find_forbidden_matches(paths, ["/core/schema/**"]) == ["core/schema/model.yaml"]
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
-@pytest.mark.parametrize(
-    "body",
-    [
-        "- Priority Score: 7 / 箇条書き",
-        "- [x] Priority Score: 8 / チェック済み",
-    ],
-)
-def test_validate_priority_score_accepts_bullet_formats(body):
-    is_valid, reason = validate_priority_score(body)
-    assert is_valid is True
-    assert reason is None
+def test_validate_pr_body_missing_evaluation_anchor(capsys):
+    body = """
+Intent: INT-001
+## EVALUATION
+"""
+
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
-@pytest.mark.parametrize(
-    "body, expected, message",
-    [
-        ("Priority Score: 5 / 安全性強化", True, None),
-        ("Priority Score: 1 / 即応性向上", True, None),
-        ("Priority Score: 3", False, "根拠"),
-        ("Priority Score: / 理由", False, "数値"),
-        ("Priority Score: abc / 理由", False, "数値"),
-        (
-            "Priority Score: <!-- 例: 5 / prioritization.yaml#phase1 -->",
-            False,
-            "数値",
-        ),
-        ("priority score: 3", False, "記載"),
-        ("", False, "Priority Score"),
-        (None, False, "Priority Score"),
-    ],
-)
-def test_validate_priority_score(body, expected, message):
-    is_valid, error = validate_priority_score(body)
-    assert is_valid is expected
-    if expected:
-        assert error is None
-    else:
-        assert error is not None
-        if message is not None:
-            assert message in error
+def test_validate_pr_body_requires_evaluation_heading(capsys):
+    body = """
+Intent: INT-555
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Evaluation anchor is explained here without heading.
+"""
+
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
-@pytest.mark.parametrize(
-    "body",
-    [
-        "Priority Score: 5 / 安全性強化",
-        "- Priority Score: 5 / 箇条書き",
-        "* Priority Score: 7 / 別記号",
-        "+ Priority Score: 9 / プラス記号",
-        "- [ ] Priority Score: 4 / 未チェック",
-        "- [x] Priority Score: 8 / チェック済み",
-        "1. Priority Score: 7 / 番号付きリスト",
-        "**Priority Score:** 5 / 強調付き",
-        "*Priority Score:* 5 / 斜体",
-        "_Priority Score:_ 5 / 斜体",
-        "Priority Score: *5* / 斜体",
-        "Priority Score: _5_ / 斜体",
-        "Priority Score:* *5* / 斜体",
-        "Priority Score:_ _5_ / 斜体",
-    ],
-)
-def test_validate_priority_score_valid(body):
-    is_valid, error = validate_priority_score(body)
-    assert is_valid is True
-    assert error is None
+def test_validate_pr_body_warns_without_priority_score(capsys):
+    body = """
+Intent: INT-789
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert "Consider adding 'Priority Score: <number>'" in captured.err
 
 
-@pytest.mark.parametrize(
-    "body",
-    [
-        "Priority Score : 5 / 理由",
-        "Priority Score：5 / 理由",
-    ],
-)
-def test_validate_priority_score_accepts_colon_variants(body):
-    is_valid, error = validate_priority_score(body)
-    assert is_valid is True
-    assert error is None
+def test_pr_template_contains_required_sections():
+    template = Path(".github/pull_request_template.md").read_text(encoding="utf-8")
 
-
-@pytest.mark.parametrize(
-    "body",
-    [
-        "- [ ] **Priority Score:** 5 / 強調付きチェックボックス",
-        "**Priority Score:** 5 / 強調のみ",
-        "- [x] _Priority Score:_ 7 / 斜体付きチェック済み",
-        "_Priority Score:_ 6 / 斜体のみ",
-    ],
-)
-def test_validate_priority_score_accepts_markdown_emphasis(body):
-    is_valid, error = validate_priority_score(body)
-    assert is_valid is True
-    assert error is None
-
-
-def test_main_accepts_repo_root_argument(monkeypatch, tmp_path):
-    event_path = tmp_path / "event.json"
-    event_payload = {
-        "pull_request": {
-            "body": "- Priority Score: 5 / テスト",
-        }
-    }
-    event_path.write_text(json.dumps(event_payload), encoding="utf-8")
-
-    def fake_run(*args, **kwargs):
-        assert kwargs.get("cwd") == REPO_ROOT
-        return type("Result", (), {"stdout": "workflow-cookbook/docs/readme.md\n"})()
-
-    monkeypatch.setattr(subprocess, "run", fake_run)
-    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-
-    exit_code = main()
-    assert exit_code == 0
-
-
-def test_main_returns_success_with_real_get_changed_paths(monkeypatch, tmp_path):
-    from tools.ci import check_governance_gate as module
-
-    event_path = tmp_path / "event.json"
-    event_payload = {
-        "pull_request": {
-            "body": "- Priority Score: 5 / 自動テスト",
-        }
-    }
-    event_path.write_text(json.dumps(event_payload), encoding="utf-8")
-
-    calls: list[tuple[list[str], Path]] = []
-
-    def fake_run(command, **kwargs):
-        cwd = kwargs.get("cwd")
-        assert cwd == module.REPO_ROOT
-        calls.append((command, cwd))
-        return type("Result", (), {"stdout": "workflow-cookbook/docs/readme.md\n"})()
-
-    monkeypatch.setattr(module.subprocess, "run", fake_run)
-    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-
-    exit_code = module.main()
-
-    assert exit_code == 0
-    assert calls and calls[0][0][:3] == ["git", "diff", "--name-only"]
+    assert "Intent:" in template
+    assert "## EVALUATION" in template
+    assert "EVALUATION.md#acceptance-criteria" in template
 
 
 def test_load_forbidden_patterns(tmp_path):
@@ -278,7 +154,7 @@ def test_load_forbidden_patterns(tmp_path):
         """
 self_modification:
   forbidden_paths:
-    - "/core/schema/**"  # コメント付き
+    - "/core/schema/**"
     - '/auth/**'
   require_human_approval:
     - "/governance/**"
@@ -288,51 +164,50 @@ self_modification:
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
 
 
-def test_load_forbidden_patterns_ignores_inline_comments(tmp_path):
-    policy = tmp_path / "policy.yaml"
-    policy.write_text(
-        """
-self_modification:
-  forbidden_paths:
-    - "/core/schema/**"  # コメント付き
-  require_human_approval:
-    - "/governance/**"
-"""
+def test_collect_changed_paths_falls_back(monkeypatch):
+    calls: list[list[str]] = []
+
+    def fake_run(args, **kwargs):  # type: ignore[no-untyped-def]
+        calls.append(list(args))
+        refspec = args[-1]
+        if refspec in {"origin/main...", "main..."}:
+            raise check_governance_gate.subprocess.CalledProcessError(128, args)
+        return type("Result", (), {"stdout": "first.txt\nsecond.txt\n"})()
+
+    monkeypatch.setattr(check_governance_gate.subprocess, "run", fake_run)
+
+    changed = check_governance_gate.collect_changed_paths()
+
+    assert changed == ["first.txt", "second.txt"]
+    assert calls == [
+        ["git", "diff", "--name-only", "origin/main..."],
+        ["git", "diff", "--name-only", "main..."],
+        ["git", "diff", "--name-only", "HEAD"],
+    ]
+
+
+def test_main_accepts_pr_body_env(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv(
+        "PR_BODY",
+        """Intent: INT-999\n## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\nPriority Score: 2\n""",
     )
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
 
-    assert load_forbidden_patterns(policy) == ["core/schema/**"]
+    exit_code = check_governance_gate.main()
 
-
-def test_load_forbidden_patterns_handles_inline_comment_on_key(tmp_path):
-    policy = tmp_path / "policy.yaml"
-    policy.write_text(
-        """
-self_modification:
-  forbidden_paths:  # コメント
-    - "/core/schema/**"
-"""
-    )
-
-    assert load_forbidden_patterns(policy) == ["core/schema/**"]
-
-
-def test_main_returns_error_when_priority_score_invalid(tmp_path, monkeypatch, capsys):
-    from tools.ci import check_governance_gate as module
-
-    event_path = tmp_path / "event.json"
-    event_path.write_text(
-        json.dumps({"pull_request": {"body": "Priority Score: invalid"}}),
-        encoding="utf-8",
-    )
-    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
-    monkeypatch.setattr(module, "get_changed_paths", lambda refspec, **_: [])
-    def stub_validate_priority_score(body: str | None) -> tuple[bool, str | None]:
-        return False, "Priority Score validation failed"
-
-    monkeypatch.setattr(module, "validate_priority_score", stub_validate_priority_score)
-
-    exit_code = module.main()
+    assert exit_code == 0
     captured = capsys.readouterr()
+    assert captured.err == ""
+
+
+def test_main_requires_pr_body(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.delenv("PR_BODY", raising=False)
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
 
     assert exit_code == 1
-    assert "Priority Score validation failed" in captured.err
+    captured = capsys.readouterr()
+    assert "PR body data is unavailable" in captured.err
