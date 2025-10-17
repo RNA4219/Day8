@@ -104,6 +104,27 @@ Intent: INT-001
     assert captured.err == ""
 
 
+@pytest.mark.parametrize(
+    "priority_line",
+    [
+        "**Priority Score:** 5 / 理由",
+        "_Priority Score:_ 4 / 根拠",
+        "- [x] **Priority Score:** 3 / 完了済み対策",
+    ],
+)
+def test_validate_priority_score_accepts_emphasis(priority_line, capsys):
+    body = f"""
+Intent: INT-314
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+{priority_line}
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_validate_pr_body_rejects_priority_without_justification(capsys):
     body = """
 Intent: INT-777
@@ -114,7 +135,7 @@ Priority Score: 3
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Priority Score must include justification" in captured.err
+    assert "Priority Score: <number>" in captured.err
 
 
 def test_validate_pr_body_missing_intent(capsys):
