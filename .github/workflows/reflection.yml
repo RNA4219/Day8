@@ -111,6 +111,28 @@ jobs:
               yaml = None
 
 
+          def _strip_inline_comment(value: str) -> str:
+              in_single = False
+              in_double = False
+              escaped = False
+              for index, char in enumerate(value):
+                  if escaped:
+                      escaped = False
+                      continue
+                  if char == "\\" and (in_single or in_double):
+                      escaped = True
+                      continue
+                  if char == "'" and not in_double:
+                      in_single = not in_single
+                      continue
+                  if char == '"' and not in_single:
+                      in_double = not in_double
+                      continue
+                  if char == "#" and not in_single and not in_double:
+                      return value[:index].rstrip()
+              return value.strip()
+
+
           def _fallback(content: str) -> str:
               report_indent = None
               quotes = ("'", '"')
@@ -127,6 +149,8 @@ jobs:
                           report_indent = None
                       if stripped.startswith("output:"):
                           value = stripped.split(":", 1)[1].strip()
+                          value = _strip_inline_comment(value)
+                          value = value.strip()
                           if len(value) >= 2 and value[0] == value[-1] and value[0] in quotes:
                               value = value[1:-1]
                           return value
