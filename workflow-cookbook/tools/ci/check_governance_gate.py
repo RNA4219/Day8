@@ -6,7 +6,6 @@ import re
 import subprocess
 import sys
 import ast
-from fnmatch import fnmatch
 from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
