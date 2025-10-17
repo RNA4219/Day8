@@ -68,6 +68,24 @@ def test_validate_markdown_front_matter_empty_owner(
     }
 
 
+@pytest.mark.parametrize("owner_value", ('"Team #1"', "'#platform-team'"))
+def test_validate_markdown_front_matter_owner_with_hash(
+    repo_root: Path, owner_value: str
+) -> None:
+    _write_markdown(
+        repo_root / "README.md",
+        (
+            ("intent_id", "INT-222"),
+            ("owner", owner_value),
+            ("status", "active"),
+            ("last_reviewed_at", "2024-07-01"),
+            ("next_review_due", "2024-08-01"),
+        ),
+    )
+
+    assert validate_markdown_front_matter(repo_root) == {}
+
+
 def test_validate_markdown_front_matter_missing_fields(repo_root: Path) -> None:
     _write_markdown(
         repo_root / "README.md",
