@@ -189,9 +189,15 @@ def validate_pr_body(body: str | None) -> bool:
     if not has_evaluation_heading or not has_evaluation_anchor:
         print("PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
         success = False
-    if not PRIORITY_PATTERN.search(normalized_body):
+    if not has_priority_label:
         print(
-            "PR must include 'Priority Score: <number>' to reflect Acceptance Criteria prioritization",
+            "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
+            file=sys.stderr,
+        )
+        success = False
+    elif not PRIORITY_PATTERN.search(normalized_body):
+        print(
+            "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
             file=sys.stderr,
         )
         success = False
