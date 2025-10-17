@@ -37,6 +37,7 @@ def _coerce_bool(value: object) -> bool | None:
 def _fallback_read_section_value(text: str, section: str, key: str) -> str | None:
     in_section = False
     section_indent = 0
+    dotted_key = f"{section}.{key}"
     for raw_line in text.splitlines():
         stripped = raw_line.strip()
         if not stripped or stripped.startswith("#"):
@@ -48,12 +49,17 @@ def _fallback_read_section_value(text: str, section: str, key: str) -> str | Non
             continue
         if indent <= section_indent:
             in_section = False
+        candidate_value: str | None = None
         if in_section and stripped.startswith(f"{key}:"):
-            raw_value = stripped.split(":", 1)[1]
-            value = _strip_inline_comment(raw_value).strip()
-            if value.startswith(("'", '"')) and value.endswith(value[0]) and len(value) >= 2:
-                value = value[1:-1]
-            return value or None
+            candidate_value = stripped.split(":", 1)[1]
+        elif indent == 0 and stripped.startswith(f"{dotted_key}:"):
+            candidate_value = stripped.split(":", 1)[1]
+        if candidate_value is None:
+            continue
+        value = _strip_inline_comment(candidate_value).strip()
+        if value.startswith(("'", '"')) and value.endswith(value[0]) and len(value) >= 2:
+            value = value[1:-1]
+        return value or None
     return None
 
 

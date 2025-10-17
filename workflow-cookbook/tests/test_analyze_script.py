@@ -287,6 +287,42 @@ def _prepare_manifest_with_yaml_fallback(
         monkeypatch.setattr(analyze, attr, value)
 
 
+def test_load_report_output_accepts_hash_when_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(
+        'report.output: "reports/#1.md"\n',
+        encoding="utf-8",
+    )
+
+    import builtins
+
+    original_import = builtins.__import__
+
+    def _missing_yaml_import(name: str, *args: object, **kwargs: object):
+        if name == "yaml":
+            raise ModuleNotFoundError("forced missing yaml")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _missing_yaml_import)
+
+    report_path = tmp_path / "reports" / "today.md"
+
+    for attr, value in {
+        "BASE_DIR": tmp_path,
+        "REPORT": report_path,
+        "REFLECTION_MANIFEST": reflection_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    chosen = analyze.load_report_output_path()
+
+    assert chosen == tmp_path / "reports" / "#1.md"
+
+
 def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
