@@ -181,6 +181,61 @@ def test_load_results_prefers_manifest_logs_even_when_log_overridden(
     assert "- Failures: 0" in contents
 
 
+def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "custom.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text(
+        json.dumps({"name": "custom::case", "status": "pass", "duration_ms": 12})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(
+        "targets:\n"
+        "  - name: unit\n"
+        "    logs:\n"
+        "      - logs/custom.jsonl\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+
+    import builtins
+
+    original_import = builtins.__import__
+
+    def _missing_yaml_import(name: str, *args: object, **kwargs: object):
+        if name == "yaml":
+            raise ModuleNotFoundError("forced missing yaml")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _missing_yaml_import)
+
+    for attr, value in {
+        "BASE_DIR": tmp_path,
+        "REPORT": report_path,
+        "ISSUE_OUT": issue_path,
+        "REFLECTION_MANIFEST": reflection_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    tests, durs, fails, statuses = analyze.load_results()
+    assert (tests, durs, fails) == (["custom::case"], [12], [])
+    assert statuses["custom::case"] == {"pass"}
+
+    analyze.main()
+
+    contents = report_path.read_text(encoding="utf-8")
+    assert "Total tests: 1" in contents
+    assert "- Failures: 0" in contents
+
+
 def test_main_reports_zero_when_no_log(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
