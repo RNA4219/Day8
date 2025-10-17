@@ -179,6 +179,7 @@ def validate_pr_body(body: str | None) -> bool:
     normalized_body = _normalize_markdown_emphasis(body or "")
     has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
     normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
+    priority_match = PRIORITY_PATTERN.search(normalized_body) if has_priority_label else None
     success = True
 
     if not INTENT_PATTERN.search(normalized_body):
@@ -189,13 +190,7 @@ def validate_pr_body(body: str | None) -> bool:
     if not has_evaluation_heading or not has_evaluation_anchor:
         print("PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
         success = False
-    if not has_priority_label:
-        print(
-            "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
-            file=sys.stderr,
-        )
-        success = False
-    elif not PRIORITY_PATTERN.search(normalized_body):
+    if not has_priority_label or priority_match is None:
         print(
             "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
             file=sys.stderr,
