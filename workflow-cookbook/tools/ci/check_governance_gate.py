@@ -12,10 +12,11 @@ from typing import Iterable, List, Sequence
 
 def _normalize_markdown_emphasis(text: str) -> str:
     cleaned = text.replace("**", "").replace("__", "").replace("~~", "").replace("`", "")
-    cleaned = re.sub(r"(?<!\\S)\\*(?=\\S)", "", cleaned)
-    cleaned = re.sub(r"(?<=\\S)\\*(?!\\S)", "", cleaned)
-    cleaned = re.sub(r"(?<!\\S)_(?=\\S)", "", cleaned)
-    cleaned = re.sub(r"(?<=\\S)_(?!\\S)", "", cleaned)
+    cleaned = re.sub(r"(?m)^(\s*[-*+]\s*)\[[xX ]\]\s*", r"\1", cleaned)
+    cleaned = re.sub(r"(^|\s)\*+([^\s])", r"\1\2", cleaned)
+    cleaned = re.sub(r"([^\s])\*+(\s|$)", r"\1\2", cleaned)
+    cleaned = re.sub(r"(^|\s)_+([^\s])", r"\1\2", cleaned)
+    cleaned = re.sub(r"([^\s])_+(\s|$)", r"\1\2", cleaned)
     return cleaned
 
 
