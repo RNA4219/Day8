@@ -46,6 +46,10 @@ def _parse_fields(front_matter_lines: Iterable[str]) -> Dict[str, str]:
             if char == "#" and (index == 0 or value[index - 1].isspace()):
                 value = value[:index].rstrip()
                 break
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+            value = value[1:-1]
+        if value == "":
+            value = ""
         data[key.strip()] = value
     return data
 
