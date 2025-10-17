@@ -1,7 +1,7 @@
 Intent: INT-XXXX
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
-Priority Score: 
+Priority Score: <数値> / <根拠>
 
 ### 変更概要
 -
