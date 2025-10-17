@@ -188,11 +188,22 @@ def test_validate_priority_score(body, expected, message):
         "Priority Score: _5_ / 斜体",
         "Priority Score:* *5* / 斜体",
         "Priority Score:_ _5_ / 斜体",
+    ],
+)
+def test_validate_priority_score_valid(body):
+    is_valid, error = validate_priority_score(body)
+    assert is_valid is True
+    assert error is None
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
         "Priority Score : 5 / 理由",
         "Priority Score：5 / 理由",
     ],
 )
-def test_validate_priority_score_valid(body):
+def test_validate_priority_score_accepts_colon_variants(body):
     is_valid, error = validate_priority_score(body)
     assert is_valid is True
     assert error is None
