@@ -64,6 +64,7 @@ jobs:
         id: download-logs
         uses: actions/download-artifact@v4.1.7
         with:
+          artifact-id: ${{ steps.artifact-locator.outputs.artifact-id }}
           name: test-logs
           path: workflow-cookbook/logs
           run-id: ${{ steps.artifact-meta.outputs.run_id }}
