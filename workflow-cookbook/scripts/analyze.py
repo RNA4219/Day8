@@ -321,6 +321,7 @@ def p95(values: list[int]) -> int:
 
 
 def main() -> None:
+    manifest = load_reflection_manifest()
     tests, durs, fails, statuses = load_results()
     total = len(tests)
     if total == 0:
@@ -335,10 +336,8 @@ def main() -> None:
         flaky_rate = flaky_tests / unique_tests
     dur_p95 = p95(durs)
     now = datetime.datetime.now(datetime.UTC).isoformat()
-
-    manifest = load_reflection_manifest()
-    report_path = load_report_output_path()
-    include_why = load_report_include_why()
+    report_path = load_report_output_path(manifest=manifest)
+    include_why = load_report_include_why(manifest=manifest)
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with report_path.open("w", encoding="utf-8") as f:

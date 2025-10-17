@@ -437,6 +437,65 @@ def test_main_uses_reflection_manifest_to_skip_issue_suggestions(
     assert not issue_path.exists()
 
 
+def test_main_passes_loaded_manifest_to_issue_suggestions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    log_path = tmp_path / "logs" / "failures.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text(
+        json.dumps({"name": "case::fail", "status": "fail", "duration_ms": 10})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    report_path = tmp_path / "reports" / "today.md"
+    issue_path = tmp_path / "reports" / "issue_suggestions.md"
+
+    for attr, value in {
+        "LOG": log_path,
+        "REPORT": report_path,
+        "ISSUE_OUT": issue_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+    manifest_data: dict[str, object] = {
+        "actions": {"suggest_issues": True},
+        "report": {},
+    }
+
+    calls: dict[str, object] = {}
+
+    def _load_manifest_stub() -> dict[str, object]:
+        calls["manifest_calls"] = int(calls.get("manifest_calls", 0)) + 1
+        return manifest_data
+
+    def _report_path_stub(*, manifest: dict[str, object], **_kwargs: object) -> Path:
+        calls["report_manifest"] = manifest
+        return tmp_path / "reports" / "custom.md"
+
+    def _include_why_stub(*, manifest: dict[str, object], **_kwargs: object) -> bool:
+        calls["include_manifest"] = manifest
+        return False
+
+    def _suggest_issues_stub(*, manifest: dict[str, object], **_kwargs: object) -> bool:
+        calls["issue_manifest"] = manifest
+        return False
+
+    monkeypatch.setattr(analyze, "load_reflection_manifest", _load_manifest_stub)
+    monkeypatch.setattr(analyze, "load_report_output_path", _report_path_stub)
+    monkeypatch.setattr(analyze, "load_report_include_why", _include_why_stub)
+    monkeypatch.setattr(analyze, "load_actions_suggest_issues", _suggest_issues_stub)
+
+    analyze.main()
+
+    assert calls.get("manifest_calls") == 1
+    assert calls.get("report_manifest") is manifest_data
+    assert calls.get("include_manifest") is manifest_data
+    assert calls.get("issue_manifest") is manifest_data
+
+
 def test_main_writes_report_to_custom_manifest_output(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
