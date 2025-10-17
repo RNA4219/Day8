@@ -45,6 +45,17 @@ def test_find_forbidden_matches(changed_paths, patterns, expected):
     assert find_forbidden_matches(changed_paths, normalized) == expected
 
 
+def test_find_forbidden_matches_with_repo_subdir_prefix(monkeypatch):
+    monkeypatch.setattr(check_governance_gate, "REPO_ROOT_NAME", "Day8")
+
+    matches = find_forbidden_matches(
+        ["workflow-cookbook/core/schema/model.yaml"],
+        ["core/schema/**"],
+    )
+
+    assert matches == ["core/schema/model.yaml"]
+
+
 def test_validate_pr_body_success(capsys):
     body = """
 Intent: INT-123
