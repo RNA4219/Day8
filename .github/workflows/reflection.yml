@@ -67,7 +67,6 @@ jobs:
           name: test-logs
           path: workflow-cookbook/logs
           run-id: ${{ steps.artifact-meta.outputs.run_id }}
-          if-no-artifact-found: warn
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
