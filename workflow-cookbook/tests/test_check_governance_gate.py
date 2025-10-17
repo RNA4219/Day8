@@ -48,7 +48,7 @@ def test_validate_pr_body_accepts_segmented_intent(capsys):
 Intent: INT-2024-001
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
-Priority Score: 3
+Priority Score: 3 / レイテンシ改善
 """
 
     assert validate_pr_body(body) is True
@@ -61,7 +61,7 @@ def test_validate_pr_body_accepts_alphanumeric_segments(capsys):
 Intent: INT-OPS-7A
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
-Priority Score: 2
+Priority Score: 2 / セキュリティ強化
 """
 
     assert validate_pr_body(body) is True
@@ -74,7 +74,7 @@ def test_validate_pr_body_accepts_fullwidth_colon(capsys):
 Intent：INT-456
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
-Priority Score: 1
+Priority Score：1 / 重要顧客要望
 """
 
     assert validate_pr_body(body) is True
@@ -85,10 +85,10 @@ Priority Score: 1
 @pytest.mark.parametrize(
     "priority_line",
     [
-        "Priority Score：4",  # 全角コロン
-        "Priority Score ： 4",  # コロン前後に全角空白
-        "Priority Score :4",  # コロン後に空白なし
-        "Priority Score: 4",  # 標準ケース
+        "Priority Score：4 / 規制対応",  # 全角コロン
+        "Priority Score ： 4 / 技術的負債削減",  # コロン前後に全角空白
+        "Priority Score :4 / 顧客影響",  # コロン後に空白なし
+        "Priority Score: 4 / 品質改善",  # 標準ケース
     ],
 )
 def test_validate_priority_score_accepts_colon_variants(priority_line, capsys):
@@ -104,11 +104,24 @@ Intent: INT-001
     assert captured.err == ""
 
 
+def test_validate_pr_body_rejects_priority_without_justification(capsys):
+    body = """
+Intent: INT-777
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 3
+"""
+
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert "Priority Score must include justification" in captured.err
+
+
 def test_validate_pr_body_missing_intent(capsys):
     body = """
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
-Priority Score: 2
+Priority Score: 2 / SLO遵守
 """
 
     assert validate_pr_body(body) is False
@@ -119,7 +132,7 @@ Priority Score: 2
 def test_validate_pr_body_missing_evaluation(capsys):
     body = """
 Intent: INT-001
-Priority Score: 3
+Priority Score: 3 / パフォーマンス改善
 """
 
     assert validate_pr_body(body) is False
@@ -248,7 +261,7 @@ def test_main_accepts_pr_body_env(monkeypatch, capsys):
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
     monkeypatch.setenv(
         "PR_BODY",
-        """Intent: INT-999\n## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\nPriority Score: 2\n""",
+        """Intent: INT-999\n## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\nPriority Score: 2 / バグ修正優先\n""",
     )
     monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
 
