@@ -14,8 +14,8 @@
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `.github/CODEOWNERS`（@RNA4219 をあなたのハンドルに調整）
 - `docs/safety.md`
-- `logs/test.jsonl`（ダミー。最初の動作確認用）
-- `reports/.gitkeep`
+- `workflow-cookbook/logs/test.jsonl`（ダミー。最初の動作確認用）
+- `workflow-cookbook/reports/.gitkeep`
 
 `workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。
 
