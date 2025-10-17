@@ -177,9 +177,10 @@ def validate_pr_body(body: str | None) -> bool:
         success = False
     if not PRIORITY_PATTERN.search(normalized_body):
         print(
-            "Consider adding 'Priority Score: <number>' based on prioritization.yaml",
+            "PR must include 'Priority Score: <number>' to reflect Acceptance Criteria prioritization",
             file=sys.stderr,
         )
+        success = False
 
     return success
 
