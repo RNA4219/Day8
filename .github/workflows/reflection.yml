@@ -113,7 +113,7 @@ jobs:
 
           def _fallback(content: str) -> str:
               report_indent = None
-              quote = chr(34)
+              quotes = ("'", '"')
               for raw_line in content.splitlines():
                   stripped = raw_line.strip()
                   if not stripped or stripped.startswith("#"):
@@ -127,7 +127,7 @@ jobs:
                           report_indent = None
                       if stripped.startswith("output:"):
                           value = stripped.split(":", 1)[1].strip()
-                          if value.startswith(quote) and value.endswith(quote):
+                          if len(value) >= 2 and value[0] == value[-1] and value[0] in quotes:
                               value = value[1:-1]
                           return value
               raise SystemExit("report.output not found")

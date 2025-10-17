@@ -5,6 +5,7 @@ import importlib.util
 import io
 import os
 import textwrap
+from collections.abc import Callable
 from pathlib import Path
 
 try:
@@ -286,3 +287,27 @@ def test_reflection_workflow_commit_step_git_add_matches_manifest_output() -> No
     derived_output = stdout.getvalue().strip()
 
     assert derived_output == expected_output
+
+
+def test_reflection_workflow_commit_step_fallback_strips_quotes() -> None:
+    run_block = _load_commit_run_block()
+    python_script = _extract_python_heredoc(run_block)
+
+    namespace: dict[str, object] = {"__name__": "__fallback_test__"}
+    exec(python_script, namespace)
+
+    fallback = namespace.get("_fallback")
+    assert isinstance(fallback, Callable)
+
+    fallback_fn: Callable[[str], str] = fallback
+    quoted_content = textwrap.dedent(
+        """
+        report:
+          output: 'reports/today.md'
+        """
+    ).strip()
+
+    result = fallback_fn(quoted_content)
+
+    assert isinstance(result, str)
+    assert result == "reports/today.md"
