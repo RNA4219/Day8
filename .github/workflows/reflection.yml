@@ -111,6 +111,9 @@ jobs:
               yaml = None
 
 
+          DEFAULT_OUTPUT = "reports/today.md"
+
+
           def _strip_inline_comment(value: str) -> str:
               in_single = False
               in_double = False
@@ -154,8 +157,9 @@ jobs:
                           value = cleaned.split(":", 1)[1].strip()
                           if len(value) >= 2 and value[0] == value[-1] and value[0] in quotes:
                               value = value[1:-1]
-                          return value
-              raise SystemExit("report.output not found")
+                          if value:
+                              return value
+              return DEFAULT_OUTPUT
 
 
           def main() -> None:
@@ -164,7 +168,14 @@ jobs:
                   sys.stdout.write(_fallback(content))
                   return
               data = yaml.safe_load(content)
-              sys.stdout.write(data["report"]["output"])
+              if isinstance(data, dict):
+                  report_section = data.get("report")
+                  if isinstance(report_section, dict):
+                      output = report_section.get("output")
+                      if isinstance(output, str) and output.strip():
+                          sys.stdout.write(output.strip())
+                          return
+              sys.stdout.write(_fallback(content))
 
 
           if __name__ == "__main__":
