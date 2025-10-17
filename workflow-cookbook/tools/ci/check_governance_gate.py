@@ -10,6 +10,9 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
+REPO_ROOT_NAME = Path(__file__).resolve().parents[2].name
+
+
 def _normalize_markdown_emphasis(text: str) -> str:
     cleaned = text.replace("**", "").replace("__", "").replace("~~", "").replace("`", "")
     cleaned = re.sub(r"(?m)^(\s*[-*+]\s*)\[[xX ]\]\s*", r"\1", cleaned)
@@ -143,9 +146,9 @@ def _normalize_changed_path(path: str) -> str:
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     matches: List[str] = []
     for path in paths:
-        normalized_path = _normalize_changed_path(path)
-        if not normalized_path:
-            continue
+        normalized_path = path.lstrip("./")
+        if REPO_ROOT_NAME and normalized_path.startswith(f"{REPO_ROOT_NAME}/"):
+            normalized_path = normalized_path[len(REPO_ROOT_NAME) + 1 :]
         for pattern in patterns:
             if fnmatch(normalized_path, pattern):
                 matches.append(normalized_path)
