@@ -7,6 +7,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from tools.ci import check_governance_gate
 from tools.ci.check_governance_gate import (
+    PRIORITY_SCORE_ERROR_MESSAGE,
     find_forbidden_matches,
     load_forbidden_patterns,
     validate_pr_body,
@@ -198,6 +199,64 @@ def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys
         "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
         in captured.err
     )
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "\n".join(
+            [
+                "Intent: INT-5150",
+                "## EVALUATION",
+                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+            ]
+        ),
+        "\n".join(
+            [
+                "Intent: INT-8383",
+                "## EVALUATION",
+                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+                "Priority Score: 7 /",
+            ]
+        ),
+    ],
+    ids=["missing-priority-line", "missing-justification"],
+)
+def test_validate_pr_body_fails_when_priority_line_invalid(body, capsys):
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "\n".join(
+            [
+                "Intent: INT-9000",
+                "## EVALUATION",
+                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+            ]
+        ),
+        "\n".join(
+            [
+                "Intent: INT-4242",
+                "## EVALUATION",
+                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+                "Priority Score: 2 /",
+            ]
+        ),
+    ],
+    ids=["missing-priority-line", "missing-justification"],
+)
+def test_main_blocks_pr_when_priority_line_invalid(body, monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "load_forbidden_patterns", lambda _path: [])
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setattr(check_governance_gate, "resolve_pr_body", lambda: body)
+
+    assert check_governance_gate.main() == 1
+    captured = capsys.readouterr()
+    assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
 
 
 def test_validate_pr_body_missing_intent(capsys):
