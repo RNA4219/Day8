@@ -330,6 +330,20 @@ self_modification:
         "auth/**",
     ]
 
+    inline_list_item_policy = tmp_path / "policy_inline_list_item.yaml"
+    inline_list_item_policy.write_text(
+        """
+self_modification:
+  forbidden_paths:
+    - ["/core/schema/**", "/auth/**"]
+"""
+    )
+
+    assert load_forbidden_patterns(inline_list_item_policy) == [
+        "core/schema/**",
+        "auth/**",
+    ]
+
 
 def test_collect_changed_paths_falls_back(monkeypatch):
     calls: list[list[str]] = []
