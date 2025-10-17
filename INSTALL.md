@@ -20,9 +20,9 @@
 `workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。
 
 ## 使い方
-1. push or PR → `test` が走り、`logs/test.jsonl` を生成
-2. `reflection` が実行され `reports/today.md` を生成
-3. 失敗があれば `reports/issue_suggestions.md` から Issue を自動作成
+1. push or PR → `test` が走り、`workflow-cookbook/logs/test.jsonl` を生成
+2. `reflection` が実行され `workflow-cookbook/reports/today.md` を生成
+3. 失敗があれば `workflow-cookbook/reports/issue_suggestions.md` から Issue を自動作成
 4. 自動修正は **無効**（安全デチューン）。提案を読み、人間が修正PRを作成。
 
 ## 注意
