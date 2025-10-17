@@ -48,7 +48,41 @@ jobs:
         run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
-          git add reports/today.md
+          REPORT_PATH="$(python -c 'from __future__ import annotations
+          from pathlib import Path
+          import sys
+          try:
+              import yaml  # type: ignore
+          except ModuleNotFoundError:
+              yaml = None
+          content = Path("reflection.yaml").read_text(encoding="utf-8")
+          output = None
+          if yaml is not None:
+              output = yaml.safe_load(content)["report"]["output"]
+          else:
+              report_indent = None
+              quote = chr(34)
+              for raw_line in content.splitlines():
+                  stripped = raw_line.strip()
+                  if not stripped or stripped.startswith("#"):
+                      continue
+                  indent = len(raw_line) - len(raw_line.lstrip())
+                  if stripped.startswith("report:"):
+                      report_indent = indent
+                      continue
+                  if report_indent is not None:
+                      if indent <= report_indent and ":" in stripped:
+                          report_indent = None
+                      if stripped.startswith("output:"):
+                          value = stripped.split(":", 1)[1].strip()
+                          if value.startswith(quote) and value.endswith(quote):
+                              value = value[1:-1]
+                          output = value
+                          break
+          if output is None:
+              raise SystemExit("report.output not found")
+          sys.stdout.write(output)')"
+          git add "$REPORT_PATH"
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed (draft memo)
