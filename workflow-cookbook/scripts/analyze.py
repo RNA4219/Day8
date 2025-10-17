@@ -74,11 +74,15 @@ def _fallback_read_include_why(text: str, default: bool) -> bool:
 def _fallback_read_targets_first_log(text: str) -> str | None:
     in_targets = False
     targets_indent = 0
+    collecting_logs = False
+    logs_indent = 0
     for raw_line in text.splitlines():
         stripped = raw_line.strip()
         if not stripped or stripped.startswith("#"):
             continue
         indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if collecting_logs and indent <= logs_indent:
+            collecting_logs = False
         if not in_targets:
             if stripped.startswith("targets:") and indent == 0:
                 in_targets = True
@@ -86,10 +90,34 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
             continue
         if indent <= targets_indent:
             break
+        if collecting_logs:
+            if stripped.startswith("-"):
+                candidate = stripped[1:].strip()
+                if not candidate:
+                    continue
+                candidate = candidate.split("#", 1)[0].strip()
+                if not candidate:
+                    continue
+                if (
+                    candidate.startswith(("'", '"'))
+                    and candidate.endswith(candidate[0])
+                    and len(candidate) >= 2
+                ):
+                    try:
+                        parsed = ast.literal_eval(candidate)
+                    except Exception:
+                        parsed = candidate[1:-1]
+                else:
+                    parsed = candidate
+                if isinstance(parsed, str) and parsed.strip():
+                    return parsed.strip()
+            continue
         if not stripped.startswith("logs:"):
             continue
         candidate_text = stripped.split(":", 1)[1].strip()
         if not candidate_text:
+            collecting_logs = True
+            logs_indent = indent
             continue
         try:
             parsed = ast.literal_eval(candidate_text)
