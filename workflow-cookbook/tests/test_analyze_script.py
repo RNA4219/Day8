@@ -181,11 +181,12 @@ def test_load_results_prefers_manifest_logs_even_when_log_overridden(
     assert "- Failures: 0" in contents
 
 
-def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    analyze = load_analyze_module()
-
+def _exercise_missing_yaml_log_detection(
+    analyze: ModuleType,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    manifest_text: str,
+) -> Path:
     log_path = tmp_path / "logs" / "custom.jsonl"
     log_path.parent.mkdir(parents=True)
     log_path.write_text(
@@ -195,13 +196,7 @@ def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
     )
 
     reflection_path = tmp_path / "reflection.yaml"
-    reflection_path.write_text(
-        "targets:\n"
-        "  - name: unit\n"
-        "    logs:\n"
-        "      - logs/custom.jsonl\n",
-        encoding="utf-8",
-    )
+    reflection_path.write_text(manifest_text, encoding="utf-8")
 
     report_path = tmp_path / "reports" / "today.md"
     issue_path = tmp_path / "reports" / "issue_suggestions.md"
@@ -230,6 +225,60 @@ def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
     assert statuses["custom::case"] == {"pass"}
 
     analyze.main()
+
+    return report_path
+
+
+def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    report_path = _exercise_missing_yaml_log_detection(
+        analyze,
+        tmp_path,
+        monkeypatch,
+        "targets:\n  - name: unit\n    logs:\n      - logs/custom.jsonl\n",
+    )
+
+    contents = report_path.read_text(encoding="utf-8")
+    assert "Total tests: 1" in contents
+    assert "- Failures: 0" in contents
+
+
+def test_load_results_handles_inline_comment_block_logs_when_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    report_path = _exercise_missing_yaml_log_detection(
+        analyze,
+        tmp_path,
+        monkeypatch,
+        (
+            "targets:\n"
+            "  - name: unit\n"
+            "    logs:  # コメント\n"
+            "      - logs/custom.jsonl\n"
+        ),
+    )
+
+    contents = report_path.read_text(encoding="utf-8")
+    assert "Total tests: 1" in contents
+    assert "- Failures: 0" in contents
+
+
+def test_load_results_handles_inline_comment_inline_logs_when_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    report_path = _exercise_missing_yaml_log_detection(
+        analyze,
+        tmp_path,
+        monkeypatch,
+        "targets:\n  - name: unit\n    logs: [\"logs/custom.jsonl\"]  # コメント\n",
+    )
 
     contents = report_path.read_text(encoding="utf-8")
     assert "Total tests: 1" in contents

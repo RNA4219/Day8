@@ -53,6 +53,28 @@ def _fallback_read_section_value(text: str, section: str, key: str) -> str | Non
     return None
 
 
+def _strip_inline_comment(value: str) -> str:
+    in_single = False
+    in_double = False
+    escaped = False
+    for index, char in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\" and (in_single or in_double):
+            escaped = True
+            continue
+        if char == "'" and not in_double:
+            in_single = not in_single
+            continue
+        if char == '"' and not in_single:
+            in_double = not in_double
+            continue
+        if char == "#" and not in_single and not in_double:
+            return value[:index].rstrip()
+    return value.strip()
+
+
 def _fallback_read_section_bool(
     text: str, section: str, key: str, default: bool
 ) -> bool:
@@ -95,7 +117,7 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
                 candidate = stripped[1:].strip()
                 if not candidate:
                     continue
-                candidate = candidate.split("#", 1)[0].strip()
+                candidate = _strip_inline_comment(candidate)
                 if not candidate:
                     continue
                 if (
@@ -115,6 +137,7 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
         if not stripped.startswith("logs:"):
             continue
         candidate_text = stripped.split(":", 1)[1].strip()
+        candidate_text = _strip_inline_comment(candidate_text)
         if not candidate_text:
             collecting_logs = True
             logs_indent = indent
