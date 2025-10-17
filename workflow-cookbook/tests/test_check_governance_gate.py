@@ -188,6 +188,17 @@ self_modification:
 
     assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
 
+    commented_policy = tmp_path / "policy_commented.yaml"
+    commented_policy.write_text(
+        """
+self_modification:
+  forbidden_paths:  # inline comment
+    - "/core/schema/**"
+"""
+    )
+
+    assert load_forbidden_patterns(commented_policy) == ["core/schema/**"]
+
 
 def test_collect_changed_paths_falls_back(monkeypatch):
     calls: list[list[str]] = []
