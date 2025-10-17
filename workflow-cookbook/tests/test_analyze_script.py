@@ -358,6 +358,24 @@ def test_load_results_reads_inline_comment_inline_logs_with_yaml_missing(
     assert statuses["custom::case"] == {"pass"}
 
 
+def test_load_results_reads_inline_logs_without_quotes_when_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    _prepare_manifest_with_yaml_fallback(
+        analyze,
+        tmp_path,
+        monkeypatch,
+        "targets:\n  - name: unit\n    logs: [logs/custom.jsonl]\n",
+    )
+
+    tests, durs, fails, statuses = analyze.load_results()
+
+    assert (tests, durs, fails) == (["custom::case"], [12], [])
+    assert statuses["custom::case"] == {"pass"}
+
+
 def test_load_results_reads_inline_comment_block_logs_with_yaml_missing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
