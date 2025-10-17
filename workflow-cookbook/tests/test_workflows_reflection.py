@@ -79,13 +79,15 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
 
     expected_version_line = "        uses: actions/download-artifact@v4.1.7\n"
     fallback_notice = "core.notice(`test-logs artifact not found for run ${runId}; skipping download`);\n"
-    artifact_id_reference = (
+    download_name_line = "          name: test-logs\n"
+    unexpected_artifact_id_reference = (
         "          artifact-id: ${{ steps.artifact-locator.outputs.artifact-id }}\n"
     )
 
     assert expected_version_line in content
     assert fallback_notice in content
-    assert artifact_id_reference in content
+    assert download_name_line in content
+    assert unexpected_artifact_id_reference not in content
     assert "if-no-artifact-found" not in content
 
 
