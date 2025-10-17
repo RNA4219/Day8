@@ -33,6 +33,11 @@ from tools.ci.check_governance_gate import (
             ["/auth/**", "/core/schema/**"],
             ["auth/service.py", "core/schema/definitions.yml"],
         ),
+        (
+            """core/schema/v1/model.yaml\nauth/service/internal/api.py""".splitlines(),
+            ["/core/schema/**", "/auth/**"],
+            ["core/schema/v1/model.yaml", "auth/service/internal/api.py"],
+        ),
     ],
 )
 def test_find_forbidden_matches(changed_paths, patterns, expected):
