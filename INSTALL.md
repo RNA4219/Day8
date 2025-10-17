@@ -13,8 +13,8 @@
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `.github/CODEOWNERS`（@RNA4219 をあなたのハンドルに調整）
 - `docs/safety.md`
-- `logs/test.jsonl`（ダミー。最初の動作確認用）
-- `reports/.gitkeep`
+- `workflow-cookbook/logs/test.jsonl`（ダミー。最初の動作確認用）
+- `workflow-cookbook/reports/.gitkeep`
 
 ## 使い方
 1. push or PR → `test` が走り、`logs/test.jsonl` を生成
