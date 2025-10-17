@@ -13,7 +13,8 @@ StatusMap = dict[str, set[str]]
 
 WORKFLOW_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 BASE_DIR: Final[Path] = WORKFLOW_ROOT
-LOG: Final[Path] = WORKFLOW_ROOT / "logs" / "test.jsonl"
+DEFAULT_LOG: Final[Path] = WORKFLOW_ROOT / "logs" / "test.jsonl"
+LOG: Final[Path] = DEFAULT_LOG
 DEFAULT_REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
 REPORT: Final[Path] = DEFAULT_REPORT
 ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
@@ -266,25 +267,45 @@ def load_report_output_path(
     return chosen
 
 
-def load_results() -> tuple[list[str], list[int], list[str], StatusMap]:
+def _resolve_log_path(*, manifest: dict[str, Any] | None) -> Path:
+    fallback = LOG
+    fallback_is_default = fallback == DEFAULT_LOG
+    if not fallback.is_absolute():
+        fallback = BASE_DIR / fallback
+    fallback_exists = fallback.exists()
+    if manifest:
+        first_log = _manifest_first_log(manifest)
+        if isinstance(first_log, str):
+            stripped = first_log.strip()
+            if stripped:
+                candidate_path = Path(stripped)
+                if not candidate_path.is_absolute():
+                    candidate_path = BASE_DIR / candidate_path
+                if candidate_path.exists() and (
+                    not fallback_exists or fallback_is_default
+                ):
+                    if candidate_path == DEFAULT_LOG and not fallback_is_default:
+                        return fallback
+                    return candidate_path
+    return fallback
+
+
+def load_results(
+    *, manifest: dict[str, Any] | None = None
+) -> tuple[list[str], list[int], list[str], StatusMap]:
     tests: list[str] = []
     durs: list[int] = []
     fails: list[str] = []
     statuses: StatusMap = {}
-    log_path = LOG
-    manifest = load_reflection_manifest(
-        default_suggest_issues=True,
-        default_include_why=True,
+    manifest_data = (
+        load_reflection_manifest(
+            default_suggest_issues=True,
+            default_include_why=True,
+        )
+        if manifest is None
+        else manifest
     )
-    first_log = _manifest_first_log(manifest) if manifest else None
-    if (
-        isinstance(first_log, str)
-        and LOG == WORKFLOW_ROOT / "logs" / "test.jsonl"
-    ):
-        candidate_path = Path(first_log)
-        if not candidate_path.is_absolute():
-            candidate_path = BASE_DIR / candidate_path
-        log_path = candidate_path
+    log_path = _resolve_log_path(manifest=manifest_data)
     if not log_path.exists():
         return tests, durs, fails, statuses
     with log_path.open() as f:
@@ -322,7 +343,7 @@ def p95(values: list[int]) -> int:
 
 def main() -> None:
     manifest = load_reflection_manifest()
-    tests, durs, fails, statuses = load_results()
+    tests, durs, fails, statuses = load_results(manifest=manifest)
     total = len(tests)
     if total == 0:
         pass_rate: float = 0.0
