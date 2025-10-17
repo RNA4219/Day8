@@ -110,8 +110,19 @@ jobs:
           except ModuleNotFoundError:
               yaml = None
 
+          try:
+              if str(Path.cwd()) not in sys.path:
+                  sys.path.insert(0, str(Path.cwd()))
+              from scripts import analyze  # type: ignore
+          except ModuleNotFoundError:
+              analyze = None  # type: ignore[assignment]
 
-          DEFAULT_OUTPUT = "reports/today.md"
+
+          if analyze is not None:
+              BASE_DIR = analyze.BASE_DIR.resolve()
+          else:
+              BASE_DIR = Path.cwd().resolve()
+          DEFAULT_OUTPUT = Path("reports/today.md")
 
 
           def _strip_inline_comment(value: str) -> str:
@@ -159,23 +170,72 @@ jobs:
                               value = value[1:-1]
                           if value:
                               return value
-              return DEFAULT_OUTPUT
+              return str(DEFAULT_OUTPUT)
+
+
+          def _normalize_path(path: Path) -> str:
+              normalized_input = path if path.is_absolute() else BASE_DIR / path
+              try:
+                  resolved = normalized_input.resolve(strict=False)
+              except OSError:
+                  resolved = normalized_input
+              try:
+                  relative = resolved.relative_to(BASE_DIR)
+              except ValueError:
+                  return str(resolved)
+              return str(relative)
+
+
+          def _manual_normalize_output(value: str | None) -> str:
+              fallback_absolute = DEFAULT_OUTPUT if DEFAULT_OUTPUT.is_absolute() else BASE_DIR / DEFAULT_OUTPUT
+              try:
+                  fallback_resolved = fallback_absolute.resolve(strict=False)
+              except OSError:
+                  fallback_resolved = fallback_absolute
+              if value:
+                  candidate = Path(value.strip())
+                  candidate_absolute = candidate if candidate.is_absolute() else BASE_DIR / candidate
+                  try:
+                      candidate_resolved = candidate_absolute.resolve(strict=False)
+                  except OSError:
+                      candidate_resolved = candidate_absolute
+                  try:
+                      candidate_resolved.relative_to(BASE_DIR)
+                  except ValueError:
+                      return _normalize_path(fallback_resolved)
+                  return _normalize_path(candidate_resolved)
+              return _normalize_path(fallback_resolved)
 
 
           def main() -> None:
               content = Path("reflection.yaml").read_text(encoding="utf-8")
+              manifest_obj = yaml.safe_load(content) if yaml is not None else None
+              manifest_dict = dict(manifest_obj) if isinstance(manifest_obj, dict) else {}
               if yaml is None:
-                  sys.stdout.write(_fallback(content))
+                  fallback_output = _fallback(content)
+                  if fallback_output:
+                      report_section = {}
+                      existing = manifest_dict.get("report") if manifest_dict else None
+                      if isinstance(existing, dict):
+                          report_section = dict(existing)
+                      report_section["output"] = fallback_output
+                      manifest_dict["report"] = report_section
+              if analyze is not None:
+                  report_path = analyze.load_report_output_path(
+                      manifest=manifest_dict,
+                      default=DEFAULT_OUTPUT,
+                  )
+                  sys.stdout.write(_normalize_path(report_path))
                   return
-              data = yaml.safe_load(content)
-              if isinstance(data, dict):
-                  report_section = data.get("report")
-                  if isinstance(report_section, dict):
-                      output = report_section.get("output")
-                      if isinstance(output, str) and output.strip():
-                          sys.stdout.write(output.strip())
-                          return
-              sys.stdout.write(_fallback(content))
+              report_section = manifest_dict.get("report")
+              output_value = None
+              if isinstance(report_section, dict):
+                  raw_output = report_section.get("output")
+                  if isinstance(raw_output, str) and raw_output.strip():
+                      output_value = raw_output.strip()
+              if output_value is None:
+                  output_value = _fallback(content)
+              sys.stdout.write(_manual_normalize_output(output_value))
 
 
           if __name__ == "__main__":
