@@ -114,10 +114,8 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
             break
         if collecting_logs:
             if stripped.startswith("-"):
-                candidate = stripped[1:].strip()
-                if not candidate:
-                    continue
-                candidate = _strip_inline_comment(candidate)
+                raw_candidate = stripped[1:].strip()
+                candidate = _strip_inline_comment(raw_candidate)
                 if not candidate:
                     continue
                 if (
@@ -136,8 +134,8 @@ def _fallback_read_targets_first_log(text: str) -> str | None:
             continue
         if not stripped.startswith("logs:"):
             continue
-        candidate_text = stripped.split(":", 1)[1].strip()
-        candidate_text = _strip_inline_comment(candidate_text)
+        raw_candidate_text = stripped.split(":", 1)[1].strip()
+        candidate_text = _strip_inline_comment(raw_candidate_text)
         if not candidate_text:
             collecting_logs = True
             logs_indent = indent

@@ -229,6 +229,42 @@ def _exercise_missing_yaml_log_detection(
     return report_path
 
 
+def _prepare_manifest_with_yaml_fallback(
+    analyze: ModuleType,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    manifest_text: str,
+) -> None:
+    log_path = tmp_path / "logs" / "custom.jsonl"
+    log_path.parent.mkdir(parents=True)
+    log_path.write_text(
+        json.dumps({"name": "custom::case", "status": "pass", "duration_ms": 12})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(manifest_text, encoding="utf-8")
+
+    import builtins
+
+    original_import = builtins.__import__
+
+    def _missing_yaml_import(name: str, *args: object, **kwargs: object):
+        if name == "yaml":
+            raise ModuleNotFoundError("forced missing yaml")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _missing_yaml_import)
+
+    for attr, value in {
+        "BASE_DIR": tmp_path,
+        "LOG": tmp_path / "logs" / "ignored.jsonl",
+        "REFLECTION_MANIFEST": reflection_path,
+    }.items():
+        monkeypatch.setattr(analyze, attr, value)
+
+
 def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -244,6 +280,42 @@ def test_load_results_prefers_block_manifest_logs_when_yaml_missing(
     contents = report_path.read_text(encoding="utf-8")
     assert "Total tests: 1" in contents
     assert "- Failures: 0" in contents
+
+
+def test_load_results_reads_inline_comment_inline_logs_with_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    _prepare_manifest_with_yaml_fallback(
+        analyze,
+        tmp_path,
+        monkeypatch,
+        "targets:\n  - name: unit\n    logs: [\"logs/custom.jsonl\"]  # comment\n",
+    )
+
+    tests, durs, fails, statuses = analyze.load_results()
+
+    assert (tests, durs, fails) == (["custom::case"], [12], [])
+    assert statuses["custom::case"] == {"pass"}
+
+
+def test_load_results_reads_inline_comment_block_logs_with_yaml_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    _prepare_manifest_with_yaml_fallback(
+        analyze,
+        tmp_path,
+        monkeypatch,
+        "targets:\n  - name: unit\n    logs:  # comment\n      - logs/custom.jsonl\n",
+    )
+
+    tests, durs, fails, statuses = analyze.load_results()
+
+    assert (tests, durs, fails) == (["custom::case"], [12], [])
+    assert statuses["custom::case"] == {"pass"}
 
 
 def test_load_results_handles_inline_comment_block_logs_when_yaml_missing(
