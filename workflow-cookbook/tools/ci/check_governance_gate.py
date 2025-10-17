@@ -256,12 +256,17 @@ PRIORITY_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+PRIORITY_SCORE_ERROR_MESSAGE = (
+    "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
+)
+
 
 def validate_pr_body(body: str | None) -> bool:
     normalized_body = _normalize_markdown_emphasis(body or "")
     has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
     normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
     priority_match = PRIORITY_PATTERN.search(normalized_body) if has_priority_label else None
+    has_priority_with_justification = priority_match is not None
     success = True
 
     if not INTENT_PATTERN.search(normalized_body):
@@ -272,11 +277,8 @@ def validate_pr_body(body: str | None) -> bool:
     if not has_evaluation_heading or not has_evaluation_anchor:
         print("PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
         success = False
-    if not has_priority_label or priority_match is None:
-        print(
-            "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
-            file=sys.stderr,
-        )
+    if not has_priority_label or not has_priority_with_justification:
+        print(PRIORITY_SCORE_ERROR_MESSAGE, file=sys.stderr)
         success = False
 
     return success
