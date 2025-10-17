@@ -46,6 +46,28 @@ def test_validate_markdown_front_matter_pass(repo_root: Path) -> None:
     assert validate_markdown_front_matter(repo_root) == {}
 
 
+@pytest.mark.parametrize("owner_value", ('""', "''"))
+def test_validate_markdown_front_matter_empty_owner(
+    repo_root: Path, owner_value: str
+) -> None:
+    _write_markdown(
+        repo_root / "README.md",
+        (
+            ("intent_id", "INT-555"),
+            ("owner", owner_value),
+            ("status", "active"),
+            ("last_reviewed_at", "2024-05-01"),
+            ("next_review_due", "2024-06-01"),
+        ),
+    )
+
+    missing = validate_markdown_front_matter(repo_root)
+
+    assert missing == {
+        repo_root / "README.md": [field for field in REQUIRED_FIELDS if field == "owner"]
+    }
+
+
 def test_validate_markdown_front_matter_missing_fields(repo_root: Path) -> None:
     _write_markdown(
         repo_root / "README.md",
