@@ -1,3 +1,4 @@
+import re
 import sys
 from pathlib import Path
 
@@ -353,6 +354,10 @@ def test_pr_template_contains_required_sections():
     assert "Intent:" in template
     assert "## EVALUATION" in template
     assert "EVALUATION.md#acceptance-criteria" in template
+    assert any(
+        re.fullmatch(r"Priority Score[:：]\s*<[^>]+>\s*/\s*<[^>]+>", line.strip())
+        for line in template.splitlines()
+    ), "Priority Score line must follow 'Priority Score: <number> / <justification>' format"
 
 
 def test_load_forbidden_patterns(tmp_path):
