@@ -137,7 +137,38 @@ Priority Score: 3
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Priority Score: <number>" in captured.err
+    assert (
+        "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
+        in captured.err
+    )
+
+
+@pytest.mark.parametrize(
+    "priority_line",
+    [
+        "",
+        "Priority Score:",
+        "Priority Score: 4",
+        "Priority Score: 4 /",
+        "Priority Score: 4 /   ",
+    ],
+)
+def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys):
+    lines = [
+        "Intent: INT-4242",
+        "## EVALUATION",
+        "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+    ]
+    if priority_line:
+        lines.append(priority_line)
+    body = "\n".join(lines)
+
+    assert validate_pr_body(body) is False
+    captured = capsys.readouterr()
+    assert (
+        "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
+        in captured.err
+    )
 
 
 def test_validate_pr_body_missing_intent(capsys):

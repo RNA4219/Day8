@@ -185,6 +185,7 @@ def validate_pr_body(body: str | None) -> bool:
     normalized_body = _normalize_markdown_emphasis(body or "")
     has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
     normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
+    priority_match = PRIORITY_PATTERN.search(normalized_body) if has_priority_label else None
     success = True
 
     if not INTENT_PATTERN.search(normalized_body):
