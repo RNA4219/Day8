@@ -1,3 +1,4 @@
+# PR Justification は以下の指標名と重みを引用すること。
 criteria:
   - { name: impact_scope,     weight: 0.4 }   # 依存の多さ
   - { name: design_staleness, weight: 0.2 }   # 設計の陳腐化
