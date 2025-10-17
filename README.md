@@ -5,9 +5,9 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 ## リポジトリ構成
 - `docs/` Day8 の仕様・運用・ガバナンスドキュメント集（詳細は [`docs/day8/README.md`](docs/day8/README.md) を参照）。
 - `governance/` ポリシー定義や CODEOWNERS などの統制設定。
-- `logs/` CI で収集した観測ログ。
-- `reports/` 反省結果や Issue 提案レポートの出力先。
-- `scripts/` ログ解析やレポート生成のユーティリティ。
+- `workflow-cookbook/logs/` CI で収集した観測ログ。
+- `workflow-cookbook/reports/` 反省結果や Issue 提案レポートの出力先。
+- `workflow-cookbook/scripts/` ログ解析やレポート生成のユーティリティ。
 - `workflow-cookbook/` Day8 を他リポジトリへ導入する際のワークフロー例。
 
 ## セットアップ
@@ -15,7 +15,7 @@ Day8 を新しいリポジトリへ導入する際は、[`INSTALL.md`](INSTALL.m
 
 ## 使い方のヒント
 - 初期状態では `workflow-cookbook/reflection.yaml` の `analysis.max_tokens` が 0 のため LLM 呼び出しは抑制されています。必要に応じて `engine` 設定と合わせて有効化してください。
-- 生成されたレポート（`reports/` 配下）と提案を確認し、人間が修正 PR を作成する運用を前提としています。
+- 生成されたレポート（`workflow-cookbook/reports/` 配下）と提案を確認し、人間が修正 PR を作成する運用を前提としています。
 
 ---
 **キーワード**: Day8, safe autonomy, propose-only CI, reflective devops
