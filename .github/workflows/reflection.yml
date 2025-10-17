@@ -23,11 +23,15 @@ jobs:
         run: |
           if [ -n "${RUN_ID}" ]; then
             echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+            if [ -n "${RUN_REPOSITORY}" ]; then
+              echo "run_repository=$RUN_REPOSITORY" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "::notice title=artifact::No linked workflow_run; skip download"
           fi
         env:
           RUN_ID: ${{ github.event.workflow_run.id || '' }}
+          RUN_REPOSITORY: ${{ github.event.workflow_run.repository.full_name || '' }}
       - name: Locate test logs artifact
         if: ${{ steps.artifact-meta.outputs.run_id != '' }}
         id: artifact-locator
@@ -35,7 +39,21 @@ jobs:
         with:
           script: |
             const runId = Number(process.env.RUN_ID);
+            const repository = process.env.RUN_REPOSITORY ?? '';
+            const current = `${context.repo.owner}/${context.repo.repo}`;
             if (!Number.isFinite(runId) || runId <= 0) {
+              core.setOutput('artifact-id', '');
+              core.setOutput('found', 'false');
+              return;
+            }
+            if (!repository) {
+              core.notice(`workflow_run repository unavailable; cross-repo artifacts require a PAT with actions:read permissions.`);
+              core.setOutput('artifact-id', '');
+              core.setOutput('found', 'false');
+              return;
+            }
+            if (repository && repository !== current) {
+              core.notice(`run ${runId} belongs to ${repository}; cross-repo artifacts require a PAT with actions:read permissions.`);
               core.setOutput('artifact-id', '');
               core.setOutput('found', 'false');
               return;
@@ -59,6 +77,7 @@ jobs:
             core.setOutput('found', 'true');
         env:
           RUN_ID: ${{ steps.artifact-meta.outputs.run_id }}
+          RUN_REPOSITORY: ${{ steps.artifact-meta.outputs.run_repository || '' }}
       - name: Download test logs
         if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         id: download-logs
