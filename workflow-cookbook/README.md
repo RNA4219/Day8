@@ -15,8 +15,8 @@ canary rules.
 <!-- LLM-BOOTSTRAP v1 -->
 読む順番:
 
-1. docs/birdseye/index.json  …… ノード一覧・隣接関係（軽量）
-2. docs/birdseye/caps/`<path>`.json …… 必要ノードだけ point read（個別カプセル）
+1. `workflow-cookbook/docs/birdseye/index.json` …… ノード一覧・隣接関係（軽量）
+2. `workflow-cookbook/docs/birdseye/caps/<path>.json` …… 必要ノードだけ point read（個別カプセル）
 
 フォーカス手順:
 
@@ -37,18 +37,28 @@ canary rules.
 3. 実行手順は `RUNBOOK.md`、評価基準は `EVALUATION.md` に記述し、
    以下で Birdseye の最小読込とタスク分割の前提を共有
 
-    - [`GUARDRAILS.md`](GUARDRAILS.md) …… 行動指針と Birdseye の `deps_out`
+    - [`GUARDRAILS.md`](GUARDRAILS.md) …… (`workflow-cookbook/GUARDRAILS.md`) 行動指針と Birdseye の `deps_out`
       と整合する最小読込ガードレールを確認
-    - [`tools/codemap/README.md`](tools/codemap/README.md) …… Birdseye カプセル
-      再生成前提と `codemap.update` の流れを把握
+    - [`tools/codemap/README.md`](tools/codemap/README.md) …… (`workflow-cookbook/tools/codemap/README.md`)
+      Birdseye カプセル再生成前提と `codemap.update` の流れを把握
     - [`tools/codemap/update.py`](tools/codemap/update.py) …… `python tools/codemap/update.py`
-      で `codemap.update` を実行し Birdseye カプセルを再生成する
-      （`GUARDRAILS.md` の[鮮度管理](GUARDRAILS.md#%E9%AE%AE%E5%BA%A6%E7%AE%A1%E7%90%86staleness-handling)参照）
-    - [`HUB.codex.md`](HUB.codex.md) …… 仕様集約とタスク分割ハブを整備し、Birdseye カプセルの依存関係を維持
-    - [`docs/IN-20250115-001.md`](docs/IN-20250115-001.md) …… インシデントログを参照し
+      (`workflow-cookbook/tools/codemap/update.py`) で `codemap.update` を実行し Birdseye カプセルを再生成する
+      （`workflow-cookbook/GUARDRAILS.md` の[鮮度管理](GUARDRAILS.md#%E9%AE%AE%E5%BA%A6%E7%AE%A1%E7%90%86staleness-handling)参照）
+    - [`HUB.codex.md`](HUB.codex.md) …… (`workflow-cookbook/HUB.codex.md`) 仕様集約とタスク分割ハブを整備し、Birdseye カプセルの依存関係を維持
+    - [`docs/IN-20250115-001.md`](docs/IN-20250115-001.md) …… (`workflow-cookbook/docs/IN-20250115-001.md`)
+      インシデントログを参照し
       Birdseye カプセル要約で指示される `deps_out` を照合
-4. タスクごとに `TASK.codex.md` を複製して内容を埋め、エージェントに渡す
-5. リリースは `CHECKLISTS.md` をなぞり、差分は `CHANGELOG.md` に追記
+4. タスクごとに `workflow-cookbook/TASK.codex.md` を複製して内容を埋め、エージェントに渡す
+5. リリースは `workflow-cookbook/CHECKLISTS.md` をなぞり、差分は `workflow-cookbook/CHANGELOG.md` に追記
+
+## Repository structure
+
+- `workflow-cookbook/docs/` …… Birdseye カプセルや仕様補助ドキュメントを格納
+- `workflow-cookbook/governance/` …… ポリシーとガードレール定義を配置
+- `workflow-cookbook/logs/` …… インシデントやメトリクスの JSONL ログを保管
+- `workflow-cookbook/reports/` …… 日次レポートや評価結果を出力
+- `workflow-cookbook/scripts/` …… 自動化スクリプトとユーティリティを配置
+- `workflow-cookbook/tools/` …… Codemap などの補助ツールを格納
 
 <!-- markdownlint-disable MD013 -->
 ![lint](https://github.com/RNA4219/workflow-cookbook/actions/workflows/markdown.yml/badge.svg)

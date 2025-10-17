@@ -32,4 +32,5 @@
 - [ ] CHECKLISTS 該当項目完了
 - [ ] CHANGELOG 追記
 - 禁止パス遵守チェック（governance/policy.yaml）: <!-- 例: OK / 対象外 / 詳細 -->
-- Priority Score: <!-- 例: 5 / prioritization.yaml#phase1 -->
+Priority Score: <number> / <reference>
+<!-- 例: 5 / prioritization.yaml#phase1 -->
