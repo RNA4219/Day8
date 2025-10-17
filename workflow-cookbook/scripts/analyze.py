@@ -49,7 +49,8 @@ def _fallback_read_section_value(text: str, section: str, key: str) -> str | Non
         if indent <= section_indent:
             in_section = False
         if in_section and stripped.startswith(f"{key}:"):
-            value = stripped.split(":", 1)[1].split("#", 1)[0].strip()
+            raw_value = stripped.split(":", 1)[1]
+            value = _strip_inline_comment(raw_value).strip()
             if value.startswith(("'", '"')) and value.endswith(value[0]) and len(value) >= 2:
                 value = value[1:-1]
             return value or None
