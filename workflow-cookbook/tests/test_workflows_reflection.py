@@ -78,10 +78,11 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
     content = workflow_path.read_text(encoding="utf-8")
 
     expected_version_line = "        uses: actions/download-artifact@v4.1.7\n"
-    expected_behavior_line = "          if-no-artifact-found: warn\n"
+    fallback_notice = "core.notice(`test-logs artifact not found for run ${runId}; skipping download`);\n"
 
     assert expected_version_line in content
-    assert expected_behavior_line in content
+    assert fallback_notice in content
+    assert "if-no-artifact-found" not in content
 
 
 def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
