@@ -181,12 +181,17 @@ self_modification:
   forbidden_paths:
     - "/core/schema/**"
     - '/auth/**'
+    - "/core/schema/**"  # コメント付き
   require_human_approval:
     - "/governance/**"
 """
     )
 
-    assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
+    assert load_forbidden_patterns(policy) == [
+        "core/schema/**",
+        "auth/**",
+        "core/schema/**",
+    ]
 
 
 def test_collect_changed_paths_falls_back(monkeypatch):
