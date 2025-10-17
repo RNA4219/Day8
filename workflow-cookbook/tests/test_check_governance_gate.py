@@ -34,6 +34,11 @@ from tools.ci.check_governance_gate import (
             ["core/schema/model.yaml"],
         ),
         (
+            ["schema/model.yaml"],
+            ["**/schema/**"],
+            ["schema/model.yaml"],
+        ),
+        (
             ["workflow-cookbook/governance/policy.yaml"],
             ["/governance/**"],
             ["governance/policy.yaml"],
