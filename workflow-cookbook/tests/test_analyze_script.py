@@ -868,3 +868,45 @@ def test_main_skips_why_why_section_when_disabled(
 
     assert "- Failures: 2" in contents
     assert "## Why-Why (draft)" not in contents
+
+
+def test_main_generates_report_when_yaml_unavailable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    analyze = load_analyze_module()
+
+    reflection_path = tmp_path / "reflection.yaml"
+    reflection_path.write_text(
+        'report:\n  output: "reports/#1.md"  # comment\n',
+        encoding="utf-8",
+    )
+
+    logs_path = tmp_path / "logs" / "test.jsonl"
+    logs_path.parent.mkdir(parents=True, exist_ok=True)
+    logs_path.write_text("", encoding="utf-8")
+
+    monkeypatch.setattr(analyze, "BASE_DIR", tmp_path)
+    monkeypatch.setattr(analyze, "DEFAULT_LOG", logs_path)
+    monkeypatch.setattr(analyze, "LOG", logs_path)
+    monkeypatch.setattr(analyze, "DEFAULT_REPORT", tmp_path / "reports" / "today.md")
+    monkeypatch.setattr(analyze, "REPORT", tmp_path / "reports" / "today.md")
+    monkeypatch.setattr(
+        analyze, "ISSUE_OUT", tmp_path / "reports" / "issue_suggestions.md"
+    )
+    monkeypatch.setattr(analyze, "REFLECTION_MANIFEST", reflection_path)
+
+    import builtins
+
+    real_import = builtins.__import__
+
+    def _disabled_import(name: str, *args: object, **kwargs: object):
+        if name == "yaml":
+            raise ModuleNotFoundError("yaml disabled for test")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _disabled_import)
+
+    analyze.main()
+
+    report_path = tmp_path / "reports" / "#1.md"
+    assert report_path.exists()
