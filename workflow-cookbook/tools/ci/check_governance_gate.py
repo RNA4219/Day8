@@ -47,15 +47,19 @@ def _strip_inline_comment(text: str) -> str:
     return "".join(result).rstrip()
 
 
-def _extend_inline_sequence(sequence_text: str, patterns: list[str]) -> None:
+def _extend_inline_sequence(sequence_text: str, patterns: list[str]) -> bool:
     try:
         parsed = ast.literal_eval(sequence_text)
     except (SyntaxError, ValueError):
-        return
+        return False
     if isinstance(parsed, (list, tuple)):
+        appended = False
         for item in parsed:
             if isinstance(item, str) and item:
                 patterns.append(item.lstrip("/"))
+                appended = True
+        return appended
+    return False
 
 
 def load_forbidden_patterns(policy_path: Path) -> List[str]:
@@ -105,6 +109,9 @@ def load_forbidden_patterns(policy_path: Path) -> List[str]:
 
         if in_forbidden_paths and content.startswith("- "):
             value = content[2:].strip()
+            if value.startswith("[") and value.endswith("]"):
+                if _extend_inline_sequence(value, patterns):
+                    continue
             if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
                 value = value[1:-1]
             if value:
