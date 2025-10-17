@@ -15,7 +15,9 @@ MARKDOWN_EMPHASIS_PATTERN = re.compile(r"(?<!\\)(\*\*|__|\*|_)(?P<content>.*?)(?
 
 BULLET_PATTERN = re.compile(r"^\s*(?:[-*+]\s*(?:\[[xX ]\])?\s*|\d+[.)]\s*)")
 
-PRIORITY_LABEL_PATTERN = re.compile(r"^(Priority\s*Score)\s*[:：]\s*")
+PRIORITY_LABEL_PATTERN = re.compile(
+    r"^(?:Priority\s*Score)\s*(?:[:：])\s*(?:\"|\u201d)?\s*"
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPO_ROOT_NAME = REPO_ROOT.name
