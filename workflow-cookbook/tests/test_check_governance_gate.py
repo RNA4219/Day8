@@ -181,12 +181,17 @@ self_modification:
   forbidden_paths:
     - "/core/schema/**"
     - '/auth/**'
+    - "/core/schema/**"  # コメント付き
   require_human_approval:
     - "/governance/**"
 """
     )
 
-    assert load_forbidden_patterns(policy) == ["core/schema/**", "auth/**"]
+    assert load_forbidden_patterns(policy) == [
+        "core/schema/**",
+        "auth/**",
+        "core/schema/**",
+    ]
 
     commented_policy = tmp_path / "policy_commented.yaml"
     commented_policy.write_text(
