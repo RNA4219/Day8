@@ -1,5 +1,10 @@
+Intent: INT-XXXX
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 
+
 ### 変更概要
-- 
+-
 
 ### 検収
 - [ ] 危険な自動修正なし（docs/tests/reports のみ）

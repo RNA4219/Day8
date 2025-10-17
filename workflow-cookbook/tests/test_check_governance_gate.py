@@ -82,6 +82,28 @@ Priority Score: 1
     assert captured.err == ""
 
 
+@pytest.mark.parametrize(
+    "priority_line",
+    [
+        "Priority Score：4",  # 全角コロン
+        "Priority Score ： 4",  # コロン前後に全角空白
+        "Priority Score :4",  # コロン後に空白なし
+        "Priority Score: 4",  # 標準ケース
+    ],
+)
+def test_validate_priority_score_accepts_colon_variants(priority_line, capsys):
+    body = f"""
+Intent: INT-001
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+{priority_line}
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_validate_pr_body_missing_intent(capsys):
     body = """
 ## EVALUATION
@@ -141,7 +163,10 @@ Intent: INT-789
 
 
 def test_pr_template_contains_required_sections():
-    template = Path(".github/pull_request_template.md").read_text(encoding="utf-8")
+    template_path = Path(".github/PULL_REQUEST_TEMPLATE.md")
+    if not template_path.exists():
+        template_path = Path(".github/pull_request_template.md")
+    template = template_path.read_text(encoding="utf-8")
 
     assert "Intent:" in template
     assert "## EVALUATION" in template

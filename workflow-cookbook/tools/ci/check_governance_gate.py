@@ -129,11 +129,16 @@ EVALUATION_ANCHOR_PATTERN = re.compile(
     r"EVALUATION\.md#acceptance-criteria",
     re.IGNORECASE,
 )
+PRIORITY_LABEL_PATTERN = re.compile(
+    r"Priority\s*Score\s*[：:]\s*",
+    re.IGNORECASE,
+)
 PRIORITY_PATTERN = re.compile(r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?", re.IGNORECASE)
 
 
 def validate_pr_body(body: str | None) -> bool:
     normalized_body = body or ""
+    normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
     success = True
 
     if not INTENT_PATTERN.search(normalized_body):
