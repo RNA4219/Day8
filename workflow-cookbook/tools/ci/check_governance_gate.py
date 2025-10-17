@@ -10,13 +10,19 @@ from pathlib import Path
 from typing import Iterable, List, Sequence
 
 
+MARKDOWN_SIMPLE_DECORATORS: tuple[str, ...] = ("**", "__", "~~", "`")
+MARKDOWN_CHECKBOX_PATTERN = re.compile(r"(?m)^(\s*[-*+]\s*)\[[xX ]\]\s*")
+MARKDOWN_BOUNDARY_MARK_PATTERN = re.compile(
+    r"(?<!\S)[*_]+(?=\S)|(?<=\S)[*_]+(?=\s|$)"
+)
+
+
 def _normalize_markdown_emphasis(text: str) -> str:
-    cleaned = text.replace("**", "").replace("__", "").replace("~~", "").replace("`", "")
-    cleaned = re.sub(r"(?m)^(\s*[-*+]\s*)\[[xX ]\]\s*", r"\1", cleaned)
-    cleaned = re.sub(r"(^|\s)\*+([^\s])", r"\1\2", cleaned)
-    cleaned = re.sub(r"([^\s])\*+(\s|$)", r"\1\2", cleaned)
-    cleaned = re.sub(r"(^|\s)_+([^\s])", r"\1\2", cleaned)
-    cleaned = re.sub(r"([^\s])_+(\s|$)", r"\1\2", cleaned)
+    cleaned = text
+    for decorator in MARKDOWN_SIMPLE_DECORATORS:
+        cleaned = cleaned.replace(decorator, "")
+    cleaned = MARKDOWN_CHECKBOX_PATTERN.sub(r"\1", cleaned)
+    cleaned = MARKDOWN_BOUNDARY_MARK_PATTERN.sub("", cleaned)
     return cleaned
 
 
@@ -191,13 +197,13 @@ def validate_pr_body(body: str | None) -> bool:
         success = False
     if not has_priority_label:
         print(
-            "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
+            "Priority Score must be provided as 'Priority Score: <number> / <justification>' to reflect Acceptance Criteria prioritization",
             file=sys.stderr,
         )
         success = False
     elif not PRIORITY_PATTERN.search(normalized_body):
         print(
-            "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization",
+            "Priority Score must be provided as 'Priority Score: <number> / <justification>' to reflect Acceptance Criteria prioritization",
             file=sys.stderr,
         )
         success = False

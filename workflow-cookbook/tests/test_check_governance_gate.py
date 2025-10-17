@@ -109,6 +109,8 @@ Intent: INT-001
     [
         "**Priority Score:** 5 / 理由",
         "_Priority Score:_ 4 / 根拠",
+        "__Priority Score:__ 3 / 対応完了",
+        "*Priority Score:* 2 / 検証済み",
         "- [x] **Priority Score:** 3 / 完了済み対策",
     ],
 )
