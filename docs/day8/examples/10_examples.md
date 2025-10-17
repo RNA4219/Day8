@@ -50,6 +50,16 @@ jobs:
         with:
           name: test-logs
           path: workflow-cookbook/logs
+
+      # 別リポジトリや手動指定の run を参照する場合は、下記のように repository/run-id/github-token を明示しないと
+      # "Artifact not found" エラーになります。github-token には actions:read を付与した PAT を渡してください。
+      #- uses: actions/download-artifact@v4.1.7
+      #  with:
+      #    repository: owner/repo
+      #    run-id: 1234567890
+      #    name: test-logs
+      #    path: workflow-cookbook/logs
+      #    github-token: ${{ secrets.CROSS_REPO_PAT }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
