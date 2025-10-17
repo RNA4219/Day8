@@ -48,18 +48,19 @@ jobs:
         run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
-          REPORT_PATH="$(python -c 'from __future__ import annotations
+          REPORT_PATH="$(python - <<'PY'
+          from __future__ import annotations
+
           from pathlib import Path
           import sys
+
           try:
               import yaml  # type: ignore
           except ModuleNotFoundError:
               yaml = None
-          content = Path("reflection.yaml").read_text(encoding="utf-8")
-          output = None
-          if yaml is not None:
-              output = yaml.safe_load(content)["report"]["output"]
-          else:
+
+
+          def _fallback(content: str) -> str:
               report_indent = None
               quote = chr(34)
               for raw_line in content.splitlines():
@@ -77,11 +78,23 @@ jobs:
                           value = stripped.split(":", 1)[1].strip()
                           if value.startswith(quote) and value.endswith(quote):
                               value = value[1:-1]
-                          output = value
-                          break
-          if output is None:
+                          return value
               raise SystemExit("report.output not found")
-          sys.stdout.write(output)')"
+
+
+          def main() -> None:
+              content = Path("reflection.yaml").read_text(encoding="utf-8")
+              if yaml is None:
+                  sys.stdout.write(_fallback(content))
+                  return
+              data = yaml.safe_load(content)
+              sys.stdout.write(data["report"]["output"])
+
+
+          if __name__ == "__main__":
+              main()
+          PY
+          )"
           git add "$REPORT_PATH"
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true

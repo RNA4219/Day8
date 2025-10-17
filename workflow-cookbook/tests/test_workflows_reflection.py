@@ -4,7 +4,7 @@ import contextlib
 import importlib.util
 import io
 import os
-import re
+import textwrap
 from pathlib import Path
 
 try:
@@ -150,18 +150,7 @@ def test_reflection_workflow_issue_step_condition_evaluates_false_when_missing()
     assert simulated == "'0' != '0'"
 
 
-def test_reflection_workflow_commit_step_adds_report_output() -> None:
-    repo_root = Path(__file__).resolve().parents[1]
-    manifest_path = repo_root / "reflection.yaml"
-    manifest_content = manifest_path.read_text(encoding="utf-8")
-    manifest = yaml.safe_load(manifest_content)
-
-    assert isinstance(manifest, dict)
-    report_section = manifest["report"]
-    assert isinstance(report_section, dict)
-    expected_output = report_section["output"]
-    assert isinstance(expected_output, str)
-
+def _load_commit_run_block() -> str:
     workflow_path = (
         Path(__file__).resolve().parents[2]
         / ".github"
@@ -182,60 +171,101 @@ def test_reflection_workflow_commit_step_adds_report_output() -> None:
         )
         run_block = commit_step["run"]
         assert isinstance(run_block, str)
-    else:
-        lines = workflow_content.splitlines()
-        start_index = None
-        for index, line in enumerate(lines):
-            if line.strip() == "- name: Commit report":
-                start_index = index
-                break
-        if start_index is None:  # pragma: no cover - defensive guard
-            raise AssertionError("Commit report step not found in workflow text")
+        return run_block
 
-        run_index = None
-        for index in range(start_index + 1, len(lines)):
-            if lines[index].strip() == "run: |":
-                run_index = index
-                break
-        if run_index is None:  # pragma: no cover - defensive guard
-            raise AssertionError("Commit report run block missing in workflow text")
+    lines = workflow_content.splitlines()
+    start_index = None
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Commit report":
+            start_index = index
+            break
+    if start_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Commit report step not found in workflow text")
 
-        base_indent = len(lines[run_index]) - len(lines[run_index].lstrip(" "))
-        block_indent = None
-        collected: list[str] = []
-        for raw_line in lines[run_index + 1 :]:
-            stripped = raw_line.strip()
-            indent = len(raw_line) - len(raw_line.lstrip(" "))
-            if stripped and indent <= base_indent:
-                break
-            if stripped and block_indent is None:
-                block_indent = indent
-            if block_indent is not None and stripped:
-                collected.append(raw_line[block_indent:])
-            else:
-                collected.append("")
-        if block_indent is None:  # pragma: no cover - defensive guard
-            raise AssertionError("Commit report run block content missing")
+    run_index = None
+    for index in range(start_index + 1, len(lines)):
+        if lines[index].strip() == "run: |":
+            run_index = index
+            break
+    if run_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Commit report run block missing in workflow text")
 
-        run_block = "\n".join(collected)
+    base_indent = len(lines[run_index]) - len(lines[run_index].lstrip(" "))
+    block_indent = None
+    collected: list[str] = []
+    for raw_line in lines[run_index + 1 :]:
+        stripped = raw_line.strip()
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if stripped and indent <= base_indent:
+            break
+        if stripped and block_indent is None:
+            block_indent = indent
+        if block_indent is not None and stripped:
+            collected.append(raw_line[block_indent:])
+        else:
+            collected.append("")
+    if block_indent is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Commit report run block content missing")
 
+    return "\n".join(collected)
+
+
+def _extract_python_heredoc(run_block: str) -> str:
     lines = run_block.splitlines()
+    script_lines: list[str] = []
+    inside = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped == "REPORT_PATH=\"$(python - <<'PY'":
+            inside = True
+            continue
+        if inside and stripped == "PY":
+            break
+        if inside:
+            script_lines.append(line)
+    if not script_lines:
+        raise AssertionError("Python heredoc not found in Commit report step")
 
-    match = re.search(r"python -c '(?P<code>.*)'\)\"", run_block, re.DOTALL)
-    if match is None:  # pragma: no cover - defensive guard
-        raise AssertionError("Unable to extract python code from command substitution")
+    script = textwrap.dedent("\n".join(script_lines))
+    if not script.strip():  # pragma: no cover - defensive guard
+        raise AssertionError("Python heredoc is empty")
+    return script
 
-    snippet = match.group("code")
-    assert "reflection.yaml" in snippet
+
+def test_reflection_workflow_commit_step_adds_report_output() -> None:
+    run_block = _load_commit_run_block()
+
+    assert "git config user.name \"reflect-bot\"" in run_block
+    assert "git config user.email \"bot@example.com\"" in run_block
+    assert "REPORT_PATH=\"$(python - <<'PY'" in run_block
+    assert "git add \"$REPORT_PATH\"" in run_block
+    assert "git commit -m \"chore(report): reflection report [skip ci]\"" in run_block
+
+
+def test_reflection_workflow_commit_step_git_add_matches_manifest_output() -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    manifest_path = repo_root / "reflection.yaml"
+    manifest_content = manifest_path.read_text(encoding="utf-8")
+    manifest = yaml.safe_load(manifest_content)
+
+    assert isinstance(manifest, dict)
+    report_section = manifest["report"]
+    assert isinstance(report_section, dict)
+    expected_output = report_section["output"]
+    assert isinstance(expected_output, str)
+
+    run_block = _load_commit_run_block()
+    python_script = _extract_python_heredoc(run_block)
+
     stdout = io.StringIO()
     original_cwd = os.getcwd()
     try:
         os.chdir(repo_root)
         with contextlib.redirect_stdout(stdout):
-            exec(snippet, {})
+            exec(python_script, {"__name__": "__main__"})
     finally:
         os.chdir(original_cwd)
+
     derived_output = stdout.getvalue().strip()
 
     assert derived_output == expected_output
-    assert any(line.strip() == 'git add "$REPORT_PATH"' for line in lines)
