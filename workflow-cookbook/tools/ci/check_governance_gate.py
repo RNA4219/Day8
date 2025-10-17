@@ -10,6 +10,15 @@ from pathlib import Path
 from typing import Iterable, List, Sequence
 
 
+def _normalize_markdown_emphasis(text: str) -> str:
+    cleaned = text.replace("**", "").replace("__", "").replace("~~", "").replace("`", "")
+    cleaned = re.sub(r"(?<!\\S)\\*(?=\\S)", "", cleaned)
+    cleaned = re.sub(r"(?<=\\S)\\*(?!\\S)", "", cleaned)
+    cleaned = re.sub(r"(?<!\\S)_(?=\\S)", "", cleaned)
+    cleaned = re.sub(r"(?<=\\S)_(?!\\S)", "", cleaned)
+    return cleaned
+
+
 def _strip_inline_comment(text: str) -> str:
     in_single = False
     in_double = False
@@ -159,11 +168,15 @@ PRIORITY_LABEL_PATTERN = re.compile(
     r"Priority\s*Score\s*[：:]\s*",
     re.IGNORECASE,
 )
-PRIORITY_PATTERN = re.compile(r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?", re.IGNORECASE)
+PRIORITY_PATTERN = re.compile(
+    r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?\s*/\s*\S.*",
+    re.IGNORECASE,
+)
 
 
 def validate_pr_body(body: str | None) -> bool:
-    normalized_body = body or ""
+    normalized_body = _normalize_markdown_emphasis(body or "")
+    has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
     normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
     success = True
 
@@ -176,10 +189,17 @@ def validate_pr_body(body: str | None) -> bool:
         print("PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
         success = False
     if not PRIORITY_PATTERN.search(normalized_body):
-        print(
-            "Consider adding 'Priority Score: <number>' based on prioritization.yaml",
-            file=sys.stderr,
-        )
+        if has_priority_label:
+            print(
+                "Priority Score must include justification as 'Priority Score: <number> / <reason>'.",
+                file=sys.stderr,
+            )
+            success = False
+        else:
+            print(
+                "Consider adding 'Priority Score: <number>' based on prioritization.yaml",
+                file=sys.stderr,
+            )
 
     return success
 
