@@ -17,6 +17,11 @@ from tools.ci.check_governance_gate import (
     "changed_paths, patterns, expected",
     [
         ("""core/schema/model.yaml\ndocs/guide.md""".splitlines(), ["/core/schema/**"], ["core/schema/model.yaml"]),
+        (
+            ["workflow-cookbook/core/schema/model.yaml"],
+            ["/core/schema/**"],
+            ["core/schema/model.yaml"],
+        ),
         ("""docs/readme.md\nops/runbook.md""".splitlines(), ["/core/schema/**"], []),
         (
             """auth/service.py\ncore/schema/definitions.yml""".splitlines(),

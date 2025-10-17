@@ -6,7 +6,7 @@ import re
 import subprocess
 import sys
 from fnmatch import fnmatch
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
@@ -111,10 +111,41 @@ def collect_changed_paths(refspecs: Sequence[str] = DEFAULT_DIFF_REFSPECS) -> Li
     return []
 
 
+def _detect_repo_name() -> str:
+    resolved = Path(__file__).resolve()
+    parents = list(resolved.parents)
+    for parent in parents:
+        if (parent / ".git").exists():
+            return parent.name
+    return parents[-1].name if parents else resolved.name
+
+
+_REPO_NAME = _detect_repo_name()
+_PREFIXES_TO_REMOVE: tuple[str, ...] = tuple(
+    prefix for prefix in {"workflow-cookbook", _REPO_NAME} if prefix
+)
+
+
+def _normalize_changed_path(path: str) -> str:
+    stripped = path.strip()
+    if not stripped:
+        return stripped
+    cleaned = stripped.replace("\\", "/").lstrip("./")
+    posix_path = PurePosixPath(cleaned)
+    parts = list(posix_path.parts)
+    while parts and parts[0] in _PREFIXES_TO_REMOVE:
+        parts.pop(0)
+    if not parts:
+        return str(posix_path)
+    return "/".join(parts)
+
+
 def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> List[str]:
     matches: List[str] = []
     for path in paths:
-        normalized_path = path.lstrip("./")
+        normalized_path = _normalize_changed_path(path)
+        if not normalized_path:
+            continue
         for pattern in patterns:
             if fnmatch(normalized_path, pattern):
                 matches.append(normalized_path)
