@@ -394,8 +394,13 @@ def _has_priority_with_justification(body: str, has_priority_label: bool) -> boo
             raw = line.strip(_PRIORITY_STRIP_CHARS)
             if not raw:
                 continue
-            if raw.startswith("#") or raw.startswith("```"):
+            if raw.startswith("```"):
                 break
+            if raw.startswith("#"):
+                heading_level = len(raw) - len(raw.lstrip("#"))
+                if heading_level <= 2:
+                    break
+                continue
 
             cleaned = _clean_priority_justification_line(line)
             if cleaned:

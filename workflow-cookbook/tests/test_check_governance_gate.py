@@ -225,6 +225,22 @@ Priority Score: 4 /
     assert captured.err == ""
 
 
+def test_validate_priority_score_allows_heading_before_justification(capsys):
+    body = """
+Intent: INT-717
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 5 /
+
+### 根拠
+- mitigation plan documented
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_validate_pr_body_accepts_dash_separators(capsys):
     body = """
 Intent - INT-880
