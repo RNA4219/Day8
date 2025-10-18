@@ -252,19 +252,18 @@ Priority Score: 3
     )
 
 
-@pytest.mark.parametrize(
-    "priority_line",
-    [
-        "",
-        "Priority Score:",
-        "Priority Score: 4",
-        "Priority Score: 4 /",
-        "Priority Score: 4 /   ",
-        "Priority Score: high / 顧客要望",
-        "Priority Score 4 / 品質改善",
-    ],
-)
-def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys):
+INVALID_PRIORITY_LINES = [
+    "",
+    "Priority Score:",
+    "Priority Score: 4",
+    "Priority Score: 4 /",
+    "Priority Score: 4 /   ",
+    "Priority Score: high / 顧客要望",
+    "Priority Score 4 / 品質改善",
+]
+
+
+def _build_priority_body(priority_line: str) -> str:
     lines = [
         "Intent: INT-4242",
         "## EVALUATION",
@@ -272,7 +271,12 @@ def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys
     ]
     if priority_line:
         lines.append(priority_line)
-    body = "\n".join(lines)
+    return "\n".join(lines)
+
+
+@pytest.mark.parametrize("priority_line", INVALID_PRIORITY_LINES)
+def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys):
+    body = _build_priority_body(priority_line)
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
@@ -312,30 +316,11 @@ def test_validate_pr_body_fails_when_priority_line_invalid(body, capsys):
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
 
 
-@pytest.mark.parametrize(
-    "body",
-    [
-        "\n".join(
-            [
-                "Intent: INT-9000",
-                "## EVALUATION",
-                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
-            ]
-        ),
-        "\n".join(
-            [
-                "Intent: INT-4242",
-                "## EVALUATION",
-                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
-                "Priority Score: 2 /",
-            ]
-        ),
-    ],
-    ids=["missing-priority-line", "missing-justification"],
-)
-def test_main_blocks_pr_when_priority_line_invalid(body, monkeypatch, capsys):
+@pytest.mark.parametrize("priority_line", INVALID_PRIORITY_LINES)
+def test_main_blocks_pr_when_priority_line_invalid(priority_line, monkeypatch, capsys):
     monkeypatch.setattr(check_governance_gate, "load_forbidden_patterns", lambda _path: [])
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    body = _build_priority_body(priority_line)
     monkeypatch.setattr(check_governance_gate, "resolve_pr_body", lambda: body)
 
     assert check_governance_gate.main() == 1
