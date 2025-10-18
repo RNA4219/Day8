@@ -143,7 +143,7 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
     assert "if-no-artifact-found" not in content
 
 
-def test_reflection_workflow_download_step_extracts_to_repo_root() -> None:
+def test_reflection_workflow_download_step_extracts_to_workflow_directory() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
         / ".github"
@@ -152,8 +152,27 @@ def test_reflection_workflow_download_step_extracts_to_repo_root() -> None:
     )
     content = workflow_path.read_text(encoding="utf-8")
 
-    assert "          path: .\n" in content
-    assert "          path: workflow-cookbook/logs\n" not in content
+    assert "          path: workflow-cookbook\n" in content
+    assert "          path: .\n" not in content
+
+
+def test_reflection_workflow_normalize_step_runs_in_workflow_directory() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Normalize downloaded log directories":
+            break
+    else:  # pragma: no cover - defensive guard
+        raise AssertionError("Normalize step not found")
+
+    assert "        working-directory: workflow-cookbook" in lines[index + 1 : index + 4]
 
 
 def test_reflection_workflow_normalize_step_operates_on_logs_root() -> None:
