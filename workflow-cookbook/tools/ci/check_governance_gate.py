@@ -272,8 +272,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(list(argv))
 
 
+_OPTIONAL_PARENTHETICAL = r"(?:\s*[\(（][^\n\r\)）]*[\)）])?"
+
+
 INTENT_PATTERN = re.compile(
-    r"Intent\s*[：:]\s*INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
+    rf"Intent{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
     re.IGNORECASE,
 )
 EVALUATION_HEADING_PATTERN = re.compile(
@@ -285,7 +288,7 @@ EVALUATION_ANCHOR_PATTERN = re.compile(
     re.IGNORECASE,
 )
 PRIORITY_LABEL_PATTERN = re.compile(
-    r"Priority\s*Score\s*[：:]\s*",
+    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*",
     re.IGNORECASE,
 )
 PRIORITY_PATTERN = re.compile(
