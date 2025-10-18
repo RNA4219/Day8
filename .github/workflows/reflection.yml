@@ -111,7 +111,7 @@ jobs:
         run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
-          REPORT_PATH="$(python - <<'PY'
+          source <(python - <<'PY'
           from __future__ import annotations
 
           from pathlib import Path
@@ -135,6 +135,7 @@ jobs:
           else:
               BASE_DIR = Path.cwd().resolve()
           DEFAULT_OUTPUT = Path("reports/today.md")
+          DEFAULT_ISSUE_OUTPUT = Path("reports/issue_suggestions.md")
 
 
           def _strip_inline_comment(value: str) -> str:
@@ -219,6 +220,24 @@ jobs:
               return _normalize_path(fallback_resolved)
 
 
+          def _ensure_absolute_path(path: Path) -> Path:
+              candidate = path if path.is_absolute() else BASE_DIR / path
+              try:
+                  return candidate.resolve(strict=False)
+              except OSError:
+                  return candidate
+
+
+          def _emit_shell_assignments(*, report_path: Path, issue_path: Path) -> None:
+              def _shell_quote(value: str) -> str:
+                  return "'" + value.replace("'", "'\"'\"'") + "'"
+
+              report_value = _normalize_path(report_path)
+              issue_value = _normalize_path(issue_path)
+              print(f"REPORT_PATH={_shell_quote(report_value)}")
+              print(f"ISSUE_MEMO_PATH={_shell_quote(issue_value)}")
+
+
           def main() -> None:
               content = Path("reflection.yaml").read_text(encoding="utf-8")
               manifest_obj = yaml.safe_load(content) if yaml is not None else None
@@ -237,7 +256,12 @@ jobs:
                       manifest=manifest_dict,
                       default=DEFAULT_OUTPUT,
                   )
-                  sys.stdout.write(_normalize_path(report_path))
+                  issue_path = analyze.ISSUE_OUT
+                  if not issue_path.is_absolute():
+                      issue_path = analyze.BASE_DIR / issue_path
+                  if issue_path.parent == analyze.DEFAULT_REPORT.parent:
+                      issue_path = report_path.parent / issue_path.name
+                  _emit_shell_assignments(report_path=report_path, issue_path=issue_path)
                   return
               report_section = manifest_dict.get("report")
               output_value = None
@@ -247,23 +271,35 @@ jobs:
                       output_value = raw_output.strip()
               if output_value is None:
                   output_value = _fallback(content)
-              sys.stdout.write(_manual_normalize_output(output_value))
+              normalized_report = _manual_normalize_output(output_value)
+              report_path = _ensure_absolute_path(Path(normalized_report))
+              default_issue_path = _ensure_absolute_path(DEFAULT_ISSUE_OUTPUT)
+              default_report_path = _ensure_absolute_path(DEFAULT_OUTPUT)
+              issue_path = default_issue_path
+              if issue_path.parent == default_report_path.parent:
+                  issue_path = report_path.parent / issue_path.name
+              issue_path = _ensure_absolute_path(issue_path)
+              _emit_shell_assignments(report_path=report_path, issue_path=issue_path)
 
 
           if __name__ == "__main__":
               main()
           PY
-          )"
+          )
+          {
+            echo "REPORT_PATH=$REPORT_PATH"
+            echo "ISSUE_MEMO_PATH=$ISSUE_MEMO_PATH"
+          } >> "$GITHUB_ENV"
           git add "$REPORT_PATH"
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed (draft memo)
         # Skip issue creation when no suggestions were produced (hashFiles returns '0' when missing).
-        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '0' }}
+        if: ${{ hashFiles(format('workflow-cookbook/{0}', env.ISSUE_MEMO_PATH)) != '0' }}
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "反省TODO ${{ github.run_id }}"
-          content-filepath: workflow-cookbook/reports/issue_suggestions.md
+          content-filepath: ${{ format('workflow-cookbook/{0}', env.ISSUE_MEMO_PATH) }}
           labels: reflection, needs-triage
       - name: Open draft PR with doc/test tweaks (disabled)
         if: ${{ false }}  # デチューン：無効化

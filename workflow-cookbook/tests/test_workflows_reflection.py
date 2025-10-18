@@ -171,7 +171,7 @@ def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     content = workflow_path.read_text(encoding="utf-8")
 
     expected_condition = (
-        "        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '0' }}\n"
+        "        if: ${{ hashFiles(format('workflow-cookbook/{0}', env.ISSUE_MEMO_PATH)) != '0' }}\n"
     )
 
     assert expected_condition in content
@@ -185,7 +185,7 @@ def test_reflection_workflow_issue_step_condition_checks_hashfiles_zero() -> Non
         / "reflection.yml"
     )
     content = workflow_path.read_text(encoding="utf-8")
-    condition_snippet = "hashFiles('workflow-cookbook/reports/issue_suggestions.md')"
+    condition_snippet = "hashFiles(format('workflow-cookbook/{0}', env.ISSUE_MEMO_PATH))"
 
     assert f"{condition_snippet} != '0'" in content
     assert f"{condition_snippet} != ''" not in content
@@ -221,12 +221,51 @@ def test_reflection_workflow_issue_step_condition_evaluates_false_when_missing()
     prefix = "if: ${{"
     suffix = "}}"
     expression = condition_line[len(prefix) : -len(suffix)].strip()
-    placeholder = "hashFiles('workflow-cookbook/reports/issue_suggestions.md')"
+    placeholder = "hashFiles(format('workflow-cookbook/{0}', env.ISSUE_MEMO_PATH))"
 
     assert expression.startswith(placeholder)
     simulated = expression.replace(placeholder, "'0'")
 
     assert simulated == "'0' != '0'"
+
+
+def test_reflection_workflow_issue_step_uses_resolved_issue_path_expression() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    start_index = None
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Open issue if needed (draft memo)":
+            start_index = index
+            break
+    if start_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Issue creation step not found")
+
+    base_indent = len(lines[start_index]) - len(lines[start_index].lstrip(" "))
+    expected_expr = "format('workflow-cookbook/{0}', env.ISSUE_MEMO_PATH)"
+    condition_line = None
+    content_line = None
+
+    for raw_line in lines[start_index + 1 :]:
+        stripped = raw_line.strip()
+        if not stripped:
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if stripped.startswith("- name:") and indent <= base_indent:
+            break
+        if stripped.startswith("if: ${{") and stripped.endswith("}}"):  # expected format
+            condition_line = stripped
+        if stripped.startswith("content-filepath:"):
+            content_line = stripped
+
+    assert condition_line == f"if: ${{{{ hashFiles({expected_expr}) != '0' }}}}"
+    assert content_line == f"content-filepath: ${{{{ {expected_expr} }}}}"
 
 
 def _load_commit_run_block() -> str:
@@ -293,9 +332,10 @@ def _extract_python_heredoc(run_block: str) -> str:
     lines = run_block.splitlines()
     script_lines: list[str] = []
     inside = False
+    start_tokens = {"REPORT_PATH=\"$(python - <<'PY'", "source <(python - <<'PY'"}
     for line in lines:
         stripped = line.strip()
-        if stripped == "REPORT_PATH=\"$(python - <<'PY'":
+        if stripped in start_tokens:
             inside = True
             continue
         if inside and stripped == "PY":
@@ -311,12 +351,45 @@ def _extract_python_heredoc(run_block: str) -> str:
     return script
 
 
+def _parse_shell_assignments(text: str) -> dict[str, str]:
+    assignments: dict[str, str] = {}
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if value.startswith("'") and value.endswith("'"):
+            inner = value[1:-1]
+            value = inner.replace("'\"'\"'", "'")
+        assignments[key] = value
+    return assignments
+
+
+def _run_commit_script_for_assignments(working_dir: Path) -> dict[str, str]:
+    run_block = _load_commit_run_block()
+    python_script = _extract_python_heredoc(run_block)
+    stdout = io.StringIO()
+    original_cwd = os.getcwd()
+    try:
+        os.chdir(working_dir)
+        with contextlib.redirect_stdout(stdout):
+            exec(python_script, {"__name__": "__main__"})
+    finally:
+        os.chdir(original_cwd)
+    output = stdout.getvalue()
+    return _parse_shell_assignments(output)
+
+
 def test_reflection_workflow_commit_step_adds_report_output() -> None:
     run_block = _load_commit_run_block()
 
     assert "git config user.name \"reflect-bot\"" in run_block
     assert "git config user.email \"bot@example.com\"" in run_block
-    assert "REPORT_PATH=\"$(python - <<'PY'" in run_block
+    assert "source <(python - <<'PY'" in run_block
     assert "git add \"$REPORT_PATH\"" in run_block
     assert "git commit -m \"chore(report): reflection report [skip ci]\"" in run_block
 
@@ -333,21 +406,25 @@ def test_reflection_workflow_commit_step_git_add_matches_manifest_output() -> No
     expected_output = report_section["output"]
     assert isinstance(expected_output, str)
 
-    run_block = _load_commit_run_block()
-    python_script = _extract_python_heredoc(run_block)
+    assignments = _run_commit_script_for_assignments(repo_root)
 
-    stdout = io.StringIO()
-    original_cwd = os.getcwd()
-    try:
-        os.chdir(repo_root)
-        with contextlib.redirect_stdout(stdout):
-            exec(python_script, {"__name__": "__main__"})
-    finally:
-        os.chdir(original_cwd)
-
-    derived_output = stdout.getvalue().strip()
+    derived_output = assignments.get("REPORT_PATH")
 
     assert derived_output == expected_output
+
+
+def test_reflection_workflow_commit_step_exports_issue_memo_path() -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    assignments = _run_commit_script_for_assignments(repo_root)
+
+    report_path = assignments.get("REPORT_PATH")
+    issue_path = assignments.get("ISSUE_MEMO_PATH")
+
+    assert report_path is not None
+    assert issue_path is not None
+
+    assert Path(issue_path).name == "issue_suggestions.md"
+    assert Path(report_path).parent == Path(issue_path).parent
 
 
 def test_reflection_workflow_commit_step_fallback_strips_quotes() -> None:
@@ -423,9 +500,6 @@ def test_reflection_workflow_commit_step_fallback_handles_commented_manifest_pat
 
 
 def test_reflection_workflow_commit_step_defaults_to_today_when_output_missing(tmp_path: Path) -> None:
-    run_block = _load_commit_run_block()
-    python_script = _extract_python_heredoc(run_block)
-
     temp_manifest = textwrap.dedent(
         """
         report:
@@ -436,24 +510,14 @@ def test_reflection_workflow_commit_step_defaults_to_today_when_output_missing(t
     manifest_path = tmp_path / "reflection.yaml"
     manifest_path.write_text(temp_manifest, encoding="utf-8")
 
-    stdout = io.StringIO()
-    original_cwd = os.getcwd()
-    try:
-        os.chdir(tmp_path)
-        with contextlib.redirect_stdout(stdout):
-            exec(python_script, {"__name__": "__main__"})
-    finally:
-        os.chdir(original_cwd)
+    assignments = _run_commit_script_for_assignments(tmp_path)
 
-    derived_output = stdout.getvalue().strip()
+    derived_output = assignments.get("REPORT_PATH")
 
     assert derived_output == "reports/today.md"
 
 
 def test_reflection_workflow_commit_step_rewrites_external_output_to_today(tmp_path: Path) -> None:
-    run_block = _load_commit_run_block()
-    python_script = _extract_python_heredoc(run_block)
-
     temp_manifest = textwrap.dedent(
         """
         report:
@@ -464,15 +528,8 @@ def test_reflection_workflow_commit_step_rewrites_external_output_to_today(tmp_p
     manifest_path = tmp_path / "reflection.yaml"
     manifest_path.write_text(temp_manifest, encoding="utf-8")
 
-    stdout = io.StringIO()
-    original_cwd = os.getcwd()
-    try:
-        os.chdir(tmp_path)
-        with contextlib.redirect_stdout(stdout):
-            exec(python_script, {"__name__": "__main__"})
-    finally:
-        os.chdir(original_cwd)
+    assignments = _run_commit_script_for_assignments(tmp_path)
 
-    derived_output = stdout.getvalue().strip()
+    derived_output = assignments.get("REPORT_PATH")
 
     assert derived_output == "reports/today.md"
