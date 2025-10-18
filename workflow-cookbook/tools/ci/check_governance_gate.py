@@ -292,22 +292,60 @@ PRIORITY_LABEL_PATTERN = re.compile(
     rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*",
     re.IGNORECASE,
 )
-PRIORITY_PATTERN = re.compile(
-    r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?\s*/\s*\S.*",
+PRIORITY_ENTRY_PATTERN = re.compile(
+    r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?\s*/",
     re.IGNORECASE,
 )
+_PRIORITY_STRIP_CHARS = " \t\r\n\u3000"
+_PRIORITY_PREFIX_CHARS = "-*+>•\u2022"
 
 PRIORITY_SCORE_ERROR_MESSAGE = (
     "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
 )
 
 
+def _clean_priority_justification_line(line: str) -> str:
+    stripped = line.strip(_PRIORITY_STRIP_CHARS)
+    stripped = stripped.lstrip(_PRIORITY_PREFIX_CHARS)
+    stripped = stripped.lstrip(_PRIORITY_STRIP_CHARS)
+    return stripped
+
+
+def _has_priority_with_justification(body: str, has_priority_label: bool) -> bool:
+    if not has_priority_label:
+        return False
+
+    for match in PRIORITY_ENTRY_PATTERN.finditer(body):
+        remainder = body[match.end() :]
+        lines = remainder.splitlines()
+        if not lines:
+            continue
+
+        first_line = _clean_priority_justification_line(lines[0])
+        if first_line:
+            return True
+
+        for line in lines[1:]:
+            raw = line.strip(_PRIORITY_STRIP_CHARS)
+            if not raw:
+                break
+            if raw.startswith("#") or raw.startswith("```"):
+                break
+
+            cleaned = _clean_priority_justification_line(line)
+            if cleaned:
+                return True
+
+    return False
+
+
 def validate_pr_body(body: str | None) -> bool:
     normalized_body = _normalize_markdown_emphasis(body or "")
     has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
     normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
-    priority_match = PRIORITY_PATTERN.search(normalized_body) if has_priority_label else None
-    has_priority_with_justification = priority_match is not None
+    has_priority_with_justification = _has_priority_with_justification(
+        normalized_body, has_priority_label
+    )
     success = True
 
     if not INTENT_PATTERN.search(normalized_body):

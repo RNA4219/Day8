@@ -194,6 +194,21 @@ Intent: INT-314
     assert captured.err == ""
 
 
+def test_validate_priority_score_accepts_multiline_justification(capsys):
+    body = """
+Intent: INT-515
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 6 /
+  - impact_scope=0.4
+    - mitigates risk of regression
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_validate_pr_body_rejects_priority_without_justification(capsys):
     body = """
 Intent: INT-777
