@@ -367,8 +367,7 @@ def validate_pr_body(body: str | None) -> bool:
     success = True
 
     if not INTENT_PATTERN.search(search_body):
-        print("PR body must include 'Intent: INT-xxx'", file=sys.stderr)
-        success = False
+        print("Warning: PR body should include 'Intent: INT-xxx'", file=sys.stderr)
     has_evaluation_heading = bool(
         EVALUATION_HEADING_PATTERN.search(normalized_body)
         or EVALUATION_HTML_HEADING_PATTERN.search(raw_body)

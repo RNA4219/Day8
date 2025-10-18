@@ -348,9 +348,26 @@ def test_validate_pr_body_missing_intent(capsys):
 Priority Score: 2 / SLO遵守
 """
 
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
-    assert "PR body must include 'Intent: INT-xxx'" in captured.err
+    assert "Warning:" in captured.err
+    assert "Intent: INT-xxx" in captured.err
+
+
+def test_main_allows_missing_intent(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv(
+        "PR_BODY",
+        """## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\nPriority Score: 2 / SLO遵守\n""",
+    )
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "Warning:" in captured.err
+    assert "Intent: INT-xxx" in captured.err
 
 
 def test_validate_pr_body_missing_evaluation(capsys):
