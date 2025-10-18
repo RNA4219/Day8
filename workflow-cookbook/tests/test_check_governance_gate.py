@@ -376,9 +376,10 @@ Intent: INT-001
 Priority Score: 3 / パフォーマンス改善
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
@@ -389,9 +390,10 @@ Intent: INT-001
 Priority Score: 2 / 評価アンカー欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
@@ -403,10 +405,52 @@ Evaluation anchor is explained here without heading.
 Priority Score: 1 / 評価見出し欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "\n".join(
+            [
+                "Intent: INT-9001",
+                "Priority Score: 5 / 評価セクション欠落",
+            ]
+        ),
+        "\n".join(
+            [
+                "Intent: INT-9002",
+                "## EVALUATION",
+                "Priority Score: 4 / 評価アンカー欠落",
+            ]
+        ),
+        "\n".join(
+            [
+                "Intent: INT-9003",
+                "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+                "Priority Score: 3 / 評価見出し欠落",
+            ]
+        ),
+    ],
+    ids=["missing-heading-and-anchor", "missing-anchor", "missing-heading"],
+)
+def test_main_blocks_pr_when_evaluation_section_incomplete(body, monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv("PR_BODY", body)
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "Warning:" in captured.err
+    assert "Error:" in captured.err
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert check_governance_gate.PR_BODY_SOURCE_NAME in captured.err
 
 
 def test_validate_pr_body_requires_priority_score(capsys):

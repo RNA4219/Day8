@@ -429,10 +429,11 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
         EVALUATION_ANCHOR_PATTERN.search(raw_body)
         or EVALUATION_ANCHOR_PATTERN.search(normalized_body)
     )
-    evaluation_warning_needed = not (has_evaluation_heading and has_evaluation_anchor)
-    if evaluation_warning_needed:
-        evaluation_location = MessageLocation(source_text, None) if source_text else None
+    evaluation_location = MessageLocation(source_text, None) if source_text else None
+    evaluation_missing = not (has_evaluation_heading and has_evaluation_anchor)
+    if evaluation_missing:
         warnings.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
+        errors.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
     priority_location: MessageLocation | None = None
     if source_text:
         priority_line = _find_priority_label_line(raw_body) if has_priority_label else None
