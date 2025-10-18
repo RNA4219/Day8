@@ -209,6 +209,35 @@ def test_reflection_workflow_issue_step_uses_computed_issue_path() -> None:
     assert "workflow-cookbook/logs/workflow-cookbook/logs" not in content
 
 
+def test_reflection_workflow_defines_reflection_paths_step_id() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    workflow_content = workflow_path.read_text(encoding="utf-8")
+    workflow = yaml.safe_load(workflow_content)
+
+    assert isinstance(workflow, dict)
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict)
+    reflect_job = jobs.get("reflect")
+    assert isinstance(reflect_job, dict)
+    steps = reflect_job.get("steps")
+    if isinstance(steps, list):
+        matching_steps = [
+            step
+            for step in steps
+            if isinstance(step, dict) and step.get("id") == "reflection-paths"
+        ]
+
+        assert matching_steps, "reflection workflow must define id=reflection-paths step"
+        return
+
+    assert "        id: reflection-paths\n" in workflow_content
+
+
 def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
