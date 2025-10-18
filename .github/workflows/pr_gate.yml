@@ -61,57 +61,39 @@ jobs:
               latestStates.set(`@${login}`, state);
             }
 
-            const blockers = [];
-            for (const login of codeownerUsers) {
-              const state = latestStates.get(login);
-              if (state === 'APPROVED') {
-                continue;
-              }
-              if (state === 'CHANGES_REQUESTED') {
-                blockers.push(`${login} (CHANGES_REQUESTED)`);
-              } else {
-                blockers.push(`${login} (awaiting review)`);
-              }
-            }
-
-            for (const team of codeownerTeams) {
-              blockers.push(`${team} (team review required)`);
-            }
-
-            const approvalSources = Array.from(latestStates.entries()).filter(([login, state]) => {
-              if (state !== 'APPROVED') {
-                return false;
-              }
-              if (codeownerUsers.size === 0) {
-                return true;
-              }
-              return codeownerUsers.has(login);
-            });
-            const hasApproval = approvalSources.length > 0;
-            const changeRequesters = Array.from(latestStates.entries())
-              .filter(([login, state]) => {
-                if (state !== 'CHANGES_REQUESTED') {
-                  return false;
-                }
-                if (codeownerUsers.size === 0) {
-                  return true;
-                }
-                return codeownerUsers.has(login);
-              })
+            const approvals = new Set();
+            const allChangeRequesters = Array.from(latestStates.entries())
+              .filter(([, state]) => state === 'CHANGES_REQUESTED')
               .map(([login]) => login);
+            for (const [login, state] of latestStates.entries()) {
+              if (state === 'APPROVED') {
+                approvals.add(login);
+              }
+            }
 
-            if (!hasApproval) {
+            if (allChangeRequesters.length > 0) {
+              core.setFailed(`Changes requested by: ${allChangeRequesters.join(', ')}`);
+              return;
+            }
+
+            const requiredUsers = Array.from(codeownerUsers);
+            const pendingApprovals = requiredUsers.filter((login) => !approvals.has(login));
+            if (pendingApprovals.length > 0) {
+              const messages = pendingApprovals.map((login) => `${login} (awaiting approval)`);
+              core.setFailed(`Awaiting required review from: ${messages.join(', ')}`);
+              return;
+            }
+
+            if (codeownerTeams.size > 0) {
+              const teamMessages = Array.from(codeownerTeams).map(
+                (team) => `${team} (team review required)`,
+              );
+              core.setFailed(`Awaiting required review from: ${teamMessages.join(', ')}`);
+              return;
+            }
+
+            if (requiredUsers.length === 0 && approvals.size === 0) {
               core.setFailed('Awaiting CODEOWNERS approval: no approvals recorded yet.');
-              return;
-            }
-
-            if (changeRequesters.length > 0) {
-              core.setFailed(`Changes requested by: ${changeRequesters.join(', ')}`);
-              return;
-            }
-
-            if (blockers.length > 0) {
-              core.setFailed(`Awaiting required review from: ${blockers.join(', ')}`);
               return;
             }
 
