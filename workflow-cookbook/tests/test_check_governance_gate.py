@@ -499,3 +499,12 @@ def test_main_requires_pr_body(monkeypatch, capsys):
     assert exit_code == 1
     captured = capsys.readouterr()
     assert "PR body data is unavailable" in captured.err
+
+
+def test_sample_pr_body_fixture_is_valid():
+    sample_body_path = Path(
+        "workflow-cookbook/tools/ci/fixtures/sample_pr_body.md"
+    )
+    body = sample_body_path.read_text(encoding="utf-8")
+
+    assert check_governance_gate.validate_pr_body(body) is True
