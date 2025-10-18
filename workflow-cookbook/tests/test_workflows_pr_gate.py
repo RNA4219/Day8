@@ -158,3 +158,55 @@ def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
     assert (
         "CHANGES_REQUESTED" in raw_text
     ), "差し戻し状態(CHANGES_REQUESTED)の判定ロジックが必要です"
+
+
+def test_pr_gate_codeowners_step_has_id_and_failure_guard() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict) and "gate" in jobs, "jobs.gate が必要です"
+
+    gate_job = jobs["gate"]
+    assert isinstance(gate_job, dict), "jobs.gate はマッピングである必要があります"
+
+    steps = gate_job.get("steps")
+    if isinstance(steps, list):
+        codeowners_index = -1
+        failure_index = -1
+        for index, raw_step in enumerate(steps):
+            if not isinstance(raw_step, dict):
+                continue
+
+            if raw_step.get("id") == "codeowners":
+                codeowners_index = index
+                assert (
+                    raw_step.get("continue-on-error") is True
+                ), "CODEOWNERS ステップは continue-on-error: true を設定する必要があります"
+
+            if raw_step.get("if") == "${{ steps.codeowners.outcome == 'failure' }}":
+                failure_index = index
+                run = raw_step.get("run")
+                assert isinstance(run, str) and "exit 1" in run, "CODEOWNERS 未承認時にジョブを失敗させる必要があります"
+
+        assert codeowners_index != -1, "CODEOWNERS ステップに id: codeowners が必要です"
+        assert (
+            failure_index != -1
+        ), "CODEOWNERS ステップの結果を確認する終端ステップが必要です"
+        assert (
+            failure_index > codeowners_index
+        ), "CODEOWNERS 結果確認ステップは CODEOWNERS ステップの後に配置する必要があります"
+    else:
+        assert "id: codeowners" in raw_text, "CODEOWNERS ステップに id: codeowners が必要です"
+        assert (
+            "continue-on-error: true" in raw_text
+        ), "CODEOWNERS ステップは continue-on-error: true を設定する必要があります"
+        codeowners_pos = raw_text.find("id: codeowners")
+        failure_pos = raw_text.find("if: ${{ steps.codeowners.outcome == 'failure' }}")
+        assert (
+            failure_pos != -1
+        ), "CODEOWNERS ステップの結果を確認する終端ステップが必要です"
+        assert (
+            failure_pos > codeowners_pos
+        ), "CODEOWNERS 結果確認ステップは CODEOWNERS ステップの後に配置する必要があります"
+        failure_block = raw_text[failure_pos : failure_pos + 200]
+        assert "exit 1" in failure_block, "CODEOWNERS 未承認時にジョブを失敗させる必要があります"
