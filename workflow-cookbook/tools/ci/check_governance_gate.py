@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
@@ -21,7 +22,7 @@ def _normalize_markdown_emphasis(text: str) -> str:
     cleaned = re.sub(r"([^\s])\*+(\s|$)", r"\1\2", cleaned)
     cleaned = re.sub(r"(^|\s)_+([^\s])", r"\1\2", cleaned)
     cleaned = re.sub(r"([^\s])_+(\s|$)", r"\1\2", cleaned)
-    return cleaned
+    return unicodedata.normalize("NFKC", cleaned)
 
 
 def _strip_inline_comment(text: str) -> str:
