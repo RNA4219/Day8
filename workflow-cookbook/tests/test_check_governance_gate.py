@@ -125,6 +125,32 @@ Priority Score：1 / 重要顧客要望
     assert captured.err == ""
 
 
+def test_validate_pr_body_accepts_parenthetical_labels(capsys):
+    body = """
+Intent（必須）: INT-5150
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score（必須）: 5 / 緊急度が高い
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
+def test_validate_pr_body_accepts_fullwidth_forms(capsys):
+    body = """\
+Ｉｎｔｅｎｔ：ＩＮＴ－１２３
+＃＃ ＥＶＡＬＵＡＴＩＯＮ
+- [Acceptance Criteria](../ＥＶＡＬＵＡＴＩＯＮ．ｍｄ＃ａｃｃｅｐｔａｎｃｅ－ｃｒｉｔｅｒｉａ)
+Ｐｒｉｏｒｉｔｙ Ｓｃｏｒｅ：５ ／ フルワイド記法対応
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 @pytest.mark.parametrize(
     "priority_line",
     [
