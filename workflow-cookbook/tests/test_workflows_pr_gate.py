@@ -331,17 +331,33 @@ def test_pr_gate_runs_governance_gate_after_setup_python() -> None:
                 assert (
                     step_id == governance_gate_step_id
                 ), "ガバナンスゲート実行ステップには id を付与する必要があります"
+                assert (
+                    raw_step.get("continue-on-error") in {True, "true"}
+                ), "ガバナンスゲート実行ステップでは outcome 検査を行うため continue-on-error を有効化する必要があります"
 
             if raw_step.get("if") == "${{ steps.governance_gate.outcome == 'failure' }}":
                 governance_result_index = index
                 assert (
                     raw_step.get("run", "").strip() == "exit 1"
                 ), "ガバナンスゲート失敗時の終了ステップでは exit 1 を実行する必要があります"
+                assert (
+                    raw_step.get("name")
+                    and "failure" in str(raw_step["name"]).lower()
+                ), "ガバナンスゲート結果検査ステップには失敗を示す名称が必要です"
     else:
         setup_python_index = raw_text.find("actions/setup-python@v5")
         governance_gate_index = raw_text.find("python tools/ci/check_governance_gate.py")
         if governance_gate_index != -1:
             assert "id: governance_gate" in raw_text, "ガバナンスゲート実行ステップには id が必要です"
+            next_step_start = raw_text.find(
+                "\n      - name:",
+                governance_gate_index + len("python tools/ci/check_governance_gate.py"),
+            )
+            assert next_step_start != -1, "ガバナンスゲート実行直後のステップ定義が必要です"
+            assert raw_text.startswith(
+                "\n      - name: Governance gate failure enforcement",
+                next_step_start,
+            ), "ガバナンスゲート結果検査ステップは実行ステップの直後に配置する必要があります"
         if "id: governance_gate" in raw_text:
             governance_result_index = raw_text.find("${{ steps.governance_gate.outcome == 'failure' }}")
             assert "run: exit 1" in raw_text, "ガバナンスゲート失敗時の終了ステップでは exit 1 を実行する必要があります"
@@ -351,9 +367,14 @@ def test_pr_gate_runs_governance_gate_after_setup_python() -> None:
     assert (
         governance_gate_index > setup_python_index
     ), "ガバナンスゲートの実行ステップは actions/setup-python@v5 の後に配置する必要があります"
-    assert (
-        governance_result_index > governance_gate_index
-    ), "ガバナンスゲートの結果検査ステップは実行ステップの直後に配置する必要があります"
+    if isinstance(raw_steps, list):
+        assert (
+            governance_result_index == governance_gate_index + 1
+        ), "ガバナンスゲートの結果検査ステップは実行ステップの直後に配置する必要があります"
+    else:
+        assert (
+            governance_result_index > governance_gate_index
+        ), "ガバナンスゲートの結果検査ステップは実行ステップの直後に配置する必要があります"
 
 
 def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
