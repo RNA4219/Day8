@@ -50,6 +50,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: test-logs
+          run-id: ${{ github.event.workflow_run.id }}
           path: .
 
       # アーティファクト取得には permissions.actions: read が必要です。
