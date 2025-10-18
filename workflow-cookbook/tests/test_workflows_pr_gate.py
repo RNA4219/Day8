@@ -61,10 +61,12 @@ def _load_pr_gate_workflow() -> Tuple[Dict[str, Any], str]:
     return parsed, raw_text
 
 
-def _find_step_indices_from_text(raw_text: str) -> tuple[int, int, int]:
+def _find_step_indices_from_text(raw_text: str, expected_command: str) -> tuple[int, int, int]:
     checkout_index = raw_text.find("uses: actions/checkout")
     setup_python_index = raw_text.find("uses: actions/setup-python")
-    governance_index = raw_text.find("python workflow-cookbook/tools/ci/check_governance_gate.py")
+    governance_index = raw_text.find(expected_command)
+    if governance_index == -1:
+        governance_index = raw_text.find("python workflow-cookbook/tools/ci/check_governance_gate.py")
     return checkout_index, setup_python_index, governance_index
 
 
@@ -75,6 +77,27 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
 
     gate_job = jobs["gate"]
     assert isinstance(gate_job, dict), "jobs.gate はマッピングである必要があります"
+    workflow_defaults = workflow.get("defaults")
+    default_working_directory = None
+    if isinstance(workflow_defaults, dict):
+        run_defaults = workflow_defaults.get("run")
+        if isinstance(run_defaults, dict):
+            working_dir = run_defaults.get("working-directory")
+            if isinstance(working_dir, str):
+                default_working_directory = working_dir
+
+    gate_defaults = gate_job.get("defaults")
+    if isinstance(gate_defaults, dict):
+        run_defaults = gate_defaults.get("run")
+        if isinstance(run_defaults, dict):
+            working_dir = run_defaults.get("working-directory")
+            if isinstance(working_dir, str):
+                default_working_directory = working_dir
+
+    expected_command = "python workflow-cookbook/tools/ci/check_governance_gate.py"
+    if default_working_directory == "workflow-cookbook":
+        expected_command = "python tools/ci/check_governance_gate.py"
+
     raw_steps = gate_job.get("steps")
     checkout_index, setup_python_index, governance_index = -1, -1, -1
 
@@ -94,13 +117,18 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
                     assert "fetch-depth: 0" in raw_text, "actions/checkout に fetch-depth: 0 が必要です"
 
             run = raw_step.get("run")
-            if isinstance(run, str) and "python workflow-cookbook/tools/ci/check_governance_gate.py" in run:
+            if isinstance(run, str) and "check_governance_gate.py" in run:
                 governance_index = index
+                assert (
+                    expected_command in run
+                ), "ガバナンスゲートの実行コマンドが defaults.run.working-directory に合致する必要があります"
 
             if isinstance(uses, str) and uses.startswith("actions/setup-python@"):
                 setup_python_index = index
     else:
-        checkout_index, setup_python_index, governance_index = _find_step_indices_from_text(raw_text)
+        checkout_index, setup_python_index, governance_index = _find_step_indices_from_text(
+            raw_text, expected_command
+        )
 
     assert checkout_index != -1, "actions/checkout ステップが必要です"
     assert setup_python_index != -1, "actions/setup-python ステップが必要です"
