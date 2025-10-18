@@ -1,28 +1,18 @@
-"""Tests for the birdseye index nodes."""
-
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, Tuple
 
 
-def _load_index() -> Tuple[Dict[str, Any], Path]:
+def test_birdseye_index_nodes_are_files() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     index_path = repo_root / "workflow-cookbook" / "docs" / "birdseye" / "index.json"
-    data = json.loads(index_path.read_text(encoding="utf-8"))
-    return data, repo_root
+    index_data = json.loads(index_path.read_text(encoding="utf-8"))
 
+    missing_nodes: list[str] = []
+    for node_id in index_data["nodes"].keys():
+        node_path = repo_root / node_id
+        if not node_path.is_file():
+            missing_nodes.append(node_id)
 
-def test_birdseye_nodes_exist() -> None:
-    data, repo_root = _load_index()
-
-    missing = [
-        node_id
-        for node_id in data["nodes"].keys()
-        if not (repo_root / node_id).exists()
-    ]
-
-    assert not missing, (
-        "Missing files referenced in birdseye index: " + ", ".join(missing)
-    )
+    assert not missing_nodes, f"Missing files for node targets: {missing_nodes}"

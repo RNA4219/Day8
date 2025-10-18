@@ -66,14 +66,9 @@
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.birdseye.index.json.json",
       "mtime": "2025-10-14T00:00:00Z"
     },
-    "workflow-cookbook/docs/birdseye/caps/": {
+    "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json": {
       "role": "collection",
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
-      "mtime": "2025-10-16T10:47:48Z"
-    },
-    "workflow-cookbook/tools/codemap/": {
-      "role": "tooling",
-      "caps": "workflow-cookbook/docs/birdseye/caps/tools.codemap.json",
       "mtime": "2025-10-16T10:47:48Z"
     },
     "workflow-cookbook/tools/codemap/README.md": {
@@ -224,7 +219,7 @@
     ],
     [
       "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json"
     ],
     [
       "workflow-cookbook/HUB.codex.md",
@@ -232,7 +227,7 @@
     ],
     [
       "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json"
     ],
     [
       "workflow-cookbook/README.md",
@@ -240,11 +235,11 @@
     ],
     [
       "workflow-cookbook/README.md",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json"
     ],
     [
       "workflow-cookbook/docs/birdseye/index.json",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json"
     ],
     [
       "workflow-cookbook/EVALUATION.md",
@@ -300,11 +295,11 @@
     ],
     [
       "workflow-cookbook/README.md",
-      "workflow-cookbook/tools/codemap/"
+      "workflow-cookbook/tools/codemap/README.md"
     ],
     [
       "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/tools/codemap/"
+      "workflow-cookbook/tools/codemap/README.md"
     ],
     [
       "workflow-cookbook/HUB.codex.md",
@@ -312,15 +307,7 @@
     ],
     [
       "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/tools/codemap/"
-    ],
-    [
-      "workflow-cookbook/tools/codemap/",
-      "workflow-cookbook/docs/birdseye/index.json"
-    ],
-    [
-      "workflow-cookbook/tools/codemap/",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/tools/codemap/README.md"
     ],
     [
       "workflow-cookbook/tools/codemap/update.py",
@@ -328,7 +315,7 @@
     ],
     [
       "workflow-cookbook/tools/codemap/update.py",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json"
     ],
     [
       "workflow-cookbook/tools/codemap/README.md",
@@ -340,7 +327,7 @@
     ],
     [
       "workflow-cookbook/tools/codemap/README.md",
-      "workflow-cookbook/docs/birdseye/caps/"
+      "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json"
     ],
     [
       "workflow-cookbook/HUB.codex.md",
