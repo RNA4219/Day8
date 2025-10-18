@@ -19,6 +19,8 @@ jobs:
         with:
           python-version: "3.11"
       - name: Require CODEOWNERS approval
+        id: codeowners
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
@@ -120,3 +122,8 @@ jobs:
         run: |
           echo "Auto merge is disabled by policy"
           exit 0
+      - name: Fail pending CODEOWNERS approval
+        if: ${{ steps.codeowners.outcome == 'failure' }}
+        run: |
+          echo "CODEOWNERS approval pending; marking job as failed"
+          exit 1
