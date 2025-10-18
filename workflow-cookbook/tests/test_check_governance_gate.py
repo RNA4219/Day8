@@ -457,8 +457,7 @@ Intent: INT-789
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Priority Score" in captured.err
-    assert "Acceptance Criteria" in captured.err
+    assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
     assert "Error:" in captured.err
 
 
@@ -489,8 +488,7 @@ def test_main_fails_without_priority_score(monkeypatch, capsys):
     assert exit_code == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Priority Score" in captured.err
-    assert "Acceptance Criteria" in captured.err
+    assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
     assert "Error:" in captured.err
 
 
