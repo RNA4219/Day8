@@ -109,6 +109,39 @@ jobs:
               }
               return {codeownerUsers, codeownerTeams, uncovered};
             };
+            const toTeamSlugParts = (teamHandle) => {
+              if (typeof teamHandle !== 'string') return null;
+              const trimmed = teamHandle.trim();
+              if (!trimmed) return null;
+              const normalized = trimmed.startsWith('@') ? trimmed.slice(1) : trimmed;
+              const [org, slug] = normalized.split('/');
+              if (!org || !slug) return null;
+              return {org, team_slug: slug};
+            };
+            const teamMembersCache = new Map();
+            const fetchTeamMembers = async (teamHandle) => {
+              const slugParts = toTeamSlugParts(teamHandle);
+              if (!slugParts) return null;
+              if (teamMembersCache.has(teamHandle)) return teamMembersCache.get(teamHandle);
+              try {
+                const members = await github.paginate(
+                  github.rest.teams.listMembersInOrg,
+                  {...slugParts, per_page: 100},
+                );
+                const handles = new Set(
+                  members
+                    .map((member) => (member && member.login ? `@${member.login}` : null))
+                    .filter((handle) => typeof handle === 'string'),
+                );
+                teamMembersCache.set(teamHandle, handles);
+                return handles;
+              } catch (error) {
+                const reason = error instanceof Error ? error.message : String(error);
+                core.warning(`Unable to fetch members for ${teamHandle}: ${reason}`);
+                teamMembersCache.set(teamHandle, null);
+                return null;
+              }
+            };
             const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
             const codeownersRelativePath = '.github/CODEOWNERS';
             const codeownersPath = path.join(workspace, codeownersRelativePath);
@@ -241,10 +274,27 @@ jobs:
               return;
             }
             const teamHandles = Array.from(codeownerTeams);
-            const pendingTeamHandles = teamHandles.filter((team) => {
-              const state = teamReviewStates.get(team);
-              return state !== 'APPROVED';
-            });
+            const pendingTeamHandles = [];
+            for (const team of teamHandles) {
+              const reviewState = teamReviewStates.get(team);
+              if (reviewState === 'APPROVED') {
+                continue;
+              }
+              const members = await fetchTeamMembers(team);
+              let hasMemberApproval = false;
+              if (members && members.size > 0) {
+                for (const handle of collaboratorApprovals) {
+                  if (members.has(handle)) {
+                    hasMemberApproval = true;
+                    break;
+                  }
+                }
+              }
+              if (hasMemberApproval) {
+                continue;
+              }
+              pendingTeamHandles.push(team);
+            }
             const hasTeamCoverage = teamHandles.length > 0 && pendingTeamHandles.length === 0;
             core.setOutput('hasTeamCoverage', hasTeamCoverage ? 'true' : 'false');
             if (pendingTeamHandles.length > 0) {
