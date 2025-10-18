@@ -110,8 +110,8 @@ jobs:
         working-directory: workflow-cookbook
         run: |
           python scripts/analyze.py
-      - name: Determine reflection outputs
-        id: reflection-paths
+      - name: Commit report
+        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         working-directory: workflow-cookbook
         run: |
           PYTHON_OUTPUT="$(python - <<'PY'
