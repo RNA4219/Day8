@@ -4,6 +4,8 @@ import contextlib
 import importlib.util
 import io
 import os
+import subprocess
+import tempfile
 import textwrap
 from collections.abc import Callable
 from pathlib import Path
@@ -169,10 +171,24 @@ def test_reflection_workflow_normalize_step_operates_on_logs_root() -> None:
             "            shopt -s nullglob",
             "            for path in logs/*; do",
             "              if [ -d \"$path/logs\" ]; then",
-            "                for file in \"$path\"/logs/*; do",
-            "                  mv \"$file\" logs/",
+            "                for entry in \"$path\"/logs/*; do",
+            "                  name=\"$(basename \"$entry\")\"",
+            "                  destination=\"$path/$name\"",
+            "                  if [ -e \"$destination\" ]; then",
+            "                    base=\"${name%.*}\"",
+            "                    extension=\"\"",
+            "                    if [ \"$base\" != \"$name\" ]; then",
+            "                      extension=\".${name##*.}\"",
+            "                    fi",
+            "                    counter=1",
+            "                    while [ -e \"$path/${base}-${counter}${extension}\" ]; do",
+            "                      counter=$((counter + 1))",
+            "                    done",
+            "                    destination=\"$path/${base}-${counter}${extension}\"",
+            "                  fi",
+            "                  mv \"$entry\" \"$destination\"",
             "                done",
-            "                rm -rf \"$path\"",
+            "                rm -rf \"$path/logs\"",
             "              fi",
             "            done",
             "            shopt -u nullglob",
@@ -181,6 +197,30 @@ def test_reflection_workflow_normalize_step_operates_on_logs_root() -> None:
     )
 
     assert expected_snippet in content
+
+
+def test_reflection_workflow_normalize_step_preserves_per_job_logs() -> None:
+    run_block = _load_normalize_logs_run_block()
+
+    with tempfile.TemporaryDirectory() as temp_dir_str:
+        temp_dir = Path(temp_dir_str)
+        logs_root = temp_dir / "logs"
+        (logs_root / "job-a" / "logs").mkdir(parents=True)
+        (logs_root / "job-b" / "logs").mkdir(parents=True)
+
+        (logs_root / "job-a" / "logs" / "test.jsonl").write_text("job-a", encoding="utf-8")
+        (logs_root / "job-b" / "logs" / "test.jsonl").write_text("job-b", encoding="utf-8")
+
+        subprocess.run(
+            ["bash", "-c", textwrap.dedent(run_block)],
+            check=True,
+            cwd=temp_dir,
+        )
+
+        assert (logs_root / "job-a" / "test.jsonl").read_text(encoding="utf-8") == "job-a"
+        assert (logs_root / "job-b" / "test.jsonl").read_text(encoding="utf-8") == "job-b"
+        assert not (logs_root / "job-a" / "logs").exists()
+        assert not (logs_root / "job-b" / "logs").exists()
 
 
 def test_reflection_workflow_issue_step_uses_computed_issue_path() -> None:
@@ -347,6 +387,66 @@ def _extract_python_heredoc(run_block: str) -> str:
     if not script.strip():  # pragma: no cover - defensive guard
         raise AssertionError("Python heredoc is empty")
     return script
+
+
+def _load_normalize_logs_run_block() -> str:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    workflow_content = workflow_path.read_text(encoding="utf-8")
+    workflow = yaml.safe_load(workflow_content)
+
+    if isinstance(workflow, dict):
+        jobs = workflow.get("jobs")
+        if isinstance(jobs, dict):
+            reflect_job = jobs.get("reflect")
+            if isinstance(reflect_job, dict):
+                steps = reflect_job.get("steps")
+                if isinstance(steps, list):
+                    normalize_step = next(
+                        step
+                        for step in steps
+                        if isinstance(step, dict)
+                        and step.get("name") == "Normalize downloaded log directories"
+                    )
+                    run_block = normalize_step.get("run")
+                    assert isinstance(run_block, str)
+                    return run_block
+
+    lines = workflow_content.splitlines()
+    start_index = None
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Normalize downloaded log directories":
+            start_index = index
+            break
+    if start_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Normalize step not found in workflow text")
+
+    run_index = None
+    for index in range(start_index + 1, len(lines)):
+        if lines[index].strip() == "run: |":
+            run_index = index
+            break
+    if run_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Normalize step run block missing in workflow text")
+
+    base_indent = len(lines[run_index]) - len(lines[run_index].lstrip(" "))
+    block_indent = None
+    collected: list[str] = []
+    for raw_line in lines[run_index + 1 :]:
+        stripped = raw_line.strip()
+        if stripped.startswith("- name:") and (len(raw_line) - len(raw_line.lstrip(" ")) <= base_indent):
+            break
+        if block_indent is None and stripped:
+            block_indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if block_indent is None:
+            continue
+        collected.append(raw_line[block_indent:])
+
+    return "\n".join(collected)
 
 
 def _load_reflection_paths_run_block() -> str:
