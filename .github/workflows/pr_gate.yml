@@ -31,6 +31,7 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             const blockers = [];
+            core.setOutput('hasTeamCoverage', 'false');
             const failWith = (message) => {
               blockers.push(message);
               core.setOutput('blockers', JSON.stringify(blockers));
@@ -230,15 +231,19 @@ jobs:
             const teamHandles = Array.from(codeownerTeams);
             const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));
             const hasTeamCoverage = codeownerTeams.size > 0 && pendingTeamHandles.length === 0;
+            core.setOutput('hasTeamCoverage', hasTeamCoverage ? 'true' : 'false');
             if (pendingTeamHandles.length > 0) {
               const teamMessages = pendingTeamHandles.map((team) => `${team} (team review required)`);
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }
             const teamApprovals = collaboratorApprovals;
-            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0 && teamApprovals.size === 0 && !hasTeamCoverage) {
-              failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
-              return;
+            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0 && teamApprovals.size === 0) {
+              if (!hasTeamCoverage) {
+                failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
+                return;
+              }
+              core.notice('CODEOWNERS team coverage satisfied without individual approvals.');
             }
             core.setOutput('blockers', JSON.stringify(blockers));
             core.setOutput('hasApproval', 'true');
@@ -248,7 +253,7 @@ jobs:
           echo "Auto merge is disabled by policy"
           exit 0
       - name: Fail pending CODEOWNERS approval
-        if: ${{ steps.codeowners.outcome == 'failure' }}
+        if: ${{ steps.codeowners.outputs.hasApproval != 'true' }}
         run: |
           echo "CODEOWNERS approval pending; marking job as failed"
           exit 1

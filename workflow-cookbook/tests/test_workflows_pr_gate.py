@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
@@ -106,6 +107,123 @@ def _extract_github_script_text(workflow: Dict[str, Any], raw_text: str) -> str:
     script_text = "\n".join(script_lines).rstrip()
     assert script_text, "github-script の script ブロックを取得できませんでした"
     return script_text
+
+
+def _run_codeowners_script(
+    tmp_path: Path,
+    *,
+    codeowners_content: str,
+    pull_request: dict[str, Any] | None = None,
+    files: list[dict[str, Any]] | None = None,
+    reviews: list[dict[str, Any]] | None = None,
+) -> tuple[subprocess.CompletedProcess[str], dict[str, Any]]:
+    node_path = shutil.which("node")
+    if node_path is None:
+        pytest.skip("node 実行環境が必要です")
+
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    script_file = tmp_path / "codeowners_script.js"
+    script_file.write_text(script, encoding="utf-8")
+
+    scenario = {
+        "files": files if files is not None else [{"filename": "src/example.txt"}],
+        "reviews": reviews if reviews is not None else [],
+        "pull_request": {
+            "number": 1,
+            "requested_reviewers": [],
+            "requested_teams": [],
+            **(pull_request or {}),
+        },
+    }
+
+    scenario_file = tmp_path / "scenario.json"
+    scenario_file.write_text(json.dumps(scenario), encoding="utf-8")
+
+    runner_file = tmp_path / "runner.js"
+    runner_file.write_text(
+        textwrap.dedent(
+            """
+            'use strict';
+            const fs = require('fs');
+            const scriptPath = process.argv[2];
+            const workspace = process.argv[3];
+            const scenarioPath = process.argv[4];
+            const scriptSource = fs.readFileSync(scriptPath, 'utf8');
+            const scenario = JSON.parse(fs.readFileSync(scenarioPath, 'utf8'));
+            const outputs = new Map();
+            let failedMessage = null;
+            const core = {
+              setOutput: (key, value) => outputs.set(key, value),
+              setFailed: (message) => {
+                failedMessage = message;
+              },
+              notice: () => {},
+            };
+            const github = {
+              rest: { pulls: { listFiles: 'listFiles', listReviews: 'listReviews' } },
+              paginate: async (fn) => {
+                if (fn === 'listFiles') return scenario.files;
+                if (fn === 'listReviews') return scenario.reviews;
+                return [];
+              },
+            };
+            const context = {
+              repo: { owner: 'octo', repo: 'demo' },
+              payload: {
+                pull_request: {
+                  number: scenario.pull_request.number || 1,
+                  requested_reviewers: scenario.pull_request.requested_reviewers || [],
+                  requested_teams: scenario.pull_request.requested_teams || [],
+                },
+              },
+            };
+            const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+            (async () => {
+              process.env.GITHUB_WORKSPACE = workspace;
+              const runner = new AsyncFunction('core', 'github', 'context', 'require', 'process', scriptSource);
+              try {
+                await runner(core, github, context, require, process);
+                if (failedMessage) throw new Error(failedMessage);
+                const serialized = Object.fromEntries(outputs);
+                console.log(JSON.stringify(serialized));
+              } catch (error) {
+                const message = error instanceof Error ? error.stack ?? error.message : String(error);
+                console.error(message);
+                process.exit(1);
+              }
+            })();
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    workspace = tmp_path / "workspace"
+    codeowners_dir = workspace / ".github"
+    codeowners_dir.mkdir(parents=True)
+    (codeowners_dir / "CODEOWNERS").write_text(codeowners_content, encoding="utf-8")
+
+    result = subprocess.run(
+        [node_path, str(runner_file), str(script_file), str(workspace), str(scenario_file)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    outputs: dict[str, Any] = {}
+    stdout = result.stdout.strip()
+    if stdout:
+        last_line = stdout.splitlines()[-1]
+        try:
+            parsed = json.loads(last_line)
+        except json.JSONDecodeError:
+            parsed = None
+        if isinstance(parsed, dict):
+            outputs = parsed
+
+    return result, outputs
 
 
 def test_pr_gate_runs_governance_check_after_checkout() -> None:
@@ -235,74 +353,40 @@ def test_pr_gate_no_approval_failure_allows_team_coverage() -> None:
         "const hasTeamCoverage = codeownerTeams.size > 0 && pendingTeamHandles.length === 0;"
         in script
     ), "コードオーナーチームのみのケースで pendingTeamHandles が空なら緩和される必要があります"
+    assert "if (!hasTeamCoverage) {" in script, "チームカバレッジが無い場合のみ failWith を呼ぶ必要があります"
     assert (
-        "&& !hasTeamCoverage" in script
-    ), "Awaiting CODEOWNERS approval 判定でチームカバレッジを考慮する必要があります"
+        "core.notice('CODEOWNERS team coverage satisfied without individual approvals.');" in script
+    ), "チームカバレッジ成立時に通知メッセージを出力する必要があります"
 
 
 def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
-    node_path = shutil.which("node")
-    if node_path is None:
-        pytest.skip("node 実行環境が必要です")
-
-    workflow, raw_text = _load_pr_gate_workflow()
-    script = _extract_github_script_text(workflow, raw_text)
-
-    script_file = tmp_path / "codeowners_script.js"
-    script_file.write_text(script, encoding="utf-8")
-
-    runner_file = tmp_path / "runner.js"
-    runner_file.write_text(
-        textwrap.dedent(
-            """
-            'use strict';
-            const fs = require('fs');
-            const scriptPath = process.argv[2];
-            const workspace = process.argv[3];
-            const scriptSource = fs.readFileSync(scriptPath, 'utf8');
-            const outputs = new Map();
-            let failedMessage = null;
-            const core = { setOutput: (k, v) => outputs.set(k, v), setFailed: (msg) => { failedMessage = msg; }, notice: () => {} };
-            const github = {
-              rest: { pulls: { listFiles: 'listFiles', listReviews: 'listReviews' } },
-              paginate: async (fn) => (fn === 'listFiles' ? [{ filename: 'src/example.txt' }] : []),
-            };
-            const context = {
-              repo: { owner: 'octo', repo: 'demo' },
-              payload: { pull_request: { number: 1, requested_reviewers: [], requested_teams: [] } },
-            };
-            const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
-            (async () => {
-              process.env.GITHUB_WORKSPACE = workspace;
-              const runner = new AsyncFunction('core', 'github', 'context', 'require', 'process', scriptSource);
-              await runner(core, github, context, require, process);
-              if (failedMessage) throw new Error(failedMessage);
-              const approval = outputs.get('hasApproval');
-              if (approval !== 'true') throw new Error(`Unexpected hasApproval output: ${approval}`);
-            })().catch((error) => {
-              const message = error instanceof Error ? error.stack ?? error.message : String(error);
-              console.error(message);
-              process.exit(1);
-            });
-            """
-        ).strip()
-        + "\n",
-        encoding="utf-8",
-    )
-
-    workspace = tmp_path / "workspace"
-    codeowners_dir = workspace / ".github"
-    codeowners_dir.mkdir(parents=True)
-    (codeowners_dir / "CODEOWNERS").write_text("* email@example.com\n", encoding="utf-8")
-
-    result = subprocess.run(
-        [node_path, str(runner_file), str(script_file), str(workspace)],
-        capture_output=True,
-        text=True,
-        check=False,
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* email@example.com\n",
     )
 
     assert result.returncode == 0, result.stderr or result.stdout
+    assert outputs.get("hasApproval") == "true"
+    assert outputs.get("blockers") == "[]"
+
+
+def test_pr_gate_allows_team_only_codeowners_when_not_pending(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa\n",
+        reviews=[
+            {
+                "user": {"login": "qa-team-member"},
+                "state": "APPROVED",
+                "author_association": "MEMBER",
+            }
+        ],
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert outputs.get("hasApproval") == "true"
+    assert outputs.get("blockers") == "[]"
+    assert outputs.get("hasTeamCoverage") == "true"
 
 
 def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
