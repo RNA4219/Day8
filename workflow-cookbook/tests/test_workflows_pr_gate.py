@@ -65,8 +65,6 @@ def _find_step_indices_from_text(raw_text: str, expected_command: str) -> tuple[
     checkout_index = raw_text.find("uses: actions/checkout")
     setup_python_index = raw_text.find("uses: actions/setup-python@v5")
     governance_index = raw_text.find(expected_command)
-    if governance_index == -1:
-        governance_index = raw_text.find("python workflow-cookbook/tools/ci/check_governance_gate.py")
     return checkout_index, setup_python_index, governance_index
 
 
@@ -137,7 +135,7 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
 
     assert checkout_index != -1, "actions/checkout ステップが必要です"
     assert setup_python_index != -1, "actions/setup-python ステップが必要です"
-    assert governance_index != -1, "python workflow-cookbook/tools/ci/check_governance_gate.py を実行するステップが必要です"
+    assert governance_index != -1, "python tools/ci/check_governance_gate.py を実行するステップが必要です"
     assert (
         governance_index > checkout_index
     ), "ガバナンスゲートの実行は actions/checkout の後に行う必要があります"
