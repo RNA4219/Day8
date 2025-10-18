@@ -25,6 +25,12 @@ def _normalize_markdown_emphasis(text: str) -> str:
     return unicodedata.normalize("NFKC", cleaned)
 
 
+def _strip_markup_links(text: str) -> str:
+    without_inline = _INLINE_LINK_PATTERN.sub(r"\1", text)
+    without_reference = _REFERENCE_LINK_PATTERN.sub(r"\1", without_inline)
+    return _HTML_TAG_PATTERN.sub("", without_reference)
+
+
 def _strip_inline_comment(text: str) -> str:
     in_single = False
     in_double = False
@@ -274,47 +280,103 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 _OPTIONAL_PARENTHETICAL = r"(?:\s*[\(（][^\n\r\)）]*[\)）])?"
+_LABEL_SEPARATOR_TOKENS: tuple[str, ...] = (":", "：", "-", "－", "–", "—")
+_LABEL_SEPARATOR_PATTERN = "|".join(re.escape(token) for token in _LABEL_SEPARATOR_TOKENS)
+_LABEL_SEPARATOR_REGEX = rf"\s*(?:{_LABEL_SEPARATOR_PATTERN})\s*"
+_INLINE_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+_REFERENCE_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\s*\[[^\]]+\]")
+_HTML_TAG_PATTERN = re.compile(r"</?[^>]+>")
 
 
 INTENT_PATTERN = re.compile(
-    rf"Intent{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
+    rf"Intent{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
     re.IGNORECASE,
 )
 EVALUATION_HEADING_PATTERN = re.compile(
     r"^#{2,6}\s*EVALUATION\b",
     re.IGNORECASE | re.MULTILINE,
 )
+EVALUATION_HTML_HEADING_PATTERN = re.compile(
+    r"<h[2-6][^>]*>\s*EVALUATION\b",
+    re.IGNORECASE,
+)
 EVALUATION_ANCHOR_PATTERN = re.compile(
-    r"EVALUATION\.md#acceptance-criteria",
+    r"(?:EVALUATION\.md)?#acceptance-criteria",
     re.IGNORECASE,
 )
 PRIORITY_LABEL_PATTERN = re.compile(
-    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*",
+    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}",
     re.IGNORECASE,
 )
-PRIORITY_PATTERN = re.compile(
-    r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?\s*/\s*\S.*",
+PRIORITY_ENTRY_PATTERN = re.compile(
+    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}\d+(?:\.\d+)?\s*/",
     re.IGNORECASE,
 )
+_PRIORITY_STRIP_CHARS = " \t\r\n\u3000"
+_PRIORITY_PREFIX_CHARS = "-*+>•\u2022"
 
 PRIORITY_SCORE_ERROR_MESSAGE = (
     "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
 )
 
 
+def _clean_priority_justification_line(line: str) -> str:
+    stripped = line.strip(_PRIORITY_STRIP_CHARS)
+    stripped = stripped.lstrip(_PRIORITY_PREFIX_CHARS)
+    stripped = stripped.lstrip(_PRIORITY_STRIP_CHARS)
+    return stripped
+
+
+def _has_priority_with_justification(body: str, has_priority_label: bool) -> bool:
+    if not has_priority_label:
+        return False
+
+    for match in PRIORITY_ENTRY_PATTERN.finditer(body):
+        remainder = body[match.end() :]
+        lines = remainder.splitlines()
+        if not lines:
+            continue
+
+        first_line = _clean_priority_justification_line(lines[0])
+        if first_line:
+            return True
+
+        for line in lines[1:]:
+            raw = line.strip(_PRIORITY_STRIP_CHARS)
+            if not raw:
+                break
+            if raw.startswith("#") or raw.startswith("```"):
+                break
+
+            cleaned = _clean_priority_justification_line(line)
+            if cleaned:
+                return True
+
+    return False
+
+
 def validate_pr_body(body: str | None) -> bool:
-    normalized_body = _normalize_markdown_emphasis(body or "")
-    has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
-    normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
-    priority_match = PRIORITY_PATTERN.search(normalized_body) if has_priority_label else None
-    has_priority_with_justification = priority_match is not None
+    raw_body = body or ""
+    normalized_body = _normalize_markdown_emphasis(raw_body)
+    search_body = _strip_markup_links(normalized_body)
+    has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(search_body))
+    normalized_priority_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", search_body)
+    has_priority_with_justification = _has_priority_with_justification(
+        normalized_priority_body, has_priority_label
+    )
     success = True
 
-    if not INTENT_PATTERN.search(normalized_body):
+    if not INTENT_PATTERN.search(search_body):
         print("PR body must include 'Intent: INT-xxx'", file=sys.stderr)
         success = False
-    has_evaluation_heading = bool(EVALUATION_HEADING_PATTERN.search(normalized_body))
-    has_evaluation_anchor = bool(EVALUATION_ANCHOR_PATTERN.search(normalized_body))
+    has_evaluation_heading = bool(
+        EVALUATION_HEADING_PATTERN.search(normalized_body)
+        or EVALUATION_HTML_HEADING_PATTERN.search(raw_body)
+    )
+    has_evaluation_anchor = bool(
+        EVALUATION_ANCHOR_PATTERN.search(raw_body)
+        or EVALUATION_ANCHOR_PATTERN.search(normalized_body)
+    )
     if not has_evaluation_heading or not has_evaluation_anchor:
         print("PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
         success = False

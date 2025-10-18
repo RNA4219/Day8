@@ -194,6 +194,47 @@ Intent: INT-314
     assert captured.err == ""
 
 
+def test_validate_priority_score_accepts_multiline_justification(capsys):
+    body = """
+Intent: INT-515
+## EVALUATION
+- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
+Priority Score: 6 /
+  - impact_scope=0.4
+    - mitigates risk of regression
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
+def test_validate_pr_body_accepts_dash_separators(capsys):
+    body = """
+Intent - INT-880
+## EVALUATION
+- [Acceptance Criteria](#acceptance-criteria)
+Priority Score - 5 / レビュー指摘対応
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
+def test_validate_pr_body_accepts_link_wrapped_identifiers(capsys):
+    body = """
+Intent: [INT-4242](https://tracker.example/INT-4242)
+<h2>EVALUATION</h2>
+- <a href="../EVALUATION.md#acceptance-criteria">Acceptance Criteria</a>
+Priority Score: [5](https://tracker.example/priorities/5) / リンク付き根拠
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_validate_pr_body_rejects_priority_without_justification(capsys):
     body = """
 Intent: INT-777
