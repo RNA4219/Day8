@@ -368,20 +368,24 @@ def test_pr_gate_team_approvals_skip_failure_when_team_is_approved() -> None:
         "const requestedTeamHandles = new Set(" in script
     ), "チーム承認判定では requestedTeamHandles の集合を構築する必要があります"
     assert (
-        "const collaboratorApprovals = new Set();" in script
-    ), "チーム承認済みレビュアーを追跡する集合が必要です"
+        "const teamReviewStates = new Map();" in script
+    ), "pulls.listReviews の結果をチーム単位で保持する集合が必要です"
     assert (
-        "const hasTeamApprovals = collaboratorApprovals.size > 0;" in script
-    ), "チーム承認は最新レビュー状態から算出する必要があります"
+        "const teamHandle = toTeamHandle(review.team, owner);" in script
+    ), "レビューからチームハンドルを解析する必要があります"
     assert (
-        "const pendingTeamHandles = hasTeamApprovals ? [] : teamHandles;" in script
+        "if (teamHandle) {" in script and "teamReviewStates.set(teamHandle, state);" in script
+    ), "チームレビューステートを更新する処理が必要です"
+    assert (
+        "const pendingTeamHandles = teamHandles.filter((team) => {" in script
     ), "チーム承認待ち集合はレビュー状態に基づき算出する必要があります"
     assert (
-        "const teamApprovals = collaboratorApprovals;" in script
-    ), "チーム承認済み集合を最終判定に利用する必要があります"
+        "return state !== 'APPROVED';" in script
+    ), "チーム承認済みかをレビュー状態から判定する必要があります"
     assert (
-        "&& teamApprovals.size === 0" in script
-    ), "チーム承認が存在する場合は failWith を呼び出さないようにする必要があります"
+        "const hasTeamCoverage = teamHandles.length > 0 && pendingTeamHandles.length === 0;"
+        in script
+    ), "チーム承認成立の判定は pendingTeamHandles の空集合判定に基づく必要があります"
 
 
 def test_pr_gate_no_approval_failure_allows_team_coverage() -> None:
@@ -389,9 +393,9 @@ def test_pr_gate_no_approval_failure_allows_team_coverage() -> None:
     script = _extract_github_script_text(workflow, raw_text)
 
     assert (
-        "const hasTeamCoverage = codeownerTeams.size > 0 && hasTeamApprovals;"
+        "const hasTeamCoverage = teamHandles.length > 0 && pendingTeamHandles.length === 0;"
         in script
-    ), "コードオーナーチームのみのケースで pendingTeamHandles が空なら緩和される必要があります"
+    ), "コードオーナーチームが存在し全て承認済みならチームカバレッジ成立と判定する必要があります"
     assert "if (!hasTeamCoverage) {" in script, "チームカバレッジが無い場合のみ failWith を呼ぶ必要があります"
     assert (
         "core.notice('CODEOWNERS team coverage satisfied without individual approvals.');" in script
@@ -430,6 +434,7 @@ def test_pr_gate_allows_team_only_codeowners_when_not_pending(tmp_path: Path) ->
                 "user": {"login": "qa-team-member"},
                 "state": "APPROVED",
                 "author_association": "MEMBER",
+                "team": {"slug": "qa", "organization": {"login": "octo"}},
             }
         ],
     )
@@ -523,8 +528,29 @@ def test_pr_gate_pending_ignores_non_codeowner_manual_reviewers() -> None:
     ), "必須レビュアー集合には CODEOWNERS とフィルタ済み手動リクエストの和集合を用いる必要があります"
     assert (
         "const teamHandles = Array.from(codeownerTeams);" in script
-        and "const pendingTeamHandles = hasTeamApprovals ? [] : teamHandles;" in script
+        and "const pendingTeamHandles = teamHandles.filter((team) => {" in script
     ), "CODEOWNERS チームの未承認判定はレビュー状態に基づく必要があります"
+
+
+def test_pr_gate_fails_when_team_review_is_removed(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa @octocat\n",
+        reviews=[
+            {
+                "user": {"login": "octocat"},
+                "state": "APPROVED",
+                "author_association": "MEMBER",
+            }
+        ],
+    )
+
+    assert result.returncode != 0
+    assert outputs.get("hasApproval") == "false"
+    assert outputs.get("hasTeamCoverage") == "false"
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("@octo/qa" in blocker for blocker in blockers)
 
 
 def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
