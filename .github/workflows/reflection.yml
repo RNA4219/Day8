@@ -119,6 +119,30 @@ jobs:
             done
             shopt -u nullglob
           fi
+      - name: Merge normalized test logs
+        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
+        run: |
+          if [ -d "logs" ]; then
+            python - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+
+          logs_dir = Path("logs")
+          target = logs_dir / "test.jsonl"
+          files = sorted(path for path in logs_dir.glob("*/*.jsonl") if path.is_file())
+
+          target.parent.mkdir(parents=True, exist_ok=True)
+          content_parts: list[str] = []
+          for file_path in files:
+              text = file_path.read_text(encoding="utf-8")
+              if text and not text.endswith("\n"):
+                  text += "\n"
+              content_parts.append(text)
+
+          target.write_text("".join(content_parts), encoding="utf-8")
+          PY
+          fi
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

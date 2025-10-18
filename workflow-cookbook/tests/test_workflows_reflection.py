@@ -223,6 +223,32 @@ def test_reflection_workflow_normalize_step_preserves_per_job_logs() -> None:
         assert not (logs_root / "job-b" / "logs").exists()
 
 
+def test_reflection_workflow_merge_step_updates_root_jsonl() -> None:
+    run_block = _load_merge_logs_run_block()
+
+    with tempfile.TemporaryDirectory() as temp_dir_str:
+        temp_dir = Path(temp_dir_str)
+        logs_root = Path(temp_dir) / "logs"
+        logs_root.mkdir()
+        (logs_root / "test.jsonl").write_text("stale", encoding="utf-8")
+
+        (logs_root / "job-a").mkdir()
+        (logs_root / "job-b").mkdir()
+        (logs_root / "job-a" / "alpha.jsonl").write_text("job-a", encoding="utf-8")
+        (logs_root / "job-b" / "beta.jsonl").write_text("job-b", encoding="utf-8")
+
+        subprocess.run(
+            ["bash", "-c", textwrap.dedent(run_block)],
+            check=True,
+            cwd=temp_dir,
+        )
+
+        merged = (logs_root / "test.jsonl").read_text(encoding="utf-8")
+
+        assert merged == "job-a\njob-b\n"
+        assert "stale" not in merged
+
+
 def test_reflection_workflow_issue_step_uses_computed_issue_path() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
@@ -390,6 +416,14 @@ def _extract_python_heredoc(run_block: str) -> str:
 
 
 def _load_normalize_logs_run_block() -> str:
+    return _load_workflow_step_run_block("Normalize downloaded log directories")
+
+
+def _load_merge_logs_run_block() -> str:
+    return _load_workflow_step_run_block("Merge normalized test logs")
+
+
+def _load_workflow_step_run_block(step_name: str) -> str:
     workflow_path = (
         Path(__file__).resolve().parents[2]
         / ".github"
@@ -406,24 +440,20 @@ def _load_normalize_logs_run_block() -> str:
             if isinstance(reflect_job, dict):
                 steps = reflect_job.get("steps")
                 if isinstance(steps, list):
-                    normalize_step = next(
-                        step
-                        for step in steps
-                        if isinstance(step, dict)
-                        and step.get("name") == "Normalize downloaded log directories"
-                    )
-                    run_block = normalize_step.get("run")
-                    assert isinstance(run_block, str)
-                    return run_block
+                    for step in steps:
+                        if isinstance(step, dict) and step.get("name") == step_name:
+                            run_block = step.get("run")
+                            assert isinstance(run_block, str)
+                            return run_block
 
     lines = workflow_content.splitlines()
     start_index = None
     for index, line in enumerate(lines):
-        if line.strip() == "- name: Normalize downloaded log directories":
+        if line.strip() == f"- name: {step_name}":
             start_index = index
             break
     if start_index is None:  # pragma: no cover - defensive guard
-        raise AssertionError("Normalize step not found in workflow text")
+        raise AssertionError(f"{step_name} step not found in workflow text")
 
     run_index = None
     for index in range(start_index + 1, len(lines)):
@@ -431,7 +461,7 @@ def _load_normalize_logs_run_block() -> str:
             run_index = index
             break
     if run_index is None:  # pragma: no cover - defensive guard
-        raise AssertionError("Normalize step run block missing in workflow text")
+        raise AssertionError(f"{step_name} run block missing in workflow text")
 
     base_indent = len(lines[run_index]) - len(lines[run_index].lstrip(" "))
     block_indent = None
@@ -442,9 +472,13 @@ def _load_normalize_logs_run_block() -> str:
             break
         if block_indent is None and stripped:
             block_indent = len(raw_line) - len(raw_line.lstrip(" "))
-        if block_indent is None:
-            continue
-        collected.append(raw_line[block_indent:])
+        if block_indent is not None:
+            current_indent = len(raw_line) - len(raw_line.lstrip(" "))
+            if stripped and current_indent < block_indent:
+                break
+            collected.append(raw_line)
+    if not collected:  # pragma: no cover - defensive guard
+        raise AssertionError(f"{step_name} run block empty")
 
     return "\n".join(collected)
 
