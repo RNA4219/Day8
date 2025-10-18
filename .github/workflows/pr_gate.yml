@@ -136,6 +136,7 @@ jobs:
             const codeownerUsers = new Set();
             const codeownerTeams = new Set();
             const uncovered = [];
+            let hasBlockingOwners = false;
             for (const file of files) {
               const owners = entries.reduce(
                 (matched, entry) => (entry.regex.test(file.filename) ? entry.owners : matched),
@@ -147,6 +148,7 @@ jobs:
               }
               for (const ownerHandle of owners) {
                 if (!ownerHandle.startsWith('@')) continue;
+                hasBlockingOwners = true;
                 if (ownerHandle.includes('/')) codeownerTeams.add(ownerHandle);
                 else codeownerUsers.add(ownerHandle);
               }
@@ -161,26 +163,6 @@ jobs:
               failWith(`No CODEOWNERS match for: ${uncovered.join(', ')}`);
               return;
             }
-            const requestedUsers = new Set(
-              (context.payload.pull_request.requested_reviewers || [])
-                .map((user) => (user?.login ? `@${user.login}` : null))
-                .filter(Boolean),
-            );
-            const requestedTeams = new Set(
-              (context.payload.pull_request.requested_teams || [])
-                .map((team) => {
-                  const org = team?.organization?.login;
-                  if (!org || !team?.slug) return null;
-                  return `@${org}/${team.slug}`;
-                })
-                .filter(Boolean),
-            );
-            const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>
-              codeownerUsers.has(login),
-            );
-            const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>
-              codeownerTeams.has(team),
-            );
             if (filteredRequestedUsers.length > 0 || filteredRequestedTeams.length > 0) {
               const pending = [
                 ...filteredRequestedUsers.map((login) => `${login} (review requested)`),
@@ -227,7 +209,7 @@ jobs:
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }
-            if (requiredUsers.length === 0 && approvals.size === 0) {
+            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0) {
               failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
               return;
             }
