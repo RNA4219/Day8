@@ -244,14 +244,14 @@ Intent: INT-777
 Priority Score: 3
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert (
         "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
         in captured.err
     )
-    assert "Error:" not in captured.err
+    assert "Error:" in captured.err
 
 
 INVALID_PRIORITY_LINES = [
@@ -280,14 +280,14 @@ def _build_priority_body(priority_line: str) -> str:
 def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys):
     body = _build_priority_body(priority_line)
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert (
         "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
         in captured.err
     )
-    assert "Error:" not in captured.err
+    assert "Error:" in captured.err
 
 
 @pytest.mark.parametrize(
@@ -312,11 +312,11 @@ def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys
     ids=["missing-priority-line", "missing-justification"],
 )
 def test_validate_pr_body_fails_when_priority_line_invalid(body, capsys):
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
-    assert "Error:" not in captured.err
+    assert "Error:" in captured.err
 
 
 @pytest.mark.parametrize("priority_line", INVALID_PRIORITY_LINES)
@@ -330,12 +330,12 @@ def test_main_blocks_pr_when_priority_line_invalid(priority_line, monkeypatch, c
         lambda: (body, check_governance_gate.PR_BODY_SOURCE_NAME),
     )
 
-    assert check_governance_gate.main() == 0
+    assert check_governance_gate.main() == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
     assert check_governance_gate.PR_BODY_SOURCE_NAME in captured.err
-    assert "Error:" not in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_missing_intent(capsys):
@@ -454,11 +454,26 @@ Intent: INT-789
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
+    assert "Error:" in captured.err
+
+
+def test_main_fails_without_evaluation_anchor(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv("PR_BODY", """Intent: INT-456\nPriority Score: 2 / 評価アンカー欠落\n""")
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "Warning:" in captured.err
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_main_fails_without_priority_score(monkeypatch, capsys):
@@ -471,12 +486,12 @@ def test_main_fails_without_priority_score(monkeypatch, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 0
+    assert exit_code == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
-    assert "Error:" not in captured.err
+    assert "Error:" in captured.err
 
 
 def test_pr_template_contains_required_sections():
@@ -636,11 +651,11 @@ def test_main_reports_priority_error_with_file_location(monkeypatch, tmp_path, c
         str(pr_body_file),
     ])
 
-    assert exit_code == 0
+    assert exit_code == 1
     captured = capsys.readouterr()
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
     assert f"Warning: {pr_body_file}:4:" in captured.err
-    assert "Error:" not in captured.err
+    assert "Error:" in captured.err
 
 
 def test_main_reports_event_body_location(monkeypatch, tmp_path, capsys):
@@ -654,10 +669,11 @@ def test_main_reports_event_body_location(monkeypatch, tmp_path, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 0
+    assert exit_code == 1
     captured = capsys.readouterr()
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
     assert f"Warning: {event_path}:4:" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_main_requires_pr_body(monkeypatch, capsys):
