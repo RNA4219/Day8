@@ -400,12 +400,12 @@ def test_main_blocks_when_evaluation_context_missing(body, monkeypatch, capsys):
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "Warning:" not in captured.err
+    assert "Warning:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
 
-def test_validate_pr_body_missing_evaluation(capsys):
+def test_validate_pr_body_missing_evaluation(monkeypatch, capsys):
     body = """
 Intent: INT-001
 Priority Score: 3 / パフォーマンス改善
@@ -413,12 +413,21 @@ Priority Score: 3 / パフォーマンス改善
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
 
-def test_validate_pr_body_missing_evaluation_anchor(capsys):
+    exit_code = check_governance_gate.main(["--pr-body", body])
+
+    assert exit_code == 1
+    captured_main = capsys.readouterr()
+    assert "Warning:" in captured_main.err
+    assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured_main.err
+    assert "Error:" in captured_main.err
+
+
+def test_validate_pr_body_missing_evaluation_anchor(monkeypatch, capsys):
     body = """
 Intent: INT-001
 ## EVALUATION
@@ -427,12 +436,21 @@ Priority Score: 2 / 評価アンカー欠落
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
 
-def test_validate_pr_body_requires_evaluation_heading(capsys):
+    exit_code = check_governance_gate.main(["--pr-body", body])
+
+    assert exit_code == 1
+    captured_main = capsys.readouterr()
+    assert "Warning:" in captured_main.err
+    assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured_main.err
+    assert "Error:" in captured_main.err
+
+
+def test_validate_pr_body_requires_evaluation_heading(monkeypatch, capsys):
     body = """
 Intent: INT-555
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
@@ -442,9 +460,18 @@ Priority Score: 1 / 評価見出し欠落
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
+
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+
+    exit_code = check_governance_gate.main(["--pr-body", body])
+
+    assert exit_code == 1
+    captured_main = capsys.readouterr()
+    assert "Warning:" in captured_main.err
+    assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured_main.err
+    assert "Error:" in captured_main.err
 
 
 def test_validate_pr_body_requires_priority_score(capsys):
