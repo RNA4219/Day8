@@ -25,6 +25,12 @@ def _normalize_markdown_emphasis(text: str) -> str:
     return unicodedata.normalize("NFKC", cleaned)
 
 
+def _strip_markup_links(text: str) -> str:
+    without_inline = _INLINE_LINK_PATTERN.sub(r"\1", text)
+    without_reference = _REFERENCE_LINK_PATTERN.sub(r"\1", without_inline)
+    return _HTML_TAG_PATTERN.sub("", without_reference)
+
+
 def _strip_inline_comment(text: str) -> str:
     in_single = False
     in_double = False
@@ -277,6 +283,9 @@ _OPTIONAL_PARENTHETICAL = r"(?:\s*[\(（][^\n\r\)）]*[\)）])?"
 _LABEL_SEPARATOR_TOKENS: tuple[str, ...] = (":", "：", "-", "－", "–", "—")
 _LABEL_SEPARATOR_PATTERN = "|".join(re.escape(token) for token in _LABEL_SEPARATOR_TOKENS)
 _LABEL_SEPARATOR_REGEX = rf"\s*(?:{_LABEL_SEPARATOR_PATTERN})\s*"
+_INLINE_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+_REFERENCE_LINK_PATTERN = re.compile(r"\[([^\]]+)\]\s*\[[^\]]+\]")
+_HTML_TAG_PATTERN = re.compile(r"</?[^>]+>")
 
 
 INTENT_PATTERN = re.compile(
@@ -286,6 +295,10 @@ INTENT_PATTERN = re.compile(
 EVALUATION_HEADING_PATTERN = re.compile(
     r"^#{2,6}\s*EVALUATION\b",
     re.IGNORECASE | re.MULTILINE,
+)
+EVALUATION_HTML_HEADING_PATTERN = re.compile(
+    r"<h[2-6][^>]*>\s*EVALUATION\b",
+    re.IGNORECASE,
 )
 EVALUATION_ANCHOR_PATTERN = re.compile(
     r"(?:EVALUATION\.md)?#acceptance-criteria",
@@ -343,19 +356,27 @@ def _has_priority_with_justification(body: str, has_priority_label: bool) -> boo
 
 
 def validate_pr_body(body: str | None) -> bool:
-    normalized_body = _normalize_markdown_emphasis(body or "")
-    has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(normalized_body))
-    normalized_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", normalized_body)
+    raw_body = body or ""
+    normalized_body = _normalize_markdown_emphasis(raw_body)
+    search_body = _strip_markup_links(normalized_body)
+    has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(search_body))
+    normalized_priority_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", search_body)
     has_priority_with_justification = _has_priority_with_justification(
-        normalized_body, has_priority_label
+        normalized_priority_body, has_priority_label
     )
     success = True
 
-    if not INTENT_PATTERN.search(normalized_body):
+    if not INTENT_PATTERN.search(search_body):
         print("PR body must include 'Intent: INT-xxx'", file=sys.stderr)
         success = False
-    has_evaluation_heading = bool(EVALUATION_HEADING_PATTERN.search(normalized_body))
-    has_evaluation_anchor = bool(EVALUATION_ANCHOR_PATTERN.search(normalized_body))
+    has_evaluation_heading = bool(
+        EVALUATION_HEADING_PATTERN.search(normalized_body)
+        or EVALUATION_HTML_HEADING_PATTERN.search(raw_body)
+    )
+    has_evaluation_anchor = bool(
+        EVALUATION_ANCHOR_PATTERN.search(raw_body)
+        or EVALUATION_ANCHOR_PATTERN.search(normalized_body)
+    )
     if not has_evaluation_heading or not has_evaluation_anchor:
         print("PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
         success = False
