@@ -36,9 +36,43 @@ def test_pr_gate_runs_governance_gate() -> None:
     workflow = _YAML.safe_load(workflow_yaml)
     assert isinstance(workflow, dict), "ワークフローはマップ形式である必要があります"
 
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict), "jobs 定義が必要です"
+
+    gate_job = jobs.get("gate")
+    assert isinstance(gate_job, dict), "gate ジョブ定義が必要です"
+
+    steps = gate_job.get("steps")
+    if isinstance(steps, list):
+        checkout_index: int | None = None
+        for index, step in enumerate(steps):
+            if not isinstance(step, dict):
+                continue
+            uses = step.get("uses")
+            if isinstance(uses, str) and uses.startswith("actions/checkout@"):
+                checkout_index = index
+                break
+
+        assert checkout_index is not None, "actions/checkout ステップが必要です"
+
+        governance_gate_found = False
+        for step in steps[checkout_index + 1 :]:
+            if not isinstance(step, dict):
+                continue
+            run = step.get("run")
+            if isinstance(run, str) and "python workflow-cookbook/tools/ci/check_governance_gate.py" in run:
+                governance_gate_found = True
+                break
+
+        assert (
+            governance_gate_found
+        ), "checkout 後に python workflow-cookbook/tools/ci/check_governance_gate.py を実行するステップが必要です"
+        return
+
+    assert isinstance(steps, dict), "steps 配列またはマップが必要です"
+
     after_checkout = False
     governance_gate_found = False
-
     for line in workflow_yaml.splitlines():
         stripped = line.strip()
         if stripped.startswith("- uses: actions/checkout@"):
