@@ -347,7 +347,7 @@ Priority Score: 2 / SLO遵守
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "Intent: INT-xxx" in captured.err
     assert "Error:" in captured.err
 
@@ -364,9 +364,44 @@ def test_main_allows_missing_intent(monkeypatch, capsys):
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "Intent: INT-xxx" in captured.err
     assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:1" in captured.err
+    assert "Error:" in captured.err
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "\n".join([
+            "Intent: INT-001",
+            "Priority Score: 3 / パフォーマンス改善",
+        ]),
+        "\n".join([
+            "Intent: INT-001",
+            "## EVALUATION",
+            "Priority Score: 2 / 評価アンカー欠落",
+        ]),
+        "\n".join([
+            "Intent: INT-555",
+            "- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)",
+            "Evaluation anchor is explained here without heading.",
+            "Priority Score: 1 / 評価見出し欠落",
+        ]),
+    ],
+    ids=["missing-evaluation", "missing-anchor", "missing-heading"],
+)
+def test_main_blocks_when_evaluation_context_missing(body, monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv("PR_BODY", body)
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "Warning:" not in captured.err
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
 
@@ -376,10 +411,11 @@ Intent: INT-001
 Priority Score: 3 / パフォーマンス改善
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_missing_evaluation_anchor(capsys):
@@ -389,10 +425,11 @@ Intent: INT-001
 Priority Score: 2 / 評価アンカー欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_requires_evaluation_heading(capsys):
@@ -403,10 +440,11 @@ Evaluation anchor is explained here without heading.
 Priority Score: 1 / 評価見出し欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_requires_priority_score(capsys):
