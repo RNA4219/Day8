@@ -146,3 +146,69 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
     ), "actions/setup-python のステップは checkout の後、ガバナンスゲート実行の前に必要です"
 
     assert "fetch-depth: 0" in raw_text, "checkout ステップには fetch-depth: 0 の指定が必要です"
+
+
+def test_pr_gate_tracks_codeowners_failure() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict) and "gate" in jobs, "pr_gate.yml の jobs.gate が必要です"
+
+    gate_job = jobs["gate"]
+    assert isinstance(gate_job, dict), "jobs.gate はマッピングである必要があります"
+
+    steps = gate_job.get("steps")
+    governance_index = -1
+
+    if isinstance(steps, list):
+        codeowners_step = None
+        failure_step = None
+
+        for index, raw_step in enumerate(steps):
+            if not isinstance(raw_step, dict):
+                continue
+
+            if raw_step.get("name") == "Require CODEOWNERS approval":
+                codeowners_step = raw_step
+
+            run = raw_step.get("run")
+            if isinstance(run, str) and "check_governance_gate.py" in run:
+                governance_index = index
+
+            if raw_step.get("if") == "${{ steps.codeowners.outcome == 'failure' }}":
+                if isinstance(run, str) and "exit 1" in run:
+                    failure_step = raw_step
+
+        assert codeowners_step is not None, "CODEOWNERS 承認のステップが必要です"
+        assert codeowners_step.get("id") == "codeowners", "CODEOWNERS ステップには id: codeowners が必要です"
+
+        continue_on_error = codeowners_step.get("continue-on-error")
+        assert continue_on_error is True, "CODEOWNERS ステップには continue-on-error: true が必要です"
+
+        assert failure_step is not None, "CODEOWNERS 失敗時に exit 1 する追跡ステップが必要です"
+        assert governance_index != -1, "ガバナンスゲートのステップが必要です"
+
+        failure_index = steps.index(failure_step)
+        assert (
+            failure_index > governance_index
+        ), "CODEOWNERS 追跡ステップはガバナンスゲートの後に配置する必要があります"
+    else:
+        assert "id: codeowners" in raw_text, "CODEOWNERS ステップには id: codeowners が必要です"
+        assert (
+            "continue-on-error: true" in raw_text
+        ), "CODEOWNERS ステップには continue-on-error: true が必要です"
+
+        governance_index, _, _ = _find_step_indices_from_text(
+            raw_text, "python tools/ci/check_governance_gate.py"
+        )
+        assert governance_index != -1, "ガバナンスゲートのステップが必要です"
+
+        failure_marker = "if: ${{ steps.codeowners.outcome == 'failure' }}"
+        failure_index = raw_text.find(failure_marker)
+        assert failure_index != -1, "CODEOWNERS 失敗時に exit 1 する追跡ステップが必要です"
+
+        exit_index = raw_text.find("exit 1", failure_index)
+        assert exit_index != -1, "CODEOWNERS 追跡ステップには exit 1 が必要です"
+
+        assert (
+            failure_index > governance_index
+        ), "CODEOWNERS 追跡ステップはガバナンスゲートの後に配置する必要があります"
