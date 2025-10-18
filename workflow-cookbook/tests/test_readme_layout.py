@@ -19,3 +19,10 @@ def test_readme_guides_repository_layout() -> None:
         assert (
             relative_path in content
         ), f"README.md は {relative_path} のように正しい相対パスを案内する必要があります"
+
+    assert (
+        "Priority Score は必須" in content
+    ), "README.md の PR チェックリストに Priority Score が必須である旨を明記してください"
+    assert (
+        "`Priority Score: <number> / <justification>`" in content
+    ), "README.md の PR チェックリストで Priority Score の形式を `<number> / <justification>` と明記してください"
