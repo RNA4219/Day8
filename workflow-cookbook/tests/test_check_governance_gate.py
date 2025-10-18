@@ -376,10 +376,11 @@ Intent: INT-001
 Priority Score: 3 / パフォーマンス改善
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_missing_evaluation_anchor(capsys):
@@ -389,10 +390,11 @@ Intent: INT-001
 Priority Score: 2 / 評価アンカー欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_requires_evaluation_heading(capsys):
@@ -403,10 +405,11 @@ Evaluation anchor is explained here without heading.
 Priority Score: 1 / 評価見出し欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_requires_priority_score(capsys):
@@ -421,6 +424,20 @@ Intent: INT-789
     assert "Warning:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
+    assert "Error:" in captured.err
+
+
+def test_main_fails_without_evaluation_anchor(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setenv("PR_BODY", """Intent: INT-456\nPriority Score: 2 / 評価アンカー欠落\n""")
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "Warning:" in captured.err
+    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
 
