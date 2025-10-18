@@ -98,3 +98,20 @@ def test_reflection_manifest_logs_entry() -> None:
         targets = cast(list[Dict[str, Any]], raw_targets)
 
     assert targets[0]["logs"] == ["logs/test.jsonl"]
+
+
+def test_test_workflow_upload_steps_overwrite_logs_artifact() -> None:
+    workflow = load_workflow("test.yml")
+    jobs = workflow["jobs"]
+
+    for job in jobs.values():
+        steps = job.get("steps", [])
+        for step in steps:
+            if not isinstance(step, dict):
+                continue
+            if step.get("uses") == "actions/upload-artifact@v4":
+                config = step.get("with", {})
+                if not isinstance(config, dict):
+                    continue
+                if config.get("name") == "test-logs":
+                    assert config.get("overwrite") is True
