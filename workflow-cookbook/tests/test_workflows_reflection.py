@@ -61,12 +61,34 @@ def test_reflection_workflow_analyze_step_runs_analyze_script() -> None:
 
     expected_block = """\
       - name: Analyze logs → report
+        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         working-directory: workflow-cookbook
         run: |
           python scripts/analyze.py
     """.rstrip()
 
     assert expected_block in content
+
+
+def test_reflection_workflow_analyze_step_requires_artifact() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Analyze logs → report":
+            break
+    else:  # pragma: no cover - defensive guard
+        raise AssertionError("Analyze step not found")
+
+    expected_condition = "        if: ${{ steps.artifact-locator.outputs.found == 'true' }}"
+
+    assert expected_condition in lines[index + 1 : index + 4]
 
 
 def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None:

@@ -102,6 +102,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Analyze logs → report
+        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         working-directory: workflow-cookbook
         run: |
           python scripts/analyze.py
