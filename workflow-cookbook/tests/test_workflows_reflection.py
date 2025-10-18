@@ -162,6 +162,31 @@ def test_reflection_workflow_normalize_step_operates_on_logs_root() -> None:
     )
 
     assert expected_snippet in content
+
+
+def test_reflection_workflow_issue_step_uses_computed_issue_path() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+
+    assert "      - name: Determine reflection outputs\n" in content
+    assert "        id: reflection-paths\n" in content
+    assert "          PYTHON_OUTPUT=\"$(python - <<'PY'" in content
+    assert "              from scripts import analyze  # type: ignore\n" in content
+
+    expected_if = (
+        "        if: ${{ hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path)) != '0' }}\n"
+    )
+    expected_content_path = (
+        "          content-filepath: ${{ steps.reflection-paths.outputs.issue-content-path }}\n"
+    )
+
+    assert expected_if in content
+    assert expected_content_path in content
     assert "workflow-cookbook/logs/workflow-cookbook/logs" not in content
 
 
@@ -175,7 +200,7 @@ def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     content = workflow_path.read_text(encoding="utf-8")
 
     expected_condition = (
-        "        if: ${{ hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH)) != '0' }}\n"
+        "        if: ${{ hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path)) != '0' }}\n"
     )
 
     assert expected_condition in content
@@ -189,7 +214,7 @@ def test_reflection_workflow_issue_step_condition_checks_hashfiles_zero() -> Non
         / "reflection.yml"
     )
     content = workflow_path.read_text(encoding="utf-8")
-    condition_snippet = "hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH))"
+    condition_snippet = "hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path))"
 
     assert f"{condition_snippet} != '0'" in content
     assert f"{condition_snippet} != ''" not in content
@@ -225,7 +250,7 @@ def test_reflection_workflow_issue_step_condition_evaluates_false_when_missing()
     prefix = "if: ${{"
     suffix = "}}"
     expression = condition_line[len(prefix) : -len(suffix)].strip()
-    placeholder = "hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH))"
+    placeholder = "hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path))"
 
     assert expression.startswith(placeholder)
     simulated = expression.replace(placeholder, "'0'")
@@ -244,7 +269,9 @@ def test_reflection_workflow_issue_step_uses_manifest_relative_path() -> None:
 
     assert "ISSUE_SUGGESTIONS_CONTENT_PATH" in content
     assert "ISSUE_SUGGESTIONS_HASH_PATH" in content
-    assert "content-filepath: ${{ env.ISSUE_SUGGESTIONS_CONTENT_PATH }}\n" in content
+    assert "issue-content-path" in content
+    assert "issue-hash-path" in content
+    assert "content-filepath: ${{ steps.reflection-paths.outputs.issue-content-path }}\n" in content
     assert "read -r REPORT_PATH ISSUE_SUGGESTIONS_RELATIVE" in content
 
 
@@ -322,7 +349,7 @@ def _extract_python_heredoc(run_block: str) -> str:
         if inside:
             script_lines.append(line)
     if not script_lines:
-        raise AssertionError("Python heredoc not found in Commit report step")
+        raise AssertionError("Python heredoc not found in run block")
 
     script = textwrap.dedent("\n".join(script_lines))
     if not script.strip():  # pragma: no cover - defensive guard
@@ -330,12 +357,70 @@ def _extract_python_heredoc(run_block: str) -> str:
     return script
 
 
+def _load_reflection_paths_run_block() -> str:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    workflow_content = workflow_path.read_text(encoding="utf-8")
+    workflow = yaml.safe_load(workflow_content)
+
+    jobs = workflow["jobs"]
+    assert isinstance(jobs, dict)
+    reflect_job = jobs["reflect"]
+    assert isinstance(reflect_job, dict)
+    steps = reflect_job["steps"]
+    if isinstance(steps, list):
+        compute_step = next(
+            step for step in steps if isinstance(step, dict) and step.get("name") == "Determine reflection outputs"
+        )
+        run_block = compute_step["run"]
+        assert isinstance(run_block, str)
+        return run_block
+
+    lines = workflow_content.splitlines()
+    start_index = None
+    for index, line in enumerate(lines):
+        if line.strip() == "- name: Determine reflection outputs":
+            start_index = index
+            break
+    if start_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Determine reflection outputs step not found in workflow text")
+
+    run_index = None
+    for index in range(start_index + 1, len(lines)):
+        if lines[index].strip() == "run: |":
+            run_index = index
+            break
+    if run_index is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Determine reflection outputs run block missing in workflow text")
+
+    base_indent = len(lines[run_index]) - len(lines[run_index].lstrip(" "))
+    block_indent = None
+    collected: list[str] = []
+    for raw_line in lines[run_index + 1 :]:
+        stripped = raw_line.strip()
+        if stripped.startswith("- name:") and (len(raw_line) - len(raw_line.lstrip(" ")) <= base_indent):
+            break
+        if block_indent is None and stripped:
+            block_indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if block_indent is not None:
+            collected.append(raw_line[block_indent:])
+        else:
+            collected.append("")
+    if block_indent is None:  # pragma: no cover - defensive guard
+        raise AssertionError("Determine reflection outputs run block content missing")
+
+    return "\n".join(collected)
+
+
 def test_reflection_workflow_commit_step_adds_report_output() -> None:
     run_block = _load_commit_run_block()
 
     assert "git config user.name \"reflect-bot\"" in run_block
     assert "git config user.email \"bot@example.com\"" in run_block
-    assert "PYTHON_OUTPUT=\"$(python - <<'PY'" in run_block
     assert "git add \"$REPORT_PATH\"" in run_block
     assert "git commit -m \"chore(report): reflection report [skip ci]\"" in run_block
 
@@ -352,7 +437,7 @@ def test_reflection_workflow_commit_step_git_add_matches_manifest_output() -> No
     expected_output = report_section["output"]
     assert isinstance(expected_output, str)
 
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     stdout = io.StringIO()
@@ -371,7 +456,7 @@ def test_reflection_workflow_commit_step_git_add_matches_manifest_output() -> No
 
 
 def test_reflection_workflow_commit_step_fallback_strips_quotes() -> None:
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     namespace: dict[str, object] = {"__name__": "__fallback_test__"}
@@ -395,7 +480,7 @@ def test_reflection_workflow_commit_step_fallback_strips_quotes() -> None:
 
 
 def test_reflection_workflow_commit_step_fallback_ignores_inline_comment() -> None:
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     namespace: dict[str, object] = {"__name__": "__fallback_test__"}
@@ -419,7 +504,7 @@ def test_reflection_workflow_commit_step_fallback_ignores_inline_comment() -> No
 
 
 def test_reflection_workflow_commit_step_fallback_handles_commented_manifest_path() -> None:
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     namespace: dict[str, object] = {"__name__": "__fallback_test__"}
@@ -443,7 +528,7 @@ def test_reflection_workflow_commit_step_fallback_handles_commented_manifest_pat
 
 
 def test_reflection_workflow_commit_step_defaults_to_today_when_output_missing(tmp_path: Path) -> None:
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     temp_manifest = textwrap.dedent(
@@ -472,7 +557,7 @@ def test_reflection_workflow_commit_step_defaults_to_today_when_output_missing(t
 
 
 def test_reflection_workflow_commit_step_aligns_issue_path_with_report_directory(tmp_path: Path) -> None:
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     temp_manifest = textwrap.dedent(
@@ -501,7 +586,7 @@ def test_reflection_workflow_commit_step_aligns_issue_path_with_report_directory
 
 
 def test_reflection_workflow_commit_step_rewrites_external_output_to_today(tmp_path: Path) -> None:
-    run_block = _load_commit_run_block()
+    run_block = _load_reflection_paths_run_block()
     python_script = _extract_python_heredoc(run_block)
 
     temp_manifest = textwrap.dedent(
