@@ -345,6 +345,9 @@ EVALUATION_ANCHOR_PATTERN = re.compile(
     r"(?:EVALUATION\.md)?#acceptance-criteria",
     re.IGNORECASE,
 )
+EVALUATION_SECTION_ERROR_MESSAGE = (
+    "PR must include an EVALUATION heading and reference the Acceptance Criteria anchor"
+)
 PRIORITY_LABEL_PATTERN = re.compile(
     rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}",
     re.IGNORECASE,
@@ -432,8 +435,8 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
     evaluation_location = MessageLocation(source_text, None) if source_text else None
     evaluation_missing = not (has_evaluation_heading and has_evaluation_anchor)
     if evaluation_missing:
-        warnings.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
-        errors.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
+        warnings.append((EVALUATION_SECTION_ERROR_MESSAGE, evaluation_location))
+        errors.append((EVALUATION_SECTION_ERROR_MESSAGE, evaluation_location))
     priority_location: MessageLocation | None = None
     if source_text:
         priority_line = _find_priority_label_line(raw_body) if has_priority_label else None

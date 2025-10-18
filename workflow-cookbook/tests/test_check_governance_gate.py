@@ -9,6 +9,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from tools.ci import check_governance_gate
 from tools.ci.check_governance_gate import (
+    EVALUATION_SECTION_ERROR_MESSAGE,
     PRIORITY_SCORE_ERROR_MESSAGE,
     find_forbidden_matches,
     load_forbidden_patterns,
@@ -380,7 +381,7 @@ Priority Score: 3 / パフォーマンス改善
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Error:" in captured.err
-    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert EVALUATION_SECTION_ERROR_MESSAGE in captured.err
 
 
 def test_validate_pr_body_missing_evaluation_anchor(capsys):
@@ -394,7 +395,7 @@ Priority Score: 2 / 評価アンカー欠落
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Error:" in captured.err
-    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert EVALUATION_SECTION_ERROR_MESSAGE in captured.err
 
 
 def test_validate_pr_body_requires_evaluation_heading(capsys):
@@ -409,7 +410,7 @@ Priority Score: 1 / 評価見出し欠落
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Error:" in captured.err
-    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert EVALUATION_SECTION_ERROR_MESSAGE in captured.err
 
 
 @pytest.mark.parametrize(
@@ -449,7 +450,7 @@ def test_main_blocks_pr_when_evaluation_section_incomplete(body, monkeypatch, ca
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Error:" in captured.err
-    assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
+    assert EVALUATION_SECTION_ERROR_MESSAGE in captured.err
     assert check_governance_gate.PR_BODY_SOURCE_NAME in captured.err
 
 
