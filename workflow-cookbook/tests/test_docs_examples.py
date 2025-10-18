@@ -33,3 +33,9 @@ def test_reflection_example_does_not_stage_with_repo_prefix() -> None:
     yaml_lines = _load_reflection_yaml_block()
 
     assert "          git add workflow-cookbook/reports/today.md" not in yaml_lines
+
+
+def test_reflection_download_artifact_path_is_repo_root() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert "          path: workflow-cookbook/logs" not in yaml_lines
