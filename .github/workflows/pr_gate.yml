@@ -23,8 +23,12 @@ jobs:
         with:
           python-version: "3.11"
       - name: Governance gate (soft)
+        id: governance_gate
         run: python tools/ci/check_governance_gate.py
         continue-on-error: true
+      - name: Governance gate failure enforcement
+        if: ${{ steps.governance_gate.outcome == 'failure' }}
+        run: exit 1
       - name: Require CODEOWNERS approval
         id: codeowners
         continue-on-error: true
