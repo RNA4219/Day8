@@ -32,20 +32,90 @@ jobs:
               pull_number,
             });
 
-            const pendingUsers = pr.requested_reviewers?.map((reviewer) => `@${reviewer.login}`) ?? [];
-            const pendingTeams = pr.requested_teams?.map(
-              (team) => `@${team.organization.login}/${team.slug}`,
-            ) ?? [];
+            const codeownerUsers = new Set(
+              (pr.requested_reviewers ?? []).map((reviewer) => `@${reviewer.login}`),
+            );
+            const codeownerTeams = new Set(
+              (pr.requested_teams ?? []).map(
+                (team) => `@${team.organization.login}/${team.slug}`,
+              ),
+            );
 
-            if (pendingUsers.length === 0 && pendingTeams.length === 0) {
-              core.notice('All required reviewers have approved.');
+            const reviews = await github.paginate(
+              github.rest.pulls.listReviews,
+              {
+                owner,
+                repo,
+                pull_number,
+                per_page: 100,
+              },
+            );
+
+            const latestStates = new Map();
+            for (const review of reviews) {
+              const login = review.user?.login;
+              const state = review.state?.toUpperCase();
+              if (!login || !state) {
+                continue;
+              }
+              latestStates.set(`@${login}`, state);
+            }
+
+            const blockers = [];
+            for (const login of codeownerUsers) {
+              const state = latestStates.get(login);
+              if (state === 'APPROVED') {
+                continue;
+              }
+              if (state === 'CHANGES_REQUESTED') {
+                blockers.push(`${login} (CHANGES_REQUESTED)`);
+              } else {
+                blockers.push(`${login} (awaiting review)`);
+              }
+            }
+
+            for (const team of codeownerTeams) {
+              blockers.push(`${team} (team review required)`);
+            }
+
+            const approvalSources = Array.from(latestStates.entries()).filter(([login, state]) => {
+              if (state !== 'APPROVED') {
+                return false;
+              }
+              if (codeownerUsers.size === 0) {
+                return true;
+              }
+              return codeownerUsers.has(login);
+            });
+            const hasApproval = approvalSources.length > 0;
+            const changeRequesters = Array.from(latestStates.entries())
+              .filter(([login, state]) => {
+                if (state !== 'CHANGES_REQUESTED') {
+                  return false;
+                }
+                if (codeownerUsers.size === 0) {
+                  return true;
+                }
+                return codeownerUsers.has(login);
+              })
+              .map(([login]) => login);
+
+            if (!hasApproval) {
+              core.setFailed('Awaiting CODEOWNERS approval: no approvals recorded yet.');
               return;
             }
 
-            const pending = [...pendingUsers, ...pendingTeams];
-            core.setFailed(
-              `Awaiting required review from: ${pending.join(', ')}`,
-            );
+            if (changeRequesters.length > 0) {
+              core.setFailed(`Changes requested by: ${changeRequesters.join(', ')}`);
+              return;
+            }
+
+            if (blockers.length > 0) {
+              core.setFailed(`Awaiting required review from: ${blockers.join(', ')}`);
+              return;
+            }
+
+            core.notice('All CODEOWNERS reviews have approved and no changes are requested.');
       - name: Enforce governance gate
         run: python tools/ci/check_governance_gate.py
       - name: Block auto-merge (informational)
