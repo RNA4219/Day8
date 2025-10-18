@@ -1,24 +1,87 @@
 name: test
+
 on:
   push:
     branches: ["**"]
   pull_request:
-defaults:
-  run:
-    working-directory: workflow-cookbook
+
+env:
+  CI_STRICT: ${{ vars.CI_STRICT || '' }}
+
 jobs:
-  run:
+  node-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # ★ プロジェクトに合わせて差し替え（ここはダミー出力）
-      - name: Run tests (dummy)
-        run: |
-          mkdir -p logs
-          echo '{"name":"sample::ok","status":"pass","duration_ms":120}' >> logs/test.jsonl
-          echo '{"name":"sample::fail","status":"fail","duration_ms":900}' >> logs/test.jsonl
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Node test suites
+        id: node-tests-run
+        run: python3 workflow-cookbook/scripts/run_ci_tests.py --mode node --reset-log
+        env:
+          CI: true
+
       - name: Upload logs
         uses: actions/upload-artifact@v4
         with:
           name: test-logs
           path: workflow-cookbook/logs
+
+      - name: Enforce strict mode (Node)
+        if: ${{ always() }}
+        run: |
+          case "${CI_STRICT:-}" in
+            true|True|TRUE|1|yes|YES)
+              if [ "${{ steps.node-tests-run.outputs.had_failures }}" = "true" ]; then
+                echo "Strict mode enabled; failing due to node test failures."
+                exit 1
+              fi
+              ;;
+          esac
+
+  python-tests:
+    needs: node-tests
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download existing logs
+        uses: actions/download-artifact@v4
+        with:
+          name: test-logs
+          path: .
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pytest
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+
+      - name: Run Python test suites
+        id: python-tests-run
+        run: python workflow-cookbook/scripts/run_ci_tests.py --mode python
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: workflow-cookbook/logs
+
+      - name: Enforce strict mode (Python)
+        if: ${{ always() }}
+        run: |
+          case "${CI_STRICT:-}" in
+            true|True|TRUE|1|yes|YES)
+              if [ "${{ steps.python-tests-run.outputs.had_failures }}" = "true" ]; then
+                echo "Strict mode enabled; failing due to python test failures."
+                exit 1
+              fi
+              ;;
+          esac
