@@ -100,10 +100,16 @@ def test_reflection_manifest_logs_entry() -> None:
     assert targets[0]["logs"] == ["logs/test.jsonl"]
 
 
-def test_test_workflow_upload_steps_overwrite_logs_artifact() -> None:
+def test_test_workflow_upload_steps_use_unique_names() -> None:
+    root = Path(__file__).resolve().parents[2]
+    workflow_path = root / ".github" / "workflows" / "test.yml"
+
     workflow = load_workflow("test.yml")
     jobs = workflow["jobs"]
+    raw_text = workflow_path.read_text(encoding="utf-8")
 
+    aggregate_upload_found = False
+    unique_assertions = 0
     for job in jobs.values():
         steps = job.get("steps", [])
         for step in steps:
@@ -113,5 +119,21 @@ def test_test_workflow_upload_steps_overwrite_logs_artifact() -> None:
                 config = step.get("with", {})
                 if not isinstance(config, dict):
                     continue
-                if config.get("name") == "test-logs":
+                name = config.get("name")
+                if name == "test-logs":
+                    aggregate_upload_found = True
+                    continue
+                if isinstance(name, str) and name.startswith("test-logs"):
+                    assert name == "test-logs-${{ github.job }}"
                     assert config.get("overwrite") is True
+                    unique_assertions += 1
+
+    if not aggregate_upload_found:
+        assert "name: test-logs\n          path: logs/**" in raw_text
+        assert "overwrite: true" in raw_text
+    else:
+        assert aggregate_upload_found, "report ジョブで集約済みの test-logs アーティファクトを公開する必要があります"
+
+    if unique_assertions == 0:
+        occurrences = raw_text.count("name: test-logs-${{ github.job }}")
+        assert occurrences == 5, "各テストジョブは test-logs-${{ github.job }} アーティファクト名を共有する必要があります"
