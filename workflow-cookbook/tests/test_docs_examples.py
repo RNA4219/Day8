@@ -39,3 +39,9 @@ def test_reflection_download_artifact_path_is_repo_root() -> None:
     yaml_lines = _load_reflection_yaml_block()
 
     assert "          path: workflow-cookbook/logs" not in yaml_lines
+
+
+def test_reflection_download_artifact_includes_run_id() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert "          run-id: ${{ github.event.workflow_run.id }}" in yaml_lines
