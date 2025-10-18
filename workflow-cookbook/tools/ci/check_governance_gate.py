@@ -432,7 +432,9 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
     evaluation_warning_needed = not (has_evaluation_heading and has_evaluation_anchor)
     if evaluation_warning_needed:
         evaluation_location = MessageLocation(source_text, None) if source_text else None
-        warnings.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
+        message = "PR must reference EVALUATION (acceptance) anchor"
+        warnings.append((message, evaluation_location))
+        errors.append((message, evaluation_location))
     priority_location: MessageLocation | None = None
     if source_text:
         priority_line = _find_priority_label_line(raw_body) if has_priority_label else None
