@@ -456,6 +456,39 @@ def test_main_accepts_pr_body_env(monkeypatch, capsys):
     assert captured.err == ""
 
 
+def test_main_accepts_pr_body_argument(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+
+    exit_code = check_governance_gate.main(
+        [
+            "--pr-body",
+            """Intent: INT-100\n## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\nPriority Score: 3 / 品質改善\n""",
+        ]
+    )
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
+def test_main_accepts_pr_body_file(monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    pr_body_file = tmp_path / "body.md"
+    pr_body_file.write_text(
+        """Intent: INT-200\n## EVALUATION\n- [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)\nPriority Score: 4 / セキュリティ向上\n""",
+        encoding="utf-8",
+    )
+
+    exit_code = check_governance_gate.main([
+        "--pr-body-file",
+        str(pr_body_file),
+    ])
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_main_requires_pr_body(monkeypatch, capsys):
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
     monkeypatch.delenv("PR_BODY", raising=False)

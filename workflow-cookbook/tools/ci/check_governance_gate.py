@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import argparse
+import ast
 import json
 import os
 import re
 import subprocess
 import sys
-import ast
 from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
@@ -254,6 +255,23 @@ def resolve_pr_body() -> str | None:
     return read_event_body(Path(event_path_value))
 
 
+def parse_args(argv: Sequence[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Governance gate validator")
+    parser.add_argument(
+        "--pr-body",
+        dest="pr_body",
+        type=str,
+        help="Pull request body content",
+    )
+    parser.add_argument(
+        "--pr-body-file",
+        dest="pr_body_file",
+        type=Path,
+        help="Path to file containing pull request body",
+    )
+    return parser.parse_args(list(argv))
+
+
 INTENT_PATTERN = re.compile(
     r"Intent\s*[：:]\s*INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
     re.IGNORECASE,
@@ -303,7 +321,10 @@ def validate_pr_body(body: str | None) -> bool:
     return success
 
 
-def main() -> int:
+def main(argv: Sequence[str] | None = None) -> int:
+    if argv is None:
+        argv = ()
+    args = parse_args(argv)
     repo_root = Path(__file__).resolve().parents[2]
     policy_path = repo_root / "governance" / "policy.yaml"
     forbidden_patterns = load_forbidden_patterns(policy_path)
@@ -321,7 +342,17 @@ def main() -> int:
         )
         return 1
 
-    body = resolve_pr_body()
+    body: str | None = None
+    if args.pr_body is not None:
+        body = args.pr_body
+    elif args.pr_body_file is not None:
+        try:
+            body = args.pr_body_file.read_text(encoding="utf-8")
+        except OSError as error:
+            print(f"Failed to read PR body file: {error}", file=sys.stderr)
+            return 1
+    if body is None:
+        body = resolve_pr_body()
     if body is None:
         return 1
     if not validate_pr_body(body):
@@ -331,4 +362,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
