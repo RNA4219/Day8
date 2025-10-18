@@ -12,5 +12,8 @@ def test_readme_priority_score_is_mandatory() -> None:
     assert "Priority Score" in content, "README.md には Priority Score を要求するチェック項目が必要です"
     assert "必ず" in content, "README.md のチェックリストで Priority Score が必須である旨を明記してください"
     assert (
-        "<number> / <justification>" in content
-    ), "README.md には Priority Score の形式例として '<number> / <justification>' を含めてください"
+        "Priority Score: <number> / <justification>" in content
+    ), (
+        "README.md には Priority Score の形式例として 'Priority Score: <number> / <justification>' を"
+        "含めてください"
+    )
