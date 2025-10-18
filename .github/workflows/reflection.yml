@@ -84,8 +84,19 @@ jobs:
         uses: actions/download-artifact@v4.1.7
         with:
           name: test-logs
-          path: workflow-cookbook/logs
+          path: .
           run-id: ${{ steps.artifact-meta.outputs.run_id }}
+      - name: Normalize downloaded log directories
+        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
+        run: |
+          if [ -d "workflow-cookbook/logs/workflow-cookbook/logs" ]; then
+            shopt -s nullglob
+            for file in workflow-cookbook/logs/workflow-cookbook/logs/*; do
+              mv "$file" workflow-cookbook/logs/
+            done
+            shopt -u nullglob
+            rm -rf workflow-cookbook/logs/workflow-cookbook
+          fi
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
