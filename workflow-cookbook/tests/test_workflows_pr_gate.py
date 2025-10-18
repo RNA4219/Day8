@@ -289,6 +289,42 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
     assert "fetch-depth: 0" in raw_text, "checkout ステップには fetch-depth: 0 の指定が必要です"
 
 
+def test_pr_gate_runs_governance_gate_after_setup_python() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict) and "gate" in jobs, "pr_gate.yml の jobs.gate が必要です"
+
+    gate_job = jobs["gate"]
+    assert isinstance(gate_job, dict), "jobs.gate はマッピングである必要があります"
+
+    raw_steps = gate_job.get("steps")
+    governance_gate_index, setup_python_index = -1, -1
+
+    if isinstance(raw_steps, list):
+        for index, raw_step in enumerate(raw_steps):
+            if not isinstance(raw_step, dict):
+                continue
+
+            if raw_step.get("uses") == "actions/setup-python@v5":
+                setup_python_index = index
+
+            run_command = raw_step.get("run")
+            if isinstance(run_command, str) and "python tools/ci/check_governance_gate.py" in run_command:
+                governance_gate_index = index
+                assert run_command.strip().startswith(
+                    "python tools/ci/check_governance_gate.py"
+                ), "ガバナンスゲートの実行コマンドは defaults.run.working-directory に合わせたパスを使用する必要があります"
+    else:
+        setup_python_index = raw_text.find("actions/setup-python@v5")
+        governance_gate_index = raw_text.find("python tools/ci/check_governance_gate.py")
+
+    assert governance_gate_index != -1, "python tools/ci/check_governance_gate.py を実行するステップが必要です"
+    assert setup_python_index != -1, "actions/setup-python@v5 ステップが必要です"
+    assert (
+        governance_gate_index > setup_python_index
+    ), "ガバナンスゲートの実行ステップは actions/setup-python@v5 の後に配置する必要があります"
+
+
 def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)
