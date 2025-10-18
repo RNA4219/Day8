@@ -231,6 +231,7 @@ jobs:
           pattern: test-logs-*
           path: test-logs
       - name: Summarize & STRICT gate (optional)
+        working-directory: .
         run: |
           set -Eeuo pipefail
           mapfile -t sources < <(find . -name test.jsonl -print 2>/dev/null | sort)
