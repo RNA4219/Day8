@@ -100,6 +100,19 @@ def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None
     assert "if-no-artifact-found" not in content
 
 
+def test_reflection_workflow_download_step_extracts_to_repo_root() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+
+    assert "          path: .\n" in content
+    assert "          path: workflow-cookbook/logs\n" not in content
+
+
 def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
