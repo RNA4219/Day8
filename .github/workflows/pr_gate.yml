@@ -221,13 +221,14 @@ jobs:
             }
             const teamHandles = Array.from(codeownerTeams);
             const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));
+            const hasTeamCoverage = codeownerTeams.size > 0 && pendingTeamHandles.length === 0;
             if (pendingTeamHandles.length > 0) {
               const teamMessages = pendingTeamHandles.map((team) => `${team} (team review required)`);
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }
             const teamApprovals = collaboratorApprovals;
-            if (requiredUsers.length === 0 && approvals.size === 0 && teamApprovals.size === 0) {
+            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0 && teamApprovals.size === 0 && !hasTeamCoverage) {
               failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
               return;
             }
