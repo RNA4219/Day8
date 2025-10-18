@@ -430,6 +430,20 @@ def test_pr_gate_to_team_handle_is_declared_in_outer_scope() -> None:
     ), "toTeamHandle は requestedTeamHandles から参照可能なスコープで宣言される必要があります"
 
 
+def test_pr_gate_to_team_handle_helper_precedes_fail_with_definition() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    to_team_handle_index = script.find("const toTeamHandle")
+    fail_with_index = script.find("const failWith")
+
+    assert to_team_handle_index != -1, "toTeamHandle ヘルパーが定義されている必要があります"
+    assert fail_with_index != -1, "failWith ヘルパーが定義されている必要があります"
+    assert (
+        to_team_handle_index < fail_with_index
+    ), "toTeamHandle は failWith より前の外側スコープで定義されている必要があります"
+
+
 def test_pr_gate_github_script_declares_manual_request_variables_once() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)
