@@ -391,7 +391,7 @@ Intent: INT-001
 Priority Score: 2 / 評価アンカー欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
@@ -405,7 +405,7 @@ Evaluation anchor is explained here without heading.
 Priority Score: 1 / 評価見出し欠落
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
