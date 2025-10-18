@@ -110,11 +110,10 @@ jobs:
         working-directory: workflow-cookbook
         run: |
           python scripts/analyze.py
-      - name: Commit report
+      - name: Determine reflection outputs
+        id: reflection-paths
         working-directory: workflow-cookbook
         run: |
-          git config user.name "reflect-bot"
-          git config user.email "bot@example.com"
           PYTHON_OUTPUT="$(python - <<'PY'
           from __future__ import annotations
 
@@ -306,18 +305,29 @@ jobs:
             ISSUE_SUGGESTIONS_CONTENT_PATH="workflow-cookbook/$ISSUE_SUGGESTIONS_RELATIVE"
             ISSUE_SUGGESTIONS_HASH_PATH="$ISSUE_SUGGESTIONS_CONTENT_PATH"
           fi
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
+          echo "ISSUE_SUGGESTIONS_RELATIVE=$ISSUE_SUGGESTIONS_RELATIVE" >> "$GITHUB_ENV"
           echo "ISSUE_SUGGESTIONS_CONTENT_PATH=$ISSUE_SUGGESTIONS_CONTENT_PATH" >> "$GITHUB_ENV"
           echo "ISSUE_SUGGESTIONS_HASH_PATH=$ISSUE_SUGGESTIONS_HASH_PATH" >> "$GITHUB_ENV"
+          echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+          echo "issue-relative-path=$ISSUE_SUGGESTIONS_RELATIVE" >> "$GITHUB_OUTPUT"
+          echo "issue-content-path=$ISSUE_SUGGESTIONS_CONTENT_PATH" >> "$GITHUB_OUTPUT"
+          echo "issue-hash-path=$ISSUE_SUGGESTIONS_HASH_PATH" >> "$GITHUB_OUTPUT"
+      - name: Commit report
+        working-directory: workflow-cookbook
+        run: |
+          git config user.name "reflect-bot"
+          git config user.email "bot@example.com"
           git add "$REPORT_PATH"
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed (draft memo)
         # Skip issue creation when no suggestions were produced (hashFiles returns '0' when missing).
-        if: ${{ hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH)) != '0' }}
+        if: ${{ hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path)) != '0' }}
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "反省TODO ${{ github.run_id }}"
-          content-filepath: ${{ env.ISSUE_SUGGESTIONS_CONTENT_PATH }}
+          content-filepath: ${{ steps.reflection-paths.outputs.issue-content-path }}
           labels: reflection, needs-triage
       - name: Open draft PR with doc/test tweaks (disabled)
         if: ${{ false }}  # デチューン：無効化
