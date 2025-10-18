@@ -308,6 +308,7 @@ def test_validate_pr_body_fails_when_priority_line_invalid(body, capsys):
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
 
 
@@ -340,6 +341,7 @@ def test_main_blocks_pr_when_priority_line_invalid(body, monkeypatch, capsys):
     assert check_governance_gate.main() == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
 
 
@@ -394,6 +396,7 @@ Priority Score: 2 / 評価アンカー欠落
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
@@ -408,6 +411,7 @@ Priority Score: 1 / 評価見出し欠落
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
@@ -421,6 +425,7 @@ Intent: INT-789
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
 
@@ -438,6 +443,7 @@ def test_main_fails_without_priority_score(monkeypatch, capsys):
     assert exit_code == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
+    assert "Error:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
 

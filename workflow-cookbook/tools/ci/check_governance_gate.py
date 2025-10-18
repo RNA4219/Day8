@@ -364,10 +364,11 @@ def validate_pr_body(body: str | None) -> bool:
     has_priority_with_justification = _has_priority_with_justification(
         normalized_priority_body, has_priority_label
     )
-    success = True
+    warnings: list[str] = []
+    errors: list[str] = []
 
     if not INTENT_PATTERN.search(search_body):
-        print("Warning: PR body should include 'Intent: INT-xxx'", file=sys.stderr)
+        warnings.append("PR body should include 'Intent: INT-xxx'")
     has_evaluation_heading = bool(
         EVALUATION_HEADING_PATTERN.search(normalized_body)
         or EVALUATION_HTML_HEADING_PATTERN.search(raw_body)
@@ -376,13 +377,22 @@ def validate_pr_body(body: str | None) -> bool:
         EVALUATION_ANCHOR_PATTERN.search(raw_body)
         or EVALUATION_ANCHOR_PATTERN.search(normalized_body)
     )
-    if not has_evaluation_heading or not has_evaluation_anchor:
-        print("Warning: PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
+    evaluation_warning_needed = not (has_evaluation_heading and has_evaluation_anchor)
+    evaluation_error_needed = has_evaluation_heading ^ has_evaluation_anchor
+    if evaluation_warning_needed:
+        warnings.append("PR must reference EVALUATION (acceptance) anchor")
+        if evaluation_error_needed:
+            errors.append("PR must reference EVALUATION (acceptance) anchor")
     if not has_priority_label or not has_priority_with_justification:
-        print(f"Warning: {PRIORITY_SCORE_ERROR_MESSAGE}", file=sys.stderr)
-        success = False
+        warnings.append(PRIORITY_SCORE_ERROR_MESSAGE)
+        errors.append(PRIORITY_SCORE_ERROR_MESSAGE)
 
-    return success
+    for warning in warnings:
+        print(f"Warning: {warning}", file=sys.stderr)
+    for error in errors:
+        print(f"Error: {error}", file=sys.stderr)
+
+    return not errors
 
 
 def main(argv: Sequence[str] | None = None) -> int:
