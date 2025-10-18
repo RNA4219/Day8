@@ -232,8 +232,9 @@ jobs:
               return;
             }
             const teamHandles = Array.from(codeownerTeams);
-            const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));
-            const hasTeamCoverage = codeownerTeams.size > 0 && pendingTeamHandles.length === 0;
+            const hasTeamApprovals = collaboratorApprovals.size > 0;
+            const pendingTeamHandles = hasTeamApprovals ? [] : teamHandles;
+            const hasTeamCoverage = codeownerTeams.size > 0 && hasTeamApprovals;
             core.setOutput('hasTeamCoverage', hasTeamCoverage ? 'true' : 'false');
             if (pendingTeamHandles.length > 0) {
               const teamMessages = pendingTeamHandles.map((team) => `${team} (team review required)`);

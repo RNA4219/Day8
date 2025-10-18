@@ -185,9 +185,9 @@ def _run_codeowners_script(
               const runner = new AsyncFunction('core', 'github', 'context', 'require', 'process', scriptSource);
               try {
                 await runner(core, github, context, require, process);
-                if (failedMessage) throw new Error(failedMessage);
                 const serialized = Object.fromEntries(outputs);
                 console.log(JSON.stringify(serialized));
+                if (failedMessage) throw new Error(failedMessage);
               } catch (error) {
                 const message = error instanceof Error ? error.stack ?? error.message : String(error);
                 console.error(message);
@@ -371,8 +371,11 @@ def test_pr_gate_team_approvals_skip_failure_when_team_is_approved() -> None:
         "const collaboratorApprovals = new Set();" in script
     ), "チーム承認済みレビュアーを追跡する集合が必要です"
     assert (
-        "const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));" in script
-    ), "ブロッカーとして扱うのは requested_team に残っているチームだけに限定する必要があります"
+        "const hasTeamApprovals = collaboratorApprovals.size > 0;" in script
+    ), "チーム承認は最新レビュー状態から算出する必要があります"
+    assert (
+        "const pendingTeamHandles = hasTeamApprovals ? [] : teamHandles;" in script
+    ), "チーム承認待ち集合はレビュー状態に基づき算出する必要があります"
     assert (
         "const teamApprovals = collaboratorApprovals;" in script
     ), "チーム承認済み集合を最終判定に利用する必要があります"
@@ -386,13 +389,25 @@ def test_pr_gate_no_approval_failure_allows_team_coverage() -> None:
     script = _extract_github_script_text(workflow, raw_text)
 
     assert (
-        "const hasTeamCoverage = codeownerTeams.size > 0 && pendingTeamHandles.length === 0;"
+        "const hasTeamCoverage = codeownerTeams.size > 0 && hasTeamApprovals;"
         in script
     ), "コードオーナーチームのみのケースで pendingTeamHandles が空なら緩和される必要があります"
     assert "if (!hasTeamCoverage) {" in script, "チームカバレッジが無い場合のみ failWith を呼ぶ必要があります"
     assert (
         "core.notice('CODEOWNERS team coverage satisfied without individual approvals.');" in script
     ), "チームカバレッジ成立時に通知メッセージを出力する必要があります"
+
+
+def test_pr_gate_team_only_codeowners_without_reviews_fails(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa\n",
+        reviews=[],
+    )
+
+    assert result.returncode != 0, "承認レビューが存在しない場合は失敗する必要があります"
+    assert outputs.get("hasApproval") == "false"
+    assert outputs.get("hasTeamCoverage") == "false"
 
 
 def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
@@ -508,8 +523,8 @@ def test_pr_gate_pending_ignores_non_codeowner_manual_reviewers() -> None:
     ), "必須レビュアー集合には CODEOWNERS とフィルタ済み手動リクエストの和集合を用いる必要があります"
     assert (
         "const teamHandles = Array.from(codeownerTeams);" in script
-        and "const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));" in script
-    ), "CODEOWNERS 以外のチームリクエストを除外した pending 判定が必要です"
+        and "const pendingTeamHandles = hasTeamApprovals ? [] : teamHandles;" in script
+    ), "CODEOWNERS チームの未承認判定はレビュー状態に基づく必要があります"
 
 
 def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
