@@ -37,6 +37,17 @@ jobs:
               core.setOutput('hasApproval', 'false');
               core.setFailed(message);
             };
+            const toHandle = (ownerHandle) => {
+              if (!ownerHandle.startsWith('@')) return `@${ownerHandle}`;
+              return ownerHandle;
+            };
+            const toTeamHandle = (team, defaultOrg) => {
+              if (!team) return null;
+              const slug = team.slug || team.name;
+              const org = (team.organization && team.organization.login) || defaultOrg;
+              if (!slug || !org) return null;
+              return `@${org}/${slug}`;
+            };
             const toRegex = (pattern) => {
               let normalized = pattern.trim();
               if (!normalized) return null;
@@ -67,17 +78,6 @@ jobs:
               const codeownerUsers = new Set();
               const codeownerTeams = new Set();
               const uncovered = [];
-            const toHandle = (ownerHandle) => {
-              if (!ownerHandle.startsWith('@')) return `@${ownerHandle}`;
-              return ownerHandle;
-            };
-            const toTeamHandle = (team, defaultOrg) => {
-              if (!team) return null;
-              const slug = team.slug || team.name;
-              const org = (team.organization && team.organization.login) || defaultOrg;
-              if (!slug || !org) return null;
-              return `@${org}/${slug}`;
-            };
               const findOwnersForFile = (filePath) => {
                 let owners = [];
                 for (const entry of entries) {

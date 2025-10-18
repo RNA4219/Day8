@@ -327,6 +327,25 @@ def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
     ), "ブロッカー集合をアクション出力へ公開する必要があります"
 
 
+def test_pr_gate_to_team_handle_is_declared_in_outer_scope() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    to_team_index = script.find("const toTeamHandle =")
+    collect_index = script.find("const collectCodeownersForFiles")
+    requested_index = script.find("const requestedTeamHandles = new Set")
+
+    assert to_team_index != -1, "toTeamHandle ヘルパー関数が定義されている必要があります"
+    assert collect_index != -1, "collectCodeownersForFiles 関数が定義されている必要があります"
+    assert requested_index != -1, "requestedTeamHandles の初期化が必要です"
+    assert (
+        to_team_index < collect_index
+    ), "toTeamHandle は collectCodeownersForFiles より外側スコープに配置される必要があります"
+    assert (
+        to_team_index < requested_index
+    ), "toTeamHandle は requestedTeamHandles から参照可能なスコープで宣言される必要があります"
+
+
 def test_pr_gate_github_script_declares_manual_request_variables_once() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)
