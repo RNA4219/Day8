@@ -225,21 +225,23 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v4
-        with: { name: test-logs, path: . }
+        with:
+          pattern: test-logs-*
+          path: test-logs
       - name: Summarize & STRICT gate (optional)
         run: |
           set -Eeuo pipefail
-          # 可能性のあるファイル名に対応
-          src=""
-          [ -f test.jsonl ] && src="test.jsonl"
-          [ -z "$src" ] && [ -f logs/test.jsonl ] && src="logs/test.jsonl"
-          if [ -z "$src" ]; then src=$(ls -1 **/test.jsonl | head -n1 || true); fi
-          if [ -z "$src" ]; then echo "No JSONL found"; exit 0; fi
+          mapfile -t sources < <(find . -name test.jsonl -print 2>/dev/null | sort)
+          if [ "${#sources[@]}" -eq 0 ]; then echo "No JSONL found"; exit 0; fi
 
           echo "=== CI Summary (raw JSONL) ==="
-          cat "$src" || true
+          fails=0
+          for src in "${sources[@]}"; do
+            echo "--- $src ---"
+            cat "$src" || true
+            fails=$(( fails + $(grep -c '"status":"fail"' "$src" || true) ))
+          done
 
-          fails=$(grep -c '"status":"fail"' "$src" || true)
           echo "Fail count: $fails"
 
           if [ "${CI_STRICT:-}" = "true" ] && [ "$fails" -gt 0 ]; then
