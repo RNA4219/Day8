@@ -70,6 +70,41 @@ def _find_step_indices_from_text(raw_text: str, expected_command: str) -> tuple[
     return checkout_index, setup_python_index, governance_index
 
 
+def _extract_github_script_text(workflow: Dict[str, Any], raw_text: str) -> str:
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict), "jobs セクションが必要です"
+    gate = jobs.get("gate")
+    assert isinstance(gate, dict), "jobs.gate が必要です"
+
+    steps = gate.get("steps")
+    if isinstance(steps, list):
+        for raw_step in steps:
+            if not isinstance(raw_step, dict):
+                continue
+            uses = raw_step.get("uses")
+            if uses == "actions/github-script@v7":
+                with_block = raw_step.get("with")
+                assert isinstance(with_block, dict), "github-script ステップには with ブロックが必要です"
+                script = with_block.get("script")
+                assert isinstance(script, str), "github-script ステップには script が必要です"
+                return script
+
+    marker = "script: |"
+    start = raw_text.find(marker)
+    assert start != -1, "github-script の script ブロックが必要です"
+    start += len(marker)
+    lines = raw_text[start:].splitlines()
+    script_lines = []
+    for line in lines:
+        if not line.startswith(" " * 12) and line.strip():
+            break
+        if line.startswith(" " * 12):
+            script_lines.append(line[12:])
+    script_text = "\n".join(script_lines).rstrip()
+    assert script_text, "github-script の script ブロックを取得できませんでした"
+    return script_text
+
+
 def test_pr_gate_runs_governance_check_after_checkout() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     jobs = workflow.get("jobs")
@@ -149,12 +184,38 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
 
 
 def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
-    _, raw_text = _load_pr_gate_workflow()
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
 
     assert (
-        "github.rest.pulls.listReviews" in raw_text
+        "github.rest.pulls.listReviews" in script
     ), "CODEOWNERS 判定には github.rest.pulls.listReviews を利用する必要があります"
+    assert "await github.paginate" in script, "レビュー一覧は github.paginate で取得する必要があります"
+    assert "const latestStates = new Map();" in script, "最新レビュー状態を保持する Map が必要です"
+    assert "latestStates.set(`@${login}`, state);" in script, "レビュアー毎に最新状態を記録する必要があります"
     assert "APPROVED" in raw_text, "承認状態(APPROVED)の判定ロジックが必要です"
     assert (
         "CHANGES_REQUESTED" in raw_text
     ), "差し戻し状態(CHANGES_REQUESTED)の判定ロジックが必要です"
+
+
+def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert "const approvals = new Set();" in script, "承認済みレビュアー集合の管理が必要です"
+    assert (
+        "const allChangeRequesters = Array.from(latestStates.entries())" in script
+    ), "CHANGES_REQUESTED を抽出する処理が必要です"
+    assert (
+        "const requiredUsers = Array.from(codeownerUsers);" in script
+    ), "CODEOWNERS 個人の一覧が必要です"
+    assert (
+        "const pendingApprovals = requiredUsers.filter" in script
+    ), "CODEOWNERS の未承認者検知が必要です"
+    assert (
+        "core.setFailed(`Changes requested by: ${allChangeRequesters.join(', ')}`);" in script
+    ), "CHANGES_REQUESTED 残存時の失敗メッセージが必要です"
+    assert (
+        "core.setFailed(`Awaiting required review from: ${messages.join(', ')}`);" in script
+    ), "未承認 CODEOWNERS の失敗メッセージが必要です"
