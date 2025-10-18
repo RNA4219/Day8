@@ -110,8 +110,9 @@ jobs:
         working-directory: workflow-cookbook
         run: |
           python scripts/analyze.py
-      - name: Commit report
+      - name: Determine reflection outputs
         if: ${{ steps.artifact-locator.outputs.found == 'true' }}
+        id: reflection-paths
         working-directory: workflow-cookbook
         run: |
           PYTHON_OUTPUT="$(python - <<'PY'
@@ -314,6 +315,7 @@ jobs:
           echo "issue-content-path=$ISSUE_SUGGESTIONS_CONTENT_PATH" >> "$GITHUB_OUTPUT"
           echo "issue-hash-path=$ISSUE_SUGGESTIONS_HASH_PATH" >> "$GITHUB_OUTPUT"
       - name: Commit report
+        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         working-directory: workflow-cookbook
         run: |
           git config user.name "reflect-bot"
