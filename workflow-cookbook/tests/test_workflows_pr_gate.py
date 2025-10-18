@@ -63,7 +63,7 @@ def _load_pr_gate_workflow() -> Tuple[Dict[str, Any], str]:
 
 def _find_step_indices_from_text(raw_text: str, expected_command: str) -> tuple[int, int, int]:
     checkout_index = raw_text.find("uses: actions/checkout")
-    setup_python_index = raw_text.find("uses: actions/setup-python")
+    setup_python_index = raw_text.find("uses: actions/setup-python@v5")
     governance_index = raw_text.find(expected_command)
     if governance_index == -1:
         governance_index = raw_text.find("python workflow-cookbook/tools/ci/check_governance_gate.py")
@@ -94,9 +94,11 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
             if isinstance(working_dir, str):
                 default_working_directory = working_dir
 
-    expected_command = "python workflow-cookbook/tools/ci/check_governance_gate.py"
-    if default_working_directory == "workflow-cookbook":
-        expected_command = "python tools/ci/check_governance_gate.py"
+    assert (
+        default_working_directory == "workflow-cookbook"
+    ), "defaults.run.working-directory は workflow-cookbook を指す必要があります"
+
+    expected_command = "python tools/ci/check_governance_gate.py"
 
     raw_steps = gate_job.get("steps")
     checkout_index, setup_python_index, governance_index = -1, -1, -1
@@ -124,6 +126,9 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
                 ), "ガバナンスゲートの実行コマンドが defaults.run.working-directory に合致する必要があります"
 
             if isinstance(uses, str) and uses.startswith("actions/setup-python@"):
+                assert (
+                    uses == "actions/setup-python@v5"
+                ), "actions/setup-python は v5 を使用する必要があります"
                 setup_python_index = index
     else:
         checkout_index, setup_python_index, governance_index = _find_step_indices_from_text(
