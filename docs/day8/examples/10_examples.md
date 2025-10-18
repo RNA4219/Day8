@@ -66,7 +66,7 @@ jobs:
       - name: Analyze logs → report
         run: |
           python -m pip install --upgrade pip
-          python workflow-cookbook/scripts/analyze.py
+          python scripts/analyze.py
       - name: Commit report
         run: |
           git config user.name "reflect-bot"
@@ -75,6 +75,8 @@ jobs:
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
 ```
+
+> `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、スクリプトは `python scripts/analyze.py` として呼び出します。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出
