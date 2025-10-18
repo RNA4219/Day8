@@ -393,7 +393,7 @@ def _has_priority_with_justification(body: str, has_priority_label: bool) -> boo
         for line in lines[1:]:
             raw = line.strip(_PRIORITY_STRIP_CHARS)
             if not raw:
-                break
+                continue
             if raw.startswith("#") or raw.startswith("```"):
                 break
 
