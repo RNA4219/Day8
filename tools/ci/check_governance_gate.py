@@ -9,6 +9,7 @@ from typing import Sequence
 
 _SAMPLE_FLAG = "--use-sample-pr-body"
 _SAMPLE_RELATIVE_PATH = Path("workflow-cookbook") / "tools" / "ci" / "fixtures" / "sample_pr_body.md"
+_PR_EVENT_NAMES = {"pull_request", "pull_request_target"}
 
 
 def _prepare_arguments(argv: Sequence[str] | None) -> tuple[list[str], bool]:
@@ -33,9 +34,13 @@ def _should_use_sample(use_sample_flag: bool) -> bool:
         return True
     if os.environ.get("PR_BODY"):
         return False
-    if os.environ.get("GITHUB_EVENT_PATH"):
-        return False
-    return True
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if not event_path:
+        return True
+    event_name = os.environ.get("GITHUB_EVENT_NAME")
+    if event_name not in _PR_EVENT_NAMES:
+        return True
+    return False
 
 
 def main(argv: Sequence[str] | None = None) -> None:
