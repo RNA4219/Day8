@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 
-def test_reflection_example_uses_repo_relative_git_add() -> None:
+def _load_reflection_yaml_block() -> list[str]:
     doc_path = (
         Path(__file__).resolve().parents[2]
         / "docs"
@@ -14,14 +13,23 @@ def test_reflection_example_uses_repo_relative_git_add() -> None:
     )
     content = doc_path.read_text(encoding="utf-8")
 
-    reflection_section = re.search(
-        r"## reflection\.yml（連動）\n```yaml\n(?P<block>.*?)```",
-        content,
-        re.DOTALL,
-    )
-    assert reflection_section is not None
+    prefix = "## reflection.yml（連動）\n```yaml\n"
+    _, sep, remainder = content.partition(prefix)
+    assert sep == prefix
 
-    yaml_block = reflection_section.group("block")
+    block, closing_sep, _ = remainder.partition("\n```")
+    assert closing_sep == "\n```"
 
-    assert "git add reports/today.md" in yaml_block
-    assert "git add workflow-cookbook/reports/today.md" not in yaml_block
+    return [line.rstrip() for line in block.splitlines()]
+
+
+def test_reflection_example_stages_report_file() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert "          git add reports/today.md" in yaml_lines
+
+
+def test_reflection_example_does_not_stage_with_repo_prefix() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert "          git add workflow-cookbook/reports/today.md" not in yaml_lines

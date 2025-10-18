@@ -76,6 +76,7 @@ jobs:
 ```
 
 > `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、スクリプトは `python scripts/analyze.py` として呼び出します。
+> 同じ理由でレポートのステージングは `git add reports/today.md` として実行します。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出
