@@ -116,6 +116,7 @@ def _run_codeowners_script(
     pull_request: dict[str, Any] | None = None,
     files: list[dict[str, Any]] | None = None,
     reviews: list[dict[str, Any]] | None = None,
+    team_members: dict[str, list[str]] | None = None,
 ) -> tuple[subprocess.CompletedProcess[str], dict[str, Any]]:
     node_path = shutil.which("node")
     if node_path is None:
@@ -136,6 +137,7 @@ def _run_codeowners_script(
             "requested_teams": [],
             **(pull_request or {}),
         },
+        "team_members": team_members or {},
     }
 
     scenario_file = tmp_path / "scenario.json"
@@ -160,12 +162,21 @@ def _run_codeowners_script(
                 failedMessage = message;
               },
               notice: () => {},
+              warning: () => {},
             };
             const github = {
-              rest: { pulls: { listFiles: 'listFiles', listReviews: 'listReviews' } },
-              paginate: async (fn) => {
+              rest: {
+                pulls: { listFiles: 'listFiles', listReviews: 'listReviews' },
+                teams: { listMembersInOrg: 'listMembersInOrg' },
+              },
+              paginate: async (fn, params) => {
                 if (fn === 'listFiles') return scenario.files;
                 if (fn === 'listReviews') return scenario.reviews;
+                if (fn === 'listMembersInOrg') {
+                  const key = `${params.org}/${params.team_slug}`;
+                  const members = scenario.team_members?.[key] || [];
+                  return members.map((login) => ({ login }));
+                }
                 return [];
               },
             };
@@ -397,11 +408,13 @@ def test_pr_gate_team_approvals_skip_failure_when_team_is_approved() -> None:
         "if (teamHandle) {" in script and "teamReviewStates.set(teamHandle, state);" in script
     ), "チームレビューステートを更新する処理が必要です"
     assert (
-        "const pendingTeamHandles = teamHandles.filter((team) => {" in script
-    ), "チーム承認待ち集合はレビュー状態に基づき算出する必要があります"
+        "const teamHandles = Array.from(codeownerTeams);" in script
+        and "const pendingTeamHandles = [];" in script
+        and "for (const team of teamHandles) {" in script
+    ), "チーム承認待ち集合はコードオーナーチームを走査して算出する必要があります"
     assert (
-        "return state !== 'APPROVED';" in script
-    ), "チーム承認済みかをレビュー状態から判定する必要があります"
+        "const reviewState = teamReviewStates.get(team);" in script
+    ), "チームレビュー状態は各ループ内で確認する必要があります"
     assert (
         "const hasTeamCoverage = teamHandles.length > 0 && pendingTeamHandles.length === 0;"
         in script
@@ -463,6 +476,27 @@ def test_pr_gate_allows_team_only_codeowners_when_not_pending(tmp_path: Path) ->
     assert outputs.get("hasApproval") == "true"
     assert outputs.get("blockers") == "[]"
     assert outputs.get("hasTeamCoverage") == "true"
+
+
+def test_pr_gate_team_only_codeowners_rejects_non_member_collaborator(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa\n",
+        reviews=[
+            {
+                "user": {"login": "external-collaborator"},
+                "state": "APPROVED",
+                "author_association": "COLLABORATOR",
+            }
+        ],
+        team_members={"octo/qa": ["qa-team-member"]},
+    )
+
+    assert result.returncode != 0
+    assert outputs.get("hasTeamCoverage") == "false"
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("@octo/qa" in blocker for blocker in blockers)
 
 
 def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
@@ -548,8 +582,9 @@ def test_pr_gate_pending_ignores_non_codeowner_manual_reviewers() -> None:
     ), "必須レビュアー集合には CODEOWNERS とフィルタ済み手動リクエストの和集合を用いる必要があります"
     assert (
         "const teamHandles = Array.from(codeownerTeams);" in script
-        and "const pendingTeamHandles = teamHandles.filter((team) => {" in script
-    ), "CODEOWNERS チームの未承認判定はレビュー状態に基づく必要があります"
+        and "const pendingTeamHandles = [];" in script
+        and "for (const team of teamHandles) {" in script
+    ), "CODEOWNERS チームの未承認判定はチームごとの確認処理を通じて行う必要があります"
 
 
 def test_pr_gate_fails_when_team_review_is_removed(tmp_path: Path) -> None:
