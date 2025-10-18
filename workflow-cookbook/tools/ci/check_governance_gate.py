@@ -433,7 +433,6 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
     if missing_evaluation_heading or missing_evaluation_anchor:
         evaluation_location = MessageLocation(source_text, None) if source_text else None
         message = "PR must reference EVALUATION (acceptance) anchor"
-        warnings.append((message, evaluation_location))
         errors.append((message, evaluation_location))
     priority_location: MessageLocation | None = None
     if source_text:
