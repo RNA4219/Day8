@@ -28,15 +28,25 @@ def _load_sample_body(sample_path: Path) -> str:
     return sample_path.read_text(encoding="utf-8")
 
 
+def _should_use_sample(use_sample_flag: bool) -> bool:
+    if use_sample_flag:
+        return True
+    if os.environ.get("PR_BODY"):
+        return False
+    if os.environ.get("GITHUB_EVENT_PATH"):
+        return False
+    return True
+
+
 def main(argv: Sequence[str] | None = None) -> None:
     repo_root = Path(__file__).resolve().parents[2]
     legacy_script = repo_root / "workflow-cookbook" / "tools" / "ci" / "check_governance_gate.py"
     if not legacy_script.is_file():
         raise FileNotFoundError(legacy_script)
 
-    filtered_args, use_sample = _prepare_arguments(argv)
+    filtered_args, use_sample_flag = _prepare_arguments(argv)
 
-    if use_sample:
+    if _should_use_sample(use_sample_flag):
         sample_path = repo_root / _SAMPLE_RELATIVE_PATH
         if not sample_path.is_file():
             raise FileNotFoundError(sample_path)
