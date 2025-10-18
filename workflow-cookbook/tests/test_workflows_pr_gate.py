@@ -96,7 +96,7 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
         default_working_directory == "workflow-cookbook"
     ), "defaults.run.working-directory は workflow-cookbook を指す必要があります"
 
-    expected_command = "python tools/ci/check_governance_gate.py"
+    expected_command = "python ../tools/ci/check_governance_gate.py"
 
     raw_steps = gate_job.get("steps")
     checkout_index, setup_python_index, governance_index = -1, -1, -1
@@ -135,7 +135,7 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
 
     assert checkout_index != -1, "actions/checkout ステップが必要です"
     assert setup_python_index != -1, "actions/setup-python ステップが必要です"
-    assert governance_index != -1, "python tools/ci/check_governance_gate.py を実行するステップが必要です"
+    assert governance_index != -1, "python ../tools/ci/check_governance_gate.py を実行するステップが必要です"
     assert (
         governance_index > checkout_index
     ), "ガバナンスゲートの実行は actions/checkout の後に行う必要があります"
