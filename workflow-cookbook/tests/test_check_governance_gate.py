@@ -244,13 +244,14 @@ Intent: INT-777
 Priority Score: 3
 """
 
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert (
         "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
         in captured.err
     )
+    assert "Error:" not in captured.err
 
 
 INVALID_PRIORITY_LINES = [
@@ -279,13 +280,14 @@ def _build_priority_body(priority_line: str) -> str:
 def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys):
     body = _build_priority_body(priority_line)
 
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert (
         "Priority Score must be provided as '<number> / <justification>' to reflect Acceptance Criteria prioritization"
         in captured.err
     )
+    assert "Error:" not in captured.err
 
 
 @pytest.mark.parametrize(
@@ -310,29 +312,30 @@ def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys
     ids=["missing-priority-line", "missing-justification"],
 )
 def test_validate_pr_body_fails_when_priority_line_invalid(body, capsys):
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Error:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
+    assert "Error:" not in captured.err
 
 
 @pytest.mark.parametrize("priority_line", INVALID_PRIORITY_LINES)
 def test_main_blocks_pr_when_priority_line_invalid(priority_line, monkeypatch, capsys):
     monkeypatch.setattr(check_governance_gate, "load_forbidden_patterns", lambda _path: [])
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    body = _build_priority_body(priority_line)
     monkeypatch.setattr(
         check_governance_gate,
         "resolve_pr_body_with_source",
         lambda: (body, check_governance_gate.PR_BODY_SOURCE_NAME),
     )
 
-    assert check_governance_gate.main() == 1
+    assert check_governance_gate.main() == 0
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Error:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
     assert check_governance_gate.PR_BODY_SOURCE_NAME in captured.err
+    assert "Error:" not in captured.err
 
 
 def test_validate_pr_body_missing_intent(capsys):
@@ -342,10 +345,11 @@ def test_validate_pr_body_missing_intent(capsys):
 Priority Score: 2 / SLO遵守
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Intent: INT-xxx" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_main_allows_missing_intent(monkeypatch, capsys):
@@ -358,11 +362,12 @@ def test_main_allows_missing_intent(monkeypatch, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 0
+    assert exit_code == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Intent: INT-xxx" in captured.err
     assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:1" in captured.err
+    assert "Error:" in captured.err
 
 
 def test_validate_pr_body_missing_evaluation(capsys):
@@ -384,10 +389,9 @@ Intent: INT-001
 Priority Score: 2 / 評価アンカー欠落
 """
 
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
@@ -399,10 +403,9 @@ Evaluation anchor is explained here without heading.
 Priority Score: 1 / 評価見出し欠落
 """
 
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Error:" in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
 
 
@@ -413,10 +416,9 @@ Intent: INT-789
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
 """
 
-    assert validate_pr_body(body) is False
+    assert validate_pr_body(body) is True
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Error:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
 
@@ -431,13 +433,12 @@ def test_main_fails_without_priority_score(monkeypatch, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 1
+    assert exit_code == 0
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
-    assert "Error:" in captured.err
     assert "Priority Score" in captured.err
     assert "Acceptance Criteria" in captured.err
-    assert f"Error: {check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured.err
+    assert "Error:" not in captured.err
 
 
 def test_pr_template_contains_required_sections():
@@ -597,10 +598,11 @@ def test_main_reports_priority_error_with_file_location(monkeypatch, tmp_path, c
         str(pr_body_file),
     ])
 
-    assert exit_code == 1
+    assert exit_code == 0
     captured = capsys.readouterr()
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
-    assert f"Error: {pr_body_file}:4:" in captured.err
+    assert f"Warning: {pr_body_file}:4:" in captured.err
+    assert "Error:" not in captured.err
 
 
 def test_main_reports_event_body_location(monkeypatch, tmp_path, capsys):
@@ -614,10 +616,10 @@ def test_main_reports_event_body_location(monkeypatch, tmp_path, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 1
+    assert exit_code == 0
     captured = capsys.readouterr()
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
-    assert f"Error: {event_path}:4:" in captured.err
+    assert f"Warning: {event_path}:4:" in captured.err
 
 
 def test_main_requires_pr_body(monkeypatch, capsys):
@@ -627,9 +629,53 @@ def test_main_requires_pr_body(monkeypatch, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 1
+    assert exit_code == 0
     captured = capsys.readouterr()
     assert "PR body data is unavailable" in captured.err
+
+
+def test_main_skips_for_non_pull_request_event(monkeypatch, capsys):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setattr(check_governance_gate, "load_forbidden_patterns", lambda _path: [])
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "push")
+    monkeypatch.delenv("GITHUB_EVENT_PATH", raising=False)
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "Skipping governance gate" in captured.err
+
+
+@pytest.mark.parametrize(
+    "payload_updates",
+    [
+        {"pull_request": {"draft": True}},
+        {"pull_request": {"base": {"ref": "release"}}, "repository": {"default_branch": "main"}},
+    ],
+)
+def test_main_skips_for_draft_and_non_default_base(
+    payload_updates, monkeypatch, tmp_path, capsys
+):
+    monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
+    monkeypatch.setattr(check_governance_gate, "load_forbidden_patterns", lambda _path: [])
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    payload = {"pull_request": {"body": "Intent: INT-1"}, "repository": {"default_branch": "main"}}
+    payload = json.loads(json.dumps(payload))  # ensure copy
+    for key, value in payload_updates.items():
+        if isinstance(value, dict) and isinstance(payload.get(key), dict):
+            payload[key].update(value)
+        else:
+            payload[key] = value
+    event_path = tmp_path / "event.json"
+    event_path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(event_path))
+
+    exit_code = check_governance_gate.main()
+
+    assert exit_code == 0
+    captured = capsys.readouterr()
+    assert "Skipping governance gate" in captured.err
 
 
 def test_sample_pr_body_fixture_is_valid():

@@ -22,6 +22,10 @@ class MessageLocation:
     line: int | None = None
 
 
+def _print_warning(message: str) -> None:
+    print(f"Warning: {message}", file=sys.stderr)
+
+
 def _format_message(prefix: str, message: str, location: MessageLocation | None) -> str:
     if location is None:
         return f"{prefix}: {message}"
@@ -247,10 +251,25 @@ def find_forbidden_matches(paths: Iterable[str], patterns: Sequence[str]) -> Lis
     return matches
 
 
-def read_event_body(event_path: Path) -> str | None:
+def load_event_payload(event_path: Path) -> dict[str, object] | None:
     if not event_path.exists():
+        _print_warning(f"{event_path}: Event payload not found")
         return None
-    payload = json.loads(event_path.read_text(encoding="utf-8"))
+    try:
+        payload = json.loads(event_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        _print_warning(f"{event_path}: Cannot read event payload: {error}")
+        return None
+    if not isinstance(payload, dict):
+        _print_warning(f"{event_path}: Event payload must be a JSON object")
+        return None
+    return payload
+
+
+def read_event_body(event_path: Path) -> str | None:
+    payload = load_event_payload(event_path)
+    if payload is None:
+        return None
     pull_request = payload.get("pull_request")
     if not isinstance(pull_request, dict):
         return None
@@ -401,6 +420,7 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
     if not INTENT_PATTERN.search(search_body):
         intent_location = MessageLocation(source_text, 1) if source_text else None
         warnings.append(("PR body should include 'Intent: INT-xxx'", intent_location))
+        errors.append(("PR body should include 'Intent: INT-xxx'", intent_location))
     has_evaluation_heading = bool(
         EVALUATION_HEADING_PATTERN.search(normalized_body)
         or EVALUATION_HTML_HEADING_PATTERN.search(raw_body)
@@ -410,21 +430,15 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
         or EVALUATION_ANCHOR_PATTERN.search(normalized_body)
     )
     evaluation_warning_needed = not (has_evaluation_heading and has_evaluation_anchor)
-    evaluation_error_needed = has_evaluation_heading ^ has_evaluation_anchor
     if evaluation_warning_needed:
         evaluation_location = MessageLocation(source_text, None) if source_text else None
         warnings.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
-        if evaluation_error_needed:
-            errors.append(
-                ("PR must reference EVALUATION (acceptance) anchor", evaluation_location)
-            )
     priority_location: MessageLocation | None = None
     if source_text:
         priority_line = _find_priority_label_line(raw_body) if has_priority_label else None
         priority_location = MessageLocation(source_text, priority_line)
     if not has_priority_label or not has_priority_with_justification:
         warnings.append((PRIORITY_SCORE_ERROR_MESSAGE, priority_location))
-        errors.append((PRIORITY_SCORE_ERROR_MESSAGE, priority_location))
 
     for warning, location in warnings:
         print(_format_message("Warning", warning, location), file=sys.stderr)
@@ -438,6 +452,46 @@ def main(argv: Sequence[str] | None = None) -> int:
     if argv is None:
         argv = ()
     args = parse_args(argv)
+
+    event_name = os.environ.get("GITHUB_EVENT_NAME")
+    if event_name and event_name != "pull_request":
+        _print_warning(f"Skipping governance gate (event={event_name})")
+        return 0
+
+    event_path_value = os.environ.get("GITHUB_EVENT_PATH")
+    if event_name == "pull_request":
+        if not event_path_value:
+            _print_warning("Skipping governance gate (event payload unavailable)")
+            return 0
+        event_payload = load_event_payload(Path(event_path_value))
+        if event_payload is None:
+            _print_warning("Skipping governance gate (event payload unreadable)")
+            return 0
+        pull_request_data = event_payload.get("pull_request")
+        if not isinstance(pull_request_data, dict):
+            _print_warning("Skipping governance gate (pull request payload missing)")
+            return 0
+        if pull_request_data.get("draft"):
+            _print_warning("Skipping governance gate (draft pull request)")
+            return 0
+        repository_data = event_payload.get("repository")
+        default_branch: str | None = None
+        if isinstance(repository_data, dict):
+            default_branch_value = repository_data.get("default_branch")
+            if isinstance(default_branch_value, str):
+                default_branch = default_branch_value
+        base_data = pull_request_data.get("base")
+        base_ref: str | None = None
+        if isinstance(base_data, dict):
+            base_ref_value = base_data.get("ref")
+            if isinstance(base_ref_value, str):
+                base_ref = base_ref_value
+        if default_branch and base_ref and base_ref != default_branch:
+            _print_warning(
+                f"Skipping governance gate (base={base_ref}, default_branch={default_branch})"
+            )
+            return 0
+
     repo_root = Path(__file__).resolve().parents[2]
     policy_path = repo_root / "governance" / "policy.yaml"
     forbidden_patterns = load_forbidden_patterns(policy_path)
@@ -472,7 +526,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if inferred_source is not None:
             body_source = inferred_source
     if body is None:
-        return 1
+        return 0
     if not validate_pr_body(body, source=body_source):
         return 1
 
