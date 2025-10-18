@@ -243,7 +243,7 @@ Intent: INT-777
 Priority Score: 3
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert (
@@ -260,6 +260,8 @@ Priority Score: 3
         "Priority Score: 4",
         "Priority Score: 4 /",
         "Priority Score: 4 /   ",
+        "Priority Score: high / 顧客要望",
+        "Priority Score 4 / 品質改善",
     ],
 )
 def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys):
@@ -272,7 +274,7 @@ def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys
         lines.append(priority_line)
     body = "\n".join(lines)
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert (
@@ -303,7 +305,7 @@ def test_validate_pr_body_rejects_missing_priority_details(priority_line, capsys
     ids=["missing-priority-line", "missing-justification"],
 )
 def test_validate_pr_body_fails_when_priority_line_invalid(body, capsys):
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
@@ -335,7 +337,7 @@ def test_main_blocks_pr_when_priority_line_invalid(body, monkeypatch, capsys):
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
     monkeypatch.setattr(check_governance_gate, "resolve_pr_body", lambda: body)
 
-    assert check_governance_gate.main() == 0
+    assert check_governance_gate.main() == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert PRIORITY_SCORE_ERROR_MESSAGE in captured.err
@@ -386,6 +388,7 @@ def test_validate_pr_body_missing_evaluation_anchor(capsys):
     body = """
 Intent: INT-001
 ## EVALUATION
+Priority Score: 2 / 評価アンカー欠落
 """
 
     assert validate_pr_body(body) is True
@@ -399,6 +402,7 @@ def test_validate_pr_body_requires_evaluation_heading(capsys):
 Intent: INT-555
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
 Evaluation anchor is explained here without heading.
+Priority Score: 1 / 評価見出し欠落
 """
 
     assert validate_pr_body(body) is True
@@ -414,7 +418,7 @@ Intent: INT-789
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
 """
 
-    assert validate_pr_body(body) is True
+    assert validate_pr_body(body) is False
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Priority Score" in captured.err
@@ -431,7 +435,7 @@ def test_main_fails_without_priority_score(monkeypatch, capsys):
 
     exit_code = check_governance_gate.main()
 
-    assert exit_code == 0
+    assert exit_code == 1
     captured = capsys.readouterr()
     assert "Warning:" in captured.err
     assert "Priority Score" in captured.err
