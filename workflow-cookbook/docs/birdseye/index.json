@@ -61,11 +61,6 @@
       "caps": "docs/birdseye/caps/governance.policy.yaml.json",
       "mtime": "2025-10-14T00:00:00Z"
     },
-    "workflow-cookbook/governance/prioritization.yaml": {
-      "role": "governance",
-      "caps": "docs/birdseye/caps/governance.prioritization.yaml.json",
-      "mtime": "2025-10-16T12:30:00Z"
-    },
     "docs/birdseye/index.json": {
       "role": "index",
       "caps": "docs/birdseye/caps/docs.birdseye.index.json.json",
@@ -95,6 +90,11 @@
       "role": "template",
       "caps": "docs/birdseye/caps/docs.INCIDENT_TEMPLATE.md.json",
       "mtime": "2025-10-16T12:00:00Z"
+    },
+    "governance/prioritization.yaml": {
+      "role": "governance",
+      "caps": "docs/birdseye/caps/governance.prioritization.yaml.json",
+      "mtime": "2025-10-16T12:30:00Z"
     }
   },
   "edges": [
@@ -308,7 +308,7 @@
     ],
     [
       "HUB.codex.md",
-      "workflow-cookbook/governance/prioritization.yaml"
+      "governance/prioritization.yaml"
     ],
     [
       "GUARDRAILS.md",
@@ -360,26 +360,26 @@
     ],
     [
       "README.md",
-      "workflow-cookbook/governance/prioritization.yaml"
+      "governance/prioritization.yaml"
     ],
     [
       "EVALUATION.md",
-      "workflow-cookbook/governance/prioritization.yaml"
+      "governance/prioritization.yaml"
     ],
     [
       "TASK.codex.md",
-      "workflow-cookbook/governance/prioritization.yaml"
+      "governance/prioritization.yaml"
     ],
     [
-      "workflow-cookbook/governance/prioritization.yaml",
+      "governance/prioritization.yaml",
       "README.md"
     ],
     [
-      "workflow-cookbook/governance/prioritization.yaml",
+      "governance/prioritization.yaml",
       "EVALUATION.md"
     ],
     [
-      "workflow-cookbook/governance/prioritization.yaml",
+      "governance/prioritization.yaml",
       "TASK.codex.md"
     ]
   ]

@@ -1,5 +1,5 @@
 {
-  "id": "workflow-cookbook/governance/prioritization.yaml",
+  "id": "governance/prioritization.yaml",
   "role": "governance",
   "public_api": [],
   "summary": "重大度・影響・リソース制約を組み合わせて施策優先度を決定するための評価指標と審査フローを定義したガバナンス基準。",
