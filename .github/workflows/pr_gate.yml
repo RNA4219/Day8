@@ -67,10 +67,17 @@ jobs:
               const codeownerUsers = new Set();
               const codeownerTeams = new Set();
               const uncovered = [];
-              const toHandle = (ownerHandle) => {
-                if (!ownerHandle.startsWith('@')) return `@${ownerHandle}`;
-                return ownerHandle;
-              };
+            const toHandle = (ownerHandle) => {
+              if (!ownerHandle.startsWith('@')) return `@${ownerHandle}`;
+              return ownerHandle;
+            };
+            const toTeamHandle = (team, defaultOrg) => {
+              if (!team) return null;
+              const slug = team.slug || team.name;
+              const org = (team.organization && team.organization.login) || defaultOrg;
+              if (!slug || !org) return null;
+              return `@${org}/${slug}`;
+            };
               const findOwnersForFile = (filePath) => {
                 let owners = [];
                 for (const entry of entries) {
@@ -112,20 +119,14 @@ jobs:
             }
             const {owner, repo} = context.repo;
             const pr = context.payload.pull_request || {};
-            const requestedUsers = new Set(
+            const requestedUserHandles = new Set(
               (Array.isArray(pr.requested_reviewers) ? pr.requested_reviewers : [])
                 .map((reviewer) => (reviewer && reviewer.login ? `@${reviewer.login}` : null))
                 .filter((login) => typeof login === 'string'),
             );
-            const requestedTeams = new Set(
+            const requestedTeamHandles = new Set(
               (Array.isArray(pr.requested_teams) ? pr.requested_teams : [])
-                .map((team) => {
-                  if (!team) return null;
-                  const slug = team.slug || team.name;
-                  if (!slug) return null;
-                  const org = (team.organization && team.organization.login) || owner;
-                  return `@${org}/${slug}`;
-                })
+                .map((team) => toTeamHandle(team, owner))
                 .filter((team) => typeof team === 'string'),
             );
             const pull_number = context.payload.pull_request.number;
@@ -151,36 +152,16 @@ jobs:
                 else codeownerUsers.add(ownerHandle);
               }
             }
-            const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>
+            const filteredRequestedUsers = Array.from(requestedUserHandles).filter((login) =>
               codeownerUsers.has(login),
             );
-            const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>
+            const filteredRequestedTeams = Array.from(requestedTeamHandles).filter((team) =>
               codeownerTeams.has(team),
             );
             if (uncovered.length > 0) {
               failWith(`No CODEOWNERS match for: ${uncovered.join(', ')}`);
               return;
             }
-            const requestedUsers = new Set(
-              (context.payload.pull_request.requested_reviewers || [])
-                .map((user) => (user?.login ? `@${user.login}` : null))
-                .filter(Boolean),
-            );
-            const requestedTeams = new Set(
-              (context.payload.pull_request.requested_teams || [])
-                .map((team) => {
-                  const org = team?.organization?.login;
-                  if (!org || !team?.slug) return null;
-                  return `@${org}/${team.slug}`;
-                })
-                .filter(Boolean),
-            );
-            const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>
-              codeownerUsers.has(login),
-            );
-            const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>
-              codeownerTeams.has(team),
-            );
             if (filteredRequestedUsers.length > 0 || filteredRequestedTeams.length > 0) {
               const pending = [
                 ...filteredRequestedUsers.map((login) => `${login} (review requested)`),
@@ -195,23 +176,38 @@ jobs:
             );
             const latestStates = new Map();
             const requiredHandles = new Set(codeownerUsers);
+            const collaboratorApprovals = new Set();
+            const collaboratorChangeRequesters = new Set();
+            const collaboratorAssociations = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
             for (const review of reviews) {
               const login = review.user?.login;
               const state = review.state?.toUpperCase();
               if (!login || !state) continue;
               const loginHandle = `@${login}`;
-              if (!requiredHandles.has(loginHandle)) continue;
-              latestStates.set(loginHandle, state);
+              if (requiredHandles.has(loginHandle)) {
+                latestStates.set(loginHandle, state);
+              }
+              const association = typeof review.author_association === 'string'
+                ? review.author_association.toUpperCase()
+                : '';
+              if (!collaboratorAssociations.has(association)) continue;
+              if (state === 'APPROVED') collaboratorApprovals.add(loginHandle);
+              if (state === 'CHANGES_REQUESTED') collaboratorChangeRequesters.add(loginHandle);
             }
             const approvals = new Set();
-            const allChangeRequesters = Array.from(latestStates.entries())
-              .filter(([, state]) => state === 'CHANGES_REQUESTED')
-              .map(([login]) => login);
+            const allChangeRequesters = new Set(
+              Array.from(latestStates.entries())
+                .filter(([, state]) => state === 'CHANGES_REQUESTED')
+                .map(([login]) => login),
+            );
             for (const [login, state] of latestStates.entries()) {
               if (state === 'APPROVED') approvals.add(login);
             }
-            if (allChangeRequesters.length > 0) {
-              failWith(`Changes requested by: ${allChangeRequesters.join(', ')}`);
+            for (const handle of collaboratorChangeRequesters) {
+              allChangeRequesters.add(handle);
+            }
+            if (allChangeRequesters.size > 0) {
+              failWith(`Changes requested by: ${Array.from(allChangeRequesters).join(', ')}`);
               return;
             }
             const requiredUsers = Array.from(new Set([...codeownerUsers, ...filteredRequestedUsers]));
@@ -221,13 +217,15 @@ jobs:
               failWith(`Awaiting required review from: ${messages.join(', ')}`);
               return;
             }
-            const pendingTeams = filteredRequestedTeams;
-            if (pendingTeams.length > 0) {
-              const teamMessages = pendingTeams.map((team) => `${team} (team review required)`);
+            const teamHandles = Array.from(codeownerTeams);
+            const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));
+            if (pendingTeamHandles.length > 0) {
+              const teamMessages = pendingTeamHandles.map((team) => `${team} (team review required)`);
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }
-            if (requiredUsers.length === 0 && approvals.size === 0) {
+            const teamApprovals = collaboratorApprovals;
+            if (requiredUsers.length === 0 && approvals.size === 0 && teamApprovals.size === 0) {
               failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
               return;
             }
