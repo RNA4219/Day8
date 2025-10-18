@@ -192,11 +192,30 @@ def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
     ), "CODEOWNERS 判定には github.rest.pulls.listReviews を利用する必要があります"
     assert "await github.paginate" in script, "レビュー一覧は github.paginate で取得する必要があります"
     assert "const latestStates = new Map();" in script, "最新レビュー状態を保持する Map が必要です"
-    assert "latestStates.set(`@${login}`, state);" in script, "レビュアー毎に最新状態を記録する必要があります"
+    assert (
+        "const loginHandle = `@${login}`;" in script
+        and "latestStates.set(loginHandle, state);" in script
+    ), "レビュアー毎に最新状態を記録する際、ログインIDを正規化した変数を利用する必要があります"
     assert "APPROVED" in raw_text, "承認状態(APPROVED)の判定ロジックが必要です"
     assert (
         "CHANGES_REQUESTED" in raw_text
     ), "差し戻し状態(CHANGES_REQUESTED)の判定ロジックが必要です"
+
+
+def test_pr_gate_codeowners_required_handles_are_parsed() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert "github.rest.pulls.listFiles" in script, "変更ファイル取得に github.rest.pulls.listFiles を使用する必要があります"
+    assert (
+        "const parseCodeowners" in script
+    ), "CODEOWNERS 解析用のヘルパー関数 parseCodeowners が定義されている必要があります"
+    assert (
+        "const requiredHandles = new Set" in script
+    ), "CODEOWNERS から抽出した必須レビュアー集合を requiredHandles として扱う必要があります"
+    assert (
+        "if (!requiredHandles.has(loginHandle))" in script
+    ), "レビュアー状態の判定は CODEOWNERS 上のハンドルに限定する必要があります"
 
 
 def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:

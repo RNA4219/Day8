@@ -46,6 +46,50 @@ jobs:
                 .replace(/\\\?/g, '.');
               return new RegExp(`^${escaped}$`);
             };
+            const parseCodeowners = (content) => {
+              const entries = [];
+              for (const rawLine of content.split(/\r?\n/)) {
+                const line = rawLine.trim();
+                if (!line || line.startsWith('#')) continue;
+                const [pattern, ...owners] = line.split(/\s+/);
+                if (!pattern || owners.length === 0) continue;
+                const regex = toRegex(pattern);
+                if (!regex) continue;
+                entries.push({owners, regex});
+              }
+              return entries;
+            };
+            const collectCodeownersForFiles = (entries, files) => {
+              const codeownerUsers = new Set();
+              const codeownerTeams = new Set();
+              const uncovered = [];
+              const toHandle = (ownerHandle) => {
+                if (!ownerHandle.startsWith('@')) return `@${ownerHandle}`;
+                return ownerHandle;
+              };
+              const findOwnersForFile = (filePath) => {
+                let owners = [];
+                for (const entry of entries) {
+                  if (entry.regex.test(filePath)) {
+                    owners = entry.owners;
+                  }
+                }
+                return owners;
+              };
+              for (const file of files) {
+                const owners = findOwnersForFile(file.filename);
+                if (owners.length === 0) {
+                  uncovered.push(file.filename);
+                  continue;
+                }
+                for (const ownerHandle of owners) {
+                  const normalized = toHandle(ownerHandle);
+                  if (normalized.includes('/')) codeownerTeams.add(normalized);
+                  else codeownerUsers.add(normalized);
+                }
+              }
+              return {codeownerUsers, codeownerTeams, uncovered};
+            };
             const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
             const codeownersRelativePath = '.github/CODEOWNERS';
             const codeownersPath = path.join(workspace, codeownersRelativePath);
@@ -57,15 +101,7 @@ jobs:
               failWith(`Unable to read CODEOWNERS at ${codeownersPath}: ${reason}`);
               return;
             }
-            const entries = [];
-            for (const rawLine of codeownersContent.split(/\r?\n/)) {
-              const line = rawLine.trim();
-              if (!line || line.startsWith('#')) continue;
-              const [pattern, ...owners] = line.split(/\s+/);
-              if (!pattern || owners.length === 0) continue;
-              const regex = toRegex(pattern);
-              if (regex) entries.push({owners, regex});
-            }
+            const entries = parseCodeowners(codeownersContent);
             if (entries.length === 0) {
               failWith('No CODEOWNERS entries could be parsed.');
               return;
@@ -76,26 +112,37 @@ jobs:
               github.rest.pulls.listFiles,
               {owner, repo, pull_number, per_page: 100},
             );
-            const codeownerUsers = new Set();
-            const codeownerTeams = new Set();
-            const uncovered = [];
-            for (const file of files) {
-              const owners = entries.reduce(
-                (matched, entry) => (entry.regex.test(file.filename) ? entry.owners : matched),
-                [],
-              );
-              if (owners.length === 0) {
-                uncovered.push(file.filename);
-                continue;
-              }
-              for (const ownerHandle of owners) {
-                if (!ownerHandle.startsWith('@')) continue;
-                if (ownerHandle.includes('/')) codeownerTeams.add(ownerHandle);
-                else codeownerUsers.add(ownerHandle);
-              }
-            }
+            const {codeownerUsers, codeownerTeams, uncovered} = collectCodeownersForFiles(entries, files);
             if (uncovered.length > 0) {
               failWith(`No CODEOWNERS match for: ${uncovered.join(', ')}`);
+              return;
+            }
+            const requestedUsers = new Set(
+              (context.payload.pull_request.requested_reviewers || [])
+                .map((user) => (user?.login ? `@${user.login}` : null))
+                .filter(Boolean),
+            );
+            const requestedTeams = new Set(
+              (context.payload.pull_request.requested_teams || [])
+                .map((team) => {
+                  const org = team?.organization?.login;
+                  if (!org || !team?.slug) return null;
+                  return `@${org}/${team.slug}`;
+                })
+                .filter(Boolean),
+            );
+            const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>
+              codeownerUsers.has(login),
+            );
+            const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>
+              codeownerTeams.has(team),
+            );
+            if (filteredRequestedUsers.length > 0 || filteredRequestedTeams.length > 0) {
+              const pending = [
+                ...filteredRequestedUsers.map((login) => `${login} (review requested)`),
+                ...filteredRequestedTeams.map((team) => `${team} (team review requested)`),
+              ];
+              failWith(`Awaiting required review from: ${pending.join(', ')}`);
               return;
             }
             const reviews = await github.paginate(
@@ -103,11 +150,14 @@ jobs:
               {owner, repo, pull_number, per_page: 100},
             );
             const latestStates = new Map();
+            const requiredHandles = new Set(codeownerUsers);
             for (const review of reviews) {
               const login = review.user?.login;
               const state = review.state?.toUpperCase();
               if (!login || !state) continue;
-              latestStates.set(`@${login}`, state);
+              const loginHandle = `@${login}`;
+              if (!requiredHandles.has(loginHandle)) continue;
+              latestStates.set(loginHandle, state);
             }
             const approvals = new Set();
             const allChangeRequesters = Array.from(latestStates.entries())
