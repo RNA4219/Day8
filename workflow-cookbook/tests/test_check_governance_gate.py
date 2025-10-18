@@ -209,6 +209,19 @@ Priority Score: 6 /
     assert captured.err == ""
 
 
+def test_validate_pr_body_accepts_dash_separators(capsys):
+    body = """
+Intent - INT-880
+## EVALUATION
+- [Acceptance Criteria](#acceptance-criteria)
+Priority Score - 5 / レビュー指摘対応
+"""
+
+    assert validate_pr_body(body) is True
+    captured = capsys.readouterr()
+    assert captured.err == ""
+
+
 def test_validate_pr_body_rejects_priority_without_justification(capsys):
     body = """
 Intent: INT-777

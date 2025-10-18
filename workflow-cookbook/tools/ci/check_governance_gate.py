@@ -274,10 +274,13 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
 
 
 _OPTIONAL_PARENTHETICAL = r"(?:\s*[\(（][^\n\r\)）]*[\)）])?"
+_LABEL_SEPARATOR_TOKENS: tuple[str, ...] = (":", "：", "-", "－", "–", "—")
+_LABEL_SEPARATOR_PATTERN = "|".join(re.escape(token) for token in _LABEL_SEPARATOR_TOKENS)
+_LABEL_SEPARATOR_REGEX = rf"\s*(?:{_LABEL_SEPARATOR_PATTERN})\s*"
 
 
 INTENT_PATTERN = re.compile(
-    rf"Intent{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
+    rf"Intent{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}INT-[0-9A-Z]+(?:-[0-9A-Z]+)*",
     re.IGNORECASE,
 )
 EVALUATION_HEADING_PATTERN = re.compile(
@@ -285,15 +288,15 @@ EVALUATION_HEADING_PATTERN = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 EVALUATION_ANCHOR_PATTERN = re.compile(
-    r"EVALUATION\.md#acceptance-criteria",
+    r"(?:EVALUATION\.md)?#acceptance-criteria",
     re.IGNORECASE,
 )
 PRIORITY_LABEL_PATTERN = re.compile(
-    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}\s*[：:]\s*",
+    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}",
     re.IGNORECASE,
 )
 PRIORITY_ENTRY_PATTERN = re.compile(
-    r"Priority\s*Score\s*:\s*\d+(?:\.\d+)?\s*/",
+    rf"Priority\s*Score{_OPTIONAL_PARENTHETICAL}{_LABEL_SEPARATOR_REGEX}\d+(?:\.\d+)?\s*/",
     re.IGNORECASE,
 )
 _PRIORITY_STRIP_CHARS = " \t\r\n\u3000"
