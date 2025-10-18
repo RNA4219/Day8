@@ -199,6 +199,24 @@ def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
     ), "差し戻し状態(CHANGES_REQUESTED)の判定ロジックが必要です"
 
 
+def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert (
+        "const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>" in script
+        and "codeownerUsers.has(login)" in script
+    ), "手動リクエストのうち CODEOWNERS 該当者のみを対象にするフィルタが必要です"
+    assert (
+        "const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>" in script
+        and "codeownerTeams.has(team)" in script
+    ), "手動チームリクエストも CODEOWNERS との共通部分でフィルタする必要があります"
+    assert "const blockers = [];" in script, "ブロッカー集合の初期化が必要です"
+    assert (
+        "core.setOutput('blockers', JSON.stringify(blockers));" in script
+    ), "ブロッカー集合をアクション出力へ公開する必要があります"
+
+
 def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)
