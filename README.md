@@ -14,6 +14,8 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 - 対応する caps/*.json のみ読み込み
 <!-- /LLM-BOOTSTRAP -->
 
+詳細な構成を確認する際は、上記の導線に沿って必要なドキュメントを順番に参照してください。
+
 ## リポジトリ構成
 - `docs/` Day8 の仕様・運用・ガバナンスドキュメント集（詳細は [`docs/day8/README.md`](docs/day8/README.md) を参照）。
 - `governance/` ポリシー定義や CODEOWNERS などの統制設定。
