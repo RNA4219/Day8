@@ -201,8 +201,29 @@ def test_pr_gate_codeowners_required_handles_are_parsed() -> None:
         "const requiredHandles = new Set" in script
     ), "CODEOWNERS から抽出した必須レビュアー集合を requiredHandles として扱う必要があります"
     assert (
-        "if (!requiredHandles.has(loginHandle))" in script
-    ), "レビュアー状態の判定は CODEOWNERS 上のハンドルに限定する必要があります"
+        "if (requiredHandles.has(loginHandle)) {" in script
+    ), "レビュアー状態の判定は CODEOWNERS 上のハンドルが対象となる必要があります"
+
+
+def test_pr_gate_team_approvals_skip_failure_when_team_is_approved() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert (
+        "const requestedTeamHandles = new Set(" in script
+    ), "チーム承認判定では requestedTeamHandles の集合を構築する必要があります"
+    assert (
+        "const collaboratorApprovals = new Set();" in script
+    ), "チーム承認済みレビュアーを追跡する集合が必要です"
+    assert (
+        "const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));" in script
+    ), "ブロッカーとして扱うのは requested_team に残っているチームだけに限定する必要があります"
+    assert (
+        "const teamApprovals = collaboratorApprovals;" in script
+    ), "チーム承認済み集合を最終判定に利用する必要があります"
+    assert (
+        "&& teamApprovals.size === 0" in script
+    ), "チーム承認が存在する場合は failWith を呼び出さないようにする必要があります"
 
 
 def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
@@ -275,15 +296,15 @@ def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
     script = _extract_github_script_text(workflow, raw_text)
 
     assert (
-        "const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>" in script
+        "const filteredRequestedUsers = Array.from(requestedUserHandles).filter((login) =>" in script
         and "codeownerUsers.has(login)" in script
     ), "手動リクエストのうち CODEOWNERS 該当者のみを対象にするフィルタが必要です"
     assert (
-        "const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>" in script
+        "const filteredRequestedTeams = Array.from(requestedTeamHandles).filter((team) =>" in script
         and "codeownerTeams.has(team)" in script
     ), "手動チームリクエストも CODEOWNERS との共通部分でフィルタする必要があります"
-    assert "const requestedUsers = new Set(" in script, "requested_reviewers を集合化する必要があります"
-    assert "const requestedTeams = new Set(" in script, "requested_teams を集合化する必要があります"
+    assert "const requestedUserHandles = new Set(" in script, "requested_reviewers を集合化する必要があります"
+    assert "const requestedTeamHandles = new Set(" in script, "requested_teams を集合化する必要があります"
     assert "const blockers = [];" in script, "ブロッカー集合の初期化が必要です"
     assert (
         "core.setOutput('blockers', JSON.stringify(blockers));" in script
@@ -299,8 +320,8 @@ def test_pr_gate_pending_ignores_non_codeowner_manual_reviewers() -> None:
         in script
     ), "必須レビュアー集合には CODEOWNERS とフィルタ済み手動リクエストの和集合を用いる必要があります"
     assert (
-        "const pendingTeams = filteredRequestedTeams;" in script
-        and "const teamMessages = pendingTeams.map" in script
+        "const teamHandles = Array.from(codeownerTeams);" in script
+        and "const pendingTeamHandles = teamHandles.filter((handle) => requestedTeamHandles.has(handle));" in script
     ), "CODEOWNERS 以外のチームリクエストを除外した pending 判定が必要です"
 
 
@@ -310,7 +331,7 @@ def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
 
     assert "const approvals = new Set();" in script, "承認済みレビュアー集合の管理が必要です"
     assert (
-        "const allChangeRequesters = Array.from(latestStates.entries())" in script
+        "const allChangeRequesters = new Set(" in script
     ), "CHANGES_REQUESTED を抽出する処理が必要です"
     assert (
         "const requiredUsers = Array.from(new Set([...codeownerUsers, ...filteredRequestedUsers]));"
@@ -319,7 +340,7 @@ def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
     assert (
         "const pendingApprovals = requiredUsers.filter" in script
     ), "CODEOWNERS の未承認者検知が必要です"
-    change_request_message = "Changes requested by: ${allChangeRequesters.join(', ')}"
+    change_request_message = "Changes requested by: ${Array.from(allChangeRequesters).join(', ')}"
     assert (
         any(
             marker in script
