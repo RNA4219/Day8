@@ -89,13 +89,17 @@ jobs:
       - name: Normalize downloaded log directories
         if: ${{ steps.artifact-locator.outputs.found == 'true' }}
         run: |
-          if [ -d "logs/workflow-cookbook/logs" ]; then
+          if [ -d "logs" ]; then
             shopt -s nullglob
-            for file in logs/workflow-cookbook/logs/*; do
-              mv "$file" logs/
+            for path in logs/*; do
+              if [ -d "$path/logs" ]; then
+                for file in "$path"/logs/*; do
+                  mv "$file" logs/
+                done
+                rm -rf "$path"
+              fi
             done
             shopt -u nullglob
-            rm -rf logs/workflow-cookbook
           fi
       - name: Setup Python
         uses: actions/setup-python@v5

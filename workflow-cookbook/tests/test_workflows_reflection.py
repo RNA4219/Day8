@@ -146,13 +146,17 @@ def test_reflection_workflow_normalize_step_operates_on_logs_root() -> None:
 
     expected_snippet = "\n".join(
         (
-            "          if [ -d \"logs/workflow-cookbook/logs\" ]; then",
+            "          if [ -d \"logs\" ]; then",
             "            shopt -s nullglob",
-            "            for file in logs/workflow-cookbook/logs/*; do",
-            "              mv \"$file\" logs/",
+            "            for path in logs/*; do",
+            "              if [ -d \"$path/logs\" ]; then",
+            "                for file in \"$path\"/logs/*; do",
+            "                  mv \"$file\" logs/",
+            "                done",
+            "                rm -rf \"$path\"",
+            "              fi",
             "            done",
             "            shopt -u nullglob",
-            "            rm -rf logs/workflow-cookbook",
             "          fi",
         )
     )
