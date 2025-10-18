@@ -182,6 +182,7 @@ def _detect_repo_name() -> str:
 
 
 _REPO_NAME = _detect_repo_name()
+PR_BODY_SOURCE_NAME = "PR_BODY"
 _PREFIXES_TO_REMOVE: tuple[str, ...] = tuple(
     prefix for prefix in {"workflow-cookbook", _REPO_NAME} if prefix
 )
@@ -261,10 +262,10 @@ def read_event_body(event_path: Path) -> str | None:
     return body
 
 
-def resolve_pr_body() -> str | None:
+def resolve_pr_body_with_source() -> tuple[str | None, str | Path | None]:
     direct_body = os.environ.get("PR_BODY")
     if direct_body is not None:
-        return direct_body
+        return direct_body, PR_BODY_SOURCE_NAME
 
     event_path_value = os.environ.get("GITHUB_EVENT_PATH")
     if not event_path_value:
@@ -272,9 +273,15 @@ def resolve_pr_body() -> str | None:
             "PR body data is unavailable. Set PR_BODY or GITHUB_EVENT_PATH.",
             file=sys.stderr,
         )
-        return None
+        return None, None
 
-    return read_event_body(Path(event_path_value))
+    event_path = Path(event_path_value)
+    return read_event_body(event_path), event_path if event_path.exists() else None
+
+
+def resolve_pr_body() -> str | None:
+    body, _ = resolve_pr_body_with_source()
+    return body
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -452,6 +459,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     body_source: str | Path | None = None
     if args.pr_body is not None:
         body = args.pr_body
+        body_source = PR_BODY_SOURCE_NAME
     elif args.pr_body_file is not None:
         try:
             body = args.pr_body_file.read_text(encoding="utf-8")
@@ -459,8 +467,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         except OSError as error:
             print(f"Failed to read PR body file: {error}", file=sys.stderr)
             return 1
-    if body is None:
-        body = resolve_pr_body()
+    else:
+        body, inferred_source = resolve_pr_body_with_source()
+        if inferred_source is not None:
+            body_source = inferred_source
     if body is None:
         return 1
     if not validate_pr_body(body, source=body_source):
