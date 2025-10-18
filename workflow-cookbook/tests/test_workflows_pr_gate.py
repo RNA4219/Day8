@@ -227,6 +227,19 @@ def test_pr_gate_team_approvals_skip_failure_when_team_is_approved() -> None:
     ), "チーム承認が存在する場合は failWith を呼び出さないようにする必要があります"
 
 
+def test_pr_gate_no_approval_failure_allows_team_coverage() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert (
+        "const hasTeamCoverage = codeownerTeams.size > 0 && pendingTeamHandles.length === 0;"
+        in script
+    ), "コードオーナーチームのみのケースで pendingTeamHandles が空なら緩和される必要があります"
+    assert (
+        "&& !hasTeamCoverage" in script
+    ), "Awaiting CODEOWNERS approval 判定でチームカバレッジを考慮する必要があります"
+
+
 def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
     node_path = shutil.which("node")
     if node_path is None:
