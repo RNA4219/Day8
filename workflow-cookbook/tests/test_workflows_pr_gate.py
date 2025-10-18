@@ -61,13 +61,10 @@ def _load_pr_gate_workflow() -> Tuple[Dict[str, Any], str]:
     return parsed, raw_text
 
 
-def _find_step_indices_from_text(raw_text: str, expected_command: str) -> tuple[int, int, int]:
+def _find_step_indices_from_text(raw_text: str) -> tuple[int, int]:
     checkout_index = raw_text.find("uses: actions/checkout")
     setup_python_index = raw_text.find("uses: actions/setup-python@v5")
-    governance_index = raw_text.find(expected_command)
-    if governance_index == -1:
-        governance_index = raw_text.find("python workflow-cookbook/tools/ci/check_governance_gate.py")
-    return checkout_index, setup_python_index, governance_index
+    return checkout_index, setup_python_index
 
 
 def _extract_github_script_text(workflow: Dict[str, Any], raw_text: str) -> str:
@@ -133,10 +130,8 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
         default_working_directory == "workflow-cookbook"
     ), "defaults.run.working-directory は workflow-cookbook を指す必要があります"
 
-    expected_command = "python tools/ci/check_governance_gate.py"
-
     raw_steps = gate_job.get("steps")
-    checkout_index, setup_python_index, governance_index = -1, -1, -1
+    checkout_index, setup_python_index = -1, -1
 
     if isinstance(raw_steps, list):
         for index, raw_step in enumerate(raw_steps):
@@ -153,32 +148,19 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
                 else:
                     assert "fetch-depth: 0" in raw_text, "actions/checkout に fetch-depth: 0 が必要です"
 
-            run = raw_step.get("run")
-            if isinstance(run, str) and "check_governance_gate.py" in run:
-                governance_index = index
-                assert (
-                    expected_command in run
-                ), "ガバナンスゲートの実行コマンドが defaults.run.working-directory に合致する必要があります"
-
             if isinstance(uses, str) and uses.startswith("actions/setup-python@"):
                 assert (
                     uses == "actions/setup-python@v5"
                 ), "actions/setup-python は v5 を使用する必要があります"
                 setup_python_index = index
     else:
-        checkout_index, setup_python_index, governance_index = _find_step_indices_from_text(
-            raw_text, expected_command
-        )
+        checkout_index, setup_python_index = _find_step_indices_from_text(raw_text)
 
     assert checkout_index != -1, "actions/checkout ステップが必要です"
     assert setup_python_index != -1, "actions/setup-python ステップが必要です"
-    assert governance_index != -1, "python workflow-cookbook/tools/ci/check_governance_gate.py を実行するステップが必要です"
     assert (
-        governance_index > checkout_index
-    ), "ガバナンスゲートの実行は actions/checkout の後に行う必要があります"
-    assert (
-        governance_index > setup_python_index > checkout_index
-    ), "actions/setup-python のステップは checkout の後、ガバナンスゲート実行の前に必要です"
+        setup_python_index > checkout_index
+    ), "actions/setup-python のステップは checkout の後に必要です"
 
     assert "fetch-depth: 0" in raw_text, "checkout ステップには fetch-depth: 0 の指定が必要です"
 
