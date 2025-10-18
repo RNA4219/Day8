@@ -231,12 +231,44 @@ def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
     assert (
         "const pendingApprovals = requiredUsers.filter" in script
     ), "CODEOWNERS の未承認者検知が必要です"
+    change_request_message = "Changes requested by: ${allChangeRequesters.join(', ')}"
     assert (
-        "blockers.push(`Changes requested by: ${allChangeRequesters.join(', ')}`);" in script
-    ), "CHANGES_REQUESTED 残存時にはブロッカーへ追加する必要があります"
+        any(
+            marker in script
+            for marker in (
+                f"core.setFailed(`{change_request_message}`);",
+                f"failWith(`{change_request_message}`);",
+            )
+        )
+    ), "CHANGES_REQUESTED 残存時の失敗メッセージが必要です"
+    pending_message = "Awaiting required review from: ${messages.join(', ')}"
     assert (
-        "blockers.push(`Awaiting required review from: ${messages.join(', ')}`);" in script
-    ), "未承認 CODEOWNERS をブロッカーへ追加する必要があります"
+        any(
+            marker in script
+            for marker in (
+                f"core.setFailed(`{pending_message}`);",
+                f"failWith(`{pending_message}`);",
+            )
+        )
+    ), "未承認 CODEOWNERS の失敗メッセージが必要です"
+    team_message = "Awaiting required review from: ${teamMessages.join(', ')}"
     assert (
-        "core.setFailed(blockers.join('\\n'));" in script
-    ), "集約したブロッカーでジョブを失敗させる必要があります"
+        any(
+            marker in script
+            for marker in (
+                f"core.setFailed(`{team_message}`);",
+                f"failWith(`{team_message}`);",
+            )
+        )
+    ), "CODEOWNERS チーム承認の失敗メッセージが必要です"
+
+
+def test_pr_gate_github_script_reads_repo_codeowners() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert (
+        "github.rest.pulls.listFiles" in script
+    ), "変更ファイル一覧の取得に github.rest.pulls.listFiles を用いる必要があります"
+    assert ".github/CODEOWNERS" in script, "CODEOWNERS ファイルを参照して必須レビュアーを決定する必要があります"
+    assert "fs.readFileSync" in script, "CODEOWNERS ファイルはワークスペースから読み取る必要があります"

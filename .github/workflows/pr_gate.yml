@@ -24,198 +24,122 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
+            const path = require('path');
+            const blockers = [];
+            const failWith = (message) => {
+              blockers.push(message);
+              core.setOutput('blockers', JSON.stringify(blockers));
+              core.setOutput('hasApproval', 'false');
+              core.setFailed(message);
+            };
+            const toRegex = (pattern) => {
+              let normalized = pattern.trim();
+              if (!normalized) return null;
+              if (normalized.startsWith('/')) normalized = normalized.replace(/^\/+/, '');
+              if (normalized.endsWith('/')) normalized = `${normalized}**`;
+              if (normalized === '*') return /^.*$/;
+              const escaped = normalized
+                .replace(/([\\^$+?.()|{}\[\]])/g, '\\$1')
+                .replace(/\\\*\\\*/g, '.*')
+                .replace(/\\\*/g, '.*')
+                .replace(/\\\?/g, '.');
+              return new RegExp(`^${escaped}$`);
+            };
+            const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
+            const codeownersRelativePath = '.github/CODEOWNERS';
+            const codeownersPath = path.join(workspace, codeownersRelativePath);
+            let codeownersContent;
+            try {
+              codeownersContent = fs.readFileSync(codeownersPath, 'utf8');
+            } catch (error) {
+              const reason = error instanceof Error ? error.message : String(error);
+              failWith(`Unable to read CODEOWNERS at ${codeownersPath}: ${reason}`);
+              return;
+            }
+            const entries = [];
+            for (const rawLine of codeownersContent.split(/\r?\n/)) {
+              const line = rawLine.trim();
+              if (!line || line.startsWith('#')) continue;
+              const [pattern, ...owners] = line.split(/\s+/);
+              if (!pattern || owners.length === 0) continue;
+              const regex = toRegex(pattern);
+              if (regex) entries.push({owners, regex});
+            }
+            if (entries.length === 0) {
+              failWith('No CODEOWNERS entries could be parsed.');
+              return;
+            }
             const {owner, repo} = context.repo;
             const pull_number = context.payload.pull_request.number;
-            const {data: pr} = await github.rest.pulls.get({
-              owner,
-              repo,
-              pull_number,
-            });
-
-            const codeownersPath = 'workflow-cookbook/CODEOWNERS';
-            const codeownersDir = codeownersPath.split('/').slice(0, -1).join('/');
-            const basePrefix = codeownersDir ? `${codeownersDir}/` : '';
-            const {data: codeownersFile} = await github.rest.repos.getContent({
-              owner,
-              repo,
-              path: codeownersPath,
-              ref: pr.base.ref,
-            });
-            const codeownersText = Buffer.from(
-              codeownersFile.content,
-              codeownersFile.encoding ?? 'base64',
-            ).toString('utf-8');
-
-            function escapeRegex(value) {
-              return value.replace(/[-\\^$+?.()|[\]{}]/g, '\\$&');
-            }
-
-            function patternToRegex(pattern) {
-              let source = escapeRegex(pattern);
-              source = source.replace(/\\\*\\\*/g, '::DOUBLESTAR::');
-              source = source.replace(/\\\*/g, '[^/]*');
-              source = source.replace(/::DOUBLESTAR::/g, '.*');
-              source = source.replace(/\\\?/g, '[^/]');
-              if (source.endsWith('/')) {
-                source = `${source}.*`;
-              }
-              return new RegExp(`^${source}$`);
-            }
-
-            function normalizePattern(rawPattern) {
-              const trimmed = rawPattern.trim();
-              if (!trimmed) {
-                return null;
-              }
-              const withoutLeading = trimmed.replace(/^\/+/g, '');
-              if (trimmed.startsWith('/')) {
-                return `${basePrefix}${withoutLeading}`;
-              }
-              return `${basePrefix}${trimmed}`;
-            }
-
-            function parseCodeowners(text) {
-              const entries = [];
-              for (const line of text.split(/\r?\n/)) {
-                const trimmed = line.trim();
-                if (!trimmed || trimmed.startsWith('#')) {
-                  continue;
-                }
-                const parts = trimmed.split(/\s+/);
-                if (parts.length < 2) {
-                  continue;
-                }
-                const normalizedPattern = normalizePattern(parts[0]);
-                if (!normalizedPattern) {
-                  continue;
-                }
-                const owners = parts.slice(1);
-                const users = owners.filter(
-                  (handle) => handle.startsWith('@') && !handle.includes('/'),
-                );
-                const teams = owners.filter(
-                  (handle) => handle.startsWith('@') && handle.includes('/'),
-                );
-                entries.push({
-                  regex: patternToRegex(normalizedPattern),
-                  users,
-                  teams,
-                });
-              }
-              return entries;
-            }
-
-            function resolveOwners(entries, filePath) {
-              let users = [];
-              let teams = [];
-              for (const entry of entries) {
-                if (entry.regex.test(filePath)) {
-                  users = entry.users;
-                  teams = entry.teams;
-                }
-              }
-              return {users, teams};
-            }
-
-            const codeownerEntries = parseCodeowners(codeownersText);
-            const files = await github.paginate(github.rest.pulls.listFiles, {
-              owner,
-              repo,
-              pull_number,
-              per_page: 100,
-            });
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {owner, repo, pull_number, per_page: 100},
+            );
             const codeownerUsers = new Set();
             const codeownerTeams = new Set();
+            const uncovered = [];
             for (const file of files) {
-              const owners = resolveOwners(codeownerEntries, file.filename);
-              for (const user of owners.users) {
-                codeownerUsers.add(user);
+              const owners = entries.reduce(
+                (matched, entry) => (entry.regex.test(file.filename) ? entry.owners : matched),
+                [],
+              );
+              if (owners.length === 0) {
+                uncovered.push(file.filename);
+                continue;
               }
-              for (const team of owners.teams) {
-                codeownerTeams.add(team);
+              for (const ownerHandle of owners) {
+                if (!ownerHandle.startsWith('@')) continue;
+                if (ownerHandle.includes('/')) codeownerTeams.add(ownerHandle);
+                else codeownerUsers.add(ownerHandle);
               }
             }
-
-            const requestedUsers = new Set(
-              (pr.requested_reviewers ?? []).map((reviewer) => `@${reviewer.login}`),
-            );
-            const requestedTeams = new Set(
-              (pr.requested_teams ?? []).map(
-                (team) => `@${team.organization.login}/${team.slug}`,
-              ),
-            );
-            const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>
-              codeownerUsers.has(login),
-            );
-            const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>
-              codeownerTeams.has(team),
-            );
-
+            if (uncovered.length > 0) {
+              failWith(`No CODEOWNERS match for: ${uncovered.join(', ')}`);
+              return;
+            }
             const reviews = await github.paginate(
               github.rest.pulls.listReviews,
-              {
-                owner,
-                repo,
-                pull_number,
-                per_page: 100,
-              },
+              {owner, repo, pull_number, per_page: 100},
             );
-
             const latestStates = new Map();
             for (const review of reviews) {
               const login = review.user?.login;
               const state = review.state?.toUpperCase();
-              if (!login || !state) {
-                continue;
-              }
+              if (!login || !state) continue;
               latestStates.set(`@${login}`, state);
             }
-
             const approvals = new Set();
             const allChangeRequesters = Array.from(latestStates.entries())
               .filter(([, state]) => state === 'CHANGES_REQUESTED')
               .map(([login]) => login);
             for (const [login, state] of latestStates.entries()) {
-              if (state === 'APPROVED') {
-                approvals.add(login);
-              }
+              if (state === 'APPROVED') approvals.add(login);
             }
-
-            const requiredUsers = Array.from(codeownerUsers);
-            const pendingApprovals = requiredUsers.filter((login) => !approvals.has(login));
-            const blockers = [];
             if (allChangeRequesters.length > 0) {
-              blockers.push(`Changes requested by: ${allChangeRequesters.join(', ')}`);
-            }
-
-            if (pendingApprovals.length > 0) {
-              const messages = pendingApprovals.map((login) => `${login} (awaiting approval)`);
-              blockers.push(`Awaiting required review from: ${messages.join(', ')}`);
-            }
-
-            if (filteredRequestedTeams.length > 0) {
-              const teamMessages = filteredRequestedTeams.map(
-                (team) => `${team} (team review required)`,
-              );
-              blockers.push(`Awaiting required review from: ${teamMessages.join(', ')}`);
-            }
-
-            if (
-              requiredUsers.length === 0 &&
-              codeownerTeams.size === 0 &&
-              approvals.size === 0 &&
-              blockers.length === 0
-            ) {
-              blockers.push('Awaiting CODEOWNERS approval: no approvals recorded yet.');
-            }
-
-            if (blockers.length > 0) {
-              core.setOutput('blockers', JSON.stringify(blockers));
-              core.setFailed(blockers.join('\n'));
+              failWith(`Changes requested by: ${allChangeRequesters.join(', ')}`);
               return;
             }
-
-            core.setOutput('blockers', JSON.stringify([]));
+            const requiredUsers = Array.from(codeownerUsers);
+            const pendingApprovals = requiredUsers.filter((login) => !approvals.has(login));
+            if (pendingApprovals.length > 0) {
+              const messages = pendingApprovals.map((login) => `${login} (awaiting approval)`);
+              failWith(`Awaiting required review from: ${messages.join(', ')}`);
+              return;
+            }
+            if (codeownerTeams.size > 0) {
+              const teamMessages = Array.from(codeownerTeams).map(
+                (team) => `${team} (team review required)`,
+              );
+              failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
+              return;
+            }
+            if (requiredUsers.length === 0 && approvals.size === 0) {
+              failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
+              return;
+            }
+            core.setOutput('blockers', JSON.stringify(blockers));
+            core.setOutput('hasApproval', 'true');
             core.notice('All CODEOWNERS reviews have approved and no changes are requested.');
       - name: Enforce governance gate
         run: python tools/ci/check_governance_gate.py
