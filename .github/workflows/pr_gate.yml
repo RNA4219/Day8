@@ -71,6 +71,23 @@ jobs:
               return;
             }
             const {owner, repo} = context.repo;
+            const pr = context.payload.pull_request || {};
+            const requestedUsers = new Set(
+              (Array.isArray(pr.requested_reviewers) ? pr.requested_reviewers : [])
+                .map((reviewer) => (reviewer && reviewer.login ? `@${reviewer.login}` : null))
+                .filter((login) => typeof login === 'string'),
+            );
+            const requestedTeams = new Set(
+              (Array.isArray(pr.requested_teams) ? pr.requested_teams : [])
+                .map((team) => {
+                  if (!team) return null;
+                  const slug = team.slug || team.name;
+                  if (!slug) return null;
+                  const org = (team.organization && team.organization.login) || owner;
+                  return `@${org}/${slug}`;
+                })
+                .filter((team) => typeof team === 'string'),
+            );
             const pull_number = context.payload.pull_request.number;
             const files = await github.paginate(
               github.rest.pulls.listFiles,
@@ -94,6 +111,12 @@ jobs:
                 else codeownerUsers.add(ownerHandle);
               }
             }
+            const filteredRequestedUsers = Array.from(requestedUsers).filter((login) =>
+              codeownerUsers.has(login),
+            );
+            const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>
+              codeownerTeams.has(team),
+            );
             if (uncovered.length > 0) {
               failWith(`No CODEOWNERS match for: ${uncovered.join(', ')}`);
               return;
@@ -120,17 +143,16 @@ jobs:
               failWith(`Changes requested by: ${allChangeRequesters.join(', ')}`);
               return;
             }
-            const requiredUsers = Array.from(codeownerUsers);
+            const requiredUsers = Array.from(new Set([...codeownerUsers, ...filteredRequestedUsers]));
             const pendingApprovals = requiredUsers.filter((login) => !approvals.has(login));
             if (pendingApprovals.length > 0) {
               const messages = pendingApprovals.map((login) => `${login} (awaiting approval)`);
               failWith(`Awaiting required review from: ${messages.join(', ')}`);
               return;
             }
-            if (codeownerTeams.size > 0) {
-              const teamMessages = Array.from(codeownerTeams).map(
-                (team) => `${team} (team review required)`,
-              );
+            const pendingTeams = filteredRequestedTeams;
+            if (pendingTeams.length > 0) {
+              const teamMessages = pendingTeams.map((team) => `${team} (team review required)`);
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }

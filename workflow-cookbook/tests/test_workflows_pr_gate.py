@@ -211,10 +211,26 @@ def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
         "const filteredRequestedTeams = Array.from(requestedTeams).filter((team) =>" in script
         and "codeownerTeams.has(team)" in script
     ), "手動チームリクエストも CODEOWNERS との共通部分でフィルタする必要があります"
+    assert "const requestedUsers = new Set(" in script, "requested_reviewers を集合化する必要があります"
+    assert "const requestedTeams = new Set(" in script, "requested_teams を集合化する必要があります"
     assert "const blockers = [];" in script, "ブロッカー集合の初期化が必要です"
     assert (
         "core.setOutput('blockers', JSON.stringify(blockers));" in script
     ), "ブロッカー集合をアクション出力へ公開する必要があります"
+
+
+def test_pr_gate_pending_ignores_non_codeowner_manual_reviewers() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    assert (
+        "const requiredUsers = Array.from(new Set([...codeownerUsers, ...filteredRequestedUsers]));"
+        in script
+    ), "必須レビュアー集合には CODEOWNERS とフィルタ済み手動リクエストの和集合を用いる必要があります"
+    assert (
+        "const pendingTeams = filteredRequestedTeams;" in script
+        and "const teamMessages = pendingTeams.map" in script
+    ), "CODEOWNERS 以外のチームリクエストを除外した pending 判定が必要です"
 
 
 def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
@@ -226,8 +242,9 @@ def test_pr_gate_requires_all_codeowners_to_approve_latest_reviews() -> None:
         "const allChangeRequesters = Array.from(latestStates.entries())" in script
     ), "CHANGES_REQUESTED を抽出する処理が必要です"
     assert (
-        "const requiredUsers = Array.from(codeownerUsers);" in script
-    ), "CODEOWNERS 個人の一覧が必要です"
+        "const requiredUsers = Array.from(new Set([...codeownerUsers, ...filteredRequestedUsers]));"
+        in script
+    ), "CODEOWNERS 個人の一覧とフィルタ済み手動リクエストの組み合わせが必要です"
     assert (
         "const pendingApprovals = requiredUsers.filter" in script
     ), "CODEOWNERS の未承認者検知が必要です"
