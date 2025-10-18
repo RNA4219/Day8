@@ -91,6 +91,25 @@ def test_reflection_workflow_analyze_step_requires_artifact() -> None:
     assert expected_condition in lines[index + 1 : index + 4]
 
 
+def test_reflection_workflow_commit_step_matches_analyze_condition() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    analyze_condition = _find_step_condition(lines, "- name: Analyze logs → report")
+    commit_condition = _find_step_condition(lines, "- name: Commit report")
+
+    expected_condition = "        if: ${{ steps.artifact-locator.outputs.found == 'true' }}"
+
+    assert analyze_condition == expected_condition
+    assert commit_condition == expected_condition
+
+
 def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
@@ -527,3 +546,21 @@ def test_reflection_workflow_commit_step_rewrites_external_output_to_today(tmp_p
 
     assert derived_lines[0] == "reports/today.md"
     assert derived_lines[1] == "reports/issue_suggestions.md"
+def _find_step_condition(lines: list[str], step_label: str) -> str:
+    for index, line in enumerate(lines):
+        if line.strip() == step_label:
+            for candidate in lines[index + 1 :]:
+                stripped = candidate.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                if stripped.startswith("if: ${{") and stripped.endswith("}}"):
+                    return candidate
+                if stripped.startswith("-") and stripped.endswith(":"):
+                    break
+                if stripped.startswith("- name:"):
+                    break
+                if stripped.startswith("run:") or stripped.startswith("uses:"):
+                    break
+            raise AssertionError(f"{step_label} missing if condition")
+    raise AssertionError(f"{step_label} not found")
+
