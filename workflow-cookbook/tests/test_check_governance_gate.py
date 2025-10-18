@@ -347,7 +347,7 @@ Priority Score: 2 / SLO遵守
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "Intent: INT-xxx" in captured.err
     assert "Error:" in captured.err
 
@@ -364,7 +364,7 @@ def test_main_allows_missing_intent(monkeypatch, capsys):
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "Intent: INT-xxx" in captured.err
     assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:1" in captured.err
     assert "Error:" in captured.err
@@ -400,7 +400,7 @@ def test_main_blocks_when_evaluation_context_missing(body, monkeypatch, capsys):
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
@@ -413,7 +413,7 @@ Priority Score: 3 / パフォーマンス改善
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
@@ -427,7 +427,7 @@ Priority Score: 2 / 評価アンカー欠落
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
@@ -442,7 +442,7 @@ Priority Score: 1 / 評価見出し欠落
 
     assert validate_pr_body(body) is False
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
