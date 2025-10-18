@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import textwrap
@@ -295,12 +296,14 @@ def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)
 
+    assert "const requestedUsers = Array.from(requestedUserHandles);" in script, "手動リクエスト集合 requestedUsers の構築が必要です"
     assert (
-        "const filteredRequestedUsers = Array.from(requestedUserHandles).filter((login) =>" in script
+        "const filteredRequestedUsers = requestedUsers.filter((login) =>" in script
         and "codeownerUsers.has(login)" in script
     ), "手動リクエストのうち CODEOWNERS 該当者のみを対象にするフィルタが必要です"
+    assert "const requestedTeams = Array.from(requestedTeamHandles);" in script, "手動チームリクエスト集合 requestedTeams の構築が必要です"
     assert (
-        "const filteredRequestedTeams = Array.from(requestedTeamHandles).filter((team) =>" in script
+        "const filteredRequestedTeams = requestedTeams.filter((team) =>" in script
         and "codeownerTeams.has(team)" in script
     ), "手動チームリクエストも CODEOWNERS との共通部分でフィルタする必要があります"
     assert "const requestedUserHandles = new Set(" in script, "requested_reviewers を集合化する必要があります"
@@ -309,6 +312,24 @@ def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
     assert (
         "core.setOutput('blockers', JSON.stringify(blockers));" in script
     ), "ブロッカー集合をアクション出力へ公開する必要があります"
+
+
+def test_pr_gate_github_script_declares_manual_request_variables_once() -> None:
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    patterns = (
+        "requestedUsers",
+        "filteredRequestedUsers",
+        "requestedTeams",
+        "filteredRequestedTeams",
+    )
+
+    for name in patterns:
+        occurrences = re.findall(rf"const {name} =", script)
+        assert (
+            len(occurrences) == 1
+        ), f"github-script 内で {name} は const 宣言が1度のみである必要があります"
 
 
 def test_pr_gate_pending_ignores_non_codeowner_manual_reviewers() -> None:
