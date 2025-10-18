@@ -83,6 +83,6 @@ canary rules.
 - `EVALUATION` 見出し（例:
   `[Acceptance Criteria](EVALUATION.md#acceptance-criteria)`）へのリンクを
   本文に明示すること。
-- 必ず `Priority Score: <number> / <justification>` の形式で追記し、根拠を `workflow-cookbook/governance/prioritization.yaml` と整合させる（例: `Priority Score: 5 / impact_scope=0.4 (critical fix)`）。
+- Priority Score は必須。必ず `Priority Score: <number> / <justification>` の形式で記載し、根拠を `workflow-cookbook/governance/prioritization.yaml` と整合させる（例: `Priority Score: 5 / impact_scope=0.4 (critical fix)`）。
 
 > `workflow-cookbook/governance/prioritization.yaml` で定義された `impact_scope`（0.4）などの重み付け基準に基づき、Justification には該当指標と判断理由を明記する。
