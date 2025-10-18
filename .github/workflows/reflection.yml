@@ -111,7 +111,7 @@ jobs:
         run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
-          REPORT_PATH="$(python - <<'PY'
+          PYTHON_OUTPUT="$(python - <<'PY'
           from __future__ import annotations
 
           from pathlib import Path
@@ -135,6 +135,7 @@ jobs:
           else:
               BASE_DIR = Path.cwd().resolve()
           DEFAULT_OUTPUT = Path("reports/today.md")
+          DEFAULT_ISSUE = Path("reports/issue_suggestions.md")
 
 
           def _strip_inline_comment(value: str) -> str:
@@ -198,6 +199,37 @@ jobs:
               return str(relative)
 
 
+          def _safe_resolve(path: Path) -> Path:
+              try:
+                  return path.resolve(strict=False)
+              except OSError:
+                  return path
+
+
+          def _resolve_issue_output(report_path: Path, analyze_module: object | None) -> Path:
+              issue_candidate = DEFAULT_ISSUE
+              default_report = DEFAULT_OUTPUT
+              base_dir = BASE_DIR
+              if analyze_module is not None:
+                  issue_candidate = getattr(analyze_module, "ISSUE_OUT", issue_candidate)
+                  default_report = getattr(analyze_module, "DEFAULT_REPORT", default_report)
+                  base_dir = getattr(analyze_module, "BASE_DIR", base_dir)
+              if not isinstance(issue_candidate, Path):
+                  issue_candidate = Path(str(issue_candidate))
+              if not isinstance(default_report, Path):
+                  default_report = Path(str(default_report))
+              if not issue_candidate.is_absolute():
+                  issue_candidate = base_dir / issue_candidate
+              if not default_report.is_absolute():
+                  default_report = base_dir / default_report
+              report_parent = _safe_resolve(report_path).parent
+              issue_parent = _safe_resolve(issue_candidate).parent
+              default_parent = _safe_resolve(default_report).parent
+              if issue_parent == default_parent and report_parent != default_parent:
+                  return report_parent / issue_candidate.name
+              return issue_candidate
+
+
           def _manual_normalize_output(value: str | None) -> str:
               fallback_absolute = DEFAULT_OUTPUT if DEFAULT_OUTPUT.is_absolute() else BASE_DIR / DEFAULT_OUTPUT
               try:
@@ -237,33 +269,51 @@ jobs:
                       manifest=manifest_dict,
                       default=DEFAULT_OUTPUT,
                   )
-                  sys.stdout.write(_normalize_path(report_path))
-                  return
-              report_section = manifest_dict.get("report")
-              output_value = None
-              if isinstance(report_section, dict):
-                  raw_output = report_section.get("output")
-                  if isinstance(raw_output, str) and raw_output.strip():
-                      output_value = raw_output.strip()
-              if output_value is None:
-                  output_value = _fallback(content)
-              sys.stdout.write(_manual_normalize_output(output_value))
+              else:
+                  report_section = manifest_dict.get("report")
+                  output_value = None
+                  if isinstance(report_section, dict):
+                      raw_output = report_section.get("output")
+                      if isinstance(raw_output, str) and raw_output.strip():
+                          output_value = raw_output.strip()
+                  if output_value is None:
+                      output_value = _fallback(content)
+                  normalized = _manual_normalize_output(output_value)
+                  report_path = Path(normalized)
+                  if not report_path.is_absolute():
+                      report_path = BASE_DIR / report_path
+              issue_path = _resolve_issue_output(report_path, analyze)
+              normalized_report = _normalize_path(report_path)
+              normalized_issue = _normalize_path(issue_path)
+              sys.stdout.write(f"{normalized_report}\n{normalized_issue}")
 
 
           if __name__ == "__main__":
               main()
           PY
           )"
+          IFS=$'\n' read -r REPORT_PATH ISSUE_SUGGESTIONS_RELATIVE <<< "$PYTHON_OUTPUT"
+          : "${REPORT_PATH:=reports/today.md}"
+          : "${ISSUE_SUGGESTIONS_RELATIVE:=reports/issue_suggestions.md}"
+          if [[ "$ISSUE_SUGGESTIONS_RELATIVE" = /* ]]; then
+            ISSUE_SUGGESTIONS_CONTENT_PATH="$ISSUE_SUGGESTIONS_RELATIVE"
+            ISSUE_SUGGESTIONS_HASH_PATH="$ISSUE_SUGGESTIONS_RELATIVE"
+          else
+            ISSUE_SUGGESTIONS_CONTENT_PATH="workflow-cookbook/$ISSUE_SUGGESTIONS_RELATIVE"
+            ISSUE_SUGGESTIONS_HASH_PATH="$ISSUE_SUGGESTIONS_CONTENT_PATH"
+          fi
+          echo "ISSUE_SUGGESTIONS_CONTENT_PATH=$ISSUE_SUGGESTIONS_CONTENT_PATH" >> "$GITHUB_ENV"
+          echo "ISSUE_SUGGESTIONS_HASH_PATH=$ISSUE_SUGGESTIONS_HASH_PATH" >> "$GITHUB_ENV"
           git add "$REPORT_PATH"
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed (draft memo)
         # Skip issue creation when no suggestions were produced (hashFiles returns '0' when missing).
-        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '0' }}
+        if: ${{ hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH)) != '0' }}
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "反省TODO ${{ github.run_id }}"
-          content-filepath: workflow-cookbook/reports/issue_suggestions.md
+          content-filepath: ${{ env.ISSUE_SUGGESTIONS_CONTENT_PATH }}
           labels: reflection, needs-triage
       - name: Open draft PR with doc/test tweaks (disabled)
         if: ${{ false }}  # デチューン：無効化

@@ -145,7 +145,7 @@ def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     content = workflow_path.read_text(encoding="utf-8")
 
     expected_condition = (
-        "        if: ${{ hashFiles('workflow-cookbook/reports/issue_suggestions.md') != '0' }}\n"
+        "        if: ${{ hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH)) != '0' }}\n"
     )
 
     assert expected_condition in content
@@ -159,7 +159,7 @@ def test_reflection_workflow_issue_step_condition_checks_hashfiles_zero() -> Non
         / "reflection.yml"
     )
     content = workflow_path.read_text(encoding="utf-8")
-    condition_snippet = "hashFiles('workflow-cookbook/reports/issue_suggestions.md')"
+    condition_snippet = "hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH))"
 
     assert f"{condition_snippet} != '0'" in content
     assert f"{condition_snippet} != ''" not in content
@@ -195,12 +195,27 @@ def test_reflection_workflow_issue_step_condition_evaluates_false_when_missing()
     prefix = "if: ${{"
     suffix = "}}"
     expression = condition_line[len(prefix) : -len(suffix)].strip()
-    placeholder = "hashFiles('workflow-cookbook/reports/issue_suggestions.md')"
+    placeholder = "hashFiles(format('{0}', env.ISSUE_SUGGESTIONS_HASH_PATH))"
 
     assert expression.startswith(placeholder)
     simulated = expression.replace(placeholder, "'0'")
 
     assert simulated == "'0' != '0'"
+
+
+def test_reflection_workflow_issue_step_uses_manifest_relative_path() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+
+    assert "ISSUE_SUGGESTIONS_CONTENT_PATH" in content
+    assert "ISSUE_SUGGESTIONS_HASH_PATH" in content
+    assert "content-filepath: ${{ env.ISSUE_SUGGESTIONS_CONTENT_PATH }}\n" in content
+    assert "read -r REPORT_PATH ISSUE_SUGGESTIONS_RELATIVE" in content
 
 
 def _load_commit_run_block() -> str:
@@ -269,7 +284,7 @@ def _extract_python_heredoc(run_block: str) -> str:
     inside = False
     for line in lines:
         stripped = line.strip()
-        if stripped == "REPORT_PATH=\"$(python - <<'PY'":
+        if stripped == "PYTHON_OUTPUT=\"$(python - <<'PY'":
             inside = True
             continue
         if inside and stripped == "PY":
@@ -290,7 +305,7 @@ def test_reflection_workflow_commit_step_adds_report_output() -> None:
 
     assert "git config user.name \"reflect-bot\"" in run_block
     assert "git config user.email \"bot@example.com\"" in run_block
-    assert "REPORT_PATH=\"$(python - <<'PY'" in run_block
+    assert "PYTHON_OUTPUT=\"$(python - <<'PY'" in run_block
     assert "git add \"$REPORT_PATH\"" in run_block
     assert "git commit -m \"chore(report): reflection report [skip ci]\"" in run_block
 
@@ -319,9 +334,10 @@ def test_reflection_workflow_commit_step_git_add_matches_manifest_output() -> No
     finally:
         os.chdir(original_cwd)
 
-    derived_output = stdout.getvalue().strip()
+    derived_lines = stdout.getvalue().splitlines()
 
-    assert derived_output == expected_output
+    assert derived_lines[0] == expected_output
+    assert derived_lines[1] == "reports/issue_suggestions.md"
 
 
 def test_reflection_workflow_commit_step_fallback_strips_quotes() -> None:
@@ -419,9 +435,39 @@ def test_reflection_workflow_commit_step_defaults_to_today_when_output_missing(t
     finally:
         os.chdir(original_cwd)
 
-    derived_output = stdout.getvalue().strip()
+    derived_lines = stdout.getvalue().splitlines()
 
-    assert derived_output == "reports/today.md"
+    assert derived_lines[0] == "reports/today.md"
+    assert derived_lines[1] == "reports/issue_suggestions.md"
+
+
+def test_reflection_workflow_commit_step_aligns_issue_path_with_report_directory(tmp_path: Path) -> None:
+    run_block = _load_commit_run_block()
+    python_script = _extract_python_heredoc(run_block)
+
+    temp_manifest = textwrap.dedent(
+        """
+        report:
+          output: "reports/custom/out.md"
+        """
+    ).strip()
+
+    manifest_path = tmp_path / "reflection.yaml"
+    manifest_path.write_text(temp_manifest, encoding="utf-8")
+
+    stdout = io.StringIO()
+    original_cwd = os.getcwd()
+    try:
+        os.chdir(tmp_path)
+        with contextlib.redirect_stdout(stdout):
+            exec(python_script, {"__name__": "__main__"})
+    finally:
+        os.chdir(original_cwd)
+
+    derived_lines = stdout.getvalue().splitlines()
+
+    assert derived_lines[0] == "reports/custom/out.md"
+    assert derived_lines[1] == "reports/custom/issue_suggestions.md"
 
 
 def test_reflection_workflow_commit_step_rewrites_external_output_to_today(tmp_path: Path) -> None:
@@ -447,6 +493,7 @@ def test_reflection_workflow_commit_step_rewrites_external_output_to_today(tmp_p
     finally:
         os.chdir(original_cwd)
 
-    derived_output = stdout.getvalue().strip()
+    derived_lines = stdout.getvalue().splitlines()
 
-    assert derived_output == "reports/today.md"
+    assert derived_lines[0] == "reports/today.md"
+    assert derived_lines[1] == "reports/issue_suggestions.md"
