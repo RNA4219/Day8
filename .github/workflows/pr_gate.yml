@@ -193,6 +193,7 @@ jobs:
               {owner, repo, pull_number, per_page: 100},
             );
             const latestStates = new Map();
+            const teamReviewStates = new Map();
             const requiredHandles = new Set(codeownerUsers);
             const collaboratorApprovals = new Set();
             const collaboratorChangeRequesters = new Set();
@@ -211,6 +212,10 @@ jobs:
               if (!collaboratorAssociations.has(association)) continue;
               if (state === 'APPROVED') collaboratorApprovals.add(loginHandle);
               if (state === 'CHANGES_REQUESTED') collaboratorChangeRequesters.add(loginHandle);
+              const teamHandle = toTeamHandle(review.team, owner);
+              if (teamHandle) {
+                teamReviewStates.set(teamHandle, state);
+              }
             }
             const approvals = new Set();
             const allChangeRequesters = new Set(
@@ -236,17 +241,18 @@ jobs:
               return;
             }
             const teamHandles = Array.from(codeownerTeams);
-            const hasTeamApprovals = collaboratorApprovals.size > 0;
-            const pendingTeamHandles = hasTeamApprovals ? [] : teamHandles;
-            const hasTeamCoverage = codeownerTeams.size > 0 && hasTeamApprovals;
+            const pendingTeamHandles = teamHandles.filter((team) => {
+              const state = teamReviewStates.get(team);
+              return state !== 'APPROVED';
+            });
+            const hasTeamCoverage = teamHandles.length > 0 && pendingTeamHandles.length === 0;
             core.setOutput('hasTeamCoverage', hasTeamCoverage ? 'true' : 'false');
             if (pendingTeamHandles.length > 0) {
               const teamMessages = pendingTeamHandles.map((team) => `${team} (team review required)`);
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }
-            const teamApprovals = collaboratorApprovals;
-            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0 && teamApprovals.size === 0) {
+            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0) {
               if (!hasTeamCoverage) {
                 failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
                 return;
