@@ -8,11 +8,26 @@ import re
 import subprocess
 import sys
 import unicodedata
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Iterable, List, Sequence
 
 
 REPO_ROOT_NAME = Path(__file__).resolve().parents[2].name
+
+
+@dataclass(frozen=True)
+class MessageLocation:
+    source: str
+    line: int | None = None
+
+
+def _format_message(prefix: str, message: str, location: MessageLocation | None) -> str:
+    if location is None:
+        return f"{prefix}: {message}"
+    if location.line is not None:
+        return f"{prefix}: {location.source}:{location.line}: {message}"
+    return f"{prefix}: {location.source}: {message}"
 
 
 def _normalize_markdown_emphasis(text: str) -> str:
@@ -320,6 +335,14 @@ PRIORITY_SCORE_ERROR_MESSAGE = (
 )
 
 
+def _find_priority_label_line(body: str) -> int | None:
+    for index, line in enumerate(body.splitlines(), 1):
+        normalized_line = _strip_markup_links(_normalize_markdown_emphasis(line))
+        if PRIORITY_LABEL_PATTERN.search(line) or PRIORITY_LABEL_PATTERN.search(normalized_line):
+            return index
+    return None
+
+
 def _clean_priority_justification_line(line: str) -> str:
     stripped = line.strip(_PRIORITY_STRIP_CHARS)
     stripped = stripped.lstrip(_PRIORITY_PREFIX_CHARS)
@@ -355,7 +378,7 @@ def _has_priority_with_justification(body: str, has_priority_label: bool) -> boo
     return False
 
 
-def validate_pr_body(body: str | None) -> bool:
+def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> bool:
     raw_body = body or ""
     normalized_body = _normalize_markdown_emphasis(raw_body)
     search_body = _strip_markup_links(normalized_body)
@@ -364,10 +387,13 @@ def validate_pr_body(body: str | None) -> bool:
     has_priority_with_justification = _has_priority_with_justification(
         normalized_priority_body, has_priority_label
     )
-    success = True
+    source_text = str(source) if source is not None else None
+    warnings: list[tuple[str, MessageLocation | None]] = []
+    errors: list[tuple[str, MessageLocation | None]] = []
 
     if not INTENT_PATTERN.search(search_body):
-        print("Warning: PR body should include 'Intent: INT-xxx'", file=sys.stderr)
+        intent_location = MessageLocation(source_text, 1) if source_text else None
+        warnings.append(("PR body should include 'Intent: INT-xxx'", intent_location))
     has_evaluation_heading = bool(
         EVALUATION_HEADING_PATTERN.search(normalized_body)
         or EVALUATION_HTML_HEADING_PATTERN.search(raw_body)
@@ -376,13 +402,29 @@ def validate_pr_body(body: str | None) -> bool:
         EVALUATION_ANCHOR_PATTERN.search(raw_body)
         or EVALUATION_ANCHOR_PATTERN.search(normalized_body)
     )
-    if not has_evaluation_heading or not has_evaluation_anchor:
-        print("Warning: PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
+    evaluation_warning_needed = not (has_evaluation_heading and has_evaluation_anchor)
+    evaluation_error_needed = has_evaluation_heading ^ has_evaluation_anchor
+    if evaluation_warning_needed:
+        evaluation_location = MessageLocation(source_text, None) if source_text else None
+        warnings.append(("PR must reference EVALUATION (acceptance) anchor", evaluation_location))
+        if evaluation_error_needed:
+            errors.append(
+                ("PR must reference EVALUATION (acceptance) anchor", evaluation_location)
+            )
+    priority_location: MessageLocation | None = None
+    if source_text:
+        priority_line = _find_priority_label_line(raw_body) if has_priority_label else None
+        priority_location = MessageLocation(source_text, priority_line)
     if not has_priority_label or not has_priority_with_justification:
-        print(f"Warning: {PRIORITY_SCORE_ERROR_MESSAGE}", file=sys.stderr)
-        success = False
+        warnings.append((PRIORITY_SCORE_ERROR_MESSAGE, priority_location))
+        errors.append((PRIORITY_SCORE_ERROR_MESSAGE, priority_location))
 
-    return success
+    for warning, location in warnings:
+        print(_format_message("Warning", warning, location), file=sys.stderr)
+    for error, location in errors:
+        print(_format_message("Error", error, location), file=sys.stderr)
+
+    return not errors
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -407,11 +449,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     body: str | None = None
+    body_source: str | Path | None = None
     if args.pr_body is not None:
         body = args.pr_body
     elif args.pr_body_file is not None:
         try:
             body = args.pr_body_file.read_text(encoding="utf-8")
+            body_source = args.pr_body_file
         except OSError as error:
             print(f"Failed to read PR body file: {error}", file=sys.stderr)
             return 1
@@ -419,7 +463,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         body = resolve_pr_body()
     if body is None:
         return 1
-    if not validate_pr_body(body):
+    if not validate_pr_body(body, source=body_source):
         return 1
 
     return 0
