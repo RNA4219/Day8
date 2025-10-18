@@ -154,10 +154,18 @@ jobs:
                 else codeownerUsers.add(ownerHandle);
               }
             }
-            const filteredRequestedUsers = Array.from(requestedUserHandles).filter((login) =>
+            if (!hasBlockingOwners) {
+              core.setOutput('blockers', JSON.stringify(blockers));
+              core.setOutput('hasApproval', 'true');
+              core.notice('CODEOWNERS contains no GitHub handles; skipping approval enforcement.');
+              return;
+            }
+            const requestedUsers = Array.from(requestedUserHandles);
+            const requestedTeams = Array.from(requestedTeamHandles);
+            const filteredRequestedUsers = requestedUsers.filter((login) =>
               codeownerUsers.has(login),
             );
-            const filteredRequestedTeams = Array.from(requestedTeamHandles).filter((team) =>
+            const filteredRequestedTeams = requestedTeams.filter((team) =>
               codeownerTeams.has(team),
             );
             if (uncovered.length > 0) {
