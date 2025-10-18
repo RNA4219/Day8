@@ -70,7 +70,7 @@ make ci || true
 ## Deliverables
 
 - PR: タイトル/要約/影響/ロールバックに加え、本文へ `Intent: INT-xxx` と `## EVALUATION` アンカーを明記
-  - 必要なら `Priority Score: <number> / <justification>` を追記（例: `Priority Score: 7 / SLO違反リスクが高い`）
+  - Priority Score（必須）: `Priority Score: <number> / <justification>` 形式で根拠を記載（例: `Priority Score: 7 / SLO違反リスクが高い`）
 - Artifacts: 変更パッチ、テスト、必要ならREADME/CHANGELOG差分
 
 ---
