@@ -146,3 +146,15 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
     ), "actions/setup-python のステップは checkout の後、ガバナンスゲート実行の前に必要です"
 
     assert "fetch-depth: 0" in raw_text, "checkout ステップには fetch-depth: 0 の指定が必要です"
+
+
+def test_pr_gate_reviews_are_evaluated_via_github_script() -> None:
+    _, raw_text = _load_pr_gate_workflow()
+
+    assert (
+        "github.rest.pulls.listReviews" in raw_text
+    ), "CODEOWNERS 判定には github.rest.pulls.listReviews を利用する必要があります"
+    assert "APPROVED" in raw_text, "承認状態(APPROVED)の判定ロジックが必要です"
+    assert (
+        "CHANGES_REQUESTED" in raw_text
+    ), "差し戻し状態(CHANGES_REQUESTED)の判定ロジックが必要です"
