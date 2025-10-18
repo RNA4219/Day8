@@ -2,6 +2,18 @@
 
 Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、安全に改善サイクルを回すためのスターターセットです。自動修正を行わず、レポートと Issue 提案で止めることで OSS プロジェクトでも安全に導入できます。
 
+このリポジトリを把握する際は、以下の LLM-BOOTSTRAP を起点に参照範囲を絞り込んでください。
+
+<!-- LLM-BOOTSTRAP v1 -->
+読む順番:
+1. docs/birdseye/index.json  …… ノード一覧・隣接関係（軽量）
+2. docs/birdseye/caps/<path>.json …… 必要ノードだけ point read（個別カプセル）
+
+フォーカス手順:
+- 直近変更ファイル±2hopのノードIDを index.json から取得
+- 対応する caps/*.json のみ読み込み
+<!-- /LLM-BOOTSTRAP -->
+
 ## リポジトリ構成
 - `docs/` Day8 の仕様・運用・ガバナンスドキュメント集（詳細は [`docs/day8/README.md`](docs/day8/README.md) を参照）。
 - `governance/` ポリシー定義や CODEOWNERS などの統制設定。
