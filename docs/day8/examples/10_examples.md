@@ -52,9 +52,10 @@ jobs:
           name: test-logs
           path: workflow-cookbook/logs
 
+      # アーティファクト取得には permissions.actions: read が必要です。
       # 別リポジトリや手動指定の run を参照する場合は、下記のように repository/run-id/github-token を明示しないと
-      # "Artifact not found" エラーになります。ダウンロードには permissions.actions:read が必須で、github-token には
-      # actions:read を付与した PAT を渡してください。
+      # "Artifact not found" エラーになります。ダウンロードには permissions.actions: read が必須で、github-token には
+      # actions: read を付与した PAT を渡してください。
       #- uses: actions/download-artifact@v4.1.7
       #  with:
       #    repository: owner/repo
