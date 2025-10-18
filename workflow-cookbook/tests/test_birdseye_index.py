@@ -5,8 +5,8 @@ from pathlib import Path
 
 
 def test_birdseye_index_nodes_exist() -> None:
-    repo_root = Path(__file__).resolve().parents[2]
-    index_path = repo_root / "workflow-cookbook" / "docs" / "birdseye" / "index.json"
+    repo_root = Path(__file__).resolve().parents[1]
+    index_path = repo_root / "docs" / "birdseye" / "index.json"
 
     index_data = json.loads(index_path.read_text(encoding="utf-8"))
 
