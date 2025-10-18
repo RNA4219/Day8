@@ -102,12 +102,12 @@ def test_reflection_workflow_commit_step_matches_analyze_condition() -> None:
     lines = content.splitlines()
 
     analyze_condition = _find_step_condition(lines, "- name: Analyze logs → report")
-    commit_condition = _find_step_condition(lines, "- name: Commit report")
+    determine_condition = _find_step_condition(lines, "- name: Determine reflection outputs")
 
     expected_condition = "        if: ${{ steps.artifact-locator.outputs.found == 'true' }}"
 
     assert analyze_condition == expected_condition
-    assert commit_condition == expected_condition
+    assert determine_condition == expected_condition
 
 
 def test_reflection_workflow_download_step_warns_when_artifact_missing() -> None:
@@ -324,63 +324,7 @@ def test_reflection_workflow_issue_step_uses_manifest_relative_path() -> None:
 
 
 def _load_commit_run_block() -> str:
-    workflow_path = (
-        Path(__file__).resolve().parents[2]
-        / ".github"
-        / "workflows"
-        / "reflection.yml"
-    )
-    workflow_content = workflow_path.read_text(encoding="utf-8")
-    workflow = yaml.safe_load(workflow_content)
-
-    jobs = workflow["jobs"]
-    assert isinstance(jobs, dict)
-    reflect_job = jobs["reflect"]
-    assert isinstance(reflect_job, dict)
-    steps = reflect_job["steps"]
-    if isinstance(steps, list):
-        commit_step = next(
-            step for step in steps if isinstance(step, dict) and step.get("name") == "Commit report"
-        )
-        run_block = commit_step["run"]
-        assert isinstance(run_block, str)
-        return run_block
-
-    lines = workflow_content.splitlines()
-    start_index = None
-    for index, line in enumerate(lines):
-        if line.strip() == "- name: Commit report":
-            start_index = index
-            break
-    if start_index is None:  # pragma: no cover - defensive guard
-        raise AssertionError("Commit report step not found in workflow text")
-
-    run_index = None
-    for index in range(start_index + 1, len(lines)):
-        if lines[index].strip() == "run: |":
-            run_index = index
-            break
-    if run_index is None:  # pragma: no cover - defensive guard
-        raise AssertionError("Commit report run block missing in workflow text")
-
-    base_indent = len(lines[run_index]) - len(lines[run_index].lstrip(" "))
-    block_indent = None
-    collected: list[str] = []
-    for raw_line in lines[run_index + 1 :]:
-        stripped = raw_line.strip()
-        indent = len(raw_line) - len(raw_line.lstrip(" "))
-        if stripped and indent <= base_indent:
-            break
-        if stripped and block_indent is None:
-            block_indent = indent
-        if block_indent is not None and stripped:
-            collected.append(raw_line[block_indent:])
-        else:
-            collected.append("")
-    if block_indent is None:  # pragma: no cover - defensive guard
-        raise AssertionError("Commit report run block content missing")
-
-    return "\n".join(collected)
+    return _load_reflection_paths_run_block()
 
 
 def _extract_python_heredoc(run_block: str) -> str:

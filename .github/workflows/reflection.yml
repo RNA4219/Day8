@@ -314,11 +314,6 @@ jobs:
           echo "issue-relative-path=$ISSUE_SUGGESTIONS_RELATIVE" >> "$GITHUB_OUTPUT"
           echo "issue-content-path=$ISSUE_SUGGESTIONS_CONTENT_PATH" >> "$GITHUB_OUTPUT"
           echo "issue-hash-path=$ISSUE_SUGGESTIONS_HASH_PATH" >> "$GITHUB_OUTPUT"
-      - name: Commit report
-        # Skip committing when artifacts are unavailable, matching the analyze gate.
-        if: ${{ steps.artifact-locator.outputs.found == 'true' }}
-        working-directory: workflow-cookbook
-        run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
           git add "$REPORT_PATH"
