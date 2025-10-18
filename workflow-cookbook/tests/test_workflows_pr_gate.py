@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import shutil
+import subprocess
+import textwrap
 from pathlib import Path
 from typing import IO, Any, Dict, Tuple
+
+import pytest
 
 try:
     import yaml  # type: ignore
@@ -219,6 +224,71 @@ def test_pr_gate_team_approvals_skip_failure_when_team_is_approved() -> None:
     assert (
         "&& teamApprovals.size === 0" in script
     ), "チーム承認が存在する場合は failWith を呼び出さないようにする必要があります"
+
+
+def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
+    node_path = shutil.which("node")
+    if node_path is None:
+        pytest.skip("node 実行環境が必要です")
+
+    workflow, raw_text = _load_pr_gate_workflow()
+    script = _extract_github_script_text(workflow, raw_text)
+
+    script_file = tmp_path / "codeowners_script.js"
+    script_file.write_text(script, encoding="utf-8")
+
+    runner_file = tmp_path / "runner.js"
+    runner_file.write_text(
+        textwrap.dedent(
+            """
+            'use strict';
+            const fs = require('fs');
+            const scriptPath = process.argv[2];
+            const workspace = process.argv[3];
+            const scriptSource = fs.readFileSync(scriptPath, 'utf8');
+            const outputs = new Map();
+            let failedMessage = null;
+            const core = { setOutput: (k, v) => outputs.set(k, v), setFailed: (msg) => { failedMessage = msg; }, notice: () => {} };
+            const github = {
+              rest: { pulls: { listFiles: 'listFiles', listReviews: 'listReviews' } },
+              paginate: async (fn) => (fn === 'listFiles' ? [{ filename: 'src/example.txt' }] : []),
+            };
+            const context = {
+              repo: { owner: 'octo', repo: 'demo' },
+              payload: { pull_request: { number: 1, requested_reviewers: [], requested_teams: [] } },
+            };
+            const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+            (async () => {
+              process.env.GITHUB_WORKSPACE = workspace;
+              const runner = new AsyncFunction('core', 'github', 'context', 'require', 'process', scriptSource);
+              await runner(core, github, context, require, process);
+              if (failedMessage) throw new Error(failedMessage);
+              const approval = outputs.get('hasApproval');
+              if (approval !== 'true') throw new Error(`Unexpected hasApproval output: ${approval}`);
+            })().catch((error) => {
+              const message = error instanceof Error ? error.stack ?? error.message : String(error);
+              console.error(message);
+              process.exit(1);
+            });
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    workspace = tmp_path / "workspace"
+    codeowners_dir = workspace / ".github"
+    codeowners_dir.mkdir(parents=True)
+    (codeowners_dir / "CODEOWNERS").write_text("* email@example.com\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [node_path, str(runner_file), str(script_file), str(workspace)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
 
 
 def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:

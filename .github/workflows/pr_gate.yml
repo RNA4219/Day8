@@ -137,6 +137,7 @@ jobs:
             const codeownerUsers = new Set();
             const codeownerTeams = new Set();
             const uncovered = [];
+            let hasBlockingOwners = false;
             for (const file of files) {
               const owners = entries.reduce(
                 (matched, entry) => (entry.regex.test(file.filename) ? entry.owners : matched),
@@ -148,6 +149,7 @@ jobs:
               }
               for (const ownerHandle of owners) {
                 if (!ownerHandle.startsWith('@')) continue;
+                hasBlockingOwners = true;
                 if (ownerHandle.includes('/')) codeownerTeams.add(ownerHandle);
                 else codeownerUsers.add(ownerHandle);
               }
