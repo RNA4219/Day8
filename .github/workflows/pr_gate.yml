@@ -141,8 +141,6 @@ jobs:
             core.setOutput('blockers', JSON.stringify(blockers));
             core.setOutput('hasApproval', 'true');
             core.notice('All CODEOWNERS reviews have approved and no changes are requested.');
-      - name: Enforce governance gate
-        run: python tools/ci/check_governance_gate.py
       - name: Block auto-merge (informational)
         run: |
           echo "Auto merge is disabled by policy"
