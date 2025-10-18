@@ -360,10 +360,12 @@ def validate_pr_body(body: str | None) -> bool:
     normalized_body = _normalize_markdown_emphasis(raw_body)
     search_body = _strip_markup_links(normalized_body)
     has_priority_label = bool(PRIORITY_LABEL_PATTERN.search(search_body))
-    normalized_priority_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", search_body)
-    has_priority_with_justification = _has_priority_with_justification(
-        normalized_priority_body, has_priority_label
-    )
+    has_priority_with_justification = False
+    if has_priority_label:
+        normalized_priority_body = PRIORITY_LABEL_PATTERN.sub("Priority Score: ", search_body)
+        has_priority_with_justification = _has_priority_with_justification(
+            normalized_priority_body, True
+        )
     success = True
 
     if not INTENT_PATTERN.search(search_body):
@@ -378,7 +380,10 @@ def validate_pr_body(body: str | None) -> bool:
     )
     if not has_evaluation_heading or not has_evaluation_anchor:
         print("Warning: PR must reference EVALUATION (acceptance) anchor", file=sys.stderr)
-    if not has_priority_label or not has_priority_with_justification:
+    if not has_priority_label:
+        print(f"Warning: {PRIORITY_SCORE_ERROR_MESSAGE}", file=sys.stderr)
+        success = False
+    elif not has_priority_with_justification:
         print(f"Warning: {PRIORITY_SCORE_ERROR_MESSAGE}", file=sys.stderr)
         success = False
 
