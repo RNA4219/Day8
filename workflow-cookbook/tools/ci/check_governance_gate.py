@@ -439,7 +439,8 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
     if source_text:
         priority_line = _find_priority_label_line(raw_body) if has_priority_label else None
         priority_location = MessageLocation(source_text, priority_line)
-    if not has_priority_label or not has_priority_with_justification:
+    priority_error_needed = not has_priority_label or not has_priority_with_justification
+    if priority_error_needed:
         warnings.append((PRIORITY_SCORE_ERROR_MESSAGE, priority_location))
         errors.append((PRIORITY_SCORE_ERROR_MESSAGE, priority_location))
 
