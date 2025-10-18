@@ -135,6 +135,32 @@ def test_reflection_workflow_download_step_extracts_to_repo_root() -> None:
     assert "          path: workflow-cookbook/logs\n" not in content
 
 
+def test_reflection_workflow_normalize_step_operates_on_logs_root() -> None:
+    workflow_path = (
+        Path(__file__).resolve().parents[2]
+        / ".github"
+        / "workflows"
+        / "reflection.yml"
+    )
+    content = workflow_path.read_text(encoding="utf-8")
+
+    expected_snippet = "\n".join(
+        (
+            "          if [ -d \"logs/workflow-cookbook/logs\" ]; then",
+            "            shopt -s nullglob",
+            "            for file in logs/workflow-cookbook/logs/*; do",
+            "              mv \"$file\" logs/",
+            "            done",
+            "            shopt -u nullglob",
+            "            rm -rf logs/workflow-cookbook",
+            "          fi",
+        )
+    )
+
+    assert expected_snippet in content
+    assert "workflow-cookbook/logs/workflow-cookbook/logs" not in content
+
+
 def test_reflection_workflow_issue_step_skips_when_file_missing() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
