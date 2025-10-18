@@ -400,7 +400,7 @@ def test_main_blocks_when_evaluation_context_missing(body, monkeypatch, capsys):
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
@@ -415,6 +415,7 @@ Priority Score: 3 / パフォーマンス改善
     captured = capsys.readouterr()
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
+    assert "Warning:" not in captured.err
 
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
 
@@ -422,7 +423,7 @@ Priority Score: 3 / パフォーマンス改善
 
     assert exit_code == 1
     captured_main = capsys.readouterr()
-    assert "Warning:" in captured_main.err
+    assert "Warning:" not in captured_main.err
     assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured_main.err
     assert "Error:" in captured_main.err
 
@@ -438,6 +439,7 @@ Priority Score: 2 / 評価アンカー欠落
     captured = capsys.readouterr()
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
+    assert "Warning:" not in captured.err
 
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
 
@@ -445,7 +447,7 @@ Priority Score: 2 / 評価アンカー欠落
 
     assert exit_code == 1
     captured_main = capsys.readouterr()
-    assert "Warning:" in captured_main.err
+    assert "Warning:" not in captured_main.err
     assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured_main.err
     assert "Error:" in captured_main.err
 
@@ -462,6 +464,7 @@ Priority Score: 1 / 評価見出し欠落
     captured = capsys.readouterr()
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
+    assert "Warning:" not in captured.err
 
     monkeypatch.setattr(check_governance_gate, "collect_changed_paths", lambda: [])
 
@@ -469,7 +472,7 @@ Priority Score: 1 / 評価見出し欠落
 
     assert exit_code == 1
     captured_main = capsys.readouterr()
-    assert "Warning:" in captured_main.err
+    assert "Warning:" not in captured_main.err
     assert f"{check_governance_gate.PR_BODY_SOURCE_NAME}:" in captured_main.err
     assert "Error:" in captured_main.err
 
@@ -497,7 +500,7 @@ def test_main_fails_without_evaluation_anchor(monkeypatch, capsys):
 
     assert exit_code == 1
     captured = capsys.readouterr()
-    assert "Warning:" in captured.err
+    assert "Warning:" not in captured.err
     assert "PR must reference EVALUATION (acceptance) anchor" in captured.err
     assert "Error:" in captured.err
 
