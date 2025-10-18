@@ -97,10 +97,24 @@ jobs:
             shopt -s nullglob
             for path in logs/*; do
               if [ -d "$path/logs" ]; then
-                for file in "$path"/logs/*; do
-                  mv "$file" logs/
+                for entry in "$path"/logs/*; do
+                  name="$(basename "$entry")"
+                  destination="$path/$name"
+                  if [ -e "$destination" ]; then
+                    base="${name%.*}"
+                    extension=""
+                    if [ "$base" != "$name" ]; then
+                      extension=".${name##*.}"
+                    fi
+                    counter=1
+                    while [ -e "$path/${base}-${counter}${extension}" ]; do
+                      counter=$((counter + 1))
+                    done
+                    destination="$path/${base}-${counter}${extension}"
+                  fi
+                  mv "$entry" "$destination"
                 done
-                rm -rf "$path"
+                rm -rf "$path/logs"
               fi
             done
             shopt -u nullglob
