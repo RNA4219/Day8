@@ -419,7 +419,6 @@ def validate_pr_body(body: str | None, *, source: str | Path | None = None) -> b
 
     if not INTENT_PATTERN.search(search_body):
         intent_location = MessageLocation(source_text, 1) if source_text else None
-        warnings.append(("PR body should include 'Intent: INT-xxx'", intent_location))
         errors.append(("PR body should include 'Intent: INT-xxx'", intent_location))
     has_evaluation_heading = bool(
         EVALUATION_HEADING_PATTERN.search(normalized_body)
