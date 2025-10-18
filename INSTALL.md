@@ -10,6 +10,7 @@
 - `.github/workflows/test.yml`
 - `.github/workflows/reflection.yml`
 - `.github/workflows/pr_gate.yml`
+- `workflow-cookbook/tools/ci/check_governance_gate.py`
 - `tools/ci/check_governance_gate.py`
 - `.github/ISSUE_TEMPLATE/why-why.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
@@ -18,7 +19,7 @@
 - `workflow-cookbook/logs/test.jsonl`（ダミー。最初の動作確認用）
 - `workflow-cookbook/reports/.gitkeep`
 
-`workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。`pr_gate` ワークフローは `tools/ci/check_governance_gate.py` を実行するため、同スクリプトも忘れずにコピーしてください。
+`workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。`pr_gate` ワークフローは `workflow-cookbook/tools/ci/check_governance_gate.py` を `python tools/ci/check_governance_gate.py` で実行します。デフォルトの作業ディレクトリ（`workflow-cookbook/`）からの呼び出しを成立させるため、`workflow-cookbook/tools/ci/` 配下と、ラッパーとして `tools/ci/check_governance_gate.py` の両方を確実にコピーしてください。
 
 ## 使い方
 1. push or PR → `test` が走り、`workflow-cookbook/logs/test.jsonl` を生成
