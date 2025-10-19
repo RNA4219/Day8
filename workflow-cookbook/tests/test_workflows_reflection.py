@@ -302,6 +302,35 @@ def test_reflection_workflow_merge_step_includes_nested_jsonl_files() -> None:
         assert "stale" not in merged
 
 
+def test_reflection_workflow_merge_step_includes_multi_level_test_jsonl_files() -> None:
+    run_block = _load_merge_logs_run_block()
+
+    with tempfile.TemporaryDirectory() as temp_dir_str:
+        temp_dir = Path(temp_dir_str)
+        logs_root = Path(temp_dir) / "logs"
+        logs_root.mkdir()
+        (logs_root / "test.jsonl").write_text("stale", encoding="utf-8")
+
+        (logs_root / "job-a").mkdir()
+        (logs_root / "job-a" / "nested").mkdir()
+        (logs_root / "job-b").mkdir()
+
+        (logs_root / "job-a" / "test.jsonl").write_text("alpha", encoding="utf-8")
+        (logs_root / "job-a" / "nested" / "test.jsonl").write_text("nested", encoding="utf-8")
+        (logs_root / "job-b" / "test.jsonl").write_text("beta", encoding="utf-8")
+
+        subprocess.run(
+            ["bash", "-c", textwrap.dedent(run_block)],
+            check=True,
+            cwd=temp_dir,
+        )
+
+        merged = (logs_root / "test.jsonl").read_text(encoding="utf-8")
+
+        assert merged == "nested\nalpha\nbeta\n"
+        assert "stale" not in merged
+
+
 def test_reflection_workflow_issue_step_uses_computed_issue_path() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
