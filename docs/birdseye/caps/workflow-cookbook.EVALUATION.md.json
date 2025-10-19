@@ -1,10 +1,10 @@
 {
   "id": "workflow-cookbook/EVALUATION.md",
   "role": ["core::quality-gates","orbit::acceptance"],
-  "summary": ["core::受け入れ基準とKPIを整理しPriority Scoreや禁止パスを規定。","orbit::テストアウトラインで単体/結合/回帰を俯瞰。","orbit::インシデント連携要件をRunbookと相互リンク。"],
-  "deps": ["in::docs/ROADMAP_AND_SPECS.md","in::workflow-cookbook/HUB.codex.md","in::workflow-cookbook/RUNBOOK.md","out::workflow-cookbook/CHECKLISTS.md"],
+  "summary": ["core::受け入れ基準とKPIを整理しPriority Scoreや禁止パスを規定。","orbit::テストアウトラインで単体/結合/回帰を俯瞰。","orbit::Runbook/Guardrailsと相互リンクし品質ゲートを同期。"],
+  "deps": ["in::docs/ROADMAP_AND_SPECS.md","in::workflow-cookbook/HUB.codex.md","in::workflow-cookbook/RUNBOOK.md","in::workflow-cookbook/GUARDRAILS.md","out::workflow-cookbook/CHECKLISTS.md"],
   "deps_out": ["workflow-cookbook/CHECKLISTS.md"],
-  "deps_in": ["docs/ROADMAP_AND_SPECS.md","workflow-cookbook/HUB.codex.md","workflow-cookbook/RUNBOOK.md"],
+  "deps_in": ["docs/ROADMAP_AND_SPECS.md","workflow-cookbook/HUB.codex.md","workflow-cookbook/RUNBOOK.md","workflow-cookbook/GUARDRAILS.md"],
   "maintenance": {
     "refresh": "Acceptance Criteria変更時はCHECKLISTS/RUNBOOK/Task Seed雛形を更新。",
     "tooling": ["python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"]

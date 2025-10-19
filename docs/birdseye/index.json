@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-01-18T00:00:00Z",
+  "generated_at": "2025-01-19T00:00:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -111,6 +111,16 @@
     ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/RUNBOOK.md"],
     ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/EVALUATION.md"],
     ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/CHECKLISTS.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/TASK.codex.md"]
+    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/TASK.codex.md"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/BLUEPRINT.md"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/RUNBOOK.md"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/EVALUATION.md"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/CHECKLISTS.md"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/TASK.codex.md"],
+    ["workflow-cookbook/BLUEPRINT.md", "workflow-cookbook/RUNBOOK.md"],
+    ["workflow-cookbook/RUNBOOK.md", "workflow-cookbook/EVALUATION.md"],
+    ["workflow-cookbook/RUNBOOK.md", "workflow-cookbook/CHECKLISTS.md"],
+    ["workflow-cookbook/EVALUATION.md", "workflow-cookbook/CHECKLISTS.md"],
+    ["workflow-cookbook/CHECKLISTS.md", "workflow-cookbook/TASK.codex.md"]
   ]
 }
