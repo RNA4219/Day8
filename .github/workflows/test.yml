@@ -229,7 +229,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: test-logs-*
-          path: test-logs
+          path: workflow-cookbook/test-logs
       - name: Summarize & STRICT gate (optional)
         working-directory: .
         run: |
