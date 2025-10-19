@@ -82,16 +82,21 @@ jobs:
             const parseCodeowners = (content) => {
               const entries = [];
               for (const rawLine of content.split(/\r?\n/)) {
-                const line = rawLine.trim();
-                if (!line || line.startsWith('#')) continue;
-                const [pattern, ...ownerTokens] = line.split(/\s+/);
+                const trimmedLine = rawLine.trim();
+                if (!trimmedLine || trimmedLine.startsWith('#')) continue;
+                const commentIndex = trimmedLine.indexOf('#');
+                const effectiveLine = commentIndex === -1
+                  ? trimmedLine
+                  : trimmedLine.slice(0, commentIndex).trimEnd();
+                if (!effectiveLine) continue;
+                const [pattern, ...ownerTokens] = effectiveLine.split(/\s+/);
                 if (!pattern || ownerTokens.length === 0) continue;
                 const owners = [];
                 for (const token of ownerTokens) {
-                  const trimmed = token.trim();
-                  if (!trimmed) continue;
-                  if (trimmed.startsWith('#')) break;
-                  owners.push(trimmed);
+                  const normalized = token.trim();
+                  if (!normalized) continue;
+                  if (normalized.startsWith('#')) break;
+                  owners.push(normalized);
                 }
                 if (owners.length === 0) continue;
                 const regex = toRegex(pattern);

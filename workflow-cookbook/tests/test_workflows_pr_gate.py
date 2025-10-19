@@ -538,6 +538,21 @@ def test_pr_gate_ignores_codeowners_comment_fragments(tmp_path: Path) -> None:
     assert outputs.get("hasTeamCoverage") == "true"
 
 
+def test_pr_gate_inline_comment_lines_do_not_create_pseudo_codeowners(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa # note\n",
+        reviews=[],
+        team_members={},
+    )
+
+    assert result.returncode != 0
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("@octo/qa (team review required)" in blocker for blocker in blockers)
+    assert not any("@octo/qa#" in blocker for blocker in blockers)
+
+
 def test_pr_gate_allows_team_only_codeowners_without_team_context(tmp_path: Path) -> None:
     result, outputs = _run_codeowners_script(
         tmp_path,
