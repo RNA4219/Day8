@@ -1,0 +1,14 @@
+{
+  "id": "workflow-cookbook/RUNBOOK.md",
+  "role": ["core::operations","orbit::incident-response"],
+  "summary": ["core::環境別の実行手順と観測ポイントを列挙。","orbit::インシデントログやロールバック更新までの手順を明示。","orbit::Blueprint/Evaluation要件を現場操作へ展開。"],
+  "deps": ["in::docs/ROADMAP_AND_SPECS.md","in::workflow-cookbook/HUB.codex.md","in::workflow-cookbook/BLUEPRINT.md","out::workflow-cookbook/EVALUATION.md","out::workflow-cookbook/CHECKLISTS.md"],
+  "deps_out": ["workflow-cookbook/EVALUATION.md","workflow-cookbook/CHECKLISTS.md"],
+  "deps_in": ["docs/ROADMAP_AND_SPECS.md","workflow-cookbook/HUB.codex.md","workflow-cookbook/BLUEPRINT.md"],
+  "maintenance": {
+    "refresh": "Runbook更新時はインシデントサンプルやチェックリストの該当項目も同期。",
+    "tooling": ["python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"]
+  },
+  "risks": ["手順の齟齬は本番運用事故を誘発"],
+  "tests": ["check::RunbookのExecute/Observability/Rollbackが最新CIと一致するか確認"]
+}
