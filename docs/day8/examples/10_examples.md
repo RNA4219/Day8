@@ -88,18 +88,18 @@ jobs:
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
       - name: Open issue if needed
-        if: ${{ hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path)) != '0' }}
+        if: ${{ hashFiles(format('{0}', env.ISSUE_HASH_PATH)) != '0' }}
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "反省TODO ${{ github.run_id }}"
-          content-filepath: ${{ steps.reflection-paths.outputs.issue-content-path }}
+          content-filepath: ${{ env.ISSUE_CONTENT_PATH }}
           labels: reflection, needs-triage
 ```
 
 > `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
-> 同じ理由でレポート生成後の処理も `workflow-cookbook/` を基準に行い、`Determine reflection outputs` ステップで `REPORT_PATH` や `ISSUE_RELATIVE_PATH` を算出します。
-> ステップ内では、算出したパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` へ書き出し、`git add "$REPORT_PATH"` のように変数からステージング先を決定しています。
-> `Open issue if needed` でも `steps.reflection-paths.outputs.issue-content-path` などの出力を再利用し、`hashFiles(format('{0}', ...))` の評価結果に応じて Issue 起票を行います。
+> 同じ理由でレポートのステージングや Issue テンプレートの解決は `workflow-cookbook/` からの相対パスで処理しています。
+> `Determine reflection outputs` ステップは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` に書き出します。`issue-hash-path` と `issue-content-path` をそれぞれ `ISSUE_HASH_PATH` / `ISSUE_CONTENT_PATH` として環境変数化し、`Open issue if needed` ステップで `hashFiles(format('{0}', env.ISSUE_HASH_PATH))` と `content-filepath: ${{ env.ISSUE_CONTENT_PATH }}` に流用します。
+> `hashFiles` に環境変数を噛ませることでテンプレートファイルが存在しない場合に Issue 起票を自動スキップしつつ、`create-issue-from-file` へは常にリポジトリルートからの解決済みパスを渡せます。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出

@@ -30,6 +30,25 @@ def test_reflection_example_includes_issue_steps() -> None:
     assert "      - name: Open issue if needed" in yaml_lines
 
 
+def test_reflection_example_exports_issue_paths_to_env() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert (
+        "          echo \"ISSUE_CONTENT_PATH=$ISSUE_CONTENT_PATH\" >> \"$GITHUB_ENV\""
+        in yaml_lines
+    )
+    assert (
+        "          echo \"ISSUE_HASH_PATH=$ISSUE_HASH_PATH\" >> \"$GITHUB_ENV\""
+        in yaml_lines
+    )
+    assert (
+        "        if: ${{ hashFiles(format('{0}', env.ISSUE_HASH_PATH)) != '0' }}" in yaml_lines
+    )
+    assert (
+        "          content-filepath: ${{ env.ISSUE_CONTENT_PATH }}" in yaml_lines
+    )
+
+
 def test_reflection_example_stages_report_file() -> None:
     yaml_lines = _load_reflection_yaml_block()
 
