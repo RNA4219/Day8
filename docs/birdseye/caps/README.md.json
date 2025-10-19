@@ -1,0 +1,22 @@
+{
+  "id": "README.md",
+  "role": "overview",
+  "public_api": [],
+  "summary": "Day8 全体像と導線を示すトップレベルのオリエン資料。Birdseye から個別仕様へ絞り込む起点。",
+  "deps_out": [
+    "INSTALL.md",
+    "docs/README.md",
+    "workflow-cookbook/docs/birdseye/index.json"
+  ],
+  "deps_in": [],
+  "maintenance": {
+    "refresh": "README.md を更新したら docs/birdseye/index.json とカプセルを同一コミットで再生成する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "Birdseye が陳腐化すると LLM-BOOTSTRAP の誘導が破綻する"
+  ],
+  "tests": []
+}

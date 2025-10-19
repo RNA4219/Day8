@@ -4,14 +4,17 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 
 このリポジトリを把握する際は、以下の LLM-BOOTSTRAP を起点に参照範囲を絞り込んでください。
 
-<!-- LLM-BOOTSTRAP v1 -->
+<!-- LLM-BOOTSTRAP v2 -->
 読む順番:
-1. docs/birdseye/index.json  …… ノード一覧・隣接関係（軽量）
+1. docs/birdseye/index.json  …… Day8 ルートの鳥瞰マップ
 2. docs/birdseye/caps/<path>.json …… 必要ノードだけ point read（個別カプセル）
 
 フォーカス手順:
 - 直近変更ファイル±2hopのノードIDを index.json から取得
 - 対応する caps/*.json のみ読み込み
+
+更新フロー:
+- Day8 ルート文書を更新したら `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を実行し、index/caps を同期コミットする
 <!-- /LLM-BOOTSTRAP -->
 
 詳細な構成を確認する際は、上記の導線に沿って必要なドキュメントを順番に参照してください。
