@@ -667,6 +667,29 @@ def test_pr_gate_single_segment_star_does_not_cross_directories(tmp_path: Path) 
     assert not any("README.md" in blocker for blocker in blockers)
 
 
+def test_pr_gate_single_segment_star_matches_only_repository_root(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="*.md @octocat\n",
+        files=[
+            {"filename": "README.md"},
+            {"filename": "docs/guide.md"},
+        ],
+        reviews=[
+            {
+                "user": {"login": "octocat"},
+                "state": "APPROVED",
+                "author_association": "MEMBER",
+            }
+        ],
+    )
+
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("docs/guide.md" in blocker for blocker in blockers)
+    assert not any("README.md" in blocker for blocker in blockers)
+
+
 def test_pr_gate_single_character_wildcard_does_not_cross_segments(tmp_path: Path) -> None:
     result, outputs = _run_codeowners_script(
         tmp_path,
