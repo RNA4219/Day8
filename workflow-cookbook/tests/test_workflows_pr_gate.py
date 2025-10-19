@@ -559,6 +559,24 @@ def test_pr_gate_team_only_codeowners_rejects_non_member_collaborator(tmp_path: 
     assert any("@octo/qa" in blocker for blocker in blockers)
 
 
+def test_pr_gate_globstar_schema_pattern_matches_root_file(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="**/schema/** @octo/qa\n",
+        files=[{"filename": "schema/model.yaml"}],
+        reviews=[],
+        team_members={"octo/qa": ["qa-team-member"]},
+    )
+
+    stderr = result.stderr or ""
+    assert "Invalid regular expression" not in stderr
+
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("@octo/qa" in blocker for blocker in blockers)
+    assert not any("No CODEOWNERS match" in blocker for blocker in blockers)
+
+
 def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)

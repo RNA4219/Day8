@@ -63,12 +63,21 @@ jobs:
               if (normalized.startsWith('/')) normalized = normalized.replace(/^\/+/, '');
               if (normalized.endsWith('/')) normalized = `${normalized}**`;
               if (normalized === '*') return /^.*$/;
-              const escaped = normalized
-                .replace(/([\\^$+?.()|{}\[\]])/g, '\\$1')
-                .replace(/\\\*\\\*/g, '.*')
-                .replace(/\\\*/g, '.*')
-                .replace(/\\\?/g, '.');
-              return new RegExp(`^${escaped}$`);
+              const GLOBSTAR = '__GLOBSTAR__';
+              const STAR = '__STAR__';
+              const QMARK = '__QMARK__';
+              let source = normalized
+                .replace(/\*\*/g, GLOBSTAR)
+                .replace(/\*/g, STAR)
+                .replace(/\?/g, QMARK);
+              source = source.replace(/([\\^$+?.()|{}\[\]])/g, '\\$1');
+              if (source.startsWith(`${GLOBSTAR}/`)) {
+                source = `(?:[^/]+/)*${source.slice(`${GLOBSTAR}/`.length)}`;
+              }
+              source = source.replace(new RegExp(GLOBSTAR, 'g'), '.*');
+              source = source.replace(new RegExp(STAR, 'g'), '.*');
+              source = source.replace(new RegExp(QMARK, 'g'), '.');
+              return new RegExp(`^${source}$`);
             };
             const parseCodeowners = (content) => {
               const entries = [];
@@ -294,7 +303,7 @@ jobs:
                     break;
                   }
                 }
-              } else if (collaboratorApprovals.size > 0) {
+              } else if (collaboratorApprovals.size > 0 && codeownerUsers.size === 0) {
                 hasMemberApproval = true;
               }
               if (!isTeamRequested && hasMemberApproval) {
