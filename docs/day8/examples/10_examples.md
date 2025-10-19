@@ -97,9 +97,9 @@ jobs:
 ```
 
 > `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
-> 同じ理由でレポートのステージングや Issue テンプレートの解決は `workflow-cookbook/` からの相対パスで処理しています。
-> `Determine reflection outputs` ステップは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` に書き出し、`issue-content-path` と `issue-hash-path` を `Open issue if needed` の条件・入力に再利用します。
-> `hashFiles(format('{0}', ...))` を使うことで、テンプレートファイルが存在しない場合には Issue 起票をスキップしつつ、`create-issue-from-file` へは常にリポジトリルートからの解決済みパスを渡せます。
+> 同じ理由でレポート生成後の処理も `workflow-cookbook/` を基準に行い、`Determine reflection outputs` ステップで `REPORT_PATH` や `ISSUE_RELATIVE_PATH` を算出します。
+> ステップ内では、算出したパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` へ書き出し、`git add "$REPORT_PATH"` のように変数からステージング先を決定しています。
+> `Open issue if needed` でも `steps.reflection-paths.outputs.issue-content-path` などの出力を再利用し、`hashFiles(format('{0}', ...))` の評価結果に応じて Issue 起票を行います。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出
