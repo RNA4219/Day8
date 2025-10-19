@@ -100,6 +100,19 @@ def test_reflection_manifest_logs_entry() -> None:
     assert targets[0]["logs"] == ["logs/test.jsonl"]
 
 
+def test_report_job_downloads_artifacts_into_workflow_directory() -> None:
+    root = Path(__file__).resolve().parents[2]
+    workflow_path = root / ".github" / "workflows" / "test.yml"
+    raw_text = workflow_path.read_text(encoding="utf-8")
+
+    assert (
+        "- uses: actions/download-artifact@v4" in raw_text
+    ), "report ジョブで actions/download-artifact を使用する必要があります"
+    assert (
+        "path: workflow-cookbook/test-logs" in raw_text
+    ), "report ジョブは workflow-cookbook/test-logs へアーティファクトを展開する必要があります"
+
+
 def test_test_workflow_upload_steps_use_unique_names() -> None:
     root = Path(__file__).resolve().parents[2]
     workflow_path = root / ".github" / "workflows" / "test.yml"
