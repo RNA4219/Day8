@@ -2,6 +2,13 @@
 
 プロジェクト全体の現在地と次の一手を素早く把握するためのガイドです。既存ドキュメントの骨格を保ちつつ、各資料の読みどころを短くまとめました。迷ったときはここから辿れば、必要な一次資料に直接到達できます。
 
+| 区分 | 文書 | 役割 / 重点観点 | 更新時のチェック |
+| --- | --- | --- | --- |
+| 要件 | [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) | エンドユーザー課題と優先機能の定義。 | 機能スコープ変更時に差分を Issue へ記録。 |
+| 仕様 | [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) | 画面・ユースケース・成功条件の確定版。 | シーケンス/ユースケース変更時は QA チェックリストに反映。 |
+| ADR / 決定ログ | [docs/day8/design/03_architecture.md](day8/design/03_architecture.md)<br>[governance/policy.yaml](../governance/policy.yaml) | 主要コンポーネントの責務と運用制約。暫定 ADR は Architecture に集約。 | 重要な設計判断は policy.yaml の SLO/制約と突き合わせ、Birdseye カプセルを同コミットで更新。 |
+| チェックリスト | [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md)<br>[docs/day8/quality/06_quality.md](day8/quality/06_quality.md) | 実装・運用時の検証項目、品質ゲート。 | 新しい手順追加時は RUNBOOK / Birdseye deps_out と整合を取る。 |
+
 ## 方向性・やりたいこと
 - [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md)
   - ユーザー課題と優先機能の一覧。機能間の依存関係とスコープ境界を確認する際の出発点。
@@ -26,7 +33,32 @@
 - [docs/day8/guides/07_contributing.md](day8/guides/07_contributing.md)
   - Issue テンプレート、ブランチ戦略、レビュー SLA、合意済みのコーディング規約を網羅。新規参加者へのオンボーディングにも使用。
 
+## 主要ディレクトリと仕様の対応表
+
+| ディレクトリ | 主な責務 | 紐づく仕様 / 運用資料 |
+| --- | --- | --- |
+| `docs/day8/spec/` | 要件・詳細仕様の一次情報。 | [01_requirements.md](day8/spec/01_requirements.md)、[02_spec.md](day8/spec/02_spec.md) |
+| `docs/day8/design/` | アーキテクチャ構成と決定ログの暫定集約。 | [03_architecture.md](day8/design/03_architecture.md)、[governance/policy.yaml](../governance/policy.yaml) |
+| `docs/day8/ops/` & `docs/day8/quality/` | 運用手順と品質基準。 | [04_ops.md](day8/ops/04_ops.md)、[06_quality.md](day8/quality/06_quality.md)、[workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) |
+| `docs/birdseye/` & `workflow-cookbook/docs/birdseye/` | Birdseye インデックスとカプセル。参照経路の最新化を管理。 | [docs/birdseye/index.json](birdseye/index.json)、[workflow-cookbook/tools/codemap/README.md](../workflow-cookbook/tools/codemap/README.md) |
+| `workflow-cookbook/` | ガードレール・チェックリスト・自動化スクリプト。 | [HUB.codex.md](../workflow-cookbook/HUB.codex.md)、[GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md)、[tools/codemap/update.py](../workflow-cookbook/tools/codemap/update.py) |
+
+### 優先度付きロードマップ
+
+1. **ドキュメント整備** — [docs/day8/spec](day8/spec/) 群と [docs/birdseye/index.json](birdseye/index.json) の整合性確認。差分が出た場合は [workflow-cookbook/tools/codemap/update.py](../workflow-cookbook/tools/codemap/update.py) で Birdseye を再収集し、[CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) を同期。
+2. **CI / 自動化** — [workflow-cookbook/scripts](../workflow-cookbook/scripts) や `tools/codemap` の再生成コマンドを点検し、[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) の Birdseye 運用ルールに沿って自動チェックを追加。
+3. **実装フェーズ** — [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) の責務割りをベースに実装/テストを更新。変更内容は [docs/day8/examples/10_examples.md](day8/examples/10_examples.md) や [docs/day8/guides/07_contributing.md](day8/guides/07_contributing.md) へ反映し、最終的に REQUIREMENTS / SPEC の差分と合わせて報告。
+
 リンク先を増やしたり構成を変えたくなった場合は、このページを更新し、合わせて Issue か PR の説明欄に簡単な変更理由を記載してください。
+
+## 参照クイックリンク
+- Birdseye 更新ルール: [workflow-cookbook/GUARDRAILS.md#Birdseye / Minimal Context Intake Guardrails（鳥観図×最小読込）](../workflow-cookbook/GUARDRAILS.md#birdseye--minimal-context-intake-guardrails鳥観図最小読込)
+- Birdseye 再生成手順: [workflow-cookbook/tools/codemap/README.md](../workflow-cookbook/tools/codemap/README.md)、[tools/codemap/update.py](../workflow-cookbook/tools/codemap/update.py)
+- 変更導線の総覧: [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md)、[docs/birdseye/caps/README.md.json](birdseye/caps/README.md.json)
+
+## ライセンス
+- プロジェクトライセンス: [LICENSE](../LICENSE)
+- 追加通知・依存ライセンス: [NOTICE](../NOTICE)
 
 ## Guardrails 参照順
 - [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md)
