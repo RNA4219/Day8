@@ -131,14 +131,13 @@ jobs:
 
           logs_dir = Path("logs")
           target = logs_dir / "test.jsonl"
-          files = sorted(
-              (
-                  path
-                  for path in logs_dir.glob("**/*.jsonl")
-                  if path.is_file() and path != target
-              ),
-              key=lambda path: path.relative_to(logs_dir).as_posix(),
-          )
+          files: list[Path] = []
+          for path in logs_dir.glob("**/*.jsonl"):
+              if not path.is_file() or path == target:
+                  continue
+              files.append(path)
+
+          files.sort(key=lambda path: path.relative_to(logs_dir).as_posix())
 
           target.parent.mkdir(parents=True, exist_ok=True)
           content_parts: list[str] = []
