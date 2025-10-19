@@ -14,7 +14,7 @@
     {
       "id": "workflow-cookbook/SAFETY.md",
       "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
-      "reason": "Katamari 本家の安全運用を Day8 プロセスへ同期し、Guardrails から Runbook までの承認経路を俯瞰できる。"
+      "reason": "安全運用を Day8 プロセスに同期し、Guardrails から Runbook までの承認経路を俯瞰できる。"
     },
     {
       "id": "workflow-cookbook/GUARDRAILS.md",
@@ -32,9 +32,9 @@
       "reason": "実運用手順・観測点・インシデント連携を定義し、現場で即参照される操作ガイド。"
     },
     {
-      "id": "workflow-cookbook/docs/birdseye/index.json",
-      "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
-      "reason": "Cookbook 側 Birdseye の最新ノード/エッジ構造を確認し Day8 側の索引差分を即座に同期できる。"
+      "id": "workflow-cookbook/SAFETY.md",
+      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
+      "reason": "Day8 安全審査の許容範囲・エスカレーション先・Birdseye 更新要件を集約。"
     }
   ]
 }

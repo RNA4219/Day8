@@ -26,6 +26,11 @@
       "caps": "docs/birdseye/caps/docs.safety.md.json",
       "mtime": "2025-01-15T00:00:00Z"
     },
+    "workflow-cookbook/SAFETY.md": {
+      "role": "safety",
+      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
+      "mtime": "2025-10-20T10:30:00Z"
+    },
     "workflow-cookbook/GUARDRAILS.md": {
       "role": "guardrail",
       "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",

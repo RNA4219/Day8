@@ -41,7 +41,6 @@ Katamari ワークフローの安全対策を Day8 向けにローカライズ�
 ## レビューとメンテナンス
 
 - 月次で `docs/safety.md`・`docs/birdseye/index.json`・本ドキュメントの整合性を確認する。
-- Day8 と Katamari で安全プロセスに差分が生じた場合、`workflow-cookbook/CHANGELOG.md` と Day8 のロードマップに反映する。
 - 緊急改訂時は Birdseye の `generated_at` と該当 Capsule を即時更新し、ホットリンクへ追加する。
 
 ## 参照資料

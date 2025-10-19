@@ -2,7 +2,7 @@
   "id": "workflow-cookbook/SAFETY.md",
   "role": ["core::safety-policy","orbit::day8-alignment"],
   "summary": [
-    "core::Katamari 本家の安全基準を Day8 向けにローカライズし、人間承認と自動化制限を明記する。",
+    "core::安全基準を Day8 向けにし、人間承認と自動化制限を明記する。",
     "orbit::docs/safety.md・Guardrails・Runbook との整合を担保し、Birdseye 更新を義務付ける。",
     "orbit::インシデント時の通知経路とログ要件を整理し、安全レビューの再発行条件を定義する。"
   ],
