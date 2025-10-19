@@ -1,44 +1,48 @@
 {
   "id": "workflow-cookbook/SAFETY.md",
-  "role": ["core::safety-policy","orbit::risk-gate"],
+  "role": ["core::safety-policy","orbit::day8-alignment"],
   "summary": [
-    "core::Day8 向けの安全審査フローと適用範囲を定義し、Day8 基準へ統合した中核ポリシー。",
-    "orbit::docs/safety.md・GUARDRAILS・SECURITY との整合を取り、許容作業と観測モードを切り分ける。",
-    "orbit::高リスク変更のエスカレーション/証跡/再生成手順を Birdseye へ反映させる。"
+    "core::安全基準を Day8 向けにし、人間承認と自動化制限を明記する。",
+    "orbit::docs/safety.md・Guardrails・Runbook との整合を担保し、Birdseye 更新を義務付ける。",
+    "orbit::インシデント時の通知経路とログ要件を整理し、安全レビューの再発行条件を定義する。"
   ],
   "deps": [
     "in::docs/safety.md",
+    "in::docs/day8/security/05_security.md",
     "in::workflow-cookbook/GUARDRAILS.md",
-    "in::workflow-cookbook/SECURITY.md",
-    "in::workflow-cookbook/HUB.codex.md",
-    "out::workflow-cookbook/RUNBOOK.md",
-    "out::workflow-cookbook/CHECKLISTS.md",
-    "out::docs/birdseye/index.json",
-    "out::docs/birdseye/hot.json"
+    "in::workflow-cookbook/BLUEPRINT.md",
+    "in::workflow-cookbook/RUNBOOK.md",
+    "in::workflow-cookbook/EVALUATION.md",
+    "in::workflow-cookbook/CHECKLISTS.md",
+    "in::workflow-cookbook/TASK.codex.md"
   ],
   "deps_out": [
-    "workflow-cookbook/RUNBOOK.md",
-    "workflow-cookbook/CHECKLISTS.md",
+    "docs/safety.md",
     "docs/birdseye/index.json",
-    "docs/birdseye/hot.json"
+    "docs/birdseye/hot.json",
+    "workflow-cookbook/CHANGELOG.md"
   ],
   "deps_in": [
     "docs/safety.md",
+    "docs/day8/security/05_security.md",
     "workflow-cookbook/GUARDRAILS.md",
-    "workflow-cookbook/SECURITY.md",
-    "workflow-cookbook/HUB.codex.md"
+    "workflow-cookbook/BLUEPRINT.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/TASK.codex.md"
   ],
   "maintenance": {
-    "refresh": "安全ポリシー更新時は Runbook/Checklists と Birdseye (index/hot/caps) を同時に再生成する。",
+    "refresh": "月次レビューまたは安全例外発生時に更新し、Birdseye index/hot を再生成する。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
   "risks": [
-    "安全審査ポリシーが古いと高リスク作業が未承認で進み事故につながる",
-    "Birdseye 未更新で誘導がずれると誤ったノードを参照してしまう"
+    "安全ポリシーが Guardrails や RUNBOOK と乖離すると承認フローが形骸化する"
   ],
   "tests": [
-    "check::docs/safety.md・RUNBOOK・SECURITY との制約差分が同期しているかレビュー"
+    "check::docs/safety.md と整合するかクロスレビュー",
+    "check::Birdseye generated_at が更新されているか確認"
   ]
 }

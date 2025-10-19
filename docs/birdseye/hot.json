@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-20T10:30:00Z",
+  "generated_at": "2025-10-20T12:00:00Z",
   "entries": [
     {
       "id": "README.md",
@@ -10,6 +10,11 @@
       "id": "docs/ROADMAP_AND_SPECS.md",
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
       "reason": "Day8/Workflow-cookbook双方の資料を横断索引し、ロードマップStep1内のBirdseye反映4ステップを明示して HUB への読み順を先導する。"
+    },
+    {
+      "id": "workflow-cookbook/SAFETY.md",
+      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
+      "reason": "安全運用を Day8 プロセスに同期し、Guardrails から Runbook までの承認経路を俯瞰できる。"
     },
     {
       "id": "workflow-cookbook/GUARDRAILS.md",

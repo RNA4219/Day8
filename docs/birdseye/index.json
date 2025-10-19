@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-20T10:30:00Z",
+  "generated_at": "2025-10-20T12:00:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -95,45 +95,161 @@
       "role": "visualization",
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
       "mtime": "2025-10-20T10:00:00Z"
+    },
+    "workflow-cookbook/SAFETY.md": {
+      "role": "safety",
+      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
+      "mtime": "2025-10-20T10:30:00Z"
     }
   },
   "edges": [
-    ["README.md", "INSTALL.md"],
-    ["README.md", "docs/README.md"],
-    ["docs/README.md", "docs/day8/README.md"],
-    ["docs/README.md", "docs/safety.md"],
-    ["docs/safety.md", "workflow-cookbook/SAFETY.md"],
-    ["README.md", "workflow-cookbook/docs/birdseye/index.json"],
-    ["README.md", "workflow-cookbook/GUARDRAILS.md"],
-    ["README.md", "workflow-cookbook/SAFETY.md"],
-    ["README.md", "tools/"],
-    ["README.md", "scripts/"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/tools/"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/scripts/"],
-    ["README.md", "docs/ROADMAP_AND_SPECS.md"],
-    ["README.md", "workflow-cookbook/HUB.codex.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/BLUEPRINT.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/GUARDRAILS.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/SAFETY.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/RUNBOOK.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/EVALUATION.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/CHECKLISTS.md"],
-    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/TASK.codex.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/BLUEPRINT.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/GUARDRAILS.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/RUNBOOK.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/EVALUATION.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/CHECKLISTS.md"],
-    ["workflow-cookbook/HUB.codex.md", "workflow-cookbook/TASK.codex.md"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/BLUEPRINT.md"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/RUNBOOK.md"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/EVALUATION.md"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/CHECKLISTS.md"],
-    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/TASK.codex.md"],
-    ["workflow-cookbook/BLUEPRINT.md", "workflow-cookbook/RUNBOOK.md"],
-    ["workflow-cookbook/RUNBOOK.md", "workflow-cookbook/EVALUATION.md"],
-    ["workflow-cookbook/RUNBOOK.md", "workflow-cookbook/CHECKLISTS.md"],
-    ["workflow-cookbook/EVALUATION.md", "workflow-cookbook/CHECKLISTS.md"],
-    ["workflow-cookbook/CHECKLISTS.md", "workflow-cookbook/TASK.codex.md"]
+    [
+      "README.md",
+      "INSTALL.md"
+    ],
+    [
+      "README.md",
+      "docs/README.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/day8/README.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/safety.md"
+    ],
+    [
+      "README.md",
+      "workflow-cookbook/docs/birdseye/index.json"
+    ],
+    [
+      "README.md",
+      "workflow-cookbook/GUARDRAILS.md"
+    ],
+    [
+      "README.md",
+      "tools/"
+    ],
+    [
+      "README.md",
+      "scripts/"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/tools/"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/scripts/"
+    ],
+    [
+      "README.md",
+      "docs/ROADMAP_AND_SPECS.md"
+    ],
+    [
+      "README.md",
+      "workflow-cookbook/HUB.codex.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/GUARDRAILS.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/GUARDRAILS.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "workflow-cookbook/BLUEPRINT.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/EVALUATION.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/CHECKLISTS.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "docs/safety.md",
+      "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/SAFETY.md"
+    ]
   ]
 }
