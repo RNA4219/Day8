@@ -1,4 +1,5 @@
 Intent: INT-XXXX
+参考: [CONTRIBUTING.md](../CONTRIBUTING.md) / [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)
 ## EVALUATION
 - [Acceptance Criteria](../EVALUATION.md#acceptance-criteria)
 Priority Score: <数値> / <根拠>
