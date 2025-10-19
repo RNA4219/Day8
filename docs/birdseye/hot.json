@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-01-18T00:00:00Z",
+  "generated_at": "2025-01-19T00:00:00Z",
   "entries": [
     {
       "id": "README.md",
@@ -9,7 +9,12 @@
     {
       "id": "docs/ROADMAP_AND_SPECS.md",
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "reason": "Day8/Workflow-cookbook双方の仕様・運用資料を横断索引し、優先読み順を決める。"
+      "reason": "Day8/Workflow-cookbook双方の仕様・運用資料を横断索引し、HUB/Guardrailsへの読み順を先導する。"
+    },
+    {
+      "id": "workflow-cookbook/GUARDRAILS.md",
+      "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
+      "reason": "設計/運用/品質/タスク種別ごとの禁止事項とゲート順を束ね、着手前に守るべき制約を提示。"
     },
     {
       "id": "workflow-cookbook/HUB.codex.md",

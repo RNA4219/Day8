@@ -1,23 +1,47 @@
 {
   "id": "workflow-cookbook/GUARDRAILS.md",
-  "role": "guardrail",
-  "public_api": [],
-  "summary": "リポジトリ運用の振る舞い・例外ポリシー・テスト順序を定義する中核ガードレール。実装時の判断基準を網羅。",
+  "role": ["core::guardrail-hub","orbit::policy-anchor"],
+  "summary": [
+    "core::リポジトリ運用の原則・例外ポリシー・ゲート順を定義する最上位ガードライン。",
+    "orbit::Blueprint/Runbook/Evaluation/Checklists/Task Seedの実装判断を束ねる。",
+    "orbit::自動化ツールやスクリプト適用範囲を制御し安全な変更手順を保証。"
+  ],
+  "deps": [
+    "in::README.md",
+    "in::docs/ROADMAP_AND_SPECS.md",
+    "in::workflow-cookbook/HUB.codex.md",
+    "out::workflow-cookbook/BLUEPRINT.md",
+    "out::workflow-cookbook/RUNBOOK.md",
+    "out::workflow-cookbook/EVALUATION.md",
+    "out::workflow-cookbook/CHECKLISTS.md",
+    "out::workflow-cookbook/TASK.codex.md",
+    "out::workflow-cookbook/tools/",
+    "out::workflow-cookbook/scripts/"
+  ],
   "deps_out": [
+    "workflow-cookbook/BLUEPRINT.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/TASK.codex.md",
     "workflow-cookbook/tools/",
     "workflow-cookbook/scripts/"
   ],
   "deps_in": [
-    "README.md"
+    "README.md",
+    "docs/ROADMAP_AND_SPECS.md",
+    "workflow-cookbook/HUB.codex.md"
   ],
   "maintenance": {
-    "refresh": "ガードレールを更新したら関連ツールと Birdseye カプセルを同一コミットで再生成する。",
+    "refresh": "ガードレール更新時は関連資料とBirdseye(インデックス/カプセル)を同時更新する。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
   "risks": [
-    "ガードレールと実装方針が乖離すると開発者ガイドが破綻する"
+    "ガードレールと実装方針が乖離すると優先度判断とゲートが破綻する"
   ],
-  "tests": []
+  "tests": [
+    "check::Lint/Type/Test順と例外条件が各運用資料と同期しているか確認"
+  ]
 }
