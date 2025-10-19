@@ -51,7 +51,7 @@ jobs:
         with:
           name: test-logs
           run-id: ${{ github.event.workflow_run.id }}
-          path: .
+          path: workflow-cookbook
 
       # アーティファクト取得には permissions.actions: read が必要です。
       # 別リポジトリや手動指定の run を参照する場合は、下記のように repository/run-id/github-token を明示しないと
@@ -62,7 +62,7 @@ jobs:
       #    repository: owner/repo
       #    run-id: 1234567890
       #    name: test-logs
-      #    path: .
+      #    path: workflow-cookbook
       #    github-token: ${{ secrets.CROSS_REPO_PAT }}
       - uses: actions/setup-python@v5
         with:
@@ -79,7 +79,7 @@ jobs:
           git push || true
 ```
 
-> `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: .` でワークスペース直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
+> `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
 > 同じ理由でレポートのステージングは `git add reports/today.md` として実行します。
 
 ## analyze.py（骨子）
