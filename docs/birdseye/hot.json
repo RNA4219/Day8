@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-19T20:35:37Z",
+  "generated_at": "2025-10-20T09:00:00Z",
   "entries": [
     {
       "id": "README.md",
@@ -9,7 +9,7 @@
     {
       "id": "docs/ROADMAP_AND_SPECS.md",
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "reason": "Day8/Workflow-cookbook双方の資料を横断索引し、Guardrails連動のBirdseye更新フローと HUB への読み順を先導する。"
+      "reason": "Day8/Workflow-cookbook双方の資料を横断索引し、ロードマップStep1内のBirdseye反映4ステップを明示して HUB への読み順を先導する。"
     },
     {
       "id": "workflow-cookbook/GUARDRAILS.md",
