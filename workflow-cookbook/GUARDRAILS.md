@@ -28,6 +28,7 @@ next_review_due: 2025-11-14
 7. タスク自動生成ツールはドライランで JSON 出力を確認してから Issue 化する。
 8. 完了済みタスクは `CHANGELOG.md` へ移し、履歴を更新する。
 9. テスト/型/lint/CI の実行結果を確認し、`CHECKLISTS.md` でリリース可否を判断する。
+10. `docs/ROADMAP_AND_SPECS.md` (ROADMAP ハブ) を更新し、横断ロードマップと Guardrails 参照の整合性を維持する。
 
 ## 実装原則
 
@@ -78,21 +79,24 @@ next_review_due: 2025-11-14
    - 役割：**読む場所の道標のみ**。下のテンプレを貼る。
 
    ```md
-   <!-- LLM-BOOTSTRAP v1 -->
+   <!-- LLM-BOOTSTRAP v2 -->
    読む順番:
-   1. docs/birdseye/index.json  …… ノード一覧・隣接関係（軽量）
+   1. docs/birdseye/index.json  …… Day8 ルートの鳥瞰マップ
    2. docs/birdseye/caps/<path>.json …… 必要ノードだけ point read（個別カプセル）
 
    フォーカス手順:
    - 直近変更ファイル±2hopのノードIDを index.json から取得
    - 対応する caps/*.json のみ読み込み
+
+   更新フロー:
+   - Day8 ルート文書を更新したら `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を実行し、index/caps を同期コミットする
    <!-- /LLM-BOOTSTRAP -->
    ```
 
 2. **Index（軽量インデックス）**
 
-   - 置き場所：`docs/birdseye/index.json`
-   - 役割：**±N hop 抽出**が即できる機械可読データ。
+   - 置き場所：`docs/birdseye/index.json`（Day8 ルート）と `workflow-cookbook/docs/birdseye/index.json`（cookbook）。
+   - 役割：**±N hop 抽出**が即できる機械可読データ。両者の鮮度を合わせる。
    - **最小スキーマ**：
 
    ```json

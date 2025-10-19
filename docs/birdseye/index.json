@@ -1,0 +1,37 @@
+{
+  "generated_at": "2025-01-16T00:00:00Z",
+  "nodes": {
+    "README.md": {
+      "role": "overview",
+      "caps": "docs/birdseye/caps/README.md.json",
+      "mtime": "2025-01-15T00:00:00Z"
+    },
+    "INSTALL.md": {
+      "role": "setup",
+      "caps": "docs/birdseye/caps/INSTALL.md.json",
+      "mtime": "2025-01-15T00:00:00Z"
+    },
+    "docs/README.md": {
+      "role": "index",
+      "caps": "docs/birdseye/caps/docs.README.md.json",
+      "mtime": "2025-01-15T00:00:00Z"
+    },
+    "docs/day8/README.md": {
+      "role": "overview",
+      "caps": "docs/birdseye/caps/docs.day8.README.md.json",
+      "mtime": "2025-01-15T00:00:00Z"
+    },
+    "docs/safety.md": {
+      "role": "safety",
+      "caps": "docs/birdseye/caps/docs.safety.md.json",
+      "mtime": "2025-01-15T00:00:00Z"
+    }
+  },
+  "edges": [
+    ["README.md", "INSTALL.md"],
+    ["README.md", "docs/README.md"],
+    ["docs/README.md", "docs/day8/README.md"],
+    ["docs/README.md", "docs/safety.md"],
+    ["README.md", "workflow-cookbook/docs/birdseye/index.json"]
+  ]
+}
