@@ -512,6 +512,25 @@ def test_pr_gate_respects_negated_codeowners_entries(tmp_path: Path) -> None:
     assert not any("docs/generated/auto.md" in blocker for blocker in blockers)
 
 
+def test_pr_gate_negated_entries_exclude_generated_docs_but_require_rest(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="docs/** @octo/docs\n!docs/generated/**\n",
+        files=[
+            {"filename": "docs/generated/auto.md"},
+            {"filename": "docs/guide/intro.md"},
+        ],
+    )
+
+    assert result.returncode != 0, result.stderr or result.stdout
+    blockers_raw = outputs.get("blockers") or "[]"
+    assert "@octo/docs" in blockers_raw
+    excluded_raw = outputs.get("excludedFiles") or "[]"
+    excluded = json.loads(excluded_raw)
+    assert "docs/generated/auto.md" in excluded
+    assert "docs/guide/intro.md" not in excluded
+
+
 def test_pr_gate_allows_team_only_codeowners_when_not_pending(tmp_path: Path) -> None:
     result, outputs = _run_codeowners_script(
         tmp_path,
