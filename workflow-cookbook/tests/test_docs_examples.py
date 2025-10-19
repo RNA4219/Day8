@@ -30,6 +30,17 @@ def test_reflection_example_includes_issue_steps() -> None:
     assert "      - name: Open issue if needed" in yaml_lines
 
 
+def test_reflection_example_orders_issue_steps() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    determine_line = "      - name: Determine reflection outputs"
+    open_issue_line = "      - name: Open issue if needed"
+
+    assert determine_line in yaml_lines
+    assert open_issue_line in yaml_lines
+    assert yaml_lines.index(determine_line) < yaml_lines.index(open_issue_line)
+
+
 def test_reflection_example_exports_issue_paths_to_env() -> None:
     yaml_lines = _load_reflection_yaml_block()
 

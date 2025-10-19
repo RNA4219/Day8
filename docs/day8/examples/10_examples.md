@@ -96,10 +96,10 @@ jobs:
           labels: reflection, needs-triage
 ```
 
-> `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
-> 同じ理由でレポートのステージングや Issue テンプレートの解決は `workflow-cookbook/` からの相対パスで処理しています。
-> `Determine reflection outputs` ステップは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` に書き出します。`issue-hash-path` と `issue-content-path` をそれぞれ `ISSUE_HASH_PATH` / `ISSUE_CONTENT_PATH` として環境変数化し、`Open issue if needed` ステップで `hashFiles(format('{0}', env.ISSUE_HASH_PATH))` と `content-filepath: ${{ env.ISSUE_CONTENT_PATH }}` に流用します。
-> `hashFiles` に環境変数を噛ませることでテンプレートファイルが存在しない場合に Issue 起票を自動スキップしつつ、`create-issue-from-file` へは常にリポジトリルートからの解決済みパスを渡せます。
+> - `defaults.run.working-directory` で `workflow-cookbook` を指定すると、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` のように相対パスで呼び出せます。
+> - 同じ理由で、レポートのステージングや Issue テンプレートの解決は `workflow-cookbook/` からの相対パス（例: `reports/today.md`）で処理します。`git add` の引数にリポジトリ名を重ねる必要はありません。
+> - `Determine reflection outputs` ステップでは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` に書き出します。`issue-content-path` を `ISSUE_CONTENT_PATH`、`issue-hash-path` を `ISSUE_HASH_PATH` として環境変数化しておくことで、後続ステップからは `${{ env.ISSUE_CONTENT_PATH }}` / `${{ env.ISSUE_HASH_PATH }}` を利用するだけで済みます。
+> - `Open issue if needed` ステップは、`hashFiles(format('{0}', env.ISSUE_HASH_PATH))` で Issue テンプレートの有無を判定しつつ、`content-filepath: ${{ env.ISSUE_CONTENT_PATH }}` へ同じ解決済みパスを流用します。テンプレートファイルがない場合は Issue 起票を自動的にスキップし、存在する場合のみ `create-issue-from-file` が実行されます。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出
