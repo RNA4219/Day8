@@ -38,6 +38,22 @@
 - [docs/day8/guides/07_contributing.md](day8/guides/07_contributing.md)
   - Issue テンプレート、ブランチ戦略、レビュー SLA、合意済みのコーディング規約を網羅。新規参加者へのオンボーディングにも使用。
 
+## 主要ディレクトリと仕様の対応表
+
+| ディレクトリ | 主な責務 | 紐づく仕様 / 運用資料 |
+| --- | --- | --- |
+| `docs/day8/spec/` | 要件・詳細仕様の一次情報。 | [01_requirements.md](day8/spec/01_requirements.md)、[02_spec.md](day8/spec/02_spec.md) |
+| `docs/day8/design/` | アーキテクチャ構成と決定ログの暫定集約。 | [03_architecture.md](day8/design/03_architecture.md)、[governance/policy.yaml](../governance/policy.yaml) |
+| `docs/day8/ops/` & `docs/day8/quality/` | 運用手順と品質基準。 | [04_ops.md](day8/ops/04_ops.md)、[06_quality.md](day8/quality/06_quality.md)、[workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) |
+| `docs/birdseye/` & `workflow-cookbook/docs/birdseye/` | Birdseye インデックスとカプセル。参照経路の最新化を管理。 | [docs/birdseye/index.json](birdseye/index.json)、[workflow-cookbook/tools/codemap/README.md](../workflow-cookbook/tools/codemap/README.md) |
+| `workflow-cookbook/` | ガードレール・チェックリスト・自動化スクリプト。 | [HUB.codex.md](../workflow-cookbook/HUB.codex.md)、[GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md)、[tools/codemap/update.py](../workflow-cookbook/tools/codemap/update.py) |
+
+### 優先度付きロードマップ
+
+1. **ドキュメント整備** — [docs/day8/spec](day8/spec/) 群と [docs/birdseye/index.json](birdseye/index.json) の整合性確認。差分が出た場合は [workflow-cookbook/tools/codemap/update.py](../workflow-cookbook/tools/codemap/update.py) で Birdseye を再収集し、[CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) を同期。
+2. **CI / 自動化** — [workflow-cookbook/scripts](../workflow-cookbook/scripts) や `tools/codemap` の再生成コマンドを点検し、[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) の Birdseye 運用ルールに沿って自動チェックを追加。
+3. **実装フェーズ** — [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) の責務割りをベースに実装/テストを更新。変更内容は [docs/day8/examples/10_examples.md](day8/examples/10_examples.md) や [docs/day8/guides/07_contributing.md](day8/guides/07_contributing.md) へ反映し、最終的に REQUIREMENTS / SPEC の差分と合わせて報告。
+
 リンク先を増やしたり構成を変えたくなった場合は、このページを更新し、合わせて Issue か PR の説明欄に簡単な変更理由を記載してください。
 
 ## 実装モジュールと対応仕様
