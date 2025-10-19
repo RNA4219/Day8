@@ -49,11 +49,30 @@ def test_reflection_example_exports_issue_paths_to_env() -> None:
     )
 
 
+def test_reflection_example_exports_report_path_to_env() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert (
+        "          echo \"REPORT_PATH=$REPORT_PATH\" >> \"$GITHUB_ENV\"" in yaml_lines
+    )
+
+
 def test_reflection_example_stages_report_file() -> None:
     yaml_lines = _load_reflection_yaml_block()
 
     assert "          REPORT_PATH=\"reports/today.md\"" in yaml_lines
     assert "          git add \"$REPORT_PATH\"" in yaml_lines
+
+
+def test_reflection_example_stage_uses_outputs_env() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert "      - name: Stage reflection report" in yaml_lines
+    assert "        env:" in yaml_lines
+    assert (
+        "          REPORT_PATH: ${{ steps.reflection-paths.outputs.report-path }}"
+        in yaml_lines
+    )
 
 
 def test_reflection_example_does_not_stage_with_repo_prefix() -> None:

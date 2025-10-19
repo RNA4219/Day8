@@ -80,8 +80,13 @@ jobs:
           echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
           echo "issue-content-path=$ISSUE_CONTENT_PATH" >> "$GITHUB_OUTPUT"
           echo "issue-hash-path=$ISSUE_HASH_PATH" >> "$GITHUB_OUTPUT"
+          echo "REPORT_PATH=$REPORT_PATH" >> "$GITHUB_ENV"
           echo "ISSUE_CONTENT_PATH=$ISSUE_CONTENT_PATH" >> "$GITHUB_ENV"
           echo "ISSUE_HASH_PATH=$ISSUE_HASH_PATH" >> "$GITHUB_ENV"
+      - name: Stage reflection report
+        env:
+          REPORT_PATH: ${{ steps.reflection-paths.outputs.report-path }}
+        run: |
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
           git add "$REPORT_PATH"
@@ -98,8 +103,8 @@ jobs:
 
 > `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
 > 同じ理由でレポートのステージングや Issue テンプレートの解決は `workflow-cookbook/` からの相対パスで処理しています。
-> `Determine reflection outputs` ステップは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` に書き出します。`issue-hash-path` と `issue-content-path` をそれぞれ `ISSUE_HASH_PATH` / `ISSUE_CONTENT_PATH` として環境変数化し、`Open issue if needed` ステップで `hashFiles(format('{0}', env.ISSUE_HASH_PATH))` と `content-filepath: ${{ env.ISSUE_CONTENT_PATH }}` に流用します。
-> `hashFiles` に環境変数を噛ませることでテンプレートファイルが存在しない場合に Issue 起票を自動スキップしつつ、`create-issue-from-file` へは常にリポジトリルートからの解決済みパスを渡せます。
+> `Determine reflection outputs` ステップは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` と `$GITHUB_ENV` に書き出します。`REPORT_PATH` は後続の `Stage reflection report` で `env.REPORT_PATH` として参照し、`git add "$REPORT_PATH"` などの実処理に利用します。
+> `issue-hash-path` と `issue-content-path` をそれぞれ `ISSUE_HASH_PATH` / `ISSUE_CONTENT_PATH` として環境変数化し、`Open issue if needed` ステップで `hashFiles(format('{0}', env.ISSUE_HASH_PATH))` と `content-filepath: ${{ env.ISSUE_CONTENT_PATH }}` に流用します。`hashFiles` に環境変数を噛ませることでテンプレートファイルが存在しない場合に Issue 起票を自動スキップしつつ、`create-issue-from-file` へは常にリポジトリルートからの解決済みパスを渡せます。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出
