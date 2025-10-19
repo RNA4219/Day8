@@ -268,6 +268,40 @@ def test_reflection_workflow_merge_step_updates_root_jsonl() -> None:
         assert "stale" not in merged
 
 
+def test_reflection_workflow_merge_step_uses_recursive_jsonl_glob() -> None:
+    run_block = _load_merge_logs_run_block()
+
+    assert 'logs_dir.glob("**/*.jsonl")' in run_block
+
+
+def test_reflection_workflow_merge_step_includes_nested_jsonl_files() -> None:
+    run_block = _load_merge_logs_run_block()
+
+    with tempfile.TemporaryDirectory() as temp_dir_str:
+        temp_dir = Path(temp_dir_str)
+        logs_root = Path(temp_dir) / "logs"
+        logs_root.mkdir()
+        (logs_root / "test.jsonl").write_text("stale", encoding="utf-8")
+
+        (logs_root / "job-a").mkdir()
+        (logs_root / "job-a" / "nested").mkdir()
+        (logs_root / "job-b").mkdir()
+        (logs_root / "job-a" / "alpha.jsonl").write_text("alpha", encoding="utf-8")
+        (logs_root / "job-a" / "nested" / "gamma.jsonl").write_text("gamma", encoding="utf-8")
+        (logs_root / "job-b" / "beta.jsonl").write_text("beta", encoding="utf-8")
+
+        subprocess.run(
+            ["bash", "-c", textwrap.dedent(run_block)],
+            check=True,
+            cwd=temp_dir,
+        )
+
+        merged = (logs_root / "test.jsonl").read_text(encoding="utf-8")
+
+        assert merged == "alpha\ngamma\nbeta\n"
+        assert "stale" not in merged
+
+
 def test_reflection_workflow_issue_step_uses_computed_issue_path() -> None:
     workflow_path = (
         Path(__file__).resolve().parents[2]
