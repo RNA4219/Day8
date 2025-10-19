@@ -505,6 +505,24 @@ def test_pr_gate_team_member_fetch_failure_fails(tmp_path: Path) -> None:
     assert outputs.get("hasApproval") != "true"
 
 
+def test_pr_gate_team_member_fetch_null_marks_pending_handles(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa\n",
+        reviews=[],
+        team_members={"octo/qa": "__ERROR__"},
+    )
+
+    assert result.returncode != 0, result.stderr or result.stdout
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert (
+        "Unable to fetch CODEOWNERS team members for: @octo/qa (team review required)"
+        in blockers
+    )
+    assert outputs.get("hasTeamCoverage") == "false"
+
+
 def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
     result, outputs = _run_codeowners_script(
         tmp_path,

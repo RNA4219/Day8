@@ -352,7 +352,9 @@ jobs:
               const members = await fetchTeamMembers(team);
               if (members === null) {
                 pendingTeamHandles.push(team);
-                continue;
+                core.setOutput('hasTeamCoverage', 'false');
+                failWith(`Unable to fetch CODEOWNERS team members for: ${team} (team review required)`);
+                return;
               }
               let hasMemberApproval = false;
               if (members && members.size > 0) {
