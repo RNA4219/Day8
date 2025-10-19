@@ -90,6 +90,11 @@
       "role": "tasks",
       "caps": "docs/birdseye/caps/workflow-cookbook.TASK.codex.md.json",
       "mtime": "2025-01-17T00:00:00Z"
+    },
+    "workflow-cookbook/docs/birdseye/index.json": {
+      "role": "visualization",
+      "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
+      "mtime": "2025-10-20T10:00:00Z"
     }
   },
   "edges": [

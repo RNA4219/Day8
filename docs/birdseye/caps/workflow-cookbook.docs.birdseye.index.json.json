@@ -1,0 +1,18 @@
+{
+  "id": "workflow-cookbook/docs/birdseye/index.json",
+  "role": ["core::visualization-hub","orbit::catalog-sync"],
+  "summary": [
+    "core::Workflow-cookbook 側の Birdseye ノード構造とホットスポットを俯瞰し、Day8 からの参照点を一望できる可視化インデックス。",
+    "orbit::README.md → workflow-cookbook ドメイン資料への橋渡しを担い、双方の Birdseye 更新手順を同期させる。",
+    "orbit::Cookbook 内のガードレール・運用・評価資料をまとめて辿れる導線を提供する。"
+  ],
+  "deps": ["in::README.md"],
+  "deps_out": [],
+  "deps_in": ["README.md"],
+  "maintenance": {
+    "refresh": "workflow-cookbook 側 Birdseye 更新時に README.md エッジと同期し、caps/hot/index のタイムスタンプを同一に揃える。",
+    "tooling": ["python workflow-cookbook/tools/codemap/update.py --targets workflow-cookbook/docs/birdseye/index.json"]
+  },
+  "risks": ["Workflow-cookbook 側の Birdseye が古いと Day8 の索引と不整合が生じる"],
+  "tests": ["check::エッジ先ノードの存在検証をローカルスクリプトで実行"]
+}
