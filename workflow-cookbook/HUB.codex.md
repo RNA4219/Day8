@@ -67,8 +67,8 @@ next_review_due: 2025-11-14
   備考: 後工程。
 - **Orchestration** (`orchestration/*.md`): ワークフロー構成・依存関係。優先順: 可変。
   備考: 最優先のブロッカーを提示。
-- **Birdseye Map** (`docs/birdseye/index.json` など): 依存トポロジと役割を把握。優先順: 高。
-  備考: `plan` 出力にノードID/役割を埋め込む基準面。
+- **Birdseye Map** (`docs/birdseye/index.json` / `workflow-cookbook/docs/birdseye/index.json`): 依存トポロジと役割を把握。優先順: 高。
+  備考: Day8 ルートと cookbook 両方の Birdseye を `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` で同期し、`plan` 出力にノードID/役割を埋め込む基準面。
 - **Task Seeds** (`TASK.*-MM-DD-YYYY`): 既存タスクドラフト。優先順: 高。
   備考: 未着手タスクの候補。
 
@@ -94,8 +94,8 @@ next_review_due: 2025-11-14
 
 1. **スキャン**: ルートと `orchestration/` 配下を再帰探索し、Markdown front matter
    (`---`) を含むファイルを優先取得。
-2. **Birdseye 同期**: `docs/birdseye/index.json` から対象ファイル±2 hop のノードIDと役割を取得。
-   必要な `docs/birdseye/caps/*.json` を取り込み、各節に `node_id` と `role` を差し込む。
+2. **Birdseye 同期**: `docs/birdseye/index.json` と `workflow-cookbook/docs/birdseye/index.json` から対象ファイル±2 hop のノードIDと役割を取得。
+   必要な `docs/birdseye/caps/*.json` / `workflow-cookbook/docs/birdseye/caps/*.json` を取り込み、各節に `node_id` と `role` を差し込む。
    これにより GUARDRAILS の `plan` 出力要件（ノードID明示）を満たす初期データを確保。
 3. **ノード生成**: 各ファイルから `##` レベルの節をノード化し、`Priority`
    `Dependencies` などのキーワードを抽出。
