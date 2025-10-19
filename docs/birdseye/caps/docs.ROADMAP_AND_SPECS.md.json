@@ -1,0 +1,14 @@
+{
+  "id": "docs/ROADMAP_AND_SPECS.md",
+  "role": ["core::roadmap-hub","orbit::alignment"],
+  "summary": ["core::Day8側とworkflow-cookbook側の主要資料を横断索引する起点。","orbit::要求/設計/運用/品質/リリース資料の読み順と対応表を提示。","orbit::Birdseyeやcodemap再生成など更新手順を明文化。"],
+  "deps": ["in::README.md","out::workflow-cookbook/BLUEPRINT.md","out::workflow-cookbook/GUARDRAILS.md","out::workflow-cookbook/RUNBOOK.md","out::workflow-cookbook/EVALUATION.md","out::workflow-cookbook/CHECKLISTS.md","out::workflow-cookbook/TASK.codex.md"],
+  "deps_out": ["workflow-cookbook/BLUEPRINT.md","workflow-cookbook/GUARDRAILS.md","workflow-cookbook/RUNBOOK.md","workflow-cookbook/EVALUATION.md","workflow-cookbook/CHECKLISTS.md","workflow-cookbook/TASK.codex.md"],
+  "deps_in": ["README.md"],
+  "maintenance": {
+    "refresh": "クロスリンクを変更したら対応する cookbook 資料と同時更新する。",
+    "tooling": ["python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"]
+  },
+  "risks": ["索引が古いと仕様/運用判断が分断される"],
+  "tests": ["check::ロードマップ表のリンクとBirdseyeエッジが一致しているか確認"]
+}
