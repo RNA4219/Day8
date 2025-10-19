@@ -113,6 +113,29 @@ def test_report_job_downloads_artifacts_into_workflow_directory() -> None:
     ), "report ジョブは workflow-cookbook/test-logs へアーティファクトを展開する必要があります"
 
 
+def test_report_job_download_and_aggregation_paths_match() -> None:
+    root = Path(__file__).resolve().parents[2]
+    workflow_path = root / ".github" / "workflows" / "test.yml"
+    raw_text = workflow_path.read_text(encoding="utf-8")
+
+    download_path = "workflow-cookbook/test-logs"
+    assert (
+        f"path: {download_path}" in raw_text
+    ), "report ジョブで workflow-cookbook/test-logs をダウンロード先に設定してください"
+
+    marker = "- name: Consolidate logs for reflection"
+    assert marker in raw_text, "report ジョブにログ集約ステップが存在する必要があります"
+
+    after_marker = raw_text.split(marker, 1)[1]
+    # 集約ステップの終端は次のステップ（actions/upload-artifact）までとみなす
+    terminator = "\n      - uses:"
+    aggregate_block = after_marker.split(terminator, 1)[0]
+
+    assert (
+        download_path in aggregate_block
+    ), "report ジョブのログ集約ステップは workflow-cookbook/test-logs を参照する必要があります"
+
+
 def test_test_workflow_upload_steps_use_unique_names() -> None:
     root = Path(__file__).resolve().parents[2]
     workflow_path = root / ".github" / "workflows" / "test.yml"

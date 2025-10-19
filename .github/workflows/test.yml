@@ -255,10 +255,22 @@ jobs:
         if: always()
         run: |
           set -Eeuo pipefail
+          download_root="workflow-cookbook/test-logs"
+          if [ -d "$download_root" ]; then
+            sources_root="$download_root"
+          elif [ -d "test-logs" ]; then
+            sources_root="test-logs"
+          elif [ -d "../test-logs" ]; then
+            sources_root="../test-logs"
+          else
+            echo "No downloaded test logs found" >&2
+            exit 0
+          fi
+
           rm -rf logs
           mkdir -p logs
           shopt -s nullglob
-          for source in test-logs/*; do
+          for source in "$sources_root"/*; do
             if [ -d "$source" ]; then
               find "$source" -type f -print0 | while IFS= read -r -d '' file; do
                 rel="${file#"$source"/}"
