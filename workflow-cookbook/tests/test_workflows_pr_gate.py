@@ -499,6 +499,26 @@ def test_pr_gate_allows_team_only_codeowners_when_not_pending(tmp_path: Path) ->
     assert outputs.get("hasTeamCoverage") == "true"
 
 
+def test_pr_gate_allows_team_only_codeowners_without_team_context(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa\n",
+        reviews=[
+            {
+                "user": {"login": "qa-team-member"},
+                "state": "APPROVED",
+                "author_association": "MEMBER",
+            }
+        ],
+        team_members={},
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert outputs.get("hasApproval") == "true"
+    assert outputs.get("blockers") == "[]"
+    assert outputs.get("hasTeamCoverage") == "true"
+
+
 def test_pr_gate_team_only_codeowners_rejects_non_member_collaborator(tmp_path: Path) -> None:
     result, outputs = _run_codeowners_script(
         tmp_path,
