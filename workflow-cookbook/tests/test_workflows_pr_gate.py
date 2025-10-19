@@ -122,7 +122,7 @@ def _run_codeowners_script(
     pull_request: dict[str, Any] | None = None,
     files: list[dict[str, Any]] | None = None,
     reviews: list[dict[str, Any]] | None = None,
-    team_members: dict[str, list[str]] | None = None,
+    team_members: dict[str, list[str] | str] | None = None,
 ) -> tuple[subprocess.CompletedProcess[str], dict[str, Any]]:
     node_path = shutil.which("node")
     if node_path is None:
@@ -180,7 +180,13 @@ def _run_codeowners_script(
                 if (fn === 'listReviews') return scenario.reviews;
                 if (fn === 'listMembersInOrg') {
                   const key = `${params.org}/${params.team_slug}`;
-                  const members = scenario.team_members?.[key] || [];
+                  const members = scenario.team_members?.[key];
+                  if (members === '__ERROR__') {
+                    throw new Error(`Forced team member fetch failure for ${key}`);
+                  }
+                  if (!Array.isArray(members)) {
+                    return [];
+                  }
                   return members.map((login) => ({ login }));
                 }
                 return [];
@@ -485,6 +491,18 @@ def test_pr_gate_team_only_codeowners_without_reviews_fails(tmp_path: Path) -> N
     assert result.returncode != 0, "承認レビューが存在しない場合は失敗する必要があります"
     assert outputs.get("hasApproval") == "false"
     assert outputs.get("hasTeamCoverage") == "false"
+
+
+def test_pr_gate_team_member_fetch_failure_fails(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="* @octo/qa\n",
+        reviews=[],
+        team_members={"octo/qa": "__ERROR__"},
+    )
+
+    assert result.returncode != 0, result.stderr or result.stdout
+    assert outputs.get("hasApproval") != "true"
 
 
 def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:

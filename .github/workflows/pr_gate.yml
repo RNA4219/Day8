@@ -351,6 +351,7 @@ jobs:
               const isTeamRequested = requestedTeamHandles.has(team);
               const members = await fetchTeamMembers(team);
               if (members === null) {
+                pendingTeamHandles.push(team);
                 continue;
               }
               let hasMemberApproval = false;
