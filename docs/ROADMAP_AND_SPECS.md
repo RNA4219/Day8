@@ -12,7 +12,9 @@
 | [workflow-cookbook/GUARDRAILS.md](../../workflow-cookbook/GUARDRAILS.md) | 設計判断とレビュー基準を制約として明文化する | HUB の観測内容を踏まえ、設計方針を決めるタイミング |
 | [workflow-cookbook/BLUEPRINT.md](../../workflow-cookbook/BLUEPRINT.md) | プロセスの骨格と Day8 仕様との差分を可視化する | Guardrails を適用した後、要件と画面仕様を整合させるとき |
 | [workflow-cookbook/RUNBOOK.md](../../workflow-cookbook/RUNBOOK.md) | 運用手順と検証ステップを決め、Day8 側の ops/quality 文書と同期する | 実装プランが固まったら運用・品質更新前に確認するとき |
-| [workflow-cookbook/TASK.codex.md](../../workflow-cookbook/TASK.codex.md) | 実行タスクを分解し、Day8 の実装・テスト項目へ落とし込む | Runbook を反映させた後、具体的なタスク化や Issue 起票時 |
+| [workflow-cookbook/EVALUATION.md](../../workflow-cookbook/EVALUATION.md) | RUNBOOK に定義した手順が満たすべき評価指標と計測方法を整備する | Runbook を改訂した直後や品質ゲートの更新判断時 |
+| [workflow-cookbook/CHECKLISTS.md](../../workflow-cookbook/CHECKLISTS.md) | RUNBOOK のアクションをレビューフローに合わせた実行チェックへブレークダウンする | Evaluation の結果を反映し、運用・レビュー実行前に順序を確認するとき |
+| [workflow-cookbook/TASK.codex.md](../../workflow-cookbook/TASK.codex.md) | 実行タスクを分解し、Day8 の実装・テスト項目へ落とし込む | Checklists を踏まえて具体的なタスク化や Issue 起票時 |
 
 ### Guardrails 文書概要
 
@@ -20,11 +22,11 @@
 - [workflow-cookbook/GUARDRAILS.md](../../workflow-cookbook/GUARDRAILS.md): HUB で得た課題を制約条件に落とし込み、設計判断やレビュー方針を確定したいタイミングで参照する。
 - [workflow-cookbook/BLUEPRINT.md](../../workflow-cookbook/BLUEPRINT.md): Guardrails を踏まえた理想プロセスと Day8 差分を記録し、仕様・要件を整理する際に確認する。
 - [workflow-cookbook/RUNBOOK.md](../../workflow-cookbook/RUNBOOK.md): BLUEPRINT に沿って運用手順を更新し、リリースや運用変更の作業前に参照する。
-- [workflow-cookbook/EVALUATION.md](../../workflow-cookbook/EVALUATION.md): RUNBOOK の手順が満たすべき評価指標や計測方法を定義し、品質ゲートの更新時に参照する。
-- [workflow-cookbook/CHECKLISTS.md](../../workflow-cookbook/CHECKLISTS.md): RUNBOOK のアクションを実行チェックに落とし込んだ一覧で、レビューや運用時に実行順を確認する。
-- [workflow-cookbook/TASK.codex.md](../../workflow-cookbook/TASK.codex.md): Guardrails で確定した作業を実装タスクに分解し、Issue 作成やスプリント計画時に活用する。
+- [workflow-cookbook/EVALUATION.md](../../workflow-cookbook/EVALUATION.md): RUNBOOK の更新内容が満たすべき評価指標と測定プロセスを整理し、品質ゲートの更新や指標見直し時に参照する。
+- [workflow-cookbook/CHECKLISTS.md](../../workflow-cookbook/CHECKLISTS.md): RUNBOOK・EVALUATION の結果をチェック項目へ展開し、品質ゲートを適用するレビュー・運用の直前に順序と抜け漏れを点検する。
+- [workflow-cookbook/TASK.codex.md](../../workflow-cookbook/TASK.codex.md): Guardrails で確定した作業を実装タスクに分解し、Checklists の反映後に Issue 作成やスプリント計画時へ活用する。
 
-上記の流れで HUB → Guardrails → Blueprint → Runbook → Evaluation / Checklists → Task の順に確認したら、本節の索引表と「## 2. 実装モジュールと対応仕様」へ進み、Day8 側の更新対象とトレーサビリティを確定させる。
+上記の流れで HUB → Guardrails → Blueprint → Runbook → Evaluation → Checklists → Task の順に確認したら、本節の索引表と「## 2. 実装モジュールと対応仕様」へ進み、Day8 側の更新対象とトレーサビリティを確定させる。
 
 | 種別 | 主な用途 | Day8 リポジトリ | workflow-cookbook | 備考 |
 | --- | --- | --- | --- | --- |
