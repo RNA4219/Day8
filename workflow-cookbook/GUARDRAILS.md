@@ -28,6 +28,7 @@ next_review_due: 2025-11-14
 7. タスク自動生成ツールはドライランで JSON 出力を確認してから Issue 化する。
 8. 完了済みタスクは `CHANGELOG.md` へ移し、履歴を更新する。
 9. テスト/型/lint/CI の実行結果を確認し、`CHECKLISTS.md` でリリース可否を判断する。
+10. `docs/ROADMAP_AND_SPECS.md` (ROADMAP ハブ) を更新し、横断ロードマップと Guardrails 参照の整合性を維持する。
 
 ## 実装原則
 
