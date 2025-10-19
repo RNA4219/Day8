@@ -84,8 +84,16 @@ jobs:
               for (const rawLine of content.split(/\r?\n/)) {
                 const line = rawLine.trim();
                 if (!line || line.startsWith('#')) continue;
-                const [pattern, ...owners] = line.split(/\s+/);
-                if (!pattern || owners.length === 0) continue;
+                const [pattern, ...ownerTokens] = line.split(/\s+/);
+                if (!pattern || ownerTokens.length === 0) continue;
+                const owners = [];
+                for (const token of ownerTokens) {
+                  const trimmed = token.trim();
+                  if (!trimmed) continue;
+                  if (trimmed.startsWith('#')) break;
+                  owners.push(trimmed);
+                }
+                if (owners.length === 0) continue;
                 const regex = toRegex(pattern);
                 if (!regex) continue;
                 entries.push({owners, regex});
@@ -283,6 +291,7 @@ jobs:
               failWith(`Awaiting required review from: ${messages.join(', ')}`);
               return;
             }
+            const hasIndividualCodeowners = codeownerUsers.size > 0;
             const teamHandles = Array.from(codeownerTeams);
             const pendingTeamHandles = [];
             for (const team of teamHandles) {
