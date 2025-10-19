@@ -18,7 +18,7 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 
 ## リポジトリ構成
 - `docs/` Day8 の仕様・運用・ガバナンスドキュメント集（詳細は索引ページ [`docs/README.md`](docs/README.md) を参照）。
-- `docs/ROADMAP_AND_SPECS.md` Day8 のロードマップと仕様に関するナビゲーション。
+- `docs/ROADMAP_AND_SPECS.md` Day8 のロードマップと仕様に関するライトな索引メモ。
 - `governance/` ポリシー定義や CODEOWNERS などの統制設定。
 - `workflow-cookbook/logs/` CI で収集した観測ログ。
 - `workflow-cookbook/reports/` 反省結果や Issue 提案レポートの出力先。
@@ -27,7 +27,7 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 
 ## ガバナンスと参加
 - コントリビューション手順は [`CONTRIBUTING.md`](CONTRIBUTING.md) を参照してください。
-- 行動規範は [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) に基づき運用されています。
+- 行動メモは [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) を参照してください。
 - 収録ライセンスと第三者ライセンス表記は [`LICENSE`](LICENSE)、[`NOTICE`](NOTICE)、[`workflow-cookbook/LICENSE`](workflow-cookbook/LICENSE) を参照してください。
 
 ## セットアップ
