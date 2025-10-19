@@ -80,8 +80,8 @@ jobs:
                 source = `(?:[^/]+/)*${remainder}`;
               }
               source = source.replace(new RegExp(GLOBSTAR, 'g'), '.*');
-              source = source.replace(new RegExp(STAR, 'g'), '.*');
-              source = source.replace(new RegExp(QMARK, 'g'), '.');
+              source = source.replace(new RegExp(STAR, 'g'), '[^/]*');
+              source = source.replace(new RegExp(QMARK, 'g'), '[^/]');
               return new RegExp(`^${source}$`);
             };
             const parseCodeowners = (content) => {
