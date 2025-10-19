@@ -629,6 +629,54 @@ def test_pr_gate_globstar_schema_pattern_requires_team_review(tmp_path: Path) ->
     )
 
 
+def test_pr_gate_single_segment_star_does_not_cross_directories(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="*.md @octocat\n",
+        files=[
+            {"filename": "README.md"},
+            {"filename": "docs/readme.md"},
+        ],
+        reviews=[
+            {
+                "user": {"login": "octocat"},
+                "state": "APPROVED",
+                "author_association": "MEMBER",
+            }
+        ],
+    )
+
+    assert result.returncode != 0
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("docs/readme.md" in blocker for blocker in blockers)
+    assert not any("README.md" in blocker for blocker in blockers)
+
+
+def test_pr_gate_single_character_wildcard_does_not_cross_segments(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="doc?.txt @octocat\n",
+        files=[
+            {"filename": "doc1.txt"},
+            {"filename": "doc/.txt"},
+        ],
+        reviews=[
+            {
+                "user": {"login": "octocat"},
+                "state": "APPROVED",
+                "author_association": "MEMBER",
+            }
+        ],
+    )
+
+    assert result.returncode != 0
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert any("doc/.txt" in blocker for blocker in blockers)
+    assert not any("doc1.txt" in blocker for blocker in blockers)
+
+
 def test_pr_gate_filters_manual_requests_via_codeowners_intersection() -> None:
     workflow, raw_text = _load_pr_gate_workflow()
     script = _extract_github_script_text(workflow, raw_text)
