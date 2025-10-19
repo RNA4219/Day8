@@ -50,10 +50,12 @@ jobs:
               return `@${org}/${slug}`;
             };
             const blockers = [];
+            let excludedFiles = [];
             core.setOutput('hasTeamCoverage', 'false');
             const failWith = (message) => {
               blockers.push(message);
               core.setOutput('blockers', JSON.stringify(blockers));
+              core.setOutput('excludedFiles', JSON.stringify(excludedFiles));
               core.setOutput('hasApproval', 'false');
               core.setFailed(message);
             };
@@ -121,35 +123,48 @@ jobs:
               const codeownerUsers = new Set();
               const codeownerTeams = new Set();
               const uncovered = [];
+              const excluded = new Set();
               let hasBlockingOwners = false;
               const findOwnersForFile = (filePath) => {
                 let owners = [];
                 let ignored = false;
+                let negatedMatch = false;
                 for (const entry of entries) {
                   if (!entry.regex.test(filePath)) continue;
                   if (entry.negated) {
+                    let nextOwners = owners;
                     if (entry.owners.length > 0) {
                       const exclusions = new Set(entry.owners);
-                      owners = owners.filter((owner) => !exclusions.has(owner));
-                      if (owners.length === 0) {
-                        ignored = true;
-                      }
+                      nextOwners = owners.filter((owner) => !exclusions.has(owner));
                     } else {
+                      nextOwners = [];
+                    }
+                    if (nextOwners.length === 0) {
                       owners = [];
                       ignored = true;
+                      negatedMatch = true;
+                    } else {
+                      owners = nextOwners;
+                      negatedMatch = false;
                     }
                     continue;
                   }
                   owners = entry.owners;
                   ignored = false;
+                  negatedMatch = false;
                 }
-                return {owners, ignored};
+                return {owners, ignored, negatedMatch};
               };
               for (const file of files) {
-                const {owners, ignored} = findOwnersForFile(file.filename);
+                const filename = file && typeof file.filename === 'string' ? file.filename : null;
+                if (!filename) continue;
+                const {owners, ignored, negatedMatch} = findOwnersForFile(filename);
+                if (negatedMatch && owners.length === 0) {
+                  excluded.add(filename);
+                }
                 if (owners.length === 0) {
                   if (!ignored) {
-                    uncovered.push(file.filename);
+                    uncovered.push(filename);
                   }
                   continue;
                 }
@@ -161,7 +176,13 @@ jobs:
                   hasBlockingOwners = true;
                 }
               }
-              return {codeownerUsers, codeownerTeams, uncovered, hasBlockingOwners};
+              return {
+                codeownerUsers,
+                codeownerTeams,
+                uncovered,
+                hasBlockingOwners,
+                excludedFiles: Array.from(excluded),
+              };
             };
             const toTeamSlugParts = (teamHandle) => {
               if (typeof teamHandle !== 'string') return null;
@@ -234,10 +255,14 @@ jobs:
               codeownerTeams,
               uncovered,
               hasBlockingOwners,
+              excludedFiles: excludedMatches,
             } = collectCodeownersForFiles(entries, files);
+            excludedFiles = excludedMatches;
+            core.setOutput('excludedFiles', JSON.stringify(excludedFiles));
             if (!hasBlockingOwners) {
               core.setOutput('blockers', JSON.stringify(blockers));
               core.setOutput('hasApproval', 'true');
+              core.setOutput('excludedFiles', JSON.stringify(excludedFiles));
               core.notice('CODEOWNERS contains no GitHub handles; skipping approval enforcement.');
               return;
             }
@@ -349,16 +374,17 @@ jobs:
               failWith(`Awaiting required review from: ${teamMessages.join(', ')}`);
               return;
             }
-            if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0) {
-              if (!hasTeamCoverage) {
-                failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
-                return;
+              if (hasBlockingOwners && requiredUsers.length === 0 && approvals.size === 0) {
+                if (!hasTeamCoverage) {
+                  failWith('Awaiting CODEOWNERS approval: no approvals recorded yet.');
+                  return;
+                }
+                core.notice('CODEOWNERS team coverage satisfied without individual approvals.');
               }
-              core.notice('CODEOWNERS team coverage satisfied without individual approvals.');
-            }
-            core.setOutput('blockers', JSON.stringify(blockers));
-            core.setOutput('hasApproval', 'true');
-            core.notice('All CODEOWNERS reviews have approved and no changes are requested.');
+              core.setOutput('blockers', JSON.stringify(blockers));
+              core.setOutput('excludedFiles', JSON.stringify(excludedFiles));
+              core.setOutput('hasApproval', 'true');
+              core.notice('All CODEOWNERS reviews have approved and no changes are requested.');
       - name: Block auto-merge (informational)
         run: |
           echo "Auto merge is disabled by policy"
