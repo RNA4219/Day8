@@ -52,12 +52,8 @@ def test_reflection_example_exports_issue_paths_to_env() -> None:
 def test_reflection_example_stages_report_file() -> None:
     yaml_lines = _load_reflection_yaml_block()
 
-    staging_variants = {
-        "          git add reports/today.md",
-        "          git add \"$REPORT_PATH\"",
-    }
-
-    assert staging_variants.intersection(yaml_lines)
+    assert "          REPORT_PATH=\"reports/today.md\"" in yaml_lines
+    assert "          git add \"$REPORT_PATH\"" in yaml_lines
 
 
 def test_reflection_example_does_not_stage_with_repo_prefix() -> None:
