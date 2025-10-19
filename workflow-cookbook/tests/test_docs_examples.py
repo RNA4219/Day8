@@ -23,10 +23,22 @@ def _load_reflection_yaml_block() -> list[str]:
     return [line.rstrip() for line in block.splitlines()]
 
 
+def test_reflection_example_includes_issue_steps() -> None:
+    yaml_lines = _load_reflection_yaml_block()
+
+    assert "      - name: Determine reflection outputs" in yaml_lines
+    assert "      - name: Open issue if needed" in yaml_lines
+
+
 def test_reflection_example_stages_report_file() -> None:
     yaml_lines = _load_reflection_yaml_block()
 
-    assert "          git add reports/today.md" in yaml_lines
+    staging_variants = {
+        "          git add reports/today.md",
+        "          git add \"$REPORT_PATH\"",
+    }
+
+    assert staging_variants.intersection(yaml_lines)
 
 
 def test_reflection_example_does_not_stage_with_repo_prefix() -> None:

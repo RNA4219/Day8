@@ -70,17 +70,36 @@ jobs:
       - name: Analyze logs → report
         run: |
           python scripts/analyze.py
-      - name: Commit report
+      - name: Determine reflection outputs
+        id: reflection-paths
         run: |
+          REPORT_PATH="reports/today.md"
+          ISSUE_RELATIVE_PATH="reports/issue_suggestions.md"
+          ISSUE_CONTENT_PATH="workflow-cookbook/${ISSUE_RELATIVE_PATH}"
+          ISSUE_HASH_PATH="$ISSUE_CONTENT_PATH"
+          echo "report-path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+          echo "issue-content-path=$ISSUE_CONTENT_PATH" >> "$GITHUB_OUTPUT"
+          echo "issue-hash-path=$ISSUE_HASH_PATH" >> "$GITHUB_OUTPUT"
+          echo "ISSUE_CONTENT_PATH=$ISSUE_CONTENT_PATH" >> "$GITHUB_ENV"
+          echo "ISSUE_HASH_PATH=$ISSUE_HASH_PATH" >> "$GITHUB_ENV"
           git config user.name "reflect-bot"
           git config user.email "bot@example.com"
-          git add reports/today.md
+          git add "$REPORT_PATH"
           git commit -m "chore(report): reflection report [skip ci]" || echo "no changes"
           git push || true
+      - name: Open issue if needed
+        if: ${{ hashFiles(format('{0}', steps.reflection-paths.outputs.issue-hash-path)) != '0' }}
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "反省TODO ${{ github.run_id }}"
+          content-filepath: ${{ steps.reflection-paths.outputs.issue-content-path }}
+          labels: reflection, needs-triage
 ```
 
 > `defaults.run.working-directory` で `workflow-cookbook` を指定しているため、アーティファクトは `path: workflow-cookbook` でリポジトリルート直下に展開され、スクリプトは `python scripts/analyze.py` として呼び出します。
-> 同じ理由でレポートのステージングは `git add reports/today.md` として実行します。
+> 同じ理由でレポートのステージングや Issue テンプレートの解決は `workflow-cookbook/` からの相対パスで処理しています。
+> `Determine reflection outputs` ステップは、レポートと Issue 下書きのパスを `$GITHUB_OUTPUT` / `$GITHUB_ENV` に書き出し、`issue-content-path` と `issue-hash-path` を `Open issue if needed` の条件・入力に再利用します。
+> `hashFiles(format('{0}', ...))` を使うことで、テンプレートファイルが存在しない場合には Issue 起票をスキップしつつ、`create-issue-from-file` へは常にリポジトリルートからの解決済みパスを渡せます。
 
 ## analyze.py（骨子）
 - JSONLを読み、合格率・p95・失敗数を算出
