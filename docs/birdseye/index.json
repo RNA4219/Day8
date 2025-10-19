@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-01-19T00:00:00Z",
+  "generated_at": "2025-10-19T20:35:37Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -54,7 +54,7 @@
     "docs/ROADMAP_AND_SPECS.md": {
       "role": "roadmap",
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
+      "mtime": "2025-10-19T20:35:37Z"
     },
     "workflow-cookbook/HUB.codex.md": {
       "role": "orchestration",
