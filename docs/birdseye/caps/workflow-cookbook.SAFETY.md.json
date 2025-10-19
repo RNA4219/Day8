@@ -1,0 +1,44 @@
+{
+  "id": "workflow-cookbook/SAFETY.md",
+  "role": ["core::safety-policy","orbit::risk-gate"],
+  "summary": [
+    "core::Day8 向けの安全審査フローと適用範囲を定義し、Katamari 本家基準をローカライズした中核ポリシー。",
+    "orbit::docs/safety.md・GUARDRAILS・SECURITY との整合を取り、許容作業と観測モードを切り分ける。",
+    "orbit::高リスク変更のエスカレーション/証跡/再生成手順を Birdseye へ反映させる。"
+  ],
+  "deps": [
+    "in::docs/safety.md",
+    "in::workflow-cookbook/GUARDRAILS.md",
+    "in::workflow-cookbook/SECURITY.md",
+    "in::workflow-cookbook/HUB.codex.md",
+    "out::workflow-cookbook/RUNBOOK.md",
+    "out::workflow-cookbook/CHECKLISTS.md",
+    "out::docs/birdseye/index.json",
+    "out::docs/birdseye/hot.json"
+  ],
+  "deps_out": [
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/CHECKLISTS.md",
+    "docs/birdseye/index.json",
+    "docs/birdseye/hot.json"
+  ],
+  "deps_in": [
+    "docs/safety.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/SECURITY.md",
+    "workflow-cookbook/HUB.codex.md"
+  ],
+  "maintenance": {
+    "refresh": "安全ポリシー更新時は Runbook/Checklists と Birdseye (index/hot/caps) を同時に再生成する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "安全審査ポリシーが古いと高リスク作業が未承認で進み事故につながる",
+    "Birdseye 未更新で誘導がずれると誤ったノードを参照してしまう"
+  ],
+  "tests": [
+    "check::docs/safety.md・RUNBOOK・SECURITY との制約差分が同期しているかレビュー"
+  ]
+}

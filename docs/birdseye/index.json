@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-20T09:00:00Z",
+  "generated_at": "2025-10-20T10:30:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -25,6 +25,11 @@
       "role": "safety",
       "caps": "docs/birdseye/caps/docs.safety.md.json",
       "mtime": "2025-01-15T00:00:00Z"
+    },
+    "workflow-cookbook/SAFETY.md": {
+      "role": "safety",
+      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
+      "mtime": "2025-10-20T10:30:00Z"
     },
     "workflow-cookbook/GUARDRAILS.md": {
       "role": "guardrail",
@@ -92,8 +97,10 @@
     ["README.md", "docs/README.md"],
     ["docs/README.md", "docs/day8/README.md"],
     ["docs/README.md", "docs/safety.md"],
+    ["docs/safety.md", "workflow-cookbook/SAFETY.md"],
     ["README.md", "workflow-cookbook/docs/birdseye/index.json"],
     ["README.md", "workflow-cookbook/GUARDRAILS.md"],
+    ["README.md", "workflow-cookbook/SAFETY.md"],
     ["README.md", "tools/"],
     ["README.md", "scripts/"],
     ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/tools/"],
@@ -102,6 +109,7 @@
     ["README.md", "workflow-cookbook/HUB.codex.md"],
     ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/BLUEPRINT.md"],
     ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/GUARDRAILS.md"],
+    ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/SAFETY.md"],
     ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/RUNBOOK.md"],
     ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/EVALUATION.md"],
     ["docs/ROADMAP_AND_SPECS.md", "workflow-cookbook/CHECKLISTS.md"],
