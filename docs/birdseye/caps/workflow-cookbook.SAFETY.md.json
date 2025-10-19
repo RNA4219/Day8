@@ -2,7 +2,7 @@
   "id": "workflow-cookbook/SAFETY.md",
   "role": ["core::safety-policy","orbit::risk-gate"],
   "summary": [
-    "core::Day8 向けの安全審査フローと適用範囲を定義し、Katamari 本家基準をローカライズした中核ポリシー。",
+    "core::Day8 向けの安全審査フローと適用範囲を定義し、Day8 基準へ統合した中核ポリシー。",
     "orbit::docs/safety.md・GUARDRAILS・SECURITY との整合を取り、許容作業と観測モードを切り分ける。",
     "orbit::高リスク変更のエスカレーション/証跡/再生成手順を Birdseye へ反映させる。"
   ],
