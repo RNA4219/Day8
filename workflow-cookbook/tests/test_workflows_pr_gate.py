@@ -30,8 +30,14 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for test envs without
                     continue
 
                 indent = len(raw_line) - len(stripped)
-                key, _, value = stripped.partition(":")
-                value = value.strip()
+                match = re.match(r"(?P<key>(?:'[^']+'|\"[^\"]+\"|[^:]+))\s*:\s*(?P<value>.*)", stripped)
+                if not match:
+                    continue
+
+                key = match.group("key").strip()
+                value = match.group("value").strip()
+                if (key.startswith("'") and key.endswith("'")) or (key.startswith('"') and key.endswith('"')):
+                    key = key[1:-1]
 
                 while indent < indents[-1]:
                     stack.pop()
@@ -298,6 +304,19 @@ def test_pr_gate_runs_governance_check_after_checkout() -> None:
     ), "actions/setup-python のステップは checkout の後に必要です"
 
     assert "fetch-depth: 0" in raw_text, "checkout ステップには fetch-depth: 0 の指定が必要です"
+
+
+def test_pr_gate_gate_job_requests_read_org_permission() -> None:
+    workflow, _ = _load_pr_gate_workflow()
+    jobs = workflow.get("jobs")
+    assert isinstance(jobs, dict) and "gate" in jobs, "pr_gate.yml の jobs.gate が必要です"
+
+    gate_job = jobs["gate"]
+    assert isinstance(gate_job, dict), "jobs.gate はマッピングである必要があります"
+
+    permissions = gate_job.get("permissions")
+    assert isinstance(permissions, dict), "jobs.gate.permissions はマッピングである必要があります"
+    assert permissions.get("read:org") == "read", "CODEOWNERS のチーム判定には read:org 権限が必要です"
 
 
 def test_pr_gate_runs_governance_gate_after_setup_python() -> None:
