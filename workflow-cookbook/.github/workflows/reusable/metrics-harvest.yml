@@ -1,0 +1,136 @@
+name: Reusable - Metrics Harvest
+
+on:
+  workflow_call:
+    inputs:
+      lookback_days:
+        type: number
+        default: 7
+      top_n:
+        type: number
+        default: 5
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect workflow runs (last N days)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAYS: ${{ inputs.lookback_days }}
+        run: |
+          set -eo pipefail
+          if date -u -d "@0" >/dev/null 2>&1; then
+            SINCE=$(date -u -d "$DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
+          else
+            SINCE=$(gdate -u -d "$DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
+          fi
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/actions/runs?per_page=100&created>=$SINCE" \
+            > runs.json
+          python - <<'PY'
+          import json
+          from statistics import mean
+
+          runs = json.load(open("runs.json")).get("workflow_runs", [])
+          grouped: dict[str, list[tuple[int, str | None, int]]] = {}
+          for run in runs:
+            name = run.get("name", "<unknown>")
+            duration = int(run.get("run_duration_ms") or 0)
+            conclusion = run.get("conclusion")
+            attempt = int(run.get("run_attempt") or 1)
+            grouped.setdefault(name, []).append((duration, conclusion, attempt))
+
+          results: list[dict[str, int | str]] = []
+          for name, items in grouped.items():
+            durations = [d for d, *_ in items if d]
+            durations.sort()
+            if durations:
+              p95 = durations[int(0.95 * (len(durations) - 1))]
+              avg = int(mean(durations))
+            else:
+              p95 = 0
+              avg = 0
+            failures = sum(1 for _, conclusion, _ in items if conclusion and conclusion != "success")
+            retries = sum(1 for _, _, attempt in items if attempt > 1)
+            results.append(
+              {
+                "name": name,
+                "count": len(items),
+                "failures": failures,
+                "retries": retries,
+                "p95_ms": p95,
+                "avg_ms": avg,
+              }
+            )
+
+          results.sort(key=lambda item: (item["failures"], item["retries"], item["p95_ms"]), reverse=True)
+          with open("harvest.json", "w", encoding="utf-8") as handle:
+            json.dump(results, handle, indent=2)
+          PY
+
+      - name: Merge optional contract artifact
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          import glob
+          import json
+          from pathlib import Path
+
+          harvest = Path("harvest.json")
+          if not harvest.is_file():
+            raise SystemExit("harvest.json is missing")
+          rows = json.load(harvest.open())
+          for candidate in glob.glob(".ga/qa-metrics.json"):
+            with open(candidate, "r", encoding="utf-8") as handle:
+              extra = json.load(handle)
+            rows.append({"name": "contract:qa-metrics", "payload": extra})
+          with open(harvest, "w", encoding="utf-8") as handle:
+            json.dump(rows, handle, indent=2)
+          PY
+
+      - name: Create or update weekly improvement issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TOPN: ${{ inputs.top_n }}
+        run: |
+          set -eo pipefail
+          TITLE="Weekly CI Improvement Report ($(date -u +%Y-%m-%d))"
+          BODY=$(python - <<'PY'
+          import json
+          import os
+
+          top_n = int(os.getenv("TOPN", "5"))
+          rows = json.load(open("harvest.json"))[:top_n]
+
+          def format_duration(duration_ms: int) -> str:
+            if not duration_ms:
+              return "-"
+            seconds = duration_ms // 1000
+            minutes, seconds = divmod(seconds, 60)
+            return f"{minutes}m{seconds}s" if minutes else f"{seconds}s"
+
+          lines = ["### Top offenders (fail → retry → p95)", ""]
+          for row in rows:
+            lines.append(
+              f"- **{row['name']}**: fails={row['failures']}, retries={row['retries']}, "
+              f"p95={format_duration(row['p95_ms'])}, runs={row['count']}"
+            )
+          print("\n".join(lines))
+          PY
+          )
+          ISSUE=$(gh issue list --search "$TITLE" --state open --json number --jq '.[0].number')
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label "ci:improvement"
+          fi
