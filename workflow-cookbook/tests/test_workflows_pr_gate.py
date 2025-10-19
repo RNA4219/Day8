@@ -498,6 +498,20 @@ def test_pr_gate_allows_email_only_codeowners(tmp_path: Path) -> None:
     assert outputs.get("blockers") == "[]"
 
 
+def test_pr_gate_respects_negated_codeowners_entries(tmp_path: Path) -> None:
+    result, outputs = _run_codeowners_script(
+        tmp_path,
+        codeowners_content="docs/** @octo/docs\n!docs/generated/**\n",
+        files=[{"filename": "docs/generated/auto.md"}],
+    )
+
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert outputs.get("hasApproval") == "true"
+    blockers_raw = outputs.get("blockers") or "[]"
+    blockers = json.loads(blockers_raw)
+    assert not any("docs/generated/auto.md" in blocker for blocker in blockers)
+
+
 def test_pr_gate_allows_team_only_codeowners_when_not_pending(tmp_path: Path) -> None:
     result, outputs = _run_codeowners_script(
         tmp_path,
