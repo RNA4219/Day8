@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-01-16T00:00:00Z",
+  "generated_at": "2025-01-17T00:00:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -25,6 +25,31 @@
       "role": "safety",
       "caps": "docs/birdseye/caps/docs.safety.md.json",
       "mtime": "2025-01-15T00:00:00Z"
+    },
+    "workflow-cookbook/GUARDRAILS.md": {
+      "role": "guardrail",
+      "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
+      "mtime": "2025-01-17T00:00:00Z"
+    },
+    "tools/": {
+      "role": "automation",
+      "caps": "docs/birdseye/caps/tools.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z"
+    },
+    "scripts/": {
+      "role": "automation",
+      "caps": "docs/birdseye/caps/scripts.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z"
+    },
+    "workflow-cookbook/tools/": {
+      "role": "automation",
+      "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z"
+    },
+    "workflow-cookbook/scripts/": {
+      "role": "automation",
+      "caps": "docs/birdseye/caps/workflow-cookbook.scripts.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z"
     }
   },
   "edges": [
@@ -32,6 +57,11 @@
     ["README.md", "docs/README.md"],
     ["docs/README.md", "docs/day8/README.md"],
     ["docs/README.md", "docs/safety.md"],
-    ["README.md", "workflow-cookbook/docs/birdseye/index.json"]
+    ["README.md", "workflow-cookbook/docs/birdseye/index.json"],
+    ["README.md", "workflow-cookbook/GUARDRAILS.md"],
+    ["README.md", "tools/"],
+    ["README.md", "scripts/"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/tools/"],
+    ["workflow-cookbook/GUARDRAILS.md", "workflow-cookbook/scripts/"]
   ]
 }

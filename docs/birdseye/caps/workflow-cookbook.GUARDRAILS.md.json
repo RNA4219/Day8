@@ -1,0 +1,23 @@
+{
+  "id": "workflow-cookbook/GUARDRAILS.md",
+  "role": "guardrail",
+  "public_api": [],
+  "summary": "リポジトリ運用の振る舞い・例外ポリシー・テスト順序を定義する中核ガードレール。実装時の判断基準を網羅。",
+  "deps_out": [
+    "workflow-cookbook/tools/",
+    "workflow-cookbook/scripts/"
+  ],
+  "deps_in": [
+    "README.md"
+  ],
+  "maintenance": {
+    "refresh": "ガードレールを更新したら関連ツールと Birdseye カプセルを同一コミットで再生成する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "ガードレールと実装方針が乖離すると開発者ガイドが破綻する"
+  ],
+  "tests": []
+}
