@@ -33,9 +33,13 @@
 
 ### 更新手順
 
-- フェーズ終了時に関連資料へリンク付きで差分を残し、Katamari 版 [workflow-cookbook/CHANGELOG.md](../../workflow-cookbook/CHANGELOG.md) へ転記。
-- PR 説明欄には参照した Day8 / workflow-cookbook 両方の資料を列挙し、レビュワーがトレーサビリティを追えるようにする。
-- 不整合や追加タスクが発生した場合は Issue を起票し、次スプリントの「索引・基準整備」ステップで解消する。
+- **BLUEPRINT** — `workflow-cookbook/BLUEPRINT.md` と Day8 側の [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) / [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) を突き合わせ、スコープ・制約・Guardrails 原則（[workflow-cookbook/GUARDRAILS.md](../../workflow-cookbook/GUARDRAILS.md)）のズレがないかを確認する。
+- **RUNBOOK / CHECKLISTS** — `workflow-cookbook/RUNBOOK.md`・`workflow-cookbook/CHECKLISTS.md` と [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) を同期し、運用フロー・ゲート条件・例外経路の改訂差分を洗い出す。
+- **EVALUATION** — `workflow-cookbook/EVALUATION.md` と [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) の指標・計測方法を比較し、CI 計測およびレビュー判定の最新化を反映させる。
+- **TASK** — `workflow-cookbook/TASK.codex.md` と [workflow-cookbook/HUB.codex.md](../../workflow-cookbook/HUB.codex.md) を基に、必要なタスク分解と割当を整理し、Day8 側のロードマップ差分に紐づく Issue / チェックリスト項目を更新する。
+- **Birdseye / ADR** — [docs/birdseye/index.json](birdseye/index.json) と [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) を更新し、可視化ビューと設計判断（ADR 相当）の反映を確認した上で [workflow-cookbook/CHANGELOG.md](../../workflow-cookbook/CHANGELOG.md) に記録する。
+
+> 更新完了後は、本 ROADMAP と関連 Guardrails（`workflow-cookbook/GUARDRAILS.md` など）の差分を同一 PR でまとめて同期すること。
 
 ## 4. 参照クイックリンク
 
