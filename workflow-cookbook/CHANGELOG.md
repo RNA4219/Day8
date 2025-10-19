@@ -24,3 +24,9 @@ next_review_due: 2025-11-14
 
 - SLOバッジ自動生成は未実装（README と policy.yaml を手動同期）
 - Canary 連携は任意
+
+## 1.1.0 - 2025-10-20
+
+### Added
+
+- Day8 向けにローカライズした SAFETY ポリシーと Birdseye ノード/カプセルの同期
