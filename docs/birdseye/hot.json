@@ -1,0 +1,20 @@
+{
+  "generated_at": "2025-01-17T00:00:00Z",
+  "entries": [
+    {
+      "id": "README.md",
+      "caps": "docs/birdseye/caps/README.md.json",
+      "reason": "リポジトリ全体の目的と導線を最速で把握できるトップレベル説明。"
+    },
+    {
+      "id": "workflow-cookbook/GUARDRAILS.md",
+      "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
+      "reason": "実装判断時に外せないガードレールと変更ポリシーを定義している。"
+    },
+    {
+      "id": "workflow-cookbook/tools/",
+      "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
+      "reason": "Birdseye や CI に連なる自動化ツールの実装位置。主要ワークフロー再生成の起点。"
+    }
+  ]
+}
