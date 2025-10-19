@@ -68,6 +68,8 @@ jobs:
               const GLOBSTAR = '__GLOBSTAR__';
               const STAR = '__STAR__';
               const QMARK = '__QMARK__';
+              const SINGLE_SEGMENT = '[^/]';
+              const SINGLE_SEGMENT_ANY = `${SINGLE_SEGMENT}*`;
               let source = normalized
                 .replace(/\*\*/g, GLOBSTAR)
                 .replace(/\*/g, STAR)
@@ -82,8 +84,8 @@ jobs:
                 source = `(?:[^/]+/)*${remainder}`;
               }
               source = source.replace(new RegExp(GLOBSTAR, 'g'), '.*');
-              source = source.replace(new RegExp(STAR, 'g'), '[^/]*');
-              source = source.replace(new RegExp(QMARK, 'g'), '[^/]');
+              source = source.replace(new RegExp(STAR, 'g'), SINGLE_SEGMENT_ANY);
+              source = source.replace(new RegExp(QMARK, 'g'), SINGLE_SEGMENT);
               return new RegExp(`^${source}$`);
             };
             const parseCodeowners = (content) => {
