@@ -38,11 +38,19 @@
     ],
     [
       "docs/README.md",
+      "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/README.md",
       "docs/day8/README.md"
     ],
     [
       "docs/README.md",
       "docs/safety.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/UPSTREAM.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -75,6 +83,10 @@
     [
       "docs/TASKS.md",
       "docs/seeds/README.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/UPSTREAM_WEEKLY_LOG.md"
     ],
     [
       "docs/safety.md",
@@ -154,11 +166,47 @@
     ],
     [
       "workflow-cookbook/RUNBOOK.md",
+      "docs/birdseye/index.json"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
       "workflow-cookbook/RUNBOOK.md",
       "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/docs/IN-20250115-001.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/docs/birdseye/index.json"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/logs/test.jsonl"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/reports/issue_suggestions.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/reports/today.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/scripts/analyze.py"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/tools/codemap/README.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/tools/codemap/update.py"
     ],
     [
       "workflow-cookbook/SAFETY.md",
@@ -203,21 +251,9 @@
     [
       "workflow-cookbook/SECURITY.md",
       "workflow-cookbook/tools/"
-    ],
-    [
-      "docs/README.md",
-      "docs/UPSTREAM.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/UPSTREAM.md"
-    ],
-    [
-      "docs/UPSTREAM.md",
-      "docs/UPSTREAM_WEEKLY_LOG.md"
     ]
   ],
-  "generated_at": "2025-02-15T10:00:00Z",
+  "generated_at": "2025-02-16T00:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -276,7 +312,7 @@
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.CHECKLISTS.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "2025-02-16T00:00:00Z",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
@@ -296,7 +332,7 @@
     },
     "workflow-cookbook/RUNBOOK.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "2025-02-16T00:00:00Z",
       "role": "operations"
     },
     "workflow-cookbook/SAFETY.md": {
@@ -338,6 +374,41 @@
       "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
       "mtime": "2025-02-15T10:00:00Z",
       "role": "log"
+    },
+    "workflow-cookbook/tools/codemap/README.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.README.md.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "guide"
+    },
+    "workflow-cookbook/tools/codemap/update.py": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.update.py.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "automation"
+    },
+    "workflow-cookbook/scripts/analyze.py": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.scripts.analyze.py.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "analytics"
+    },
+    "workflow-cookbook/logs/test.jsonl": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.logs.test.jsonl.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "log"
+    },
+    "workflow-cookbook/reports/today.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.reports.today.md.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "report"
+    },
+    "workflow-cookbook/reports/issue_suggestions.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.reports.issue_suggestions.md.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "report"
+    },
+    "workflow-cookbook/docs/IN-20250115-001.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.docs.IN-20250115-001.md.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "incident"
     }
   }
 }

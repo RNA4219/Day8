@@ -1,30 +1,46 @@
 {
   "deps": [
     "in::docs/ROADMAP_AND_SPECS.md",
-    "in::workflow-cookbook/HUB.codex.md",
     "in::workflow-cookbook/BLUEPRINT.md",
     "in::workflow-cookbook/GUARDRAILS.md",
-    "out::workflow-cookbook/EVALUATION.md",
+    "in::workflow-cookbook/SAFETY.md",
+    "in::workflow-cookbook/SECURITY.md",
+    "in::workflow-cookbook/tools/codemap/README.md",
+    "in::workflow-cookbook/tools/codemap/update.py",
+    "in::workflow-cookbook/scripts/analyze.py",
+    "in::workflow-cookbook/docs/IN-20250115-001.md",
+    "in::workflow-cookbook/logs/test.jsonl",
+    "in::workflow-cookbook/reports/today.md",
+    "in::workflow-cookbook/reports/issue_suggestions.md",
+    "out::docs/birdseye/index.json",
+    "out::workflow-cookbook/docs/birdseye/index.json",
     "out::workflow-cookbook/CHECKLISTS.md"
   ],
   "deps_in": [
     "docs/ROADMAP_AND_SPECS.md",
     "workflow-cookbook/BLUEPRINT.md",
     "workflow-cookbook/GUARDRAILS.md",
-    "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/SECURITY.md"
+    "workflow-cookbook/SECURITY.md",
+    "workflow-cookbook/tools/codemap/README.md",
+    "workflow-cookbook/tools/codemap/update.py",
+    "workflow-cookbook/scripts/analyze.py",
+    "workflow-cookbook/docs/IN-20250115-001.md",
+    "workflow-cookbook/logs/test.jsonl",
+    "workflow-cookbook/reports/today.md",
+    "workflow-cookbook/reports/issue_suggestions.md"
   ],
   "deps_out": [
+    "docs/birdseye/index.json",
     "workflow-cookbook/CHECKLISTS.md",
-    "workflow-cookbook/EVALUATION.md"
+    "workflow-cookbook/docs/birdseye/index.json"
   ],
-  "generated_at": "2025-10-20T19:33:35Z",
+  "generated_at": "2025-02-16T00:00:00Z",
   "id": "workflow-cookbook/RUNBOOK.md",
   "maintenance": {
-    "refresh": "Runbook更新時はインシデントサンプルやチェックリストの該当項目も同期。",
+    "refresh": "Preparation/Execution/Verificationの各手順を更新した際は Birdseye index/caps と CHECKLISTS を同時更新。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps"
     ]
   },
   "risks": [
@@ -35,11 +51,11 @@
     "orbit::incident-response"
   ],
   "summary": [
-    "core::環境別の実行手順と観測ポイントを列挙。",
-    "orbit::インシデントログやロールバック更新までの手順を明示。",
-    "orbit::Blueprint/Evaluation/Guardrails要件を現場操作へ展開。"
+    "core::Day8ワークフローのPurpose/Roles/Guardrailsを明文化し役割と参照元を即座に把握可能にする。",
+    "core::Preparation→Execution→Verificationの順で環境構築・Birdseye再生成・ログ検証の具体コマンドを提示。",
+    "orbit::CHECKLISTS/インシデント記録/Observability資料との同期ポイントを列挙し運用判断を支援。"
   ],
   "tests": [
-    "check::RunbookのExecute/Observability/Rollbackが最新CIと一致するか確認"
+    "check::Preparation/Execution/Verification手順が CHECKLISTS と codemap/analyze スクリプトに追従しているか確認"
   ]
 }

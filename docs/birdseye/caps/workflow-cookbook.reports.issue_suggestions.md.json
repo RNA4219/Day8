@@ -1,0 +1,37 @@
+{
+  "deps": [
+    "in::workflow-cookbook/scripts/analyze.py",
+    "in::workflow-cookbook/reports/today.md",
+    "out::docs/TASKS.md"
+  ],
+  "deps_in": [
+    "workflow-cookbook/scripts/analyze.py",
+    "workflow-cookbook/reports/today.md"
+  ],
+  "deps_out": [
+    "docs/TASKS.md"
+  ],
+  "generated_at": "2025-02-16T00:00:00Z",
+  "id": "workflow-cookbook/reports/issue_suggestions.md",
+  "maintenance": {
+    "refresh": "提案フォーマットが変わったら HUB/TASK テンプレートと同期。",
+    "tooling": [
+      "python workflow-cookbook/scripts/analyze.py"
+    ]
+  },
+  "risks": [
+    "提案が古いと改善タスクが手動で迷子になる"
+  ],
+  "role": [
+    "core::improvement-queue",
+    "orbit::postmortem-followup"
+  ],
+  "summary": [
+    "core::失敗ケースからTODO候補をMarkdownチェックボックスで列挙。",
+    "orbit::TASKS/Seedsへ転記する材料を提供。",
+    "orbit::Daily/Release判定時に残課題を可視化。"
+  ],
+  "tests": [
+    "check::最新ログで未完了TODOが適切に更新されるかを確認"
+  ]
+}

@@ -21,6 +21,7 @@ next_review_due: 2025-11-14
 - 影響範囲の再確認
 - 成果物に LICENSE / NOTICE を同梱済み
 - lint / test を全ジョブ完走
+- Birdseye index/caps を `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps` で再生成
 - Docker イメージをビルドし主要機能のスモーク確認
 - PR に `type:*` および `semver:*` ラベルを付与済み
 
