@@ -160,3 +160,45 @@ def test_emit_modes_and_dry_run_behaviour(tmp_path: Path) -> None:
     _invoke("--targets", str(index_path), "--emit", "index")
     assert index_path.read_text(encoding="utf-8") == index_after_index
 
+
+def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> None:
+    repo_root = Path.cwd()
+    target = tmp_path / "docs" / "birdseye"
+    _copy_tree(repo_root / "docs" / "birdseye", target)
+
+    index_path = target / "index.json"
+    index_payload = _load_json(index_path)
+    normalised, _, _ = _build_expected(list(index_payload.get("edges", [])))
+    original_timestamp = "2000-01-01T00:00:00Z"
+    index_payload["edges"] = normalised
+    index_payload["generated_at"] = original_timestamp
+    _write_json(index_path, index_payload)
+
+    hot_path = target / "hot.json"
+    if hot_path.exists():
+        hot_payload = _load_json(hot_path)
+        hot_payload["generated_at"] = original_timestamp
+        _write_json(hot_path, hot_payload)
+
+    dry_run = _invoke(
+        "--targets",
+        str(index_path),
+        "--emit",
+        "index",
+        "--dry-run",
+        capture_output=True,
+    )
+    assert dry_run.stdout
+    assert "[dry-run]" in dry_run.stdout
+    assert str(index_path) in dry_run.stdout
+    assert _load_json(index_path)["generated_at"] == original_timestamp
+    if hot_path.exists():
+        assert "hot.json" in dry_run.stdout
+        assert _load_json(hot_path)["generated_at"] == original_timestamp
+
+    _invoke("--targets", str(index_path), "--emit", "index")
+    updated_index = _load_json(index_path)
+    assert updated_index["generated_at"] != original_timestamp
+    if hot_path.exists():
+        assert _load_json(hot_path)["generated_at"] == updated_index["generated_at"]
+
