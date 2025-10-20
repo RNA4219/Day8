@@ -50,5 +50,5 @@
     "check::docs/birdseye/index.json に SAFETY ノードと Guardrails 系エッジが登録されていること",
     "check::docs/birdseye/hot.json の generated_at が index と一致し、SAFETY エントリが重複していないこと"
   ],
-  "generated_at": "2025-10-21T10:00:00Z"
+  "generated_at": "2025-10-20T08:46:58Z"
 }
