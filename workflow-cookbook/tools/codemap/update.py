@@ -65,6 +65,7 @@ def _write_json_if_changed(path: Path, payload: object, *, dry_run: bool) -> boo
         return False
 
     if dry_run:
+        print(f"[dry-run] would update {path}")
         return True
 
     try:
