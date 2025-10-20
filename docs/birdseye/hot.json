@@ -39,7 +39,12 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
       "id": "workflow-cookbook/RUNBOOK.md",
       "reason": "実運用手順・観測点・インシデント連携を定義し、現場で即参照される操作ガイド。"
+    },
+    {
+      "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
+      "id": "docs/BIRDSEYE.md",
+      "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
     }
   ],
-  "generated_at": "2025-10-20T19:33:35Z"
+  "generated_at": "2025-10-20T19:59:01Z"
 }
