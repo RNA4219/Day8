@@ -230,3 +230,25 @@ def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> No
     assert final_timestamp != second_timestamp
     _assert_timestamp_sync(target)
 
+
+def test_emit_caps_does_not_sync_hot_timestamp(tmp_path: Path) -> None:
+    repo_root = Path.cwd()
+    target = tmp_path / "docs" / "birdseye"
+    _copy_tree(repo_root / "docs" / "birdseye", target)
+
+    index_path = target / "index.json"
+    index_payload = _load_json(index_path)
+    index_payload["generated_at"] = "2000-01-01T00:00:00Z"
+    _write_json(index_path, index_payload)
+
+    hot_path = target / "hot.json"
+    if hot_path.exists():
+        hot_payload = _load_json(hot_path)
+        hot_payload["generated_at"] = "1999-12-31T23:59:59Z"
+        _write_json(hot_path, hot_payload)
+
+    _invoke("--targets", str(index_path), "--emit", "caps")
+
+    if hot_path.exists():
+        assert _load_json(hot_path)["generated_at"] == "1999-12-31T23:59:59Z"
+    assert _load_json(index_path)["generated_at"] == "2000-01-01T00:00:00Z"
