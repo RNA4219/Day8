@@ -8,6 +8,7 @@ Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガー�
 2. `docs/birdseye/index.json` — Day8 ノード間の鳥瞰マップを把握。
 3. `docs/birdseye/caps/` 以下の Capsule JSON — 必要ノードの要約と保守手順を point read。
 4. `docs/birdseye/hot.json` — 優先参照ノードと直近リスクのチェック。
+5. `docs/BIRDSEYE.md` — Guardrails で規定されたフォールバック手順と恒久対応チェックリスト。
 
 ## JSON ファイル構成（index → caps → hot）
 ### 1. `docs/birdseye/index.json`
@@ -35,4 +36,5 @@ Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガー�
 ## Guardrails 連携
 - `workflow-cookbook/GUARDRAILS.md` の Birdseye セクションで定義された「インデックス → Capsule → ホットリスト → generated_at 同期」の順序を Day8 でも必須ルールとします。
 - Guardrails を更新した PR では、`docs/ROADMAP_AND_SPECS.md` と本 README を同じコミットで整合させ、Birdseye の `nodes` / `caps` / `hot` が最新ガイドラインに従っていることを確認します。
+- Birdseye の自動再生成が行えない場合は、[docs/BIRDSEYE.md](../BIRDSEYE.md) を参照し、`edges` からの ±1 hop 抽出と Capsule/Hot のフォールバック手順に従ってください。
 - Day8 の安全審査 (`docs/safety.md`) やロードマップ (`docs/ROADMAP_AND_SPECS.md`) に差分が生じた場合、必ず対応する Capsule とホットリストを同時更新し、Guardrails 側の監査記録と `generated_at` を同期してください。

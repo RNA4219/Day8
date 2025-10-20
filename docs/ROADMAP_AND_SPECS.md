@@ -81,6 +81,7 @@
 - [Day8 コントリビューションガイド](day8/guides/07_contributing.md)
 - [安全性レビュー基準](safety.md)
 - [ガバナンス方針](../workflow-cookbook/governance/policy.yaml)
+- [Birdseye フォールバック手順](BIRDSEYE.md)
 - [Birdseye 反映 4 ステップ（ロードマップ Step1 の必須作業）](#roadmap-step1)
   1. **ノード追加** — [docs/birdseye/index.json](birdseye/index.json) に該当エントリを追加・更新し、`mtime` を差分検知時刻へ合わせる。
   2. **Capsule 更新** — `docs/birdseye/caps/` 配下の対象 Capsule を差分内容へ反映し、役割・保守手順を同期させる。
