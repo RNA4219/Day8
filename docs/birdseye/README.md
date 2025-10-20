@@ -30,7 +30,7 @@ Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガー�
 3. **Capsule 更新** — 対象ノードの Capsule（例: `docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json`）を修正し、要約・refresh 手順を最新化します。
 4. **ホットリスト見直し** — 優先度が変わった場合は `docs/birdseye/hot.json` の対象と `reason` を更新します。
 5. **generated_at 揃え** — `index.json` と `hot.json` の `generated_at` を同一時刻へ更新し、再生成の履歴を同期します。
-6. **ツール実行** — 自動再生成が必要な場合は `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を使用し、差分を Day8 リポジトリと cookbook 双方に反映します。
+6. **ツール実行** — 自動再生成が必要な場合は `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps` を使用し、必要に応じて `--dry-run` で差分確認後に適用します。
 
 ## Guardrails 連携
 - `workflow-cookbook/GUARDRAILS.md` の Birdseye セクションで定義された「インデックス → Capsule → ホットリスト → generated_at 同期」の順序を Day8 でも必須ルールとします。

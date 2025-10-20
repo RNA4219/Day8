@@ -1,14 +1,4 @@
 {
-  "id": "workflow-cookbook/EVALUATION.md",
-  "role": [
-    "core::quality-gates",
-    "orbit::acceptance"
-  ],
-  "summary": [
-    "core::受け入れ基準とKPIを整理しPriority Scoreや禁止パスを規定。",
-    "orbit::テストアウトラインで単体/結合/回帰を俯瞰。",
-    "orbit::Runbook/Guardrailsと相互リンクし品質ゲートを同期。"
-  ],
   "deps": [
     "in::docs/ROADMAP_AND_SPECS.md",
     "in::workflow-cookbook/HUB.codex.md",
@@ -16,15 +6,19 @@
     "in::workflow-cookbook/GUARDRAILS.md",
     "out::workflow-cookbook/CHECKLISTS.md"
   ],
+  "deps_in": [
+    "docs/ROADMAP_AND_SPECS.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/SAFETY.md",
+    "workflow-cookbook/SECURITY.md"
+  ],
   "deps_out": [
     "workflow-cookbook/CHECKLISTS.md"
   ],
-  "deps_in": [
-    "docs/ROADMAP_AND_SPECS.md",
-    "workflow-cookbook/HUB.codex.md",
-    "workflow-cookbook/RUNBOOK.md",
-    "workflow-cookbook/GUARDRAILS.md"
-  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "id": "workflow-cookbook/EVALUATION.md",
   "maintenance": {
     "refresh": "Acceptance Criteria変更時はCHECKLISTS/RUNBOOK/Task Seed雛形を更新。",
     "tooling": [
@@ -34,8 +28,16 @@
   "risks": [
     "品質ゲートの同期漏れで検収が失敗する"
   ],
+  "role": [
+    "core::quality-gates",
+    "orbit::acceptance"
+  ],
+  "summary": [
+    "core::受け入れ基準とKPIを整理しPriority Scoreや禁止パスを規定。",
+    "orbit::テストアウトラインで単体/結合/回帰を俯瞰。",
+    "orbit::Runbook/Guardrailsと相互リンクし品質ゲートを同期。"
+  ],
   "tests": [
     "check::Acceptance Criteriaとチェックリスト項目が揃っているか確認"
-  ],
-  "generated_at": "2025-10-20T08:46:58Z"
+  ]
 }

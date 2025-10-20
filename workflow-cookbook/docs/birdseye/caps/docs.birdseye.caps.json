@@ -1,16 +1,13 @@
 {
-  "id": "docs/birdseye/caps/docs.birdseye.caps.json",
-  "role": "collection",
-  "public_api": [],
-  "summary": "Birdseye対象ノードごとのカプセルJSONを格納し、個別リソースの要約へドリルダウンする入口になる。",
+  "deps_in": [],
   "deps_out": [],
-  "deps_in": [
-    "docs/birdseye/index.json",
-    "GUARDRAILS.md",
-    "tools/codemap/update.py"
-  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "id": "docs/birdseye/caps/docs.birdseye.caps.json",
+  "public_api": [],
   "risks": [
     "カプセル未整備のノードがあると探索が途切れる"
   ],
+  "role": "collection",
+  "summary": "Birdseye対象ノードごとのカプセルJSONを格納し、個別リソースの要約へドリルダウンする入口になる。",
   "tests": []
 }

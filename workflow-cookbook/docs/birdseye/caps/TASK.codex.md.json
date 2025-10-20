@@ -1,15 +1,12 @@
 {
+  "deps_in": [],
+  "deps_out": [],
+  "generated_at": "2025-10-20T13:50:22Z",
   "id": "TASK.codex.md",
-  "role": "template",
   "public_api": [],
-  "summary": "タスクシードのメタデータ、スコープ、要件、実行コマンド、成果物を統一フォーマットで記述するためのテンプレート。",
-  "deps_out": [
-    "EVALUATION.md",
-    "CHANGELOG.md",
-    "governance/prioritization.yaml"
-  ],
-  "deps_in": ["README.md", "HUB.codex.md", "GUARDRAILS.md"],
   "risks": [],
+  "role": "template",
+  "summary": "タスクシードのメタデータ、スコープ、要件、実行コマンド、成果物を統一フォーマットで記述するためのテンプレート。",
   "tests": [
     "手動: Local Commands 節が最新CIゲートと一致するか定期レビュー"
   ]

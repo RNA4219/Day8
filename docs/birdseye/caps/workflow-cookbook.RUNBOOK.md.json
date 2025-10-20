@@ -1,14 +1,4 @@
 {
-  "id": "workflow-cookbook/RUNBOOK.md",
-  "role": [
-    "core::operations",
-    "orbit::incident-response"
-  ],
-  "summary": [
-    "core::環境別の実行手順と観測ポイントを列挙。",
-    "orbit::インシデントログやロールバック更新までの手順を明示。",
-    "orbit::Blueprint/Evaluation/Guardrails要件を現場操作へ展開。"
-  ],
   "deps": [
     "in::docs/ROADMAP_AND_SPECS.md",
     "in::workflow-cookbook/HUB.codex.md",
@@ -17,16 +7,20 @@
     "out::workflow-cookbook/EVALUATION.md",
     "out::workflow-cookbook/CHECKLISTS.md"
   ],
-  "deps_out": [
-    "workflow-cookbook/EVALUATION.md",
-    "workflow-cookbook/CHECKLISTS.md"
-  ],
   "deps_in": [
     "docs/ROADMAP_AND_SPECS.md",
-    "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/BLUEPRINT.md",
-    "workflow-cookbook/GUARDRAILS.md"
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/SAFETY.md",
+    "workflow-cookbook/SECURITY.md"
   ],
+  "deps_out": [
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/EVALUATION.md"
+  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "id": "workflow-cookbook/RUNBOOK.md",
   "maintenance": {
     "refresh": "Runbook更新時はインシデントサンプルやチェックリストの該当項目も同期。",
     "tooling": [
@@ -36,8 +30,16 @@
   "risks": [
     "手順の齟齬は本番運用事故を誘発"
   ],
+  "role": [
+    "core::operations",
+    "orbit::incident-response"
+  ],
+  "summary": [
+    "core::環境別の実行手順と観測ポイントを列挙。",
+    "orbit::インシデントログやロールバック更新までの手順を明示。",
+    "orbit::Blueprint/Evaluation/Guardrails要件を現場操作へ展開。"
+  ],
   "tests": [
     "check::RunbookのExecute/Observability/Rollbackが最新CIと一致するか確認"
-  ],
-  "generated_at": "2025-10-20T08:46:58Z"
+  ]
 }

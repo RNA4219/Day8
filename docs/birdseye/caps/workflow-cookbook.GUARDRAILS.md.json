@@ -1,14 +1,4 @@
 {
-  "id": "workflow-cookbook/GUARDRAILS.md",
-  "role": [
-    "core::guardrail-hub",
-    "orbit::policy-anchor"
-  ],
-  "summary": [
-    "core::リポジトリ運用の原則・例外ポリシー・ゲート順を定義する最上位ガードライン。",
-    "orbit::Blueprint/Runbook/Evaluation/Checklists/Task Seedの実装判断を束ねる。",
-    "orbit::自動化ツールやスクリプト適用範囲を制御し安全な変更手順を保証。"
-  ],
   "deps": [
     "in::README.md",
     "in::docs/ROADMAP_AND_SPECS.md",
@@ -21,20 +11,24 @@
     "out::workflow-cookbook/tools/",
     "out::workflow-cookbook/scripts/"
   ],
-  "deps_out": [
-    "workflow-cookbook/BLUEPRINT.md",
-    "workflow-cookbook/RUNBOOK.md",
-    "workflow-cookbook/EVALUATION.md",
-    "workflow-cookbook/CHECKLISTS.md",
-    "workflow-cookbook/TASK.codex.md",
-    "workflow-cookbook/tools/",
-    "workflow-cookbook/scripts/"
-  ],
   "deps_in": [
     "README.md",
     "docs/ROADMAP_AND_SPECS.md",
     "workflow-cookbook/HUB.codex.md"
   ],
+  "deps_out": [
+    "workflow-cookbook/BLUEPRINT.md",
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/SAFETY.md",
+    "workflow-cookbook/SECURITY.md",
+    "workflow-cookbook/TASK.codex.md",
+    "workflow-cookbook/scripts/",
+    "workflow-cookbook/tools/"
+  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "id": "workflow-cookbook/GUARDRAILS.md",
   "maintenance": {
     "refresh": "ガードレール更新時は関連資料とBirdseye(インデックス/カプセル)を同時更新する。",
     "tooling": [
@@ -44,8 +38,16 @@
   "risks": [
     "ガードレールと実装方針が乖離すると優先度判断とゲートが破綻する"
   ],
+  "role": [
+    "core::guardrail-hub",
+    "orbit::policy-anchor"
+  ],
+  "summary": [
+    "core::リポジトリ運用の原則・例外ポリシー・ゲート順を定義する最上位ガードライン。",
+    "orbit::Blueprint/Runbook/Evaluation/Checklists/Task Seedの実装判断を束ねる。",
+    "orbit::自動化ツールやスクリプト適用範囲を制御し安全な変更手順を保証。"
+  ],
   "tests": [
     "check::Lint/Type/Test順と例外条件が各運用資料と同期しているか確認"
-  ],
-  "generated_at": "2025-10-20T08:46:58Z"
+  ]
 }

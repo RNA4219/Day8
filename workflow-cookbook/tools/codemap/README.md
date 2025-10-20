@@ -1,11 +1,12 @@
 # codemap ツール
 
-`codemap.update` は Birdseye のインデックスおよびカプセルを再生成するコマンドです。現時点ではローカル実行を前提としており、以下の手順で最新化します。
+`codemap.update` は Birdseye のインデックスおよびカプセルを再生成するコマンドです。標準ライブラリのみで動作し、複数ターゲットを一
+括で更新できます。
 
 ## 依存
 
 - Python 3.11 以上
-- 追加の外部ライブラリは不要（標準ライブラリのみで実行できます）
+- 追加の外部ライブラリは不要
 
 ## 実行手順
 
@@ -13,18 +14,15 @@
 2. リポジトリルートで次のコマンドを実行します。
 
    ```bash
-   python tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps
+   python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps
    ```
 
-   - `--targets` には再生成したい Birdseye リソースをカンマ区切りで指定します。
-   - `--emit` には出力したい成果物（`index` / `caps` / `index+caps`）を指定します。
-3. 実行後、以下の成果物が更新されます。
-   - `docs/birdseye/index.json`
-   - `docs/birdseye/caps/*.json`
+   - `--targets`: 再生成したい Birdseye インデックス（`.../index.json`）をカンマ区切りで指定します。指定順に処理します。
+   - `--emit`: 出力する成果物を `index` / `caps` / `index+caps` から選択します。
+   - `--dry-run`: 差分検知のみを行い、ファイルを変更しません。
+3. 実行後、対象配下の `index.json`・`caps/*.json`・`hot.json`（存在する場合）の `generated_at` と依存関係が同期されます。
 
 ## Birdseye 再生成スクリプト
 
-`update.py` は Birdseye の再生成処理を司るエントリーポイントです。現状は雛形実装であり、各ターゲットの解析や JSON 生成ロジックを実装する必要があります。詳細な処理を追加する際は、既存の例外設計・型安全方針に従って実装してください。
-
-- CLI エントリ: `python tools/codemap/update.py ...`
-- 未実装箇所は `TODO` コメントで明示しています。今後の拡張時に置き換えてください。
+`update.py` は JSON の正規化・依存関係再計算・差分検知を一括で実行します。I/O または JSON 解析に失敗した場合は `UpdateError` を投げ
+て終了します。
