@@ -29,14 +29,16 @@ def _iter_capsules(caps_dir: Path) -> Iterable[Path]:
     return sorted(caps_dir.glob("*.json"))
 
 
-def _invoke(*args: str) -> None:
-    subprocess.run(
+def _invoke(*args: str, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
         [
             "python",
             "workflow-cookbook/tools/codemap/update.py",
             *args,
         ],
         check=True,
+        capture_output=capture_output,
+        text=True,
     )
 
 
@@ -136,7 +138,11 @@ def test_emit_modes_and_dry_run_behaviour(tmp_path: Path) -> None:
     index_before = index_path.read_text(encoding="utf-8")
     cap_before = cap_path.read_text(encoding="utf-8")
 
-    _invoke("--targets", str(index_path), "--emit", "index+caps", "--dry-run")
+    result = _invoke("--targets", str(index_path), "--emit", "index+caps", "--dry-run", capture_output=True)
+    assert result.stdout
+    assert "[dry-run]" in result.stdout
+    assert str(index_path) in result.stdout
+    assert cap_path.name in result.stdout
     assert index_path.read_text(encoding="utf-8") == index_before
     assert cap_path.read_text(encoding="utf-8") == cap_before
 

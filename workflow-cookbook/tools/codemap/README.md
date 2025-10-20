@@ -20,6 +20,7 @@
    - `--targets`: 再生成したい Birdseye インデックス（`.../index.json`）をカンマ区切りで指定します。指定順に処理します。
    - `--emit`: 出力する成果物を `index` / `caps` / `index+caps` から選択します。
    - `--dry-run`: 差分検知のみを行い、ファイルを変更しません。
+     更新対象だったパスは `[dry-run] would update ...` 形式で標準出力に表示されます。
 3. 実行後、対象配下の `index.json`・`caps/*.json`・`hot.json`（存在する場合）の `generated_at` と依存関係が同期されます。
 
 ## Birdseye 再生成スクリプト
