@@ -16,7 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Iterator, Mapping
 
@@ -116,6 +116,30 @@ def _iso_utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+def _bump_timestamp(timestamp: str) -> str:
+    try:
+        base = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return timestamp
+    bumped = base + timedelta(seconds=1)
+    return bumped.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _fresh_generated_at(previous: str) -> str:
+    candidate = _iso_utc_now()
+    if candidate != previous:
+        return candidate
+
+    bumped = _bump_timestamp(previous)
+    if bumped != previous:
+        return bumped
+
+    while True:
+        candidate = _iso_utc_now()
+        if candidate != previous:
+            return candidate
+
+
 def _normalise_edges(edges: Iterable[object]) -> list[list[str]]:
     pairs: set[tuple[str, str]] = set()
     for edge in edges:
@@ -200,13 +224,11 @@ def _update_target(index_path: Path, *, emit_index: bool, emit_caps: bool, dry_r
 
     index_written = False
     if emit_index:
-        timestamp_for_index = _iso_utc_now()
+        timestamp_for_index = _fresh_generated_at(existing_timestamp)
         index_payload_for_write["generated_at"] = timestamp_for_index
         index_written = _write_json_if_changed(index_path, index_payload_for_write, dry_run=dry_run)
         if index_written:
             _update_hot_timestamp(index_path.parent / "hot.json", timestamp_for_index, dry_run=dry_run)
-        else:
-            timestamp_for_index = existing_timestamp
 
     if emit_caps:
         caps_dir = index_path.parent / "caps"
