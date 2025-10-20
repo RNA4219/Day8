@@ -17,7 +17,7 @@
   "deps_out": [
     "workflow-cookbook/CHECKLISTS.md"
   ],
-  "generated_at": "2025-10-20T19:33:35Z",
+  "generated_at": "2025-10-20T19:59:01Z",
   "id": "workflow-cookbook/EVALUATION.md",
   "maintenance": {
     "refresh": "Acceptance Criteria変更時はCHECKLISTS/RUNBOOK/Task Seed雛形を更新。",
