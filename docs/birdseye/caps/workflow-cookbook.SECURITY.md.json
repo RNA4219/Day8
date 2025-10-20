@@ -11,11 +11,8 @@
     "workflow-cookbook/scripts/",
     "workflow-cookbook/tools/"
   ],
-  "generated_at": "2025-10-21T00:00:00Z",
+  "generated_at": "2025-10-20T19:33:35Z",
   "id": "workflow-cookbook/SECURITY.md",
-  "summary": [
-    "core::Security Review Checklistを追加し、Secrets/CORS/レート制限/OAuthリダイレクト/依存性スキャンの確認項目を明文化。"
-  ],
   "katamari": {
     "dependencies": {
       "inputs": [
@@ -56,5 +53,8 @@
   "role": [
     "core::security-policy",
     "orbit::guardrail-extension"
+  ],
+  "summary": [
+    "core::Security Review Checklistを追加し、Secrets/CORS/レート制限/OAuthリダイレクト/依存性スキャンの確認項目を明文化。"
   ]
 }

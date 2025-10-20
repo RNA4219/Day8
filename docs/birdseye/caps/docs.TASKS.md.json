@@ -1,0 +1,23 @@
+{
+  "deps_in": [
+    "docs/README.md"
+  ],
+  "deps_out": [
+    "docs/seeds/README.md"
+  ],
+  "generated_at": "2025-10-20T19:33:35Z",
+  "id": "docs/TASKS.md",
+  "maintenance": {
+    "refresh": "Task Seed 運用ルールを更新した際は Birdseye のリンク関係も見直し、関連カプセルを再生成する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "Seed ガイドラインが Birdseye に反映されないと、タスク着手時の参照動線が断たれる"
+  ],
+  "role": "tasks",
+  "summary": "Task Seed の作成・更新・保存規約を定義し、docs/seeds 配下のガイドを統括する運用基準書。",
+  "tests": []
+}
