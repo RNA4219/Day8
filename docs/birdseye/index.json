@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-20T10:30:00Z",
+  "generated_at": "2025-10-21T10:00:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -29,7 +29,7 @@
     "workflow-cookbook/SAFETY.md": {
       "role": "safety",
       "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
-      "mtime": "2025-10-20T10:30:00Z"
+      "mtime": "2025-10-21T10:00:00Z"
     },
     "workflow-cookbook/GUARDRAILS.md": {
       "role": "guardrail",
@@ -252,12 +252,20 @@
       "workflow-cookbook/SAFETY.md"
     ],
     [
-      "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/GUARDRAILS.md"
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/RUNBOOK.md"
     ],
     [
-      "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/SAFETY.md"
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/BLUEPRINT.md"
     ]
   ]
 }
