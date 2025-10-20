@@ -158,7 +158,8 @@ def test_emit_modes_and_dry_run_behaviour(tmp_path: Path) -> None:
     index_after_index = index_path.read_text(encoding="utf-8")
     assert index_after_index != index_before
     _invoke("--targets", str(index_path), "--emit", "index")
-    assert index_path.read_text(encoding="utf-8") == index_after_index
+    second_index_text = index_path.read_text(encoding="utf-8")
+    assert second_index_text != index_after_index
 
 
 def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> None:
@@ -180,6 +181,13 @@ def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> No
         hot_payload["generated_at"] = original_timestamp
         _write_json(hot_path, hot_payload)
 
+    caps_dir = target / "caps"
+    cap_path = next(iter(_iter_capsules(caps_dir)), None)
+    original_cap_timestamp = None
+    if cap_path is not None:
+        cap_payload = _load_json(cap_path)
+        original_cap_timestamp = cap_payload.get("generated_at")
+
     dry_run = _invoke(
         "--targets",
         str(index_path),
@@ -195,10 +203,30 @@ def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> No
     if hot_path.exists():
         assert "hot.json" in dry_run.stdout
         assert _load_json(hot_path)["generated_at"] == original_timestamp
+    if cap_path is not None:
+        assert _load_json(cap_path)["generated_at"] == original_cap_timestamp
 
     _invoke("--targets", str(index_path), "--emit", "index")
     updated_index = _load_json(index_path)
-    assert updated_index["generated_at"] != original_timestamp
+    first_timestamp = str(updated_index["generated_at"])
+    assert first_timestamp != original_timestamp
     if hot_path.exists():
-        assert _load_json(hot_path)["generated_at"] == updated_index["generated_at"]
+        assert _load_json(hot_path)["generated_at"] == first_timestamp
+    if cap_path is not None:
+        assert _load_json(cap_path)["generated_at"] == original_cap_timestamp
+
+    _invoke("--targets", str(index_path), "--emit", "index")
+    second_index = _load_json(index_path)
+    second_timestamp = str(second_index["generated_at"])
+    assert second_timestamp != first_timestamp
+    if hot_path.exists():
+        assert _load_json(hot_path)["generated_at"] == second_timestamp
+    if cap_path is not None:
+        assert _load_json(cap_path)["generated_at"] == original_cap_timestamp
+
+    _invoke("--targets", str(index_path), "--emit", "index+caps")
+    final_index = _load_json(index_path)
+    final_timestamp = str(final_index["generated_at"])
+    assert final_timestamp != second_timestamp
+    _assert_timestamp_sync(target)
 
