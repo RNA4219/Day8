@@ -19,10 +19,10 @@
   "deps_out": [
     "workflow-cookbook/TASK.codex.md"
   ],
-  "generated_at": "2025-10-20T13:50:22Z",
+  "generated_at": "2025-10-20T18:08:33Z",
   "id": "workflow-cookbook/CHECKLISTS.md",
   "maintenance": {
-    "refresh": "チェック項目を増減したらRunbookとTask Seedテンプレも更新。",
+    "refresh": "チェック項目変更時は Runbook / Task Seed と Katamari docs/Release_Checklist.md を同期。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
@@ -36,6 +36,7 @@
   ],
   "summary": [
     "core::日次/リリース/衛生チェック項目を網羅。",
+    "core::リリースゲートに LICENSE/NOTICE 同梱・CI 完走・Docker スモーク確認を追加。",
     "orbit::Priority Scoreや受け入れエビデンス確認をRunbook/Evaluation/Guardrailsと連携。",
     "orbit::Birdseye更新タスクの完了条件を明示。"
   ],
