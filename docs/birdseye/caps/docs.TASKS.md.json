@@ -1,23 +1,41 @@
 {
-  "deps_in": [
-    "docs/README.md"
+  "deps": [
+    "in::docs/seeds/README.md",
+    "out::workflow-cookbook/TASK.codex.md",
+    "out::docs/UPSTREAM.md",
+    "out::docs/UPSTREAM_WEEKLY_LOG.md"
   ],
-  "deps_out": [
+  "deps_in": [
     "docs/seeds/README.md"
   ],
-  "generated_at": "2025-10-20T19:33:35Z",
+  "deps_out": [
+    "docs/day8/guides/07_contributing.md",
+    "docs/seeds/README.md",
+    "workflow-cookbook/TASK.codex.md",
+    "docs/UPSTREAM.md",
+    "docs/UPSTREAM_WEEKLY_LOG.md"
+  ],
+  "generated_at": "2025-10-20T13:50:22Z",
   "id": "docs/TASKS.md",
   "maintenance": {
-    "refresh": "Task Seed 運用ルールを更新した際は Birdseye のリンク関係も見直し、関連カプセルを再生成する。",
+    "refresh": "Katamari テンプレート（背景/手順/検証ログ/フォローアップ）の更新や Guardrails 差分を反映したら index/caps/hot を同じコミットで再生成する。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
-  "public_api": [],
   "risks": [
-    "Seed ガイドラインが Birdseye に反映されないと、タスク着手時の参照動線が断たれる"
+    "Task Seed の記入順序が古いとガバナンスと検証ログの整合が崩れる"
   ],
-  "role": "tasks",
-  "summary": "Task Seed の作成・更新・保存規約を定義し、docs/seeds 配下のガイドを統括する運用基準書。",
-  "tests": []
+  "role": [
+    "core::task-seed-policy",
+    "orbit::katamari-template"
+  ],
+  "summary": [
+    "core::Task Seed 作成/更新フローと Katamari テンプレートの要点を定義する運用基準。",
+    "orbit::UPSTREAM ドキュメントと連携しレビュー履歴・差分の参照ハブとなる。"
+  ],
+  "tests": [
+    "check::Katamari 4 セクションが最新テンプレートと一致しているか確認",
+    "check::UPSTREAM 連携リンクが有効か確認"
+  ]
 }

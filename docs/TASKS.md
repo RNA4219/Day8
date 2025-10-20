@@ -1,24 +1,36 @@
 # Task Seeds 運用方針（Day8）
 
-## 目的
-Task Seed はリポジトリ内で進行する作業を事前共有し、衝突や抜け漏れを防ぐための軽量ドキュメントです。`workflow-cookbook/TASK.codex.md` のテンプレートに準拠し、目的・範囲・受入基準を簡潔に整理します。
+## 背景
+- Task Seed は衝突や抜け漏れを防ぐための軽量ドキュメントであり、Katamari の情報整理フローに合わせて「背景/手順/検証ログ/フォローアップ」の順で整備する。
+- 運用は `workflow-cookbook/TASK.codex.md` のテンプレートと Day8 ガバナンスに従う。最新の整合性判断やレビュー履歴は [docs/UPSTREAM.md](UPSTREAM.md) および [docs/UPSTREAM_WEEKLY_LOG.md](UPSTREAM_WEEKLY_LOG.md) を参照する。
+- Seed は `docs/seeds/` に配置し、タスクの合意形成と成果追跡のログとして扱う。
 
-## 作成・更新手順
-1. **タスク識別子を定義**: `task_id` には日付ベースの連番（例: `20250115-01`）を用います。`work_branch` は作業ブランチ名、`priority` は `P1|P2|P3` のいずれかを選択します。
-2. **メタデータを記入**: テンプレートの YAML ブロックへリポジトリ URL、ベース/作業ブランチ、対応言語などを記載します。
-3. **Objective/Scoop/Requirements を整備**:
-   - Objective: 目的を一文で明示します。
-   - Scope: 対象領域と非対象領域を箇条書きで列挙します。
-   - Requirements: 期待挙動、I/O 契約、制約、受入基準をテンプレート順で埋めます。
-4. **影響範囲とローカルコマンド**: 変更が想定されるパスを `glob` 表記で示し、対象スタックに合ったローカルコマンド（lint/type/test 等）を列挙します。
-5. **成果物と後続管理**: PR で明記すべき項目（Intent ID、Priority Score、評価セクションなど）や、想定リスク・フォローアップを記入します。
+## 手順
+1. **識別情報の設定**
+   - `task_id` は日付ベース連番（例: `20250115-01`）。`work_branch` は作業ブランチ名、`priority` は `P1|P2|P3` を指定する。
+   - メタデータ（`repo`, `base_branch`, `langs`, `status`, `last_reviewed_at`, `next_review_due` など）はテンプレート順に記入し、Katamari 運用で求められるレビュー期限を必ず設定する。
+2. **本文セクションの記述**
+   - Objective: タスク目的を一文で明示。
+   - Scope: 対象領域と除外範囲を箇条書きで整理。
+   - Requirements: 期待挙動、I/O 契約、制約、受入基準をテンプレート順に埋める。
+   - Affected Paths / Local Commands: 変更予定パスを `glob` で列挙し、lint/type/test などのローカルコマンドを明記する。
+   - Deliverables: PR で報告すべき Intent ID、Priority Score、リスク、フォローアップを整理する。
+3. **Plan 以降のトラッキング**
+   - Plan/ Patch/ Tests/ Commands/ Notes の各セクションで進捗ログを更新し、検証結果と残タスクを逐次反映する。
+   - Guardrails に変更があった場合は [docs/UPSTREAM_WEEKLY_LOG.md](UPSTREAM_WEEKLY_LOG.md) を参照し、Seed の要件差分を追記する。
+4. **保存と配置**
+   - ファイル名は `TASK.<slug>-YYYY-MM-DD.md`。`<slug>` は英小文字ハイフン区切りで要約を表す。
+   - Seed はドラフトからアクティブまでの状態を `status` で管理し、完了時は関連 PR/コミットリンクを追記する。
 
-## 保存規約
-- **配置先**: `docs/seeds/` ディレクトリ配下に保存します。
-- **ファイル名**: `TASK.<slug>-YYYY-MM-DD.md`（例: `TASK.payment-retry-2025-01-15.md`）。`<slug>` はタスク概要を表す英小文字・ハイフン区切りで命名します。
-- **構成**: テンプレートの全セクション（メタデータ、Objective、Scope、Requirements、Affected Paths、Local Commands、Deliverables、Plan、Patch、Tests、Commands、Notes）を保持します。
-- **運用**: Seed はドラフトからアクティブまでの状態管理（`status` フィールド）を必ず更新し、レビュー期限 (`last_reviewed_at` / `next_review_due`) を記録します。
+## 検証ログ
+- Seed 作成・更新時は以下を確認し、検証結果を Notes/Tests セクションへ残す。
+  - メタデータがテンプレート順で埋まっているか。
+  - Scope と Requirements が最新のガバナンス（[docs/UPSTREAM.md](UPSTREAM.md)）と矛盾していないか。
+  - Affected Paths と Local Commands が対象差分と一致しているか。
+  - `status`・`next_review_due` が最新レビュー計画を反映しているか。
 
-## レビューとアーカイブ
-- 定期的に `next_review_due` を確認し、期限切れの Seed は更新もしくは `deprecated` へ移行します。
-- 完了したタスクの Seed には PR/コミットなどの成果リンクを追記し、将来の参照に備えます。
+## フォローアップのチェックリスト
+- [ ] `docs/seeds/` への配置と命名規約 (`TASK.<slug>-YYYY-MM-DD.md`) を満たした。
+- [ ] Guardrails 変更時に [docs/UPSTREAM_WEEKLY_LOG.md](UPSTREAM_WEEKLY_LOG.md) を確認し、Seed へ必要な差分メモを追加した。
+- [ ] Plan / Patch / Tests / Commands / Notes セクションで進捗と検証ログを更新した。
+- [ ] 完了後に関連 PR・コミットリンクを追記し、後続作業の有無を明記した。
