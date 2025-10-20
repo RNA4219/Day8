@@ -19,6 +19,10 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
 
+## Upstream 運用
+- [Day8 Upstream 運用ガイド](UPSTREAM.md) — Katamari ワークフロー資産との同期手順と週次チェックの基準。
+- [Day8 Upstream 週次ログ テンプレート](UPSTREAM_WEEKLY_LOG.md) — 週次レビュー用の記録テンプレート。
+
 ## 貢献・サンプル
 - [貢献ガイド](day8/guides/07_contributing.md) — 貢献手順とタスク運用ルール。
 - [サンプル集](day8/examples/10_examples.md) — 反省 DSL やガバナンス設定のサンプル。
