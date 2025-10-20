@@ -215,9 +215,13 @@
     [
       "docs/UPSTREAM.md",
       "docs/UPSTREAM_WEEKLY_LOG.md"
+    ],
+    [
+      "workflow-cookbook/EVALUATION.md",
+      "governance/policy.yaml"
     ]
   ],
-  "generated_at": "2025-02-15T10:00:00Z",
+  "generated_at": "2025-02-20T11:30:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -281,7 +285,7 @@
     },
     "workflow-cookbook/EVALUATION.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.EVALUATION.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "2025-02-20T11:29:30Z",
       "role": "quality"
     },
     "workflow-cookbook/GUARDRAILS.md": {
@@ -338,6 +342,11 @@
       "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
       "mtime": "2025-02-15T10:00:00Z",
       "role": "log"
+    },
+    "governance/policy.yaml": {
+      "caps": "docs/birdseye/caps/governance.policy.yaml.json",
+      "mtime": "2025-10-14T00:00:00Z",
+      "role": "policy"
     }
   }
 }

@@ -1,10 +1,12 @@
 {
   "deps": [
     "in::docs/ROADMAP_AND_SPECS.md",
-    "in::workflow-cookbook/HUB.codex.md",
-    "in::workflow-cookbook/RUNBOOK.md",
     "in::workflow-cookbook/GUARDRAILS.md",
-    "out::workflow-cookbook/CHECKLISTS.md"
+    "in::workflow-cookbook/RUNBOOK.md",
+    "in::workflow-cookbook/HUB.codex.md",
+    "in::governance/policy.yaml",
+    "out::workflow-cookbook/CHECKLISTS.md",
+    "out::docs/birdseye/index.json"
   ],
   "deps_in": [
     "docs/ROADMAP_AND_SPECS.md",
@@ -12,15 +14,17 @@
     "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/RUNBOOK.md",
     "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/SECURITY.md"
+    "workflow-cookbook/SECURITY.md",
+    "governance/policy.yaml"
   ],
   "deps_out": [
-    "workflow-cookbook/CHECKLISTS.md"
+    "workflow-cookbook/CHECKLISTS.md",
+    "docs/birdseye/index.json"
   ],
-  "generated_at": "2025-10-20T19:33:35Z",
+  "generated_at": "2025-02-20T11:29:30Z",
   "id": "workflow-cookbook/EVALUATION.md",
   "maintenance": {
-    "refresh": "Acceptance Criteria変更時はCHECKLISTS/RUNBOOK/Task Seed雛形を更新。",
+    "refresh": "受け入れ基準やPriority Score運用を更新したら CHECKLISTS/RUNBOOK と governance/policy.yaml の関連節、Birdseye index/caps/hot を同一コミットで再生成。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
@@ -33,9 +37,9 @@
     "orbit::acceptance"
   ],
   "summary": [
-    "core::受け入れ基準とKPIを整理しPriority Scoreや禁止パスを規定。",
-    "orbit::テストアウトラインで単体/結合/回帰を俯瞰。",
-    "orbit::Runbook/Guardrailsと相互リンクし品質ゲートを同期。"
+    "core::Guardrails/RUNBOOK/Checklist と整合した評価ステップを定義し Priority Score を必須化。",
+    "core::lint/type/test 成功・Birdseye 再生成・インシデント連携までを受け入れ基準として明示。",
+    "orbit::governance/policy.yaml の禁止パスを尊重し品質ゲートの証跡管理を統制。"
   ],
   "tests": [
     "check::Acceptance Criteriaとチェックリスト項目が揃っているか確認"
