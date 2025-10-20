@@ -3,6 +3,12 @@
 ## 概要
 Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガードレールを鳥瞰的に把握するための可視化レイヤーです。Katamari 版の情報整理フローを踏襲しつつ、Day8 固有の索引（`docs/ROADMAP_AND_SPECS.md`）と安全審査ライン（`docs/safety.md`）を同一ホップ内で辿れるように最適化しています。LLM やレビュー担当者が最小限の読み込みで必要資料へアクセスできるよう、`index.json`・Capsule 群・ホットリストを同期させることが運用の前提です。
 
+推奨参照順序:
+1. `docs/ROADMAP_AND_SPECS.md` — Day8 全体像と Birdseye 更新必須ステップの確認。
+2. `docs/birdseye/index.json` — Day8 ノード間の鳥瞰マップを把握。
+3. `docs/birdseye/caps/` 以下の Capsule JSON — 必要ノードの要約と保守手順を point read。
+4. `docs/birdseye/hot.json` — 優先参照ノードと直近リスクのチェック。
+
 ## JSON ファイル構成（index → caps → hot）
 ### 1. `docs/birdseye/index.json`
 - `nodes`: Birdseye が追跡するファイルと役割の定義。例として `"docs/ROADMAP_AND_SPECS.md"` は `docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json` を参照し、Day8 と cookbook 間のクロスリンクを管理します。
@@ -12,7 +18,7 @@ Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガー�
 ### 2. `docs/birdseye/caps/`
 - 各ノードの Capsule JSON を格納。要約・保守手順・再生成条件を含みます。
 - 代表例: `docs/birdseye/caps/README.md.json`（Day8 ルート README の誘導）、`docs/birdseye/caps/docs.safety.md.json`（安全審査基準）、`docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json`（索引と Birdseye 反映 4 ステップ）。
-- Capsule を追加・更新した場合は必ず対応する `nodes[*].caps` のパスと内容を一致させます。
+- Capsule を追加・更新した場合は必ず対応する `nodes[*].caps` のパスと内容を一致させます。Capsule ファイル名は `path.with.dots.json` 形式（例: `docs/ROADMAP_AND_SPECS.md` → `docs.ROADMAP_AND_SPECS.md.json`）。
 
 ### 3. `docs/birdseye/hot.json`
 - 優先参照すべきノードのリスト。`docs/ROADMAP_AND_SPECS.md` や `docs/safety.md` のような判断基準を即座に辿れるようピックアップします。

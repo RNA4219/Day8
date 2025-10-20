@@ -6,8 +6,10 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 
 <!-- LLM-BOOTSTRAP v2 -->
 読む順番:
-1. docs/birdseye/index.json  …… Day8 ルートの鳥瞰マップ
-2. docs/birdseye/caps/<path>.json …… 必要ノードだけ point read（個別カプセル）
+1. [docs/ROADMAP_AND_SPECS.md](docs/ROADMAP_AND_SPECS.md) …… Day8 全体像と Birdseye 更新フローの索引
+2. [docs/birdseye/index.json](docs/birdseye/index.json) …… Day8 ルートの鳥瞰マップ
+3. [`docs/birdseye/caps/`](docs/birdseye/caps) 配下の `<path>.json` …… 必要ノードだけ point read（個別カプセル）
+4. [docs/birdseye/hot.json](docs/birdseye/hot.json) …… 優先参照ノードの即時確認
 
 フォーカス手順:
 - 直近変更ファイル±2hopのノードIDを index.json から取得
@@ -15,6 +17,7 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 
 更新フロー:
 - Day8 ルート文書を更新したら `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を実行し、index/caps を同期コミットする
+- Birdseye の編集順序と `generated_at` 同期ルールは [docs/birdseye/README.md](docs/birdseye/README.md) を参照
 <!-- /LLM-BOOTSTRAP -->
 
 詳細な構成を確認する際は、上記の導線に沿って必要なドキュメントを順番に参照してください。
