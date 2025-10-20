@@ -1,7 +1,7 @@
 # Task Seeds 運用方針（Day8）
 
 ## 背景
-- Task Seed は衝突や抜け漏れを防ぐための軽量ドキュメントであり、Katamari の情報整理フローに合わせて「背景/手順/検証ログ/フォローアップ」の順で整備する。
+- Task Seed は衝突や抜け漏れを防ぐための軽量ドキュメントであり、情報整理フローに合わせて「背景/手順/検証ログ/フォローアップ」の順で整備する。
 - 運用は `workflow-cookbook/TASK.codex.md` のテンプレートと Day8 ガバナンスに従う。最新の整合性判断やレビュー履歴は [docs/UPSTREAM.md](UPSTREAM.md) および [docs/UPSTREAM_WEEKLY_LOG.md](UPSTREAM_WEEKLY_LOG.md) を参照する。
 - Seed は `docs/seeds/` に配置し、タスクの合意形成と成果追跡のログとして扱う。
 
