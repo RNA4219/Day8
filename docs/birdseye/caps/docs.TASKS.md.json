@@ -6,16 +6,12 @@
     "out::docs/UPSTREAM_WEEKLY_LOG.md"
   ],
   "deps_in": [
-    "docs/seeds/README.md"
+    "docs/README.md"
   ],
   "deps_out": [
-    "docs/day8/guides/07_contributing.md",
-    "docs/seeds/README.md",
-    "workflow-cookbook/TASK.codex.md",
-    "docs/UPSTREAM.md",
-    "docs/UPSTREAM_WEEKLY_LOG.md"
+    "docs/seeds/README.md"
   ],
-  "generated_at": "2025-10-20T13:50:22Z",
+  "generated_at": "2025-10-20T19:59:01Z",
   "id": "docs/TASKS.md",
   "maintenance": {
     "refresh": "Katamari テンプレート（背景/手順/検証ログ/フォローアップ）の更新や Guardrails 差分を反映したら index/caps/hot を同じコミットで再生成する。",

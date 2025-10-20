@@ -38,11 +38,23 @@
     ],
     [
       "docs/README.md",
+      "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/README.md",
       "docs/day8/README.md"
     ],
     [
       "docs/README.md",
       "docs/safety.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/BIRDSEYE.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/UPSTREAM.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -75,6 +87,10 @@
     [
       "docs/TASKS.md",
       "docs/seeds/README.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/UPSTREAM_WEEKLY_LOG.md"
     ],
     [
       "docs/safety.md",
@@ -233,6 +249,11 @@
       "mtime": "2025-01-15T00:00:00Z",
       "role": "overview"
     },
+    "docs/BIRDSEYE.md": {
+      "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
+      "mtime": "2025-10-20T18:08:52Z",
+      "role": "guide"
+    },
     "docs/README.md": {
       "caps": "docs/birdseye/caps/docs.README.md.json",
       "mtime": "2025-01-15T00:00:00Z",
@@ -247,6 +268,16 @@
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
       "mtime": "2025-01-15T00:00:00Z",
       "role": "tasks"
+    },
+    "docs/UPSTREAM.md": {
+      "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
+      "mtime": "2025-02-15T10:00:00Z",
+      "role": "operations"
+    },
+    "docs/UPSTREAM_WEEKLY_LOG.md": {
+      "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
+      "mtime": "2025-02-15T10:00:00Z",
+      "role": "log"
     },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
