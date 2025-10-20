@@ -1,45 +1,44 @@
 {
   "id": "workflow-cookbook/SECURITY.md",
-  "role": ["core::security-pillar", "orbit::incident-ready"],
-  "summary": [
-    "core::Guardrails の機密管理条項を補完し、Cookbook 全体の情報保護境界を明文化する。",
-    "orbit::Safety/Runbook 手順と連携し、検知から封じ込めまでの初動責務を整理する。",
-    "orbit::ツール/スクリプト適用時の秘密情報取り扱いチェックを標準化する。"
+  "role": [
+    "core::security-policy",
+    "orbit::guardrail-extension"
   ],
-  "deps": [
-    "in::workflow-cookbook/GUARDRAILS.md",
-    "in::workflow-cookbook/SAFETY.md",
-    "in::workflow-cookbook/HUB.codex.md",
-    "out::workflow-cookbook/RUNBOOK.md",
-    "out::workflow-cookbook/EVALUATION.md",
-    "out::workflow-cookbook/CHECKLISTS.md",
-    "out::workflow-cookbook/TASK.codex.md",
-    "out::workflow-cookbook/tools/",
-    "out::workflow-cookbook/scripts/"
-  ],
-  "deps_out": [
-    "workflow-cookbook/RUNBOOK.md",
-    "workflow-cookbook/EVALUATION.md",
-    "workflow-cookbook/CHECKLISTS.md",
-    "workflow-cookbook/TASK.codex.md",
-    "workflow-cookbook/tools/",
-    "workflow-cookbook/scripts/"
-  ],
-  "deps_in": [
-    "workflow-cookbook/GUARDRAILS.md",
-    "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/HUB.codex.md"
-  ],
-  "maintenance": {
-    "refresh": "インシデント手順更新時は Guardrails/Safety/Runbook と合わせて Birdseye インデックス・Capsule を更新。",
-    "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+  "katamari": {
+    "purpose": [
+      "core::Day8/Workflow-cookbook 全体で共有するセキュリティ要件・禁止事項・連絡経路を集約する。",
+      "orbit::Guardrails と Safety の間でインシデント対応判断を標準化し、変更審査の境界条件を示す。",
+      "orbit::ツール/スクリプトの利用権限と秘密情報の取り扱い制限を明示する。"
+    ],
+    "dependencies": {
+      "inputs": [
+        "workflow-cookbook/GUARDRAILS.md",
+        "workflow-cookbook/SAFETY.md",
+        "docs/safety.md"
+      ],
+      "outputs": [
+        "workflow-cookbook/RUNBOOK.md",
+        "workflow-cookbook/CHECKLISTS.md"
+      ],
+      "mirrors": []
+    },
+    "maintenance": {
+      "cadence": "セキュリティ要件変更・インシデント振り返り・Guardrails更新時（目安: 1 リリース以内）。",
+      "triggers": [
+        "workflow-cookbook/GUARDRAILS.md の例外ポリシー更新",
+        "workflow-cookbook/SAFETY.md のエスカレーション経路更新",
+        "重大インシデント後の事後対応レビュー完了"
+      ],
+      "steps": [
+        "該当差分を SECURITY.md に反映し、秘密情報を含まないことをレビューする。",
+        "docs/birdseye/index.json / hot.json のノード参照と generated_at を同期する。",
+        "関連チェックリストや Runbook のセキュリティ手順を更新して整合を確認する。"
+      ]
+    },
+    "validation": [
+      "check::Guardrails・Safety・Runbook のセキュリティ要件と齟齬がないかレビュー",
+      "check::CI/ツールの権限設定と SECURITY.md の記述が一致するか確認"
     ]
   },
-  "risks": [
-    "機密データの扱い指針が古いと自動化タスクが誤ったアクセス権で実行される"
-  ],
-  "tests": [
-    "check::Runbook/Checklists のインシデント項目が最新のセキュリティ制約と一致するかレビュー"
-  ]
+  "generated_at": "2025-10-21T10:00:00Z"
 }
