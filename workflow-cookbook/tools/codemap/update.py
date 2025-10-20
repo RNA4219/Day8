@@ -3,12 +3,12 @@
 主な挙動:
 - `--targets` に与えた複数の `index.json` をカンマ区切りの順番で処理する。
 - `--emit` でインデックスのみ / カプセルのみ / 両方の更新を切り替える。
-- インデックスの `edges` が正規化で変化した場合にファイルを書き換え、新しい
-  `generated_at` を採番する。
-- カプセルは依存関係が変わった場合、またはインデックス更新で `generated_at`
-  が変化した場合のみ書き換える。
-- インデックスを更新した場合、同階層の `hot.json` が存在すれば `generated_at`
-  を同期する。
+- `--emit index` / `index+caps` 実行時は `generated_at` を常に新しい値へ更新し、
+  `edges` の正規化結果も同時に書き戻す。
+- カプセルは依存関係が変わった場合、またはインデックス更新で付与された
+  `generated_at` を共有する必要がある場合のみ書き換える。
+- インデックスの `generated_at` を更新した場合、同階層の `hot.json` が存在すれ
+  ば同じ値へ同期する。
 """
 
 from __future__ import annotations
@@ -216,32 +216,31 @@ def _update_target(index_path: Path, *, emit_index: bool, emit_caps: bool, dry_r
 
     existing_timestamp = str(index_payload.get("generated_at", ""))
     timestamp_for_index = existing_timestamp
+    timestamp_changed = False
     index_payload_for_write = dict(index_payload)
 
     edges_changed = normalised_edges != list(index_payload.get("edges", []))
     if edges_changed:
         index_payload_for_write["edges"] = normalised_edges
 
-    index_written = False
     if emit_index:
         timestamp_for_index = _fresh_generated_at(existing_timestamp)
+        timestamp_changed = timestamp_for_index != existing_timestamp
         index_payload_for_write["generated_at"] = timestamp_for_index
-        index_written = _write_json_if_changed(index_path, index_payload_for_write, dry_run=dry_run)
-        if index_written:
+        _write_json_if_changed(index_path, index_payload_for_write, dry_run=dry_run)
+        if timestamp_changed:
             _update_hot_timestamp(index_path.parent / "hot.json", timestamp_for_index, dry_run=dry_run)
 
     if emit_caps:
         caps_dir = index_path.parent / "caps"
         if caps_dir.exists():
-            timestamp_for_caps = timestamp_for_index
-            if not emit_index:
-                timestamp_for_caps = existing_timestamp
+            timestamp_for_caps = timestamp_for_index if emit_index else existing_timestamp
             _update_capsules(
                 caps_dir,
                 deps_out,
                 deps_in,
                 timestamp=timestamp_for_caps,
-                force_timestamp=emit_index and timestamp_for_caps != existing_timestamp,
+                force_timestamp=emit_index and timestamp_changed,
                 dry_run=dry_run,
             )
 

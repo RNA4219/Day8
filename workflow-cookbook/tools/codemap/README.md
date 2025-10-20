@@ -6,9 +6,9 @@
 ## 挙動サマリ
 
 - **複数ターゲット**: `--targets` に与えた `index.json` をカンマ区切りの順番で巡回し、それぞれ独立に差分検知・書き込みを行います。空要素は無視されます。
-- **`--emit` 制御**: `index` はインデックスのみ、`caps` はカプセルのみ、`index+caps` は両方を更新します。`index` を指定した場合でも毎回 `generated_at` が再採番され、`index+caps` では同じ値がカプセルにも強制適用されます。
-- **`generated_at` 同期**: `index.json` は `--emit index` 実行ごとに新しい UTC タイムスタンプを採番し、同階層の `hot.json` が存在すれば同じ値へ更新します。`caps/*.json` は依存関係に変化があるか、または `index+caps` でインデックスの新しい `generated_at` が示されたときに更新されます。
-- **ホットリスト**: `index.json` と同じ階層の `hot.json` が存在する場合、インデックスを書き換えたタイミングで `generated_at` を同一値へ更新します（存在しない場合は無視します）。
+- **`--emit` 制御**: `index` はインデックスのみ、`caps` はカプセルのみ、`index+caps` は両方を更新します。`index` / `index+caps` を指定した場合はエッジ差分の有無にかかわらず毎回 `generated_at` が再採番され、`index+caps` では同じ値がカプセルにも強制適用されます。
+- **`generated_at` 同期**: `index.json` は `--emit index` / `index+caps` 実行ごとに新しい UTC タイムスタンプを採番します。`caps/*.json` は依存関係に変化があるか、またはインデックスで採番された `generated_at` を共有する必要があるときに更新されます。
+- **ホットリスト**: `index.json` と同じ階層の `hot.json` が存在する場合、`--emit index` / `index+caps` により `generated_at` が更新されたタイミングで同一値へ同期します（存在しない場合は無視します）。
 
 ## 依存
 
