@@ -71,7 +71,7 @@
 >
 > 参照チェック（PR 本文に記載）:
 > - Guardrails 文書群 — [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) / [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) / [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) / [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md) / [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) / [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md)
-> - Birdseye 連携 — [docs/birdseye/README.md](birdseye/README.md)（更新順序と `generated_at` 同期の必須手順を参照） / [docs/birdseye/index.json](birdseye/index.json)
+- Birdseye 連携 — [docs/birdseye/README.md](birdseye/README.md)（更新順序と `generated_at` 同期の必須手順を参照） / [docs/birdseye/index.json](birdseye/index.json) / [docs/BIRDSEYE.md](BIRDSEYE.md)（Guardrails 参照順と `edges` チェックポイントのフォールバック手順を参照）
 
 ## 4. 参照クイックリンク
 
