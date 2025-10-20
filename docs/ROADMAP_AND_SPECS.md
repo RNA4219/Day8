@@ -87,6 +87,8 @@
   2. **Capsule 更新** — `docs/birdseye/caps/` 配下の対象 Capsule を差分内容へ反映し、役割・保守手順を同期させる。
   3. **hot.json 更新** — [docs/birdseye/hot.json](birdseye/hot.json) の `reason` を最新フローへ揃え、重点参照ポイントを再評価する。
   4. **generated_at 揃え** — `index.json` / `hot.json` 双方の `generated_at` を同一値へ更新し、Birdseye 再生成の履歴を同期する。
+- [Day8 Upstream 運用ガイド](UPSTREAM.md)
+- [Day8 Upstream 週次ログ テンプレート](UPSTREAM_WEEKLY_LOG.md)
 
 ## ライセンス
 
