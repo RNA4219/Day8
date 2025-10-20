@@ -1,84 +1,24 @@
-# Task Seeds（Day8）
+# Task Seeds 運用方針（Day8）
 
-Day8 のタスク運用は、Guardrails と Day8 固有の CI ルールに合わせて最小編集で連携できるよう再構成しています。変更の衝突を防ぎ、レビュー前に要件・検証観点を揃えるため、以下の手順で Task Seed を作成・保守してください。
+## 目的
+Task Seed はリポジトリ内で進行する作業を事前共有し、衝突や抜け漏れを防ぐための軽量ドキュメントです。`workflow-cookbook/TASK.codex.md` のテンプレートに準拠し、目的・範囲・受入基準を簡潔に整理します。
 
-## 保存場所と命名規約
-- 保存先: `docs/tasks/`
-- ファイル名: `TASK.<slug>-YYYY-MM-DD.md`
-  - `<slug>` は対象領域を 1〜2 語で表現（例: `observability`, `docs-refresh`）。
-  - 日付は作成日（UTC 基準）。
-- 既存の Seed を更新するときは追記履歴を残し、必要なら `Follow-ups` セクションを分割して明示します。
+## 作成・更新手順
+1. **タスク識別子を定義**: `task_id` には日付ベースの連番（例: `20250115-01`）を用います。`work_branch` は作業ブランチ名、`priority` は `P1|P2|P3` のいずれかを選択します。
+2. **メタデータを記入**: テンプレートの YAML ブロックへリポジトリ URL、ベース/作業ブランチ、対応言語などを記載します。
+3. **Objective/Scoop/Requirements を整備**:
+   - Objective: 目的を一文で明示します。
+   - Scope: 対象領域と非対象領域を箇条書きで列挙します。
+   - Requirements: 期待挙動、I/O 契約、制約、受入基準をテンプレート順で埋めます。
+4. **影響範囲とローカルコマンド**: 変更が想定されるパスを `glob` 表記で示し、対象スタックに合ったローカルコマンド（lint/type/test 等）を列挙します。
+5. **成果物と後続管理**: PR で明記すべき項目（Intent ID、Priority Score、評価セクションなど）や、想定リスク・フォローアップを記入します。
 
-> **Note:** 旧パス（`docs/seeds/` や ルート直下 `TASK.*`）を参照する資料を見つけた場合は、本ページに従ってリンクと記法を `docs/tasks/` へ移行してください。
+## 保存規約
+- **配置先**: `docs/seeds/` ディレクトリ配下に保存します。
+- **ファイル名**: `TASK.<slug>-YYYY-MM-DD.md`（例: `TASK.payment-retry-2025-01-15.md`）。`<slug>` はタスク概要を表す英小文字・ハイフン区切りで命名します。
+- **構成**: テンプレートの全セクション（メタデータ、Objective、Scope、Requirements、Affected Paths、Local Commands、Deliverables、Plan、Patch、Tests、Commands、Notes）を保持します。
+- **運用**: Seed はドラフトからアクティブまでの状態管理（`status` フィールド）を必ず更新し、レビュー期限 (`last_reviewed_at` / `next_review_due`) を記録します。
 
-## Seed の目的
-- 意図と完了条件をレビュー前に共有し、作業単位を 1 ブランチ 1 PR に収束させる。
-- Guardrails／CHECKLISTS／Runbook で定義されたゲート（Lint/Type/Test/優先度報告）を外さずに適用する。
-- Birdseye（index → caps → hot）から参照したときに、どの文書を更新するか即座に追跡できるようにする。
-
-## テンプレート
-以下は Day8 版の Task Seed テンプレートです。必要に応じて [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md) と突き合わせてください。
-
-```markdown
----
-task_id: YYYYMMDD-xx
-repo: https://github.com/owner/repo
-base_branch: main
-work_branch: feat/<short-slug>
-priority: P1|P2|P3
-langs: [auto]
-owner: contributor-handle
----
-
-# Objective
-{{一文で目的}}
-
-## Scope
-- In:
-  - {{対象（ディレクトリ/機能/CLI）}}
-- Out:
-  - {{非対象}}
-
-## Requirements
-- Behavior:
-  - {{期待挙動1}}
-  - {{期待挙動2}}
-- I/O Contract:
-  - Input: {{型/例}}
-  - Output: {{型/例}}
-- Constraints:
-  - 既存API破壊なし / 依存追加なし
-  - Lint/Type/Test はゼロエラー（例: `ruff check`, `mypy --strict`, `pytest -q`）
-- Acceptance Criteria:
-  - {{検収条件1}}
-  - {{検収条件2}}
-
-## Affected Paths
-- {{glob 例: backend/src/**, frontend/src/hooks/**, tools/*.sh}}
-
-## Local Commands
-- {{適用スタックのコマンド}}
-
-## Deliverables
-- PR: タイトル・要約・影響・ロールバックに加え `Intent: INT-xxx` と `## EVALUATION` を明記
-- Artifacts: コード差分／テスト結果／必要なドキュメント更新
-
-## Notes
-### Rationale
-- {{設計判断}}
-
-### Risks
-- {{互換性リスク}}
-
-### Follow-ups
-- {{後続タスクや検証項目が残る場合に記載}}
-```
-
-## フォローアップ手順
-1. Seed を作成／更新したら、PR 説明に `Task Seed: docs/tasks/TASK.<slug>-YYYY-MM-DD.md` を添付。
-2. 対応完了後も未解決の懸念があれば `Follow-ups` に残し、Birdseye のカプセル再生成時に拾えるよう日時と担当を追記。
-3. Guardrails や CHECKLISTS に影響する変更を検出した場合は、関連ドキュメントを同一 PR で更新するか、別 Seed を起票して依存関係を明示。
-4. Seed をクローズ（完了）したら、最後のコミットで `Follow-ups` を空にするか、派生 Seed へのリンクでクローズ可否を示してください。
-
----
-Day8 では Seed 作成時の証跡が CI の観測対象となるため、本ページを更新した場合は `docs/birdseye/index.json` の再生成手順に従って Birdseye を同期することを忘れないでください。
+## レビューとアーカイブ
+- 定期的に `next_review_due` を確認し、期限切れの Seed は更新もしくは `deprecated` へ移行します。
+- 完了したタスクの Seed には PR/コミットなどの成果リンクを追記し、将来の参照に備えます。
