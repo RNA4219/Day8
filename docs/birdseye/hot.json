@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-21T10:00:00Z",
+  "generated_at": "2025-10-21T11:30:00Z",
   "entries": [
     {
       "id": "README.md",
@@ -24,7 +24,7 @@
     {
       "id": "workflow-cookbook/SECURITY.md",
       "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
-      "reason": "Guardrails と Safety の境界条件を整理し、機密情報の扱いとインシデント窓口を即確認できる。"
+      "reason": "Guardrails/Safety 間の責務境界とインシデント初動を統合し、即時対応すべき窓口と手順を把握できる。"
     },
     {
       "id": "workflow-cookbook/HUB.codex.md",

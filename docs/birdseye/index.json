@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-21T10:00:00Z",
+  "generated_at": "2025-10-21T11:30:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -97,9 +97,9 @@
       "mtime": "2025-10-20T10:30:00Z"
     },
     "workflow-cookbook/SECURITY.md": {
-      "role": "security",
+      "role": "guardrail",
       "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
-      "mtime": "2025-10-20T10:30:00Z"
+      "mtime": "2025-01-17T00:00:00Z"
     }
   },
   "edges": [
@@ -266,6 +266,38 @@
     [
       "workflow-cookbook/SAFETY.md",
       "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/SECURITY.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/tools/"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/scripts/"
     ]
   ]
 }
