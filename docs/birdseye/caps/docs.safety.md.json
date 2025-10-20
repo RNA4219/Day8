@@ -1,25 +1,23 @@
 {
-  "id": "docs/safety.md",
-  "role": "safety",
-  "public_api": [],
-  "summary": "Day8 の安全性ガイドラインとオペレーション上の制約を記述し、Birdseye から workflow-cookbook/SAFETY.md へ誘導する役割を担う。",
-  "deps_out": [
-    "workflow-cookbook/GUARDRAILS.md",
-    "workflow-cookbook/HUB.codex.md",
-    "workflow-cookbook/SAFETY.md"
-  ],
   "deps_in": [
     "docs/README.md"
   ],
+  "deps_out": [
+    "workflow-cookbook/SAFETY.md"
+  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "id": "docs/safety.md",
   "maintenance": {
     "refresh": "安全ポリシーが変わったら Birdseye の参照先も同期し、関連ガードレール文書と workflow-cookbook/SAFETY.md を整合させる。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
+  "public_api": [],
   "risks": [
     "安全性と Birdseye の誘導が矛盾すると運用事故を招く"
   ],
-  "tests": [],
-  "generated_at": "2025-10-20T08:46:58Z"
+  "role": "safety",
+  "summary": "Day8 の安全性ガイドラインとオペレーション上の制約を記述し、Birdseye から workflow-cookbook/SAFETY.md へ誘導する役割を担う。",
+  "tests": []
 }

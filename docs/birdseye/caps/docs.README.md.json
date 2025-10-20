@@ -1,24 +1,24 @@
 {
-  "id": "docs/README.md",
-  "role": "index",
-  "public_api": [],
-  "summary": "Day8 ドキュメント配下の索引用ページ。仕様・設計・運用資料への入口を整理する。",
+  "deps_in": [
+    "README.md"
+  ],
   "deps_out": [
     "docs/day8/README.md",
     "docs/safety.md"
   ],
-  "deps_in": [
-    "README.md"
-  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "id": "docs/README.md",
   "maintenance": {
     "refresh": "索引を更新したら Birdseye カプセルの deps_out を併せて更新する。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
+  "public_api": [],
   "risks": [
     "索引と Birdseye のリンクが崩れると適切な資料に辿り着けない"
   ],
-  "tests": [],
-  "generated_at": "2025-10-20T08:46:58Z"
+  "role": "index",
+  "summary": "Day8 ドキュメント配下の索引用ページ。仕様・設計・運用資料への入口を整理する。",
+  "tests": []
 }

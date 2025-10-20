@@ -1,22 +1,16 @@
 {
+  "deps_in": [],
+  "deps_out": [],
+  "generated_at": "2025-10-20T13:50:22Z",
   "id": "tools/codemap/update.py",
-  "role": "script",
   "public_api": [
     "python tools/codemap/update.py"
-  ],
-  "summary": "Birdseye の index.json と caps 群を指定ターゲットに応じて再生成する CLI エントリポイント。",
-  "deps_in": [
-    "tools/codemap/README.md",
-    "GUARDRAILS.md",
-    "HUB.codex.md"
-  ],
-  "deps_out": [
-    "docs/birdseye/index.json",
-    "docs/birdseye/caps/docs.birdseye.caps.json"
   ],
   "risks": [
     "誤ったターゲット指定で Birdseye のメタデータを破壊するリスク"
   ],
+  "role": "script",
+  "summary": "Birdseye の index.json と caps 群を指定ターゲットに応じて再生成する CLI エントリポイント。",
   "tests": [
     "python tools/codemap/update.py --help"
   ]

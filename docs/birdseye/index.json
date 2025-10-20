@@ -1,107 +1,4 @@
 {
-  "generated_at": "2025-10-20T08:46:58Z",
-  "nodes": {
-    "README.md": {
-      "role": "overview",
-      "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "2025-01-15T00:00:00Z"
-    },
-    "INSTALL.md": {
-      "role": "setup",
-      "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "2025-01-15T00:00:00Z"
-    },
-    "docs/README.md": {
-      "role": "index",
-      "caps": "docs/birdseye/caps/docs.README.md.json",
-      "mtime": "2025-01-15T00:00:00Z"
-    },
-    "docs/day8/README.md": {
-      "role": "overview",
-      "caps": "docs/birdseye/caps/docs.day8.README.md.json",
-      "mtime": "2025-01-15T00:00:00Z"
-    },
-    "docs/safety.md": {
-      "role": "safety",
-      "caps": "docs/birdseye/caps/docs.safety.md.json",
-      "mtime": "2025-01-15T00:00:00Z"
-    },
-    "workflow-cookbook/SAFETY.md": {
-      "role": "safety",
-      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
-      "mtime": "2025-10-21T10:00:00Z"
-    },
-    "workflow-cookbook/GUARDRAILS.md": {
-      "role": "guardrail",
-      "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "tools/": {
-      "role": "automation",
-      "caps": "docs/birdseye/caps/tools.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "scripts/": {
-      "role": "automation",
-      "caps": "docs/birdseye/caps/scripts.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/tools/": {
-      "role": "automation",
-      "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/scripts/": {
-      "role": "automation",
-      "caps": "docs/birdseye/caps/workflow-cookbook.scripts.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "docs/ROADMAP_AND_SPECS.md": {
-      "role": "roadmap",
-      "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "mtime": "2025-10-20T09:00:00Z"
-    },
-    "workflow-cookbook/HUB.codex.md": {
-      "role": "orchestration",
-      "caps": "docs/birdseye/caps/workflow-cookbook.HUB.codex.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/BLUEPRINT.md": {
-      "role": "requirements",
-      "caps": "docs/birdseye/caps/workflow-cookbook.BLUEPRINT.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/RUNBOOK.md": {
-      "role": "operations",
-      "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/EVALUATION.md": {
-      "role": "quality",
-      "caps": "docs/birdseye/caps/workflow-cookbook.EVALUATION.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/CHECKLISTS.md": {
-      "role": "checklist",
-      "caps": "docs/birdseye/caps/workflow-cookbook.CHECKLISTS.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/TASK.codex.md": {
-      "role": "tasks",
-      "caps": "docs/birdseye/caps/workflow-cookbook.TASK.codex.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    },
-    "workflow-cookbook/docs/birdseye/index.json": {
-      "role": "visualization",
-      "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
-      "mtime": "2025-10-20T10:30:00Z"
-    },
-    "workflow-cookbook/SECURITY.md": {
-      "role": "guardrail",
-      "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
-      "mtime": "2025-01-17T00:00:00Z"
-    }
-  },
   "edges": [
     [
       "README.md",
@@ -112,6 +9,30 @@
       "docs/README.md"
     ],
     [
+      "README.md",
+      "docs/ROADMAP_AND_SPECS.md"
+    ],
+    [
+      "README.md",
+      "scripts/"
+    ],
+    [
+      "README.md",
+      "tools/"
+    ],
+    [
+      "README.md",
+      "workflow-cookbook/GUARDRAILS.md"
+    ],
+    [
+      "README.md",
+      "workflow-cookbook/HUB.codex.md"
+    ],
+    [
+      "README.md",
+      "workflow-cookbook/docs/birdseye/index.json"
+    ],
+    [
       "docs/README.md",
       "docs/day8/README.md"
     ],
@@ -120,40 +41,16 @@
       "docs/safety.md"
     ],
     [
-      "README.md",
-      "workflow-cookbook/docs/birdseye/index.json"
-    ],
-    [
-      "README.md",
-      "workflow-cookbook/GUARDRAILS.md"
-    ],
-    [
-      "README.md",
-      "tools/"
-    ],
-    [
-      "README.md",
-      "scripts/"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/tools/"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/scripts/"
-    ],
-    [
-      "README.md",
-      "docs/ROADMAP_AND_SPECS.md"
-    ],
-    [
-      "README.md",
-      "workflow-cookbook/HUB.codex.md"
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/BLUEPRINT.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
-      "workflow-cookbook/BLUEPRINT.md"
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/EVALUATION.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -162,122 +59,118 @@
     [
       "docs/ROADMAP_AND_SPECS.md",
       "workflow-cookbook/RUNBOOK.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "workflow-cookbook/EVALUATION.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "workflow-cookbook/TASK.codex.md"
-    ],
-    [
-      "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/BLUEPRINT.md"
-    ],
-    [
-      "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/GUARDRAILS.md"
-    ],
-    [
-      "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/RUNBOOK.md"
-    ],
-    [
-      "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/EVALUATION.md"
-    ],
-    [
-      "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "workflow-cookbook/HUB.codex.md",
-      "workflow-cookbook/TASK.codex.md"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/BLUEPRINT.md"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/RUNBOOK.md"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/EVALUATION.md"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/TASK.codex.md"
-    ],
-    [
-      "workflow-cookbook/BLUEPRINT.md",
-      "workflow-cookbook/RUNBOOK.md"
-    ],
-    [
-      "workflow-cookbook/RUNBOOK.md",
-      "workflow-cookbook/EVALUATION.md"
-    ],
-    [
-      "workflow-cookbook/RUNBOOK.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "workflow-cookbook/EVALUATION.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "workflow-cookbook/CHECKLISTS.md",
-      "workflow-cookbook/TASK.codex.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
       "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "workflow-cookbook/TASK.codex.md"
     ],
     [
       "docs/safety.md",
       "workflow-cookbook/SAFETY.md"
     ],
     [
-      "workflow-cookbook/GUARDRAILS.md",
-      "workflow-cookbook/SAFETY.md"
-    ],
-    [
-      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/BLUEPRINT.md",
       "workflow-cookbook/RUNBOOK.md"
     ],
     [
-      "workflow-cookbook/SAFETY.md",
-      "workflow-cookbook/EVALUATION.md"
+      "workflow-cookbook/CHECKLISTS.md",
+      "workflow-cookbook/TASK.codex.md"
     ],
     [
-      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/EVALUATION.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
-      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/GUARDRAILS.md",
       "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/SAFETY.md"
     ],
     [
       "workflow-cookbook/GUARDRAILS.md",
       "workflow-cookbook/SECURITY.md"
     ],
     [
-      "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/SAFETY.md"
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/scripts/"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/tools/"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/GUARDRAILS.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/TASK.codex.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/BLUEPRINT.md"
+    ],
+    [
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "workflow-cookbook/SAFETY.md",
+      "workflow-cookbook/RUNBOOK.md"
     ],
     [
       "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/RUNBOOK.md"
+      "workflow-cookbook/CHECKLISTS.md"
     ],
     [
       "workflow-cookbook/SECURITY.md",
@@ -285,7 +178,11 @@
     ],
     [
       "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/CHECKLISTS.md"
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/SAFETY.md"
     ],
     [
       "workflow-cookbook/SECURITY.md",
@@ -293,11 +190,114 @@
     ],
     [
       "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/tools/"
+      "workflow-cookbook/scripts/"
     ],
     [
       "workflow-cookbook/SECURITY.md",
-      "workflow-cookbook/scripts/"
+      "workflow-cookbook/tools/"
     ]
-  ]
+  ],
+  "generated_at": "2025-10-20T13:50:22Z",
+  "nodes": {
+    "INSTALL.md": {
+      "caps": "docs/birdseye/caps/INSTALL.md.json",
+      "mtime": "2025-01-15T00:00:00Z",
+      "role": "setup"
+    },
+    "README.md": {
+      "caps": "docs/birdseye/caps/README.md.json",
+      "mtime": "2025-01-15T00:00:00Z",
+      "role": "overview"
+    },
+    "docs/README.md": {
+      "caps": "docs/birdseye/caps/docs.README.md.json",
+      "mtime": "2025-01-15T00:00:00Z",
+      "role": "index"
+    },
+    "docs/ROADMAP_AND_SPECS.md": {
+      "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
+      "mtime": "2025-10-20T09:00:00Z",
+      "role": "roadmap"
+    },
+    "docs/day8/README.md": {
+      "caps": "docs/birdseye/caps/docs.day8.README.md.json",
+      "mtime": "2025-01-15T00:00:00Z",
+      "role": "overview"
+    },
+    "docs/safety.md": {
+      "caps": "docs/birdseye/caps/docs.safety.md.json",
+      "mtime": "2025-01-15T00:00:00Z",
+      "role": "safety"
+    },
+    "scripts/": {
+      "caps": "docs/birdseye/caps/scripts.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "automation"
+    },
+    "tools/": {
+      "caps": "docs/birdseye/caps/tools.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "automation"
+    },
+    "workflow-cookbook/BLUEPRINT.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.BLUEPRINT.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "requirements"
+    },
+    "workflow-cookbook/CHECKLISTS.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.CHECKLISTS.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "checklist"
+    },
+    "workflow-cookbook/EVALUATION.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.EVALUATION.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "quality"
+    },
+    "workflow-cookbook/GUARDRAILS.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "guardrail"
+    },
+    "workflow-cookbook/HUB.codex.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.HUB.codex.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "orchestration"
+    },
+    "workflow-cookbook/RUNBOOK.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "operations"
+    },
+    "workflow-cookbook/SAFETY.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
+      "mtime": "2025-10-21T10:00:00Z",
+      "role": "safety"
+    },
+    "workflow-cookbook/SECURITY.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "guardrail"
+    },
+    "workflow-cookbook/TASK.codex.md": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.TASK.codex.md.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "tasks"
+    },
+    "workflow-cookbook/docs/birdseye/index.json": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
+      "mtime": "2025-10-20T10:30:00Z",
+      "role": "visualization"
+    },
+    "workflow-cookbook/scripts/": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.scripts.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "automation"
+    },
+    "workflow-cookbook/tools/": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
+      "mtime": "2025-01-17T00:00:00Z",
+      "role": "automation"
+    }
+  }
 }

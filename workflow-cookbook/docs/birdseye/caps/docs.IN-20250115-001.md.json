@@ -1,21 +1,14 @@
 {
+  "deps_in": [],
+  "deps_out": [],
+  "generated_at": "2025-10-20T13:50:22Z",
   "id": "docs/IN-20250115-001.md",
-  "role": "incident",
   "public_api": [],
-  "summary": "2025-01-15 に発生した Canary 停止インシデントの影響、原因、復旧・是正アクションを記録した事後ログ。",
-  "deps_in": [
-    "README.md",
-    "HUB.codex.md",
-    "GUARDRAILS.md"
-  ],
-  "deps_out": [
-    "RUNBOOK.md",
-    "EVALUATION.md",
-    "CHANGELOG.md"
-  ],
   "risks": [
     "再発防止タスクの完了が遅れると Canary 系の監視ギャップが残存する"
   ],
+  "role": "incident",
+  "summary": "2025-01-15 に発生した Canary 停止インシデントの影響、原因、復旧・是正アクションを記録した事後ログ。",
   "tests": [
     "手動: RUNBOOK/EVALUATION/CHANGELOG の更新内容とインシデント記録の整合を確認"
   ]
