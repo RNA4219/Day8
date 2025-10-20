@@ -1,8 +1,13 @@
 {
-  "deps_in": [],
+  "deps_in": [
+    "workflow-cookbook/CHANGELOG.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md"
+  ],
   "deps_out": [],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "governance/policy.yaml",
+  "id": "workflow-cookbook/governance/policy.yaml",
   "public_api": [],
   "risks": [],
   "role": "governance",

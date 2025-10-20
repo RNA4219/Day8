@@ -1,8 +1,10 @@
 {
-  "deps_in": [],
+  "deps_in": [
+    "workflow-cookbook/HUB.codex.md"
+  ],
   "deps_out": [],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "SECURITY.md",
+  "id": "workflow-cookbook/SECURITY.md",
   "public_api": [],
   "risks": [],
   "role": "security",

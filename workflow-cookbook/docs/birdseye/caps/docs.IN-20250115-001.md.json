@@ -1,8 +1,19 @@
 {
-  "deps_in": [],
-  "deps_out": [],
+  "deps_in": [
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/docs/INCIDENT_TEMPLATE.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/CHANGELOG.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/RUNBOOK.md"
+  ],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "docs/IN-20250115-001.md",
+  "id": "workflow-cookbook/docs/IN-20250115-001.md",
   "public_api": [],
   "risks": [
     "再発防止タスクの完了が遅れると Canary 系の監視ギャップが残存する"

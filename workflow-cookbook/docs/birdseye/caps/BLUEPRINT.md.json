@@ -1,8 +1,12 @@
 {
-  "deps_in": [],
+  "deps_in": [
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md"
+  ],
   "deps_out": [],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "BLUEPRINT.md",
+  "id": "workflow-cookbook/BLUEPRINT.md",
   "public_api": [],
   "risks": [],
   "role": "requirements",

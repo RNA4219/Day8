@@ -10,11 +10,13 @@ def test_birdseye_index_nodes_exist() -> None:
 
     index_data = json.loads(index_path.read_text(encoding="utf-8"))
 
-    missing_nodes = [
-        node_id
-        for node_id in index_data["nodes"].keys()
-        if not (repo_root / node_id).exists()
-    ]
+    missing_nodes = []
+    for node_id in index_data["nodes"].keys():
+        node_path = repo_root / node_id
+        if not node_path.exists():
+            node_path = repo_root.parent / node_id
+        if not node_path.exists():
+            missing_nodes.append(node_id)
 
     assert not missing_nodes, (
         "docs/birdseye/index.json に記載されたファイルが存在しません: "
