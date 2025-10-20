@@ -1,0 +1,37 @@
+{
+  "deps": [
+    "in::workflow-cookbook/scripts/analyze.py",
+    "out::workflow-cookbook/reports/today.md",
+    "out::workflow-cookbook/reports/issue_suggestions.md"
+  ],
+  "deps_in": [
+    "workflow-cookbook/scripts/analyze.py"
+  ],
+  "deps_out": [
+    "workflow-cookbook/reports/today.md",
+    "workflow-cookbook/reports/issue_suggestions.md"
+  ],
+  "generated_at": "2025-02-16T00:00:00Z",
+  "id": "workflow-cookbook/logs/test.jsonl",
+  "maintenance": {
+    "refresh": "CIのテストログ形式が変わったらサンプルレコードを更新。",
+    "tooling": [
+      "python workflow-cookbook/scripts/analyze.py"
+    ]
+  },
+  "risks": [
+    "ログ構造が壊れると解析結果が欠落する"
+  ],
+  "role": [
+    "core::ci-log",
+    "orbit::reflection-input"
+  ],
+  "summary": [
+    "core::CIテスト実行の結果をJSONL形式で1行1ケース保存。",
+    "orbit::pass/failやduration_msを保持し分析スクリプトが集計。",
+    "orbit::サンプルログとして解析パイプラインの動作確認に利用。"
+  ],
+  "tests": [
+    "check::JSONLを jq などでパースできるか確認"
+  ]
+}
