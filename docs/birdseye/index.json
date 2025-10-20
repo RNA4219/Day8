@@ -95,6 +95,11 @@
       "role": "visualization",
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
       "mtime": "2025-10-20T10:30:00Z"
+    },
+    "workflow-cookbook/SECURITY.md": {
+      "role": "security",
+      "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
+      "mtime": "2025-10-20T10:30:00Z"
     }
   },
   "edges": [
@@ -244,6 +249,14 @@
     ],
     [
       "workflow-cookbook/GUARDRAILS.md",
+      "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
+      "workflow-cookbook/GUARDRAILS.md"
+    ],
+    [
+      "workflow-cookbook/SECURITY.md",
       "workflow-cookbook/SAFETY.md"
     ]
   ]
