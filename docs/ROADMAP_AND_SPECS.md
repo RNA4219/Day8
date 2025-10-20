@@ -50,7 +50,7 @@
 
 ## 3. ロードマップ
 
-1. <a id="roadmap-step1"></a>**索引・基準整備** — Guardrails フローでの差分承認（[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) 更新) 直後、同一 PR のレビュー完了時点で差分検知を行い、本ページと [docs/day8/spec](day8/spec/) を照合する。Katamari 版の索引（[workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md)）との差異を毎スプリントで解消し、ガバナンス更新（[workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml)）と併せて Birdseye 更新のハンドオフを確認する。差分は [docs/birdseye/index.json](birdseye/index.json) にも反映する。Guardrails を更新したら、Step1 の一部として Birdseye 反映 4 ステップを再実行し、索引と可視化の整合を確保する。
+1. <a id="roadmap-step1"></a>**索引・基準整備** — Guardrails フローでの差分承認（[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) 更新) 直後、同一 PR のレビュー完了時点で差分検知を行い、本ページと [docs/day8/spec](day8/spec/) を照合する。Katamari 版の索引（[workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md)）との差異を毎スプリントで解消し、ガバナンス更新（[workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml)）と併せて Birdseye 更新のハンドオフを確認する。差分は [docs/birdseye/index.json](birdseye/index.json) にも反映する。Guardrails を更新したら、Step1 の一部として Birdseye 反映 4 ステップを再実行し、索引と可視化の整合を確保する。運用手順は [docs/birdseye/README.md](birdseye/README.md) に従い、必ず「index → caps → hot」の順で更新し `generated_at` を同期させる。
 2. **自動化ゲートの維持** — `tools/` / `scripts/` の CI エントリポイントを見直し、[workflow-cookbook/scripts/run_ci_tests.py](../workflow-cookbook/scripts/run_ci_tests.py) で実行される mypy / ruff / pytest / node:test の整合を保証。チェックリスト更新時は [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) を同時改訂する。
 3. **実装・検証のアップデート** — [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) に基づき実装やテストの差分をまとめ、[docs/day8/examples/10_examples.md](day8/examples/10_examples.md)・[docs/day8/guides/07_contributing.md](day8/guides/07_contributing.md) を更新。Katamari の [workflow-cookbook/CHANGELOG.md](../workflow-cookbook/CHANGELOG.md) に成果を同期する。
 4. **リリース・承認フロー** — フェーズ完了ごとに [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) と [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) を突き合わせ、[workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) の承認記録を更新。例外は [docs/safety.md](safety.md) の安全審査に連携。
@@ -67,7 +67,7 @@
 >
 > 参照チェック（PR 本文に記載）:
 > - Guardrails 文書群 — [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) / [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) / [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) / [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md)
-> - Birdseye 連携 — [docs/birdseye/index.json](birdseye/index.json)
+> - Birdseye 連携 — [docs/birdseye/README.md](birdseye/README.md)（更新順序と `generated_at` 同期の必須手順を参照） / [docs/birdseye/index.json](birdseye/index.json)
 
 ## 4. 参照クイックリンク
 
@@ -81,7 +81,7 @@
   1. **ノード追加** — [docs/birdseye/index.json](birdseye/index.json) に該当エントリを追加・更新し、`mtime` を差分検知時刻へ合わせる。
   2. **Capsule 更新** — `docs/birdseye/caps/` 配下の対象 Capsule を差分内容へ反映し、役割・保守手順を同期させる。
   3. **hot.json 更新** — [docs/birdseye/hot.json](birdseye/hot.json) の `reason` を最新フローへ揃え、重点参照ポイントを再評価する。
-  4. **generated_at 揃え** — `index.json` / `hot.json` / 対象 Capsule の `generated_at` を再発行時刻へ更新し、Birdseye 再生成の履歴を同期する。
+  4. **generated_at 揃え** — `index.json` / `hot.json` 双方の `generated_at` を同一値へ更新し、Birdseye 再生成の履歴を同期する。
 
 ## ライセンス
 
