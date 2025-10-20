@@ -2,7 +2,7 @@
 intent_id: INT-001
 owner: your-handle
 status: active   # draft|active|deprecated
-last_reviewed_at: 2025-10-14
+last_reviewed_at: 2025-10-20
 next_review_due: 2025-11-14
 ---
 
@@ -15,7 +15,7 @@ next_review_due: 2025-11-14
 
 ## Security Review Checklist
 
-リリース前・重大変更時のセキュリティレビューでは、以下のチェックリストをKatamariのガイドに従って確認する。
+リリース前・重大変更時のセキュリティレビューでは、以下のチェックリストのガイドに従って確認する。
 
 - [ ] Secrets 管理: 平文Secretsの混入がなく、Vault等で権限分離とローテーションが実施されている。
 - [ ] CORS 制限: 本番で許可するオリジンを明示し、ワイルドカード許可や不要なヘッダー開放がない。
