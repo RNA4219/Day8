@@ -3,7 +3,7 @@
     "README.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-20T13:50:22Z",
+  "generated_at": "2025-10-20T19:33:35Z",
   "id": "scripts/",
   "maintenance": {
     "refresh": "スクリプトを追加・更新したら Birdseye カプセルを更新し、利用手順の乖離を防ぐ。",
