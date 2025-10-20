@@ -8,4 +8,4 @@
 ## タスク化（衝突回避）
 - タスクは独立性が保てる粒度まで分割し、責務の重複（コンフリクト）を避ける。
 - 変更は小さく・短時間で終わるブランチとして切り、早めの rebase で常に最新に追従する。
-- リスクや重なりがある場合は **Task Seeds**（ガイド: [`docs/TASKS.md`](../../TASKS.md) / 保存先: `docs/seeds/TASK.<slug>-YYYY-MM-DD.md`）に記載。
+- リスクや重なりがある場合は **Task Seeds**（ガイド: [`docs/TASKS.md`](../../TASKS.md) / 保存先: `docs/seeds/TASK.<slug>-YYYY-MM-DD.md`）を作成し、Katamari テンプレートの「背景/手順/検証ログ/フォローアップ」各セクションを埋めてから作業を開始する。
