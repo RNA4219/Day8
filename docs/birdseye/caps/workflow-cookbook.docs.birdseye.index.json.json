@@ -1,18 +1,37 @@
 {
   "id": "workflow-cookbook/docs/birdseye/index.json",
-  "role": ["core::visualization-hub","orbit::catalog-sync"],
-  "summary": [
-    "core::Workflow-cookbook 側の Birdseye ノード構造とホットスポットを俯瞰し、Day8 からの参照点を一望できる可視化インデックス。",
-    "orbit::README.md → workflow-cookbook ドメイン資料への橋渡しを担い、双方の Birdseye 更新手順を同期させる。",
-    "orbit::Cookbook 内のガードレール・運用・評価資料をまとめて辿れる導線を提供する。"
-  ],
-  "deps": ["in::README.md"],
-  "deps_out": [],
-  "deps_in": ["README.md"],
-  "maintenance": {
-    "refresh": "workflow-cookbook 側 Birdseye 更新時に README.md エッジと同期し、caps/hot/index のタイムスタンプを同一に揃える。",
-    "tooling": ["python workflow-cookbook/tools/codemap/update.py --targets workflow-cookbook/docs/birdseye/index.json"]
-  },
-  "risks": ["Workflow-cookbook 側の Birdseye が古いと Day8 の索引と不整合が生じる"],
-  "tests": ["check::エッジ先ノードの存在検証をローカルスクリプトで実行"]
+  "role": "visualization",
+  "katamari": {
+    "purpose": [
+      "core::Workflow-cookbook 側 Birdseye のノード/エッジ現況を即座に取得し、Day8 ルート Birdseye との差分を可視化する。",
+      "orbit::README.md から Cookbook ドメイン資料へ橋渡しし、双方向の索引同期を最短経路で行う。",
+      "orbit::Guardrails/Runbook/Evaluation など主要運用文書への導線を維持し、LLM の探索コストを一定に保つ。"
+    ],
+    "dependencies": {
+      "inputs": [
+        "README.md",
+        "docs/ROADMAP_AND_SPECS.md",
+        "workflow-cookbook/GUARDRAILS.md"
+      ],
+      "outputs": [
+        "docs/birdseye/index.json",
+        "docs/birdseye/hot.json"
+      ],
+      "mirrors": [
+        "workflow-cookbook/docs/birdseye/index.json"
+      ]
+    },
+    "maintenance": {
+      "cadence": "workflow-cookbook 側 Birdseye 更新または Guardrails 差分検知時（目安: 1 スプリント以内）",
+      "triggers": [
+        "workflow-cookbook/docs/birdseye/index.json の generated_at 更新",
+        "README.md / docs/ROADMAP_AND_SPECS.md で Cookbook 連携差分を検出"
+      ],
+      "steps": [
+        "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps を実行し、Day8 Birdseye とホットリストの generated_at を揃える。",
+        "Cookbook 側の新規ノード/エッジを確認し、必要なカプセルを Katamari 形式で追記・更新する。",
+        "README.md の Birdseye エッジが最新であることを確認し、差分をコミットに含める。"
+      ]
+    }
+  }
 }

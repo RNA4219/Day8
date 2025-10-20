@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-10-20T12:00:00Z",
+  "generated_at": "2025-10-20T10:30:00Z",
   "nodes": {
     "README.md": {
       "role": "overview",
@@ -94,11 +94,6 @@
     "workflow-cookbook/docs/birdseye/index.json": {
       "role": "visualization",
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
-      "mtime": "2025-10-20T10:00:00Z"
-    },
-    "workflow-cookbook/SAFETY.md": {
-      "role": "safety",
-      "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
       "mtime": "2025-10-20T10:30:00Z"
     }
   },
