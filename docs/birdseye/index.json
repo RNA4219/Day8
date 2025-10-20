@@ -38,11 +38,19 @@
     ],
     [
       "docs/README.md",
+      "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/README.md",
       "docs/day8/README.md"
     ],
     [
       "docs/README.md",
       "docs/safety.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/UPSTREAM.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -77,6 +85,10 @@
       "docs/seeds/README.md"
     ],
     [
+      "docs/UPSTREAM.md",
+      "docs/UPSTREAM_WEEKLY_LOG.md"
+    ],
+    [
       "docs/safety.md",
       "workflow-cookbook/SAFETY.md"
     ],
@@ -85,12 +97,24 @@
       "workflow-cookbook/RUNBOOK.md"
     ],
     [
+      "workflow-cookbook/CHANGELOG.md",
+      "workflow-cookbook/governance/policy.yaml"
+    ],
+    [
       "workflow-cookbook/CHECKLISTS.md",
       "workflow-cookbook/TASK.codex.md"
     ],
     [
       "workflow-cookbook/EVALUATION.md",
       "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/EVALUATION.md",
+      "workflow-cookbook/governance/policy.yaml"
+    ],
+    [
+      "workflow-cookbook/EVALUATION.md",
+      "workflow-cookbook/governance/prioritization.yaml"
     ],
     [
       "workflow-cookbook/GUARDRAILS.md",
@@ -153,6 +177,22 @@
       "workflow-cookbook/TASK.codex.md"
     ],
     [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/governance/policy.yaml"
+    ],
+    [
+      "workflow-cookbook/HUB.codex.md",
+      "workflow-cookbook/governance/prioritization.yaml"
+    ],
+    [
+      "workflow-cookbook/README.md",
+      "workflow-cookbook/governance/policy.yaml"
+    ],
+    [
+      "workflow-cookbook/README.md",
+      "workflow-cookbook/governance/prioritization.yaml"
+    ],
+    [
       "workflow-cookbook/RUNBOOK.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
@@ -205,19 +245,23 @@
       "workflow-cookbook/tools/"
     ],
     [
-      "docs/README.md",
-      "docs/UPSTREAM.md"
+      "workflow-cookbook/TASK.codex.md",
+      "workflow-cookbook/governance/prioritization.yaml"
     ],
     [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/UPSTREAM.md"
+      "workflow-cookbook/governance/prioritization.yaml",
+      "workflow-cookbook/EVALUATION.md"
     ],
     [
-      "docs/UPSTREAM.md",
-      "docs/UPSTREAM_WEEKLY_LOG.md"
+      "workflow-cookbook/governance/prioritization.yaml",
+      "workflow-cookbook/README.md"
+    ],
+    [
+      "workflow-cookbook/governance/prioritization.yaml",
+      "workflow-cookbook/TASK.codex.md"
     ]
   ],
-  "generated_at": "2025-02-15T10:00:00Z",
+  "generated_at": "2025-10-20T20:01:13Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -243,6 +287,16 @@
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
       "mtime": "2025-01-15T00:00:00Z",
       "role": "tasks"
+    },
+    "docs/UPSTREAM.md": {
+      "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
+      "mtime": "2025-02-15T10:00:00Z",
+      "role": "operations"
+    },
+    "docs/UPSTREAM_WEEKLY_LOG.md": {
+      "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
+      "mtime": "2025-02-15T10:00:00Z",
+      "role": "log"
     },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
@@ -319,6 +373,16 @@
       "mtime": "2025-10-20T10:30:00Z",
       "role": "visualization"
     },
+    "workflow-cookbook/governance/policy.yaml": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.governance.policy.yaml.json",
+      "mtime": "2025-10-14T00:00:00Z",
+      "role": "governance"
+    },
+    "workflow-cookbook/governance/prioritization.yaml": {
+      "caps": "docs/birdseye/caps/workflow-cookbook.governance.prioritization.yaml.json",
+      "mtime": "2025-10-16T12:30:00Z",
+      "role": "governance"
+    },
     "workflow-cookbook/scripts/": {
       "caps": "docs/birdseye/caps/workflow-cookbook.scripts.DIR.json",
       "mtime": "2025-01-17T00:00:00Z",
@@ -328,16 +392,6 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
       "mtime": "2025-01-17T00:00:00Z",
       "role": "automation"
-    },
-    "docs/UPSTREAM.md": {
-      "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
-      "mtime": "2025-02-15T10:00:00Z",
-      "role": "operations"
-    },
-    "docs/UPSTREAM_WEEKLY_LOG.md": {
-      "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
-      "mtime": "2025-02-15T10:00:00Z",
-      "role": "log"
     }
   }
 }

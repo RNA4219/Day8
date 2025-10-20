@@ -10,10 +10,13 @@
     "workflow-cookbook/CHECKLISTS.md",
     "workflow-cookbook/GUARDRAILS.md",
     "workflow-cookbook/HUB.codex.md",
-    "workflow-cookbook/SECURITY.md"
+    "workflow-cookbook/SECURITY.md",
+    "workflow-cookbook/governance/prioritization.yaml"
   ],
-  "deps_out": [],
-  "generated_at": "2025-10-20T19:33:35Z",
+  "deps_out": [
+    "workflow-cookbook/governance/prioritization.yaml"
+  ],
+  "generated_at": "2025-10-20T20:01:13Z",
   "id": "workflow-cookbook/TASK.codex.md",
   "maintenance": {
     "refresh": "テンプレのゲート条件が変わったら関連チェックリスト/Runbookへ反映。",

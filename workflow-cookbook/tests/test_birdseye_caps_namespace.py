@@ -12,6 +12,23 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 INDEX_PATH = PROJECT_ROOT / "docs" / "birdseye" / "index.json"
+DOCS_INDEX_PATH = REPO_ROOT / "docs" / "birdseye" / "index.json"
+
+PRIORITIZATION_NODE = "workflow-cookbook/governance/prioritization.yaml"
+PRIORITIZATION_CAPS = REPO_ROOT / "docs" / "birdseye" / "caps" / (
+    "workflow-cookbook.governance.prioritization.yaml.json"
+)
+PRIORITIZATION_EXPECTED_INCOMING = [
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/TASK.codex.md",
+]
+PRIORITIZATION_EXPECTED_OUTGOING = [
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/TASK.codex.md",
+]
 
 
 @pytest.fixture(scope="module")
@@ -80,3 +97,45 @@ def test_caps_dependencies_match_index(
         deps_in = sorted(caps_data.get("deps_in", []))
         assert deps_out == outgoing.get(node, []), f"deps_out mismatch for {node}"
         assert deps_in == incoming.get(node, []), f"deps_in mismatch for {node}"
+
+
+def _load_docs_birdseye_index() -> dict:
+    with DOCS_INDEX_PATH.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _build_adjacency(index: dict) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    outgoing: dict[str, list[str]] = defaultdict(list)
+    incoming: dict[str, list[str]] = defaultdict(list)
+    for src, dst in index["edges"]:
+        outgoing[src].append(dst)
+        incoming[dst].append(src)
+    for mapping in (outgoing, incoming):
+        for key in mapping:
+            mapping[key].sort()
+    return outgoing, incoming
+
+
+def test_prioritization_node_registered() -> None:
+    index = _load_docs_birdseye_index()
+    assert PRIORITIZATION_NODE in index["nodes"], (
+        "prioritization node missing from docs/birdseye index"
+    )
+    meta = index["nodes"][PRIORITIZATION_NODE]
+    caps_path = REPO_ROOT / Path(meta["caps"])
+    assert caps_path == PRIORITIZATION_CAPS
+    assert caps_path.exists()
+    with caps_path.open("r", encoding="utf-8") as handle:
+        caps_data = json.load(handle)
+    assert caps_data["id"] == PRIORITIZATION_NODE
+
+
+def test_prioritization_edges() -> None:
+    index = _load_docs_birdseye_index()
+    outgoing, incoming = _build_adjacency(index)
+    assert incoming.get(PRIORITIZATION_NODE, []) == PRIORITIZATION_EXPECTED_INCOMING
+    assert outgoing.get(PRIORITIZATION_NODE, []) == PRIORITIZATION_EXPECTED_OUTGOING
+    with PRIORITIZATION_CAPS.open("r", encoding="utf-8") as handle:
+        caps_data = json.load(handle)
+    assert sorted(caps_data.get("deps_in", [])) == PRIORITIZATION_EXPECTED_INCOMING
+    assert sorted(caps_data.get("deps_out", [])) == PRIORITIZATION_EXPECTED_OUTGOING

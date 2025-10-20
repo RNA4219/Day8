@@ -1,0 +1,22 @@
+{
+  "deps_in": [
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/TASK.codex.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/TASK.codex.md"
+  ],
+  "generated_at": "2025-10-20T20:01:13Z",
+  "id": "workflow-cookbook/governance/prioritization.yaml",
+  "public_api": [],
+  "risks": [
+    "優先順位更新の遅延が運用上のボトルネックを招く"
+  ],
+  "role": "governance",
+  "summary": "重大度・影響・リソース制約を組み合わせて施策優先度を決定するための評価指標と審査フローを定義したガバナンス基準。",
+  "tests": []
+}

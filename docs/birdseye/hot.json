@@ -39,7 +39,12 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
       "id": "workflow-cookbook/RUNBOOK.md",
       "reason": "実運用手順・観測点・インシデント連携を定義し、現場で即参照される操作ガイド。"
+    },
+    {
+      "caps": "docs/birdseye/caps/workflow-cookbook.governance.prioritization.yaml.json",
+      "id": "workflow-cookbook/governance/prioritization.yaml",
+      "reason": "優先度基準と重み付けを即座に参照し、PRレビューでの判断揺れを抑える。"
     }
   ],
-  "generated_at": "2025-10-20T19:33:35Z"
+  "generated_at": "2025-10-20T20:01:13Z"
 }

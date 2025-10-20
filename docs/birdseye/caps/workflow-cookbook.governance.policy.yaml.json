@@ -1,0 +1,16 @@
+{
+  "deps_in": [
+    "workflow-cookbook/CHANGELOG.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-20T20:01:13Z",
+  "id": "workflow-cookbook/governance/policy.yaml",
+  "public_api": [],
+  "risks": [],
+  "role": "governance",
+  "summary": "自己改変禁止パス、ヒューマン承認境界、カナリア中止条件、SLO指標を規定するガバナンスポリシー。",
+  "tests": []
+}

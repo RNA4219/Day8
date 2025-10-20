@@ -12,12 +12,15 @@
     "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/RUNBOOK.md",
     "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/SECURITY.md"
+    "workflow-cookbook/SECURITY.md",
+    "workflow-cookbook/governance/prioritization.yaml"
   ],
   "deps_out": [
-    "workflow-cookbook/CHECKLISTS.md"
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/governance/policy.yaml",
+    "workflow-cookbook/governance/prioritization.yaml"
   ],
-  "generated_at": "2025-10-20T19:33:35Z",
+  "generated_at": "2025-10-20T20:01:13Z",
   "id": "workflow-cookbook/EVALUATION.md",
   "maintenance": {
     "refresh": "Acceptance Criteria変更時はCHECKLISTS/RUNBOOK/Task Seed雛形を更新。",
