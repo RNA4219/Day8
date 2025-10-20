@@ -198,13 +198,15 @@ def _update_target(index_path: Path, *, emit_index: bool, emit_caps: bool, dry_r
     if edges_changed:
         index_payload_for_write["edges"] = normalised_edges
 
-    if emit_index and (edges_changed or index_payload_for_write.get("generated_at") != existing_timestamp):
+    index_written = False
+    if emit_index:
         timestamp_for_index = _iso_utc_now()
         index_payload_for_write["generated_at"] = timestamp_for_index
-        if _write_json_if_changed(index_path, index_payload_for_write, dry_run=dry_run):
+        index_written = _write_json_if_changed(index_path, index_payload_for_write, dry_run=dry_run)
+        if index_written:
             _update_hot_timestamp(index_path.parent / "hot.json", timestamp_for_index, dry_run=dry_run)
-    elif emit_index:
-        timestamp_for_index = existing_timestamp
+        else:
+            timestamp_for_index = existing_timestamp
 
     if emit_caps:
         caps_dir = index_path.parent / "caps"
