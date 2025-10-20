@@ -15,6 +15,8 @@
 | [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | RUNBOOK に定義した手順が満たすべき評価指標と計測方法を整備する | Runbook を改訂した直後や品質ゲートの更新判断時 |
 | [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) | RUNBOOK のアクションをレビューフローに合わせた実行チェックへブレークダウンする | Evaluation の結果を反映し、運用・レビュー実行前に順序を確認するとき |
 | [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md) | 実行タスクを分解し、Day8 の実装・テスト項目へ落とし込む | Checklists を踏まえて具体的なタスク化や Issue 起票時 |
+| [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | セキュリティ例外や脅威対応の承認プロセスと責務を定義する | Task を起票し、リスク緩和策や例外申請を組み込むとき |
+| [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | 倫理・安全配慮の判断基準とハンドリング動線を明文化する | Security の結論を踏まえて人・社会影響の最終確認をするとき |
 
 ### Guardrails 文書概要
 
@@ -25,8 +27,10 @@
 - [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md): RUNBOOK の更新内容が満たすべき評価指標と測定プロセスを整理し、品質ゲートの更新や指標見直し時に参照する。
 - [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md): RUNBOOK・EVALUATION の結果をチェック項目へ展開し、品質ゲートを適用するレビュー・運用の直前に順序と抜け漏れを点検する。
 - [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md): Guardrails で確定した作業を実装タスクに分解し、Checklists の反映後に Issue 作成やスプリント計画時へ活用する。
+- [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md): タスク化した変更に潜むリスク対応や例外承認のルールを確認し、セキュリティ緩和策を手順へ織り込む。
+- [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md): Security で整理したリスクのうち倫理・安全面の追加確認が必要な項目を洗い出し、最終判断のガードを適用する。
 
-上記の流れで HUB → Guardrails → Blueprint → Runbook → Evaluation → Checklists → Task の順に確認したら、本節の索引表と「## 2. 実装モジュールと対応仕様」へ進み、Day8 側の更新対象とトレーサビリティを確定させる。
+上記の流れで HUB → Guardrails → Blueprint → Runbook → Evaluation → Checklists → Task → Security → Safety の順に確認したら、本節の索引表と「## 2. 実装モジュールと対応仕様」へ進み、Day8 側の更新対象とトレーサビリティを確定させる。
 
 | 種別 | 主な用途 | Day8 リポジトリ | workflow-cookbook | 備考 |
 | --- | --- | --- | --- | --- |
@@ -34,8 +38,8 @@
 | 仕様 | 画面・ユースケースの確定版 | [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) | [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | HUB の自動タスク分解と整合させる |
 | 設計 | アーキテクチャと責務分担 | [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) | [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) | 設計判断を Guardrails の原則に沿って記録 |
 | 運用・品質 | リリース手順と品質ゲート | [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | 承認フローと計測指標を同期 |
-| セキュリティ | 脅威モデリングと権限設計 | [docs/day8/security/05_security.md](day8/security/05_security.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | 例外運用は SECURITY.md に従ってエスカレーション |
-| 安全性レビュー | 倫理・安全配慮の基準 | [docs/safety.md](safety.md) | [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | Day8 特有の追加ガードを明記 |
+| セキュリティ | 脅威モデリングと権限設計 | [docs/day8/security/05_security.md](day8/security/05_security.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | 例外申請・緩和策は SECURITY.md の承認フローに従う |
+| 安全性レビュー | 倫理・安全配慮の基準 | [docs/safety.md](safety.md) | [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | SECURITY の結論を踏まえ追加配慮を SAFETY.md で確定 |
 | ガバナンス | 優先度・承認ルール | [governance/policy.yaml](../governance/policy.yaml) | [workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) / [workflow-cookbook/governance/prioritization.yaml](../workflow-cookbook/governance/prioritization.yaml) | Katamari ガバナンスに倣い意思決定を記録 |
 
 ## 2. 実装モジュールと対応仕様
@@ -66,7 +70,7 @@
 > Guardrails 群を更新した場合は、必ず本 ROADMAP（`docs/ROADMAP_AND_SPECS.md`）も同じ PR で同期し、差分根拠を併記すること。
 >
 > 参照チェック（PR 本文に記載）:
-> - Guardrails 文書群 — [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) / [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) / [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) / [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md)
+> - Guardrails 文書群 — [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) / [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) / [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) / [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md) / [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) / [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md)
 > - Birdseye 連携 — [docs/birdseye/README.md](birdseye/README.md)（更新順序と `generated_at` 同期の必須手順を参照） / [docs/birdseye/index.json](birdseye/index.json)
 
 ## 4. 参照クイックリンク
