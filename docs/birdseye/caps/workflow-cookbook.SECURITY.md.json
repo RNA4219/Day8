@@ -1,6 +1,9 @@
 {
   "id": "workflow-cookbook/SECURITY.md",
-  "role": ["core::security-policy", "orbit::guardrail-extension"],
+  "role": [
+    "core::security-policy",
+    "orbit::guardrail-extension"
+  ],
   "katamari": {
     "purpose": [
       "core::Day8/Workflow-cookbook 全体で共有するセキュリティ要件・禁止事項・連絡経路を集約する。",
@@ -36,5 +39,6 @@
       "check::Guardrails・Safety・Runbook のセキュリティ要件と齟齬がないかレビュー",
       "check::CI/ツールの権限設定と SECURITY.md の記述が一致するか確認"
     ]
-  }
+  },
+  "generated_at": "2025-10-21T10:00:00Z"
 }
