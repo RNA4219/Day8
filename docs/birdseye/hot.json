@@ -14,7 +14,7 @@
     {
       "id": "workflow-cookbook/SAFETY.md",
       "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
-      "reason": "Day8 安全審査の承認経路・例外手順・Birdseye 同期要件を 1 ページで確認できる。"
+      "reason": "Day8 安全審査の承認経路・例外手順・Birdseye 同期要件を 1 ページで確認し、運用判断に必要なエスカレーション基準を即座に引き出せる中核資料。"
     },
     {
       "id": "workflow-cookbook/GUARDRAILS.md",
