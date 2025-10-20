@@ -195,9 +195,21 @@
     [
       "workflow-cookbook/SECURITY.md",
       "workflow-cookbook/tools/"
+    ],
+    [
+      "docs/README.md",
+      "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/UPSTREAM_WEEKLY_LOG.md"
     ]
   ],
-  "generated_at": "2025-10-20T13:50:22Z",
+  "generated_at": "2025-02-15T10:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -298,6 +310,16 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
       "mtime": "2025-01-17T00:00:00Z",
       "role": "automation"
+    },
+    "docs/UPSTREAM.md": {
+      "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
+      "mtime": "2025-02-15T10:00:00Z",
+      "role": "operations"
+    },
+    "docs/UPSTREAM_WEEKLY_LOG.md": {
+      "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
+      "mtime": "2025-02-15T10:00:00Z",
+      "role": "log"
     }
   }
 }
