@@ -1,6 +1,9 @@
 {
   "id": "workflow-cookbook/GUARDRAILS.md",
-  "role": ["core::guardrail-hub","orbit::policy-anchor"],
+  "role": [
+    "core::guardrail-hub",
+    "orbit::policy-anchor"
+  ],
   "summary": [
     "core::リポジトリ運用の原則・例外ポリシー・ゲート順を定義する最上位ガードライン。",
     "orbit::Blueprint/Runbook/Evaluation/Checklists/Task Seedの実装判断を束ねる。",
@@ -43,5 +46,6 @@
   ],
   "tests": [
     "check::Lint/Type/Test順と例外条件が各運用資料と同期しているか確認"
-  ]
+  ],
+  "generated_at": "2025-10-21T10:00:00Z"
 }

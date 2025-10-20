@@ -19,5 +19,6 @@
   "risks": [
     "CI 補助スクリプトが更新漏れだと Cookbook の検証フローが破綻する"
   ],
-  "tests": []
+  "tests": [],
+  "generated_at": "2025-10-21T10:00:00Z"
 }
