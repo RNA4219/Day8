@@ -1,8 +1,17 @@
 {
-  "deps_in": [],
-  "deps_out": [],
+  "deps_in": [
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/docs/IN-20250115-001.md",
+    "workflow-cookbook/docs/INCIDENT_TEMPLATE.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/docs/IN-20250115-001.md"
+  ],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "RUNBOOK.md",
+  "id": "workflow-cookbook/RUNBOOK.md",
   "public_api": [],
   "risks": [],
   "role": "operations",

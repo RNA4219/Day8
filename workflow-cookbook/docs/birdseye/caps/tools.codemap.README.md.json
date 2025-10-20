@@ -1,8 +1,16 @@
 {
-  "deps_in": [],
-  "deps_out": [],
+  "deps_in": [
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
+    "workflow-cookbook/docs/birdseye/index.json",
+    "workflow-cookbook/tools/codemap/update.py"
+  ],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "tools/codemap/README.md",
+  "id": "workflow-cookbook/tools/codemap/README.md",
   "public_api": [],
   "risks": [
     "ドキュメント未更新だと codemap 実行手順が陳腐化し運用事故につながる"

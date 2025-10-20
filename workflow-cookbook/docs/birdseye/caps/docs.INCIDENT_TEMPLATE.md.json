@@ -1,8 +1,15 @@
 {
-  "deps_in": [],
-  "deps_out": [],
+  "deps_in": [
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/docs/IN-20250115-001.md"
+  ],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "docs/INCIDENT_TEMPLATE.md",
+  "id": "workflow-cookbook/docs/INCIDENT_TEMPLATE.md",
   "public_api": [],
   "risks": [],
   "role": "template",

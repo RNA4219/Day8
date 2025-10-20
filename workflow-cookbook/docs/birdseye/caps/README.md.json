@@ -1,8 +1,27 @@
 {
-  "deps_in": [],
-  "deps_out": [],
+  "deps_in": [
+    "workflow-cookbook/CHANGELOG.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/governance/prioritization.yaml"
+  ],
+  "deps_out": [
+    "workflow-cookbook/BLUEPRINT.md",
+    "workflow-cookbook/CHANGELOG.md",
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/TASK.codex.md",
+    "workflow-cookbook/docs/IN-20250115-001.md",
+    "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
+    "workflow-cookbook/docs/birdseye/index.json",
+    "workflow-cookbook/governance/policy.yaml",
+    "workflow-cookbook/governance/prioritization.yaml",
+    "workflow-cookbook/tools/codemap/README.md"
+  ],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "README.md",
+  "id": "workflow-cookbook/README.md",
   "public_api": [],
   "risks": [],
   "role": "overview",

@@ -1,8 +1,22 @@
 {
-  "deps_in": [],
-  "deps_out": [],
+  "deps_in": [
+    "workflow-cookbook/CHANGELOG.md",
+    "workflow-cookbook/CHECKLISTS.md",
+    "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
+    "workflow-cookbook/README.md",
+    "workflow-cookbook/TASK.codex.md",
+    "workflow-cookbook/docs/IN-20250115-001.md",
+    "workflow-cookbook/governance/prioritization.yaml"
+  ],
+  "deps_out": [
+    "workflow-cookbook/RUNBOOK.md",
+    "workflow-cookbook/docs/IN-20250115-001.md",
+    "workflow-cookbook/governance/policy.yaml",
+    "workflow-cookbook/governance/prioritization.yaml"
+  ],
   "generated_at": "2025-10-20T13:50:22Z",
-  "id": "EVALUATION.md",
+  "id": "workflow-cookbook/EVALUATION.md",
   "public_api": [],
   "risks": [],
   "role": "quality",
