@@ -27,6 +27,8 @@ report:
   include_why_why: true
 ```
 
+> モデル差分を調査・反映する際は [Appendix F: プロバイダーマトリクス](../../addenda/F_Provider_Matrix.md) を参照し、`llm_model` の切替やフォールバック順序、ガードレール更新をガバナンスに記録する。
+
 ## GitHub Actions（要点）
 - `test.yml`: ログ生成→アーティファクト化
 - `reflection.yml`: `workflow_run` で `test` 連動。ログを解析してレポートコミット、必要なら Issue 草案起票。

@@ -46,6 +46,10 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/F_Provider_Matrix.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/H_Deploy_Guide.md"
     ],
     [
@@ -281,11 +285,15 @@
       "docs/Architecture_ASCII.md"
     ],
     [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/F_Provider_Matrix.md"
+    ],
+    [
       "docs/day8/quality/06_quality.md",
       "docs/addenda/I_Test_Cases.md"
     ]
   ],
-  "generated_at": "2025-10-22T09:00:00Z",
+  "generated_at": "2025-10-26T00:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -326,6 +334,11 @@
       "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
       "mtime": "2025-10-21T00:00:00Z",
       "role": "glossary"
+    },
+    "docs/addenda/F_Provider_Matrix.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.F_Provider_Matrix.md.json",
+      "mtime": "2025-10-26T00:00:00Z",
+      "role": "provider"
     },
     "docs/UPSTREAM.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
