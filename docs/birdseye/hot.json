@@ -16,6 +16,11 @@
       "reason": "Task Seed の作成・保守ルールと docs/seeds 配下への導線を示し、タスク運用を立ち上げる際の必読ハブとなる。"
     },
     {
+      "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
+      "id": "docs/addenda/L_Config_Reference.md",
+      "reason": "導入前に環境変数・設定ファイル・デバッグフラグを一度で確認でき、Appendix H や ops との整合チェックを即時に実行できる。"
+    },
+    {
       "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
       "id": "workflow-cookbook/SAFETY.md",
       "reason": "Day8 安全審査の承認経路・例外手順・Birdseye 同期要件を 1 ページで確認し、運用判断に必要なエスカレーション基準を即座に引き出せる中核資料。"
@@ -51,5 +56,5 @@
       "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
     }
   ],
-  "generated_at": "2025-10-25T12:00:00Z"
+  "generated_at": "2025-10-30T12:30:00Z"
 }
