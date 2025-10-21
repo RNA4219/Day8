@@ -1,0 +1,15 @@
+WBS ID,レベル,タスク,説明,マイルストーン,成果物,担当,依存関係,状況,備考
+1.0,0,M0 Collector ベースライン確立,JSONL 契約を Day8 ログ取り込みへ適用し、Collector から Reporter までの最短経路を確立する。,M0,JSONL 契約テストレポート / 再生成済み reports/today.md,Collector リード,docs/adr/0001-collector-analyzer-reporter-pipeline.md;docs/adr/0002-jsonl-event-contract.md,計画中,GitHub Actions への取り込みは `workflow-cookbook/tools/codemap/update.py` の検証後に実施。
+1.1,1,JSONL 契約バリデーション,`workflow-cookbook/logs/*.jsonl` をスキーマ検証し、破棄条件・通知フローを固める。,M0,スキーマ検証レポート,Collector,docs/day8/spec/01_requirements.md,着手済,CI の JSONL 解析ジョブにバリデータを組み込む。
+1.2,1,Reporter 再生成確認,既存の `reports/today.md` を再生成し、差分をハッシュ比較する。,M0,差分比較ログ,Reporter,1.1,未着手,差分は Appendix E の指標更新に限ることを確認。
+2.0,0,M1 可観測性と評価ライン整備,メトリクス収集とヘルスチェックを CI 上に配置し、Evaluator の閾値を運用へ接続する。,M1,Actions ワークフロー更新 / MetricsRegistry 設定,Ops リード,1.0;docs/addenda/M1_Metrics_Healthz_ADR.md,計画中,Birdseye index/caps/hot の同期を含めた CI 更新を同時実施。
+2.1,1,Evaluator 閾値チューニング,Appendix E を参照して BERTScore/ROUGE/ルール判定の閾値を現行ログに合わせる。,M1,閾値設定表,Quality,docs/addenda/E_Evaluator_Details.md,着手済,閾値変更は Release Checklist へ記録。
+2.2,1,MetricsRegistry 配線,`/healthz` とメトリクスの公開ルートを整備し、Actions アーティファクトに保存する。,M1,MetricsRegistry 設定 PR,Ops,2.1,未着手,CI の Secrets は Appendix G のマスク手順で点検。
+3.0,0,M2 propose-only ガバナンス統合,Proposer の Issue 草案生成と承認フロー整備を完了させる。,M2,docs/seeds/ 配下の Issue テンプレート群,Governance,2.0;docs/adr/0003-propose-only-governance.md,計画中,workflow-cookbook/governance/policy.yaml と整合させる。
+3.1,1,Issue テンプレート拡充,Task Seed の背景/手順/検証ログ/フォローアップを自動生成できるよう整備する。,M2,更新済み Task Seed テンプレート,Proposer,docs/TASKS.md,未着手,生成内容は propose-only を遵守し Draft PR を伴わないことを確認。
+3.2,1,承認フロー演習,ガバナンス優先度表と連携し、擬似案件で承認ステップをトレースする。,M2,承認ログ,Governance,workflow-cookbook/governance/policy.yaml,未着手,結果は UPSTREAM_WEEKLY_LOG.md に記録。
+4.0,0,M3 LLM Analyzer パイロット,LLM Analyzer の導入可否を評価し、コスト増加を ±5% 以内に抑制する。,M3,パイロットレポート,Analyzer,3.0;docs/addenda/D_Trim_Design.md,準備中,トリム設計の確認と Appendix F のプロバイダー制約レビューを同時実施。
+4.1,1,LLM 推論プロトタイプ,既存ヒューリスティックと比較し、LLM Analyzer の改善幅を測定する。,M3,比較検証ログ,Analyzer,docs/day8/spec/02_spec.md,未着手,評価ログは安全性レビューへ共有。
+4.2,1,コスト監視ライン,推論コストを Actions / メトリクスに追加し、±5% 超過時のエスカレーション手順を整える。,M3,コスト監視ダッシュボード,Ops,4.1,未着手,逸脱時は Task Seed を起票し、Release Checklist を更新。
+5.0,0,共通タスクシンク,スプリントレビューと計画策定時に WBS とロードマップの整合性を確認する定例を設ける。,支援,レビュー議事録 / 更新済み docs/day8_wbs.csv,PM,docs/ROADMAP_AND_SPECS.md;docs/README.md,計画中,レビュー実施後は Birdseye generated_at を揃え、参照リンクを最新化する。
+5.1,1,Birdseye メンテナンス,index/caps/hot の参照グラフが WBS と一致しているか確認する。,支援,更新済み Birdseye メタデータ,PM,5.0,未着手,`python workflow-cookbook/tools/codemap/update.py --emit index+caps` を利用可。
