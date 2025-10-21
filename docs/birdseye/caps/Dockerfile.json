@@ -1,0 +1,27 @@
+{
+  "deps_in": [
+    "docs/addenda/H_Deploy_Guide.md",
+    "docs/Release_Checklist.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/tests"
+  ],
+  "generated_at": "2025-03-07T00:00:00Z",
+  "id": "Dockerfile",
+  "maintenance": {
+    "refresh": "pytest 既定コマンドや依存解決手順が変わったら Appendix H と Release Checklist と併せて更新し、Docker build/run の検証結果を記録する。",
+    "tooling": [
+      "docker build -t day8 .",
+      "docker run --rm day8"
+    ]
+  },
+  "risks": [
+    "requirements-dev.txt のビルド依存が更新されると apt レイヤが不足しテストが失敗する",
+    "pytest コマンドの既定引数が変わると CI とローカル Docker 実行の結果が乖離する"
+  ],
+  "role": "build",
+  "summary": "python:3.11-slim ベースで Day8 CI と同じ pytest を既定 CMD として実行する検証用コンテナ定義。",
+  "tests": [
+    "check::docker run --rm day8 で pytest が成功するかを確認"
+  ]
+}

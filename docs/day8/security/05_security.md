@@ -1,5 +1,7 @@
 # セキュリティ & ガバナンス
 
+Day8 のセキュリティ審査は、速査チェックリストとしての [`docs/Security_Review_Checklist.md`](../../Security_Review_Checklist.md) と、本ドキュメントに記載した詳細フロー/例外承認手順の二層で運用します。個別のチェック結果は新チェックリストへ記録し、是正策やエスカレーションは本書・Appendix G・`docs/safety.md` で管理してください。
+
 ## ポリシー（例）
 ```yaml
 # governance/policy.yaml（例）

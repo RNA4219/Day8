@@ -14,7 +14,8 @@ Day8 のリリースは Katamari propose-only 方針に従い、全変更を PR 
 - [ ] `NOTICE` / `LICENSE` の同梱に影響する依存追加がないかチェックし、必要なら `docs/addenda/H_Deploy_Guide.md` の同梱手順を参照する。
 
 ## 3. CI & ドキュメント整合
-- [ ] GitHub Actions / ローカル CI の全ジョブ（`make check`, node:test, Docker ビルド）が成功したログを取得する。
+- [ ] `docker build -t day8 .` を実行し、`requirements-dev.txt` が正しく解決されることを確認。完了後に `docker run --rm day8` で pytest がローカル CI と同等に成功することを記録する。
+- [ ] GitHub Actions / ローカル CI の全ジョブ（mypy, ruff, pytest, node:test, Docker ビルド）が成功したログを取得する。
 - [ ] Birdseye を `python scripts/birdseye_refresh.py` で再生成し、`index.json` → `caps` → `hot.json` を含む全ファイルの `generated_at` を同一値へ揃える。
 - [ ] `python scripts/perf/collect_metrics.py --prom-url http://localhost:8000/metrics --chainlit-log workflow-cookbook/logs/chainlit.jsonl` を実行し、`day8_*` メトリクスが Prometheus / Chainlit 双方で更新されていることを確認する。
 - [ ] Birdseye で新規に追加したノード／エッジが `docs/README.md`、`docs/ROADMAP_AND_SPECS.md` から到達可能か確認する。

@@ -18,31 +18,14 @@ Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 
 
 ## Docker デプロイ
 
-Day8 のワークフローをコンテナ化する際は、Katamari 版のベースイメージ構成を流用しつつ Day8 固有のスクリプトとデータをコピーします。以下は最小構成のサンプルです。
+Day8 のワークフローをコンテナ化する際は、リポジトリ直下の `Dockerfile` を利用します。`python:3.11-slim` をベースに `requirements-dev.txt` をインストールしたうえで、Day8 リポジトリを `/opt/day8` にコピーし、CI 互換のデフォルトコマンドとして `pytest -q workflow-cookbook/tests` を実行します。
 
-```dockerfile
-# docs/addenda/H_Deploy_Guide.md Appendix H sample
-FROM python:3.11-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-WORKDIR /opt/day8
-
-# 依存定義（pip / node などが必要な場合は別レイヤへ分割）
-COPY workflow-cookbook/requirements.txt ./workflow-cookbook/requirements.txt
-RUN pip install --no-cache-dir -r workflow-cookbook/requirements.txt
-
-COPY docs ./docs
-COPY workflow-cookbook ./workflow-cookbook
-COPY scripts ./scripts
-
-# CI で利用する解析スクリプトをエントリポイントに登録
-ENTRYPOINT ["python", "workflow-cookbook/scripts/analyze.py", "--root", ".", "--emit", "report"]
-```
+### ビルドと検証手順
+1. ルートで `docker build -t day8 .` を実行し、`requirements-dev.txt` の依存が解決できることを確認します。ビルド時に追加の OS パッケージが必要な場合は `Dockerfile` の `apt-get` レイヤへ追記し、`pip install` レイヤを分割し直します。
+2. `docker run --rm day8` を実行し、Day8 CI と同じ `pytest -q workflow-cookbook/tests` が完走することを確認します。失敗した場合はテストログを収集し、Day8 CI の pytest ジョブと差分がないか確認してください。
 
 ### 運用メモ
-- 上記 Dockerfile は CI 内での検証を前提としているため、アプリケーションコードを含まない構成です。必要に応じて `COPY` するディレクトリを拡張し、`ENTRYPOINT` をサービス起動コマンドへ差し替えてください。
+- `Dockerfile` の `CMD` は pytest を既定としています。アプリケーション起動用途で利用する場合は override するか、`ENTRYPOINT`/`CMD` を適宜差し替えてください。
 - Day8 では `.dockerignore` に `docs/birdseye/` を残し、軽量なビルドコンテキストを維持します。Birdseye の再生成は CI 側で実施します。
 - コンテナイメージのタグは Git タグと同じ `day8-vYYYYMMDD` を採用し、GitHub Container Registry へ `ghcr.io/<org>/day8:<tag>` として公開します。
 

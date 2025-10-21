@@ -6,6 +6,10 @@
     ],
     [
       "README.md",
+      "CHANGELOG.md"
+    ],
+    [
+      "README.md",
       "docs/README.md"
     ],
     [
@@ -59,6 +63,38 @@
     [
       "docs/README.md",
       "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "workflow-cookbook/CHANGELOG.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/Security_Review_Checklist.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/day8/security/05_security.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "workflow-cookbook/SECURITY.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/safety.md"
     ],
     [
       "docs/README.md",
@@ -710,16 +746,12 @@
       "docs/adr/0007-proposal-priority-handshake.md"
     ],
     [
-      "INSTALL.md",
-      "requirements-dev.txt"
-    ],
-    [
       "docs/addenda/H_Deploy_Guide.md",
-      "requirements-dev.txt"
+      "Dockerfile"
     ],
     [
       "docs/Release_Checklist.md",
-      "requirements-dev.txt"
+      "Dockerfile"
     ]
   ],
   "generated_at": "2025-12-20T12:00:00Z",
@@ -728,6 +760,11 @@
       "caps": "docs/birdseye/caps/INSTALL.md.json",
       "mtime": "2025-12-01T00:00:00Z",
       "role": "setup"
+    },
+    "CHANGELOG.md": {
+      "caps": "docs/birdseye/caps/CHANGELOG.md.json",
+      "mtime": "2025-11-21T09:30:00Z",
+      "role": "changelog"
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
@@ -773,6 +810,11 @@
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
       "mtime": "2025-12-20T12:00:00Z",
       "role": "checklist"
+    },
+    "docs/Security_Review_Checklist.md": {
+      "caps": "docs/birdseye/caps/docs.Security_Review_Checklist.md.json",
+      "mtime": "2025-12-15T09:00:00Z",
+      "role": "security-checklist"
     },
     "docs/openapi/day8_openapi.yaml": {
       "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
@@ -1069,10 +1111,10 @@
       "mtime": "2025-11-06T12:00:00Z",
       "role": "adr"
     },
-    "requirements-dev.txt": {
-      "caps": "docs/birdseye/caps/requirements-dev.txt.json",
-      "mtime": "2025-12-01T00:00:00Z",
-      "role": "dependency"
+    "Dockerfile": {
+      "caps": "docs/birdseye/caps/Dockerfile.json",
+      "mtime": "2025-03-07T00:00:00Z",
+      "role": "build"
     }
   }
 }
