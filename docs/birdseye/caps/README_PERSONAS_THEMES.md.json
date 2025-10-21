@@ -1,0 +1,49 @@
+{
+  "deps": [
+    "in::README.md",
+    "in::docs/README.md",
+    "in::docs/addenda/B_UI_Mock.md",
+    "in::docs/addenda/C_Persona_Schema.md",
+    "in::docs/addenda/K_Accessibility_UX.md",
+    "out::docs/birdseye/index.json",
+    "out::themes/CATALOG.md",
+    "out::personas/README.md"
+  ],
+  "deps_in": [
+    "README.md",
+    "docs/README.md",
+    "docs/addenda/B_UI_Mock.md",
+    "docs/addenda/C_Persona_Schema.md",
+    "docs/addenda/K_Accessibility_UX.md"
+  ],
+  "deps_out": [
+    "docs/birdseye/index.json",
+    "themes/CATALOG.md",
+    "personas/README.md"
+  ],
+  "generated_at": "2025-11-12T09:30:00Z",
+  "id": "README_PERSONAS_THEMES.md",
+  "maintenance": {
+    "refresh": "テーマやペルソナを追加したら TOML 設定・Appendix B/C/K とのリンクを更新し、Birdseye index/hot/caps の generated_at を同期する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "TOML 設定と public/ 配置が同期されないと Chainlit Hosted Static でスタイル崩れが発生する",
+    "Appendix B/C の要件が欠落するとペルソナと UI の整合が取れずレビュー運用が停止する"
+  ],
+  "role": [
+    "core::theme-guide",
+    "orbit::persona-handbook"
+  ],
+  "summary": [
+    "core::Chainlit の theme_path / custom_css 設定を Day8 配布構成へまとめ、Katamari 互換の移植手順を提供する。",
+    "core::Appendix B/C/K との参照ルールと TODO を整理し、テーマ追加時のレビューフローを明文化する。",
+    "orbit::ペルソナ YAML 追加の導線と Birdseye 同期フローを共有し、差分検知と整合性を保つ。"
+  ],
+  "tests": [
+    "check::themes/CATALOG.md のテーマ一覧と TOML 設定が一致しているか確認",
+    "check::personas/README.md から本ガイドへのリンクが維持されているか確認"
+  ]
+}

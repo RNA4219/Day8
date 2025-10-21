@@ -1,0 +1,43 @@
+{
+  "deps": [
+    "in::README_PERSONAS_THEMES.md",
+    "in::docs/addenda/B_UI_Mock.md",
+    "in::docs/addenda/C_Persona_Schema.md",
+    "in::docs/addenda/K_Accessibility_UX.md",
+    "out::docs/birdseye/index.json"
+  ],
+  "deps_in": [
+    "README_PERSONAS_THEMES.md",
+    "docs/addenda/B_UI_Mock.md",
+    "docs/addenda/C_Persona_Schema.md",
+    "docs/addenda/K_Accessibility_UX.md"
+  ],
+  "deps_out": [
+    "docs/birdseye/index.json"
+  ],
+  "generated_at": "2025-11-12T09:30:00Z",
+  "id": "themes/CATALOG.md",
+  "maintenance": {
+    "refresh": "テーマを追加・削除したら配色表と Appendix 参照を更新し、README_PERSONAS_THEMES.md と同時に Birdseye を再同期する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "テーマ一覧と実ファイルが不整合になると Chainlit 側で選択不能なプリセットが発生する",
+    "アクセシビリティ要件の記載漏れがあると Appendix K 監査で検出される"
+  ],
+  "role": [
+    "core::theme-catalog",
+    "orbit::accessibility"
+  ],
+  "summary": [
+    "core::classic / mocha / highcontrast テーマの目的とアクセントカラーを整理し、Day8 ロゴカラーへ合わせた差分を明示する。",
+    "core::Chainlit theme_path / Hosted Static の適用順序を記録し、運用時のハンドオフを容易にする。",
+    "orbit::Appendix B/C/K と整合を取るための確認ポイントを提示する。"
+  ],
+  "tests": [
+    "check::themes ディレクトリに記載されたテーマファイルが全て表に含まれているか確認",
+    "check::README_PERSONAS_THEMES.md の手順と catalog の案内が矛盾していないか確認"
+  ]
+}

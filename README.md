@@ -31,6 +31,7 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 - `workflow-cookbook/reports/` 反省結果や Issue 提案レポートの出力先。
 - `workflow-cookbook/scripts/` ログ解析やレポート生成のユーティリティ。
 - `workflow-cookbook/` Day8 を他リポジトリへ導入する際のワークフロー例。
+- `themes/` Chainlit テーマパックと配布カタログ（[`README_PERSONAS_THEMES.md`](README_PERSONAS_THEMES.md) を参照）。
 
 ## ガバナンスと参加
 - コントリビューション手順は [`CONTRIBUTING.md`](CONTRIBUTING.md) を参照してください。

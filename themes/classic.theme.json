@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Chainlit/chainlit/main/schema/theme.schema.json",
+  "name": "day8-classic",
+  "description": "Katamari Classic をベースに Day8 ロゴカラー (#1F6FEB) へ合わせた標準テーマ",
+  "colors": {
+    "primary": "#1F6FEB",
+    "onPrimary": "#F8FAFC",
+    "secondary": "#0B132B",
+    "onSecondary": "#E2E8F0",
+    "background": "#0F172A",
+    "surface": "#111C33",
+    "border": "#1F2A44",
+    "inputBackground": "#172541",
+    "inputBorder": "#1F2A44",
+    "success": "#10B981",
+    "warning": "#FACC15",
+    "error": "#F87171",
+    "info": "#38BDF8",
+    "textPrimary": "#F8FAFC",
+    "textSecondary": "#CBD5F5"
+  },
+  "fonts": {
+    "body": "'Noto Sans JP', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    "code": "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+  },
+  "radii": {
+    "button": 10,
+    "surface": 18,
+    "input": 12
+  },
+  "shadows": {
+    "surface": "0 16px 40px rgba(4, 16, 40, 0.35)",
+    "button": "0 8px 24px rgba(31, 111, 235, 0.45)"
+  }
+}
