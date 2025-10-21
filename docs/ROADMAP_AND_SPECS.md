@@ -36,7 +36,7 @@
 | --- | --- | --- | --- | --- |
 | 要求 | ユーザー課題の把握とスコープ設定 | [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) | [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) | Katamari 側のブループリントとペアで更新 |
 | 仕様 | 画面・ユースケースの確定版 | [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) | [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | HUB の自動タスク分解と整合させる |
-| 設計 | アーキテクチャと責務分担 | [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) | [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) | 設計判断を Guardrails の原則に沿って記録 |
+| 設計 | アーキテクチャと責務分担 | [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) / [docs/Architecture_ASCII.md](Architecture_ASCII.md) | [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) | 設計判断を Guardrails の原則に沿って記録 |
 | 運用・品質 | リリース手順と品質ゲート | [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) / [docs/addenda/H_Deploy_Guide.md](addenda/H_Deploy_Guide.md) | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | 承認フローと計測指標を同期 |
 | セキュリティ | 脅威モデリングと権限設計 | [docs/day8/security/05_security.md](day8/security/05_security.md) / [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | Appendix G で Secrets/ログ/通信の運用ノートを同期し、例外申請は SECURITY.md の承認フローに従う |
 | 安全性レビュー | 倫理・安全配慮の基準 | [docs/safety.md](safety.md) | [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | Appendix G・SECURITY からのハンドオフを受け、フェイルセーフと Hot 更新手順を適用 |
@@ -83,6 +83,7 @@
 - [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md)
 - [ガバナンス方針](../workflow-cookbook/governance/policy.yaml)
 - [Birdseye フォールバック手順](BIRDSEYE.md)
+- [Day8 Architecture ASCII Map](Architecture_ASCII.md)
 - [Birdseye 反映 4 ステップ（ロードマップ Step1 の必須作業）](#roadmap-step1)
   1. **ノード追加** — [docs/birdseye/index.json](birdseye/index.json) に該当エントリを追加・更新し、`mtime` を差分検知時刻へ合わせる。
   2. **Capsule 更新** — `docs/birdseye/caps/` 配下の対象 Capsule を差分内容へ反映し、役割・保守手順を同期させる。
