@@ -36,3 +36,4 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 
 ## 付録
 - [Day8 用語集](addenda/A_Glossary.md) — ドキュメントレビューや新規タスク着手前に、Collector/Analyzer などの用語を素早く再確認するための参照先。
+- [プロバイダーマトリクス（Appendix F）](addenda/F_Provider_Matrix.md) — モデル差分調査やフォールバック順序の確認時に、Day8 が許容するプロバイダー構成と運用ガードを参照。

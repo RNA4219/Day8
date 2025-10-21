@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 
 
@@ -21,6 +22,32 @@ def test_birdseye_index_nodes_exist() -> None:
     assert not missing_nodes, (
         "docs/birdseye/index.json に記載されたファイルが存在しません: "
         + ", ".join(sorted(missing_nodes))
+    )
+
+
+def test_birdseye_nodes_are_unique() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    index_path = repo_root / "docs" / "birdseye" / "index.json"
+
+    index_pairs = json.loads(
+        index_path.read_text(encoding="utf-8"), object_pairs_hook=list
+    )
+
+    nodes_pairs = None
+    for key, value in index_pairs:
+        if key == "nodes":
+            nodes_pairs = value
+            break
+
+    assert nodes_pairs is not None, "docs/birdseye/index.json に nodes セクションがありません"
+
+    node_ids = [key for key, _ in nodes_pairs]
+    id_counts = Counter(node_ids)
+    duplicated_ids = sorted(node_id for node_id, count in id_counts.items() if count > 1)
+
+    assert not duplicated_ids, (
+        "docs/birdseye/index.json の nodes で重複 ID が見つかりました: "
+        + ", ".join(duplicated_ids)
     )
 
 
