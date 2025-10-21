@@ -1,0 +1,23 @@
+{
+  "deps_in": [
+    "README.md",
+    "INSTALL.md",
+    "docs/Release_Checklist.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-02-28T12:00:00Z",
+  "id": "Makefile",
+  "maintenance": {
+    "refresh": "Makefile を更新したら docs/birdseye/index.json とカプセルを同一コミットで再生成する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "make check の定義が CI と乖離するとローカル確認結果が信用できなくなる"
+  ],
+  "role": "build",
+  "summary": "lint・型・テストを束ねた make タスク群。Day8 のローカル検証に使用する。",
+  "tests": []
+}

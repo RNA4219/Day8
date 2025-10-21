@@ -30,6 +30,14 @@
     ],
     [
       "README.md",
+      "Makefile"
+    ],
+    [
+      "INSTALL.md",
+      "Makefile"
+    ],
+    [
+      "README.md",
       "workflow-cookbook/docs/birdseye/index.json"
     ],
     [
@@ -562,6 +570,10 @@
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
+      "docs/Release_Checklist.md",
+      "Makefile"
+    ],
+    [
       "docs/addenda/M_Versioning_Release.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
@@ -690,17 +702,22 @@
       "docs/adr/0007-proposal-priority-handshake.md"
     ]
   ],
-  "generated_at": "2025-11-12T09:30:00Z",
+  "generated_at": "2025-02-28T12:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "2025-02-28T12:00:00Z",
       "role": "setup"
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "2025-02-28T12:00:00Z",
       "role": "overview"
+    },
+    "Makefile": {
+      "caps": "docs/birdseye/caps/Makefile.json",
+      "mtime": "2025-02-28T12:00:00Z",
+      "role": "build"
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
@@ -734,7 +751,7 @@
     },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
-      "mtime": "2025-02-24T12:00:00Z",
+      "mtime": "2025-02-28T12:00:00Z",
       "role": "checklist"
     },
     "docs/openapi/day8_openapi.yaml": {
