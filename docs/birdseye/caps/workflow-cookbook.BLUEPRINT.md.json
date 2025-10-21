@@ -14,10 +14,10 @@
   "deps_out": [
     "workflow-cookbook/RUNBOOK.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "00001",
   "id": "workflow-cookbook/BLUEPRINT.md",
   "maintenance": {
-    "refresh": "課題や制約が変わったら RUNBOOK/EVALUATION の該当節も同時更新。",
+    "refresh": "SLO/フェイルセーフ値が変わったら RUNBOOK/EVALUATION/CHECKLISTS と Birdseye 索引を同一 PR で更新。",
     "tooling": [
       "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
@@ -30,9 +30,9 @@
     "orbit::problem-scope"
   ],
   "summary": [
-    "core::課題定義とスコープ/制約を整理する最上位方針。",
-    "orbit::I/O契約や最小フローを整備し後続設計へ橋渡し。",
-    "orbit::HUBやロードマップ、ガードレールからの要求トレース先。"
+    "core::Collector→Analyzer→Reporter→Proposer フローの目的・SLO・フェイルセーフを定義。",
+    "core::I/O契約とガードレールを RUNBOOK/EVALUATION へ橋渡しする。",
+    "orbit::Birdseye・ROADMAP_AND_SPECS 更新動線の起点。"
   ],
   "tests": [
     "check::BlueprintのProblem/Scope/Constraintsと関連資料の整合を確認"

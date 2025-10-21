@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | Day8 の変更要求を Katamari 側のイベントにマッピングし、必要な一次資料を抽出する | 新規課題が発生した直後に参照し、影響範囲を整理するとき |
 | [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) | 設計判断とレビュー基準を制約として明文化する | HUB の観測内容を踏まえ、設計方針を決めるタイミング |
-| [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) | プロセスの骨格と Day8 仕様との差分を可視化する | Guardrails を適用した後、要件と画面仕様を整合させるとき |
+| [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) | Collector→Analyzer→Reporter→Proposer のフロー/SLO/フェイルセーフを定義する | Guardrails を適用した後、要件と画面仕様・運用 SLO を整合させるとき |
 | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) | 運用手順と検証ステップを決め、Day8 側の ops/quality 文書と同期する | 実装プランが固まったら運用・品質更新前に確認するとき |
 | [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | RUNBOOK に定義した手順が満たすべき評価指標と計測方法を整備する | Runbook を改訂した直後や品質ゲートの更新判断時 |
 | [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) | RUNBOOK のアクションをレビューフローに合わせた実行チェックへブレークダウンする | Evaluation の結果を反映し、運用・レビュー実行前に順序を確認するとき |
@@ -22,7 +22,7 @@
 
 - [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md): 変更要求を Katamari の観測イベントへ対応付け、初動で必要な資料一覧を洗い出すときに使う。
 - [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md): HUB で得た課題を制約条件に落とし込み、設計判断やレビュー方針を確定したいタイミングで参照する。
-- [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md): Guardrails を踏まえた理想プロセスと Day8 差分を記録し、仕様・要件を整理する際に確認する。
+- [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md): Collector→Analyzer→Reporter→Proposer の流れと SLO/フェイルセーフを定義し、仕様・要件・運用の整合を取る。
 - [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md): BLUEPRINT に沿って運用手順を更新し、リリースや運用変更の作業前に参照する。
 - [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md): RUNBOOK の更新内容が満たすべき評価指標と測定プロセスを整理し、品質ゲートの更新や指標見直し時に参照する。
 - [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md): RUNBOOK・EVALUATION の結果をチェック項目へ展開し、品質ゲートを適用するレビュー・運用の直前に順序と抜け漏れを点検する。
@@ -40,7 +40,7 @@
 
 | 種別 | 主な用途 | Day8 リポジトリ | workflow-cookbook | 備考 |
 | --- | --- | --- | --- | --- |
-| 要求 | ユーザー課題の把握とスコープ設定 | [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) | [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) | Katamari 章立てを Day8 固有の固定事項/ユースケース/FR/NFR/データモデル/受入基準/マイルストーンへ翻訳し、Appendix G/J/K/M1 と Release Checklist を同時確認 |
+| 要求 | ユーザー課題の把握とスコープ設定 | [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) | [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) | Katamari 章立てでフロー/SLO/フェイルセーフを把握し、Day8 固有の固定事項/ユースケース/FR/NFR/データモデル/受入基準/マイルストーンへ翻訳。Appendix G/J/K/M1 と Release Checklist を同時確認 |
 | 仕様 | 画面・ユースケースの確定版 | [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) | [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | HUB の自動タスク分解と整合させる |
 | 設計 | アーキテクチャと責務分担 | [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) / [docs/Architecture_ASCII.md](Architecture_ASCII.md) | [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) | 設計判断を Guardrails の原則に沿って記録 |
 | 運用・品質 | リリース手順と品質ゲート | [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) / [docs/addenda/H_Deploy_Guide.md](addenda/H_Deploy_Guide.md) | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | 承認フローと計測指標を同期 |
@@ -67,7 +67,7 @@
 
 ### 更新手順
 
-1. **BLUEPRINT を起点に制約と仕様を固める** — [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) と [docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) / [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) を照合し、[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) の原則との齟齬を潰す。
+1. **BLUEPRINT を起点に制約と仕様を固める** — [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md) の Purpose/Scope/SLO/Guardrails を読み、[docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md) / [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) と照合し、[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) の原則との齟齬を潰す。
 2. **RUNBOOK / CHECKLISTS を同期** — [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md)・[workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) と [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) を突き合わせ、運用動線とゲート条件を更新する。
 3. **EVALUATION で評価指標を確定** — [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) と [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) の測定軸を反映し、CI/レビュー判定の調整を記録する。
 4. **TASK seed を起票** — [workflow-cookbook/TASK.codex.md](../workflow-cookbook/TASK.codex.md) と [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) の対応表を用いて、Issue テンプレートとチェックリストの追従タスクを作成する。
