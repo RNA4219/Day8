@@ -11,6 +11,11 @@
       "reason": "Day8/Workflow-cookbook双方の資料を横断索引し、ロードマップStep1内のBirdseye反映4ステップを明示して HUB への読み順を先導する。"
     },
     {
+      "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
+      "id": "docs/day8_wbs.csv",
+      "reason": "マイルストーンの作業分解を一覧化し、計画策定とスプリントレビューでロードマップ差分を即座に洗い出すための基準表。"
+    },
+    {
       "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
       "id": "docs/day8/spec/01_requirements.md",
       "reason": "Katamari 章立てへ再構成した Day8 要件を参照し、固定事項/ユースケース/受入基準を即時確認するための起点。"
@@ -66,5 +71,5 @@
       "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
     }
   ],
-  "generated_at": "2025-11-06T09:00:00Z"
+  "generated_at": "2025-11-07T09:00:00Z"
 }

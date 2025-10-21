@@ -87,6 +87,7 @@
 - [Day8 Release Checklist (Katamari Flow)](Release_Checklist.md)
 - [Versioning & Release Operations（Appendix M）](addenda/M_Versioning_Release.md)
 - [Day8 コントリビューションガイド](day8/guides/07_contributing.md)
+- [Day8 マイルストーン WBS](day8_wbs.csv) — 計画策定とスプリントレビューでマイルストーン進捗を照合し、ロードマップとの差分を抽出する際に利用。
 - [安全性レビュー基準](safety.md)
 - [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md)
 - [ガバナンス方針](../workflow-cookbook/governance/policy.yaml)
