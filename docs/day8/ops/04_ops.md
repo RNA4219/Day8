@@ -5,6 +5,8 @@
 2. `.github/workflows/test.yml` と `reflection.yml` を配置
 3. コミット＆プッシュ → `test` 実行 → `reflection` 連動
 
+> 導入作業を Day8 デプロイ付録（[docs/addenda/H_Deploy_Guide.md](../../addenda/H_Deploy_Guide.md)）と併用し、ローカル検証とリリース判断を同じチェックリストで管理します。CI 設定や Docker 化が必要になった段階で参照してください。
+
 ## 失敗時の切り分け
 - `test` がこける: ログが生成されているか確認（Artifacts）
 - `reflection` がこける: `analyze.py` のパスと Python バージョンを確認

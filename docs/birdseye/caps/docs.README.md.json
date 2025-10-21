@@ -5,6 +5,7 @@
   "deps_out": [
     "docs/TASKS.md",
     "docs/UPSTREAM.md",
+    "docs/addenda/H_Deploy_Guide.md",
     "docs/day8/README.md",
     "docs/safety.md"
   ],
