@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Chainlit/chainlit/main/schema/theme.schema.json",
+  "name": "day8-default",
+  "extends": "themes/classic.theme.json",
+  "description": "Chainlit Hosted Static で読み込まれる Day8 既定プリセット",
+  "colors": {
+    "primary": "#1F6FEB",
+    "onPrimary": "#F8FAFC",
+    "background": "#0F172A",
+    "surface": "#111C33",
+    "textPrimary": "#F8FAFC"
+  }
+}

@@ -33,6 +33,10 @@
       "workflow-cookbook/docs/birdseye/index.json"
     ],
     [
+      "README.md",
+      "README_PERSONAS_THEMES.md"
+    ],
+    [
       "docs/README.md",
       "docs/TASKS.md"
     ],
@@ -66,8 +70,16 @@
       "docs/addenda/C_Persona_Schema.md"
     ],
     [
+      "docs/README.md",
+      "README_PERSONAS_THEMES.md"
+    ],
+    [
       "docs/addenda/C_Persona_Schema.md",
       "personas/README.md"
+    ],
+    [
+      "README_PERSONAS_THEMES.md",
+      "themes/CATALOG.md"
     ],
     [
       "docs/README.md",
@@ -678,7 +690,7 @@
       "docs/adr/0007-proposal-priority-handshake.md"
     ]
   ],
-  "generated_at": "2025-11-10T09:00:00Z",
+  "generated_at": "2025-11-12T09:30:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -689,6 +701,11 @@
       "caps": "docs/birdseye/caps/README.md.json",
       "mtime": "2025-01-15T00:00:00Z",
       "role": "overview"
+    },
+    "README_PERSONAS_THEMES.md": {
+      "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
+      "mtime": "2025-11-12T09:30:00Z",
+      "role": "guide"
     },
     "docs/BIRDSEYE.md": {
       "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
@@ -899,6 +916,11 @@
       "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
       "mtime": "2025-11-08T09:00:00Z",
       "role": "persona"
+    },
+    "themes/CATALOG.md": {
+      "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
+      "mtime": "2025-11-12T09:30:00Z",
+      "role": "design"
     },
     "personas/README.md": {
       "caps": "docs/birdseye/caps/personas.README.md.json",

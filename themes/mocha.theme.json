@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Chainlit/chainlit/main/schema/theme.schema.json",
+  "name": "day8-mocha",
+  "description": "Katamari Mocha のコントラストを Day8 のウォームダーク配色へ寄せたナイトテーマ",
+  "colors": {
+    "primary": "#E48D6A",
+    "onPrimary": "#1B1320",
+    "secondary": "#3B2F4A",
+    "onSecondary": "#F4E9FF",
+    "background": "#1A1423",
+    "surface": "#251A33",
+    "border": "#3F2F52",
+    "inputBackground": "#2D2240",
+    "inputBorder": "#4C3A5F",
+    "success": "#34D399",
+    "warning": "#FBBF24",
+    "error": "#FB7185",
+    "info": "#60A5FA",
+    "textPrimary": "#F8F4FF",
+    "textSecondary": "#D8CBEA"
+  },
+  "fonts": {
+    "body": "'IBM Plex Sans JP', 'Noto Sans JP', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    "code": "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+  },
+  "radii": {
+    "button": 14,
+    "surface": 20,
+    "input": 14
+  },
+  "shadows": {
+    "surface": "0 18px 48px rgba(21, 13, 33, 0.45)",
+    "button": "0 10px 28px rgba(228, 141, 106, 0.35)"
+  }
+}

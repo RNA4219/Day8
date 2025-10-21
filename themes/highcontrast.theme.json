@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Chainlit/chainlit/main/schema/theme.schema.json",
+  "name": "day8-highcontrast",
+  "description": "AA 準拠のコントラスト比を確保したアクセシビリティ特化テーマ",
+  "colors": {
+    "primary": "#0EA5E9",
+    "onPrimary": "#000000",
+    "secondary": "#1F2937",
+    "onSecondary": "#FFFFFF",
+    "background": "#000000",
+    "surface": "#111827",
+    "border": "#F8FAFC",
+    "inputBackground": "#0B1120",
+    "inputBorder": "#F8FAFC",
+    "success": "#22C55E",
+    "warning": "#FDE047",
+    "error": "#F43F5E",
+    "info": "#38BDF8",
+    "textPrimary": "#FFFFFF",
+    "textSecondary": "#E5E7EB"
+  },
+  "fonts": {
+    "body": "'BIZ UDPGothic', 'Noto Sans JP', Arial, sans-serif",
+    "code": "'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+  },
+  "radii": {
+    "button": 6,
+    "surface": 12,
+    "input": 8
+  },
+  "shadows": {
+    "surface": "0 0 0 rgba(0, 0, 0, 0)",
+    "button": "0 0 0 rgba(0, 0, 0, 0)"
+  }
+}

@@ -46,6 +46,10 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [貢献ガイド](day8/guides/07_contributing.md) — 貢献手順とタスク運用ルール。
 - [サンプル集](day8/examples/10_examples.md) — 反省 DSL やガバナンス設定のサンプル。
 
+## Chainlit テーマ & ペルソナ
+- [Day8 Personas & Themes ガイド](../README_PERSONAS_THEMES.md) — テーマ適用手順とペルソナ拡張 TODO、Appendix B/C/K の接続を整理。
+- [Day8 Theme Catalog](../themes/CATALOG.md) — classic / mocha / highcontrast の配布パックと Appendix 連携要件。
+
 ## セーフティ関連
 - [安全性ドキュメント](safety.md) — `workflow-cookbook/SAFETY.md` をハブとし、フェイルセーフ/例外/Hot 更新手順を整理。
 - [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md) — キー管理・ログ衛生・データ保持・通信保護・OAuth ガードの運用ノート。

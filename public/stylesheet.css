@@ -1,0 +1,42 @@
+:root {
+  --day8-primary: #1f6feb;
+  --day8-surface: #111c33;
+  --day8-radius: 18px;
+}
+
+body {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(11, 19, 43, 0.98) 60%, rgba(7, 12, 24, 1) 100%);
+  color: var(--day8-primary);
+}
+
+.cl-header__title {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cl-avatar {
+  border: 2px solid var(--day8-primary);
+  box-shadow: 0 0 0 4px rgba(31, 111, 235, 0.15);
+}
+
+button,
+.cl-action-button {
+  border-radius: var(--day8-radius);
+  box-shadow: 0 12px 32px rgba(31, 111, 235, 0.25);
+  transition: transform 0.12s ease-in-out;
+}
+
+button:hover,
+.cl-action-button:hover {
+  transform: translateY(-1px);
+}
+
+.cl-message {
+  border-radius: 22px;
+  background: rgba(17, 28, 51, 0.72);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.cl-message__author {
+  color: #cbd5f5;
+}

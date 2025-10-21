@@ -14,3 +14,5 @@ Day8 で運用する代表的なロール視点を YAML で管理するハブ。
 | [day8-reporter-concise-engineer.yaml](day8-reporter-concise-engineer.yaml) | Reporter | 失敗要約と提案下書きを迅速に整えるためのレポーター視点 |
 
 新規ペルソナを追加する際は、`persona_id` を `day8-<role>-<slug>` で付与し、Birdseye の index/caps を Appendix C と同時に再生成する。
+
+テーマ適用や UI 要件の擦り合わせは [`README_PERSONAS_THEMES.md`](../README_PERSONAS_THEMES.md) を参照してください。
