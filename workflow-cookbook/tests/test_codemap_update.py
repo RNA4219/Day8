@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -115,6 +116,12 @@ def test_update_recomputes_dependencies_for_all_targets(tmp_path: Path) -> None:
         normalised, deps_out, deps_in = _build_expected(index["edges"])
         assert index["edges"] == normalised
         _assert_timestamp_sync(target)
+
+        revision = str(index["generated_at"])
+        assert re.fullmatch(r"\d{5,}", revision), "generated_at should be a zero-padded serial number"
+        for node_meta in index.get("nodes", {}).values():
+            assert isinstance(node_meta, dict)
+            assert node_meta.get("mtime") == revision
 
         caps_dir = target / "caps"
         for cap_path in _iter_capsules(caps_dir):

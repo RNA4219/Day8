@@ -778,7 +778,7 @@
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
-      "mtime": "2025-11-12T09:30:00Z",
+      "mtime": "2025-12-21T00:00:00Z",
       "role": "guide"
     },
     "config/env.example": {
@@ -1003,7 +1003,7 @@
     },
     "scripts/": {
       "caps": "docs/birdseye/caps/scripts.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "2025-12-21T00:00:00Z",
       "role": "automation"
     },
     "scripts/birdseye_refresh.py": {

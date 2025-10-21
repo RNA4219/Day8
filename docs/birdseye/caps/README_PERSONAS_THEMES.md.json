@@ -7,7 +7,8 @@
     "in::docs/addenda/K_Accessibility_UX.md",
     "out::docs/birdseye/index.json",
     "out::themes/CATALOG.md",
-    "out::personas/README.md"
+    "out::personas/README.md",
+    "out::scripts/switch_theme.py"
   ],
   "deps_in": [
     "README.md",

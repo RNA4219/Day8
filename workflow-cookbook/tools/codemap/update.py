@@ -16,12 +16,14 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, Iterator, Mapping
 
 
 JsonMapping = Mapping[str, object]
+
+
+_SERIAL_MIN_WIDTH = 5
 
 
 class UpdateError(RuntimeError):
@@ -112,32 +114,27 @@ def parse_args(argv: Iterable[str] | None = None) -> UpdateOptions:
     )
 
 
-def _iso_utc_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+def _fresh_revision(previous: str, *, width: int = _SERIAL_MIN_WIDTH) -> str:
+    cleaned = previous.strip()
+    if cleaned.isdigit():
+        width = max(width, len(cleaned))
+        next_value = int(cleaned) + 1
+        return f"{next_value:0{width}d}"
+    return f"{1:0{max(width, 1)}d}"
 
 
-def _bump_timestamp(timestamp: str) -> str:
-    try:
-        base = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-    except ValueError:
-        return timestamp
-    bumped = base + timedelta(seconds=1)
-    return bumped.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
+def _serialise_node_meta(meta: object, revision: str) -> object:
+    if not isinstance(meta, dict):
+        return meta
+    updated = dict(meta)
+    updated["mtime"] = revision
+    return updated
 
 
-def _fresh_generated_at(previous: str) -> str:
-    candidate = _iso_utc_now()
-    if candidate != previous:
-        return candidate
-
-    bumped = _bump_timestamp(previous)
-    if bumped != previous:
-        return bumped
-
-    while True:
-        candidate = _iso_utc_now()
-        if candidate != previous:
-            return candidate
+def _serialise_nodes_with_revision(nodes: object, revision: str) -> object:
+    if not isinstance(nodes, dict):
+        return nodes
+    return {node_id: _serialise_node_meta(meta, revision) for node_id, meta in nodes.items()}
 
 
 def _normalise_edges(edges: Iterable[object]) -> list[list[str]]:
@@ -224,9 +221,12 @@ def _update_target(index_path: Path, *, emit_index: bool, emit_caps: bool, dry_r
         index_payload_for_write["edges"] = normalised_edges
 
     if emit_index:
-        timestamp_for_index = _fresh_generated_at(existing_timestamp)
+        timestamp_for_index = _fresh_revision(existing_timestamp)
         timestamp_changed = timestamp_for_index != existing_timestamp
         index_payload_for_write["generated_at"] = timestamp_for_index
+        serialised_nodes = _serialise_nodes_with_revision(index_payload.get("nodes"), timestamp_for_index)
+        if isinstance(serialised_nodes, dict):
+            index_payload_for_write["nodes"] = serialised_nodes
         _write_json_if_changed(index_path, index_payload_for_write, dry_run=dry_run)
         if timestamp_changed:
             _update_hot_timestamp(index_path.parent / "hot.json", timestamp_for_index, dry_run=dry_run)

@@ -4,7 +4,8 @@
     "in::docs/addenda/B_UI_Mock.md",
     "in::docs/addenda/C_Persona_Schema.md",
     "in::docs/addenda/K_Accessibility_UX.md",
-    "out::docs/birdseye/index.json"
+    "out::docs/birdseye/index.json",
+    "out::scripts/switch_theme.py"
   ],
   "deps_in": [
     "README_PERSONAS_THEMES.md"

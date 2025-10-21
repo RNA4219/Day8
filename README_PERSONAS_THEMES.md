@@ -24,6 +24,7 @@ public = "public"
 - `themes/CATALOG.md`: Day8 向けテーマ一覧と Appendix 連動要件を整理。
 - `public/theme.json`: Hosted Static/iframe 配信時のデフォルトテーマ。
 - `public/stylesheet.css`: ロゴカラー (#1F6FEB) に合わせた補助的なレイアウト。
+- `python scripts/switch_theme.py <theme-name>`: `themes/*.theme.json` を `public/theme.json` へコピーする Day8 用 CLI。テーマ切替前に実行し、Hosted Static の既定テーマを同期する。
 
 ## 3. ペルソナ拡張予定
 
