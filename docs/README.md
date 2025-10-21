@@ -18,7 +18,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 ## 運用・セキュリティ・品質
 - [運用ガイド](day8/ops/04_ops.md) — 導入・運用フローとサブディレクトリ管理手順。
 - [Day8 デプロイ付録（Appendix H）](addenda/H_Deploy_Guide.md) — ローカル検証、Docker 化、GitHub Actions リリースの要点をまとめた導入補助資料。
-- [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。
+- [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。Appendix G と連携し、Secrets/Rate limit/OAuth のチェックリストを提供。
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
 
 ## Upstream 運用
@@ -30,7 +30,8 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [サンプル集](day8/examples/10_examples.md) — 反省 DSL やガバナンス設定のサンプル。
 
 ## セーフティ関連
-- [安全性ドキュメント](safety.md) — セーフティに関する方針と運用ノート。
+- [安全性ドキュメント](safety.md) — `workflow-cookbook/SAFETY.md` をハブとし、フェイルセーフ/例外/Hot 更新手順を整理。
+- [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md) — キー管理・ログ衛生・データ保持・通信保護・OAuth ガードの運用ノート。
 
 ## 付録
 - [Day8 用語集](addenda/A_Glossary.md) — ドキュメントレビューや新規タスク着手前に、Collector/Analyzer などの用語を素早く再確認するための参照先。
