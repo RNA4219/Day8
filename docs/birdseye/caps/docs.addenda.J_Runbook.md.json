@@ -13,7 +13,7 @@
   "maintenance": {
     "refresh": "新しい代表事象や初動手順を追加したら、関連する Ops/Perf/Security ドキュメントと Birdseye エッジを同時更新する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/addenda/J_Runbook.md --emit index+caps"
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
   "public_api": [],

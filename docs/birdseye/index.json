@@ -603,6 +603,10 @@
     ],
     [
       "docs/Release_Checklist.md",
+      "scripts/perf/collect_metrics.py"
+    ],
+    [
+      "docs/Release_Checklist.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
@@ -714,6 +718,10 @@
       "config/model_registry.json"
     ],
     [
+      "docs/addenda/M1_Metrics_Healthz_ADR.md",
+      "scripts/perf/collect_metrics.py"
+    ],
+    [
       "docs/addenda/E_Evaluator_Details.md",
       "docs/adr/0006-evaluator-gates.md"
     ],
@@ -800,7 +808,7 @@
     },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
-      "mtime": "2025-12-01T00:00:00Z",
+      "mtime": "2025-12-20T12:00:00Z",
       "role": "checklist"
     },
     "docs/Security_Review_Checklist.md": {
@@ -847,6 +855,11 @@
       "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
       "mtime": "2025-11-10T09:00:00Z",
       "role": "configuration"
+    },
+    "docs/addenda/M1_Metrics_Healthz_ADR.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.M1_Metrics_Healthz_ADR.md.json",
+      "mtime": "2025-12-20T12:00:00Z",
+      "role": "operations"
     },
     "config/env.example": {
       "caps": "docs/birdseye/caps/config.env.example.json",
