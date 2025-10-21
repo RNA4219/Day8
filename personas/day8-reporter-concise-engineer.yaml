@@ -1,0 +1,39 @@
+persona_id: "day8-reporter-concise-engineer"
+role: "Reporter"
+mission: "Analyzer からの一次切り分けを踏まえ、障害サマリと提案ドラフトを 200 語以内で収束させる"
+log_slice:
+  source: "reports://ci/latest"
+  filters:
+    - key: "format"
+      op: "=="
+      values: ["markdown"]
+    - key: "includes"
+      op: "contains"
+      values: ["summary", "next_actions"]
+insights_required:
+  - "summary.outcome"
+  - "impacted_components"
+  - "customer_risk.assessment"
+  - "next_actions.proposer_ready"
+handoff:
+  to: "Proposer"
+  deliverables:
+    - type: "markdown"
+      path: "reports/latest/reporter/executive-summary.md"
+    - type: "json"
+      path: "reports/latest/reporter/proposal_inputs.json"
+  quality_gate:
+    - "executive-summary <= 200 words"
+    - "next_actions tagged with owner"
+operations_hooks:
+  - service: "slack"
+    event: "postmortem-summary"
+    on_failure: "notify-runbook://reporter"
+  - service: "github"
+    event: "draft-pr-sync"
+    on_failure: "comment://proposal/draft"
+review_cadence: "per-run"
+escalation:
+  retryable: false
+  contact: "governance@day8.example"
+  notes: "優先度が判断できない場合は Proposer を停止し、Governance へレビュー会議を要請"
