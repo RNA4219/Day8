@@ -74,6 +74,11 @@
       "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
       "id": "docs/BIRDSEYE.md",
       "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
+    },
+    {
+      "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
+      "id": "docs/adr/0007-proposal-priority-handshake.md",
+      "reason": "Priority Score 記法と Task Seed/ガバナンスゲートの整合を即時確認するためのハンドシェイク基準。"
     }
   ],
   "generated_at": "2025-10-21T19:48:39Z"

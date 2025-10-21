@@ -31,6 +31,7 @@ Katamari 付録Eの評価器設計を Day8 の自動評価ラインへ適用し�
 4. `overall_pass=false` のケースを週次でレビューし、ルール判定とスコア基準の乖離がないか確認する。乖離が継続する場合は閾値調整を提案し、Appendix E を更新する。
 
 ## 連携ドキュメント
+- [ADR 0006: Evaluator ゲートとハイブリッド評価ライン](../adr/0006-evaluator-gates.md)
 - [Day8 品質評価プロセス](../day8/quality/06_quality.md)
 - [Katamari Evaluation Baseline](../../workflow-cookbook/EVALUATION.md)
 - [Appendix I: Day8 テストケース観点](I_Test_Cases.md)

@@ -26,6 +26,7 @@ Day8 が自動化ワークフローで利用する生成 AI プロバイダー�
 3. フォールバック後 3 回連続で提案品質がしきい値 (`quality/06_quality.md` のプロポーザル SLO) を下回った場合は、Day8 Ops にエスカレーションする。
 
 ## 連携ドキュメント
+- [ADR 0004: Provider SPI と Adapter 層の統一](../adr/0004-provider-interface.md)
 - [Day8 仕様詳細](../day8/spec/02_spec.md) — Reflection DSL 設定とレポート生成ワークフロー。
 - [Appendix G: セキュリティ & プライバシー](G_Security_Privacy.md) — データ取り扱い基準とログ匿名化のルール。
 - [Appendix H: デプロイガイド](H_Deploy_Guide.md) — プロバイダー切替時の CI/CD テスト確認ポイント。

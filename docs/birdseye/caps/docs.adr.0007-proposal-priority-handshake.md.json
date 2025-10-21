@@ -1,0 +1,37 @@
+{
+  "deps_in": [
+    "docs/adr/README.md",
+    "docs/TASKS.md",
+    "workflow-cookbook/TASK.codex.md",
+    "workflow-cookbook/governance/prioritization.yaml"
+  ],
+  "deps_out": [
+    "docs/TASKS.md",
+    "workflow-cookbook/TASK.codex.md",
+    "workflow-cookbook/tools/ci/check_governance_gate.py",
+    "docs/birdseye/index.json"
+  ],
+  "generated_at": "2025-11-06T12:00:00Z",
+  "id": "docs/adr/0007-proposal-priority-handshake.md",
+  "maintenance": {
+    "refresh": "Priority Score の重みやテンプレートを更新したら Task Seed/TASK.codex/ガバナンスゲートと本 ADR を同時に改訂する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "Priority Score の形式が揃わないとガバナンスゲートで提案が正しく評価されない"
+  ],
+  "role": [
+    "core::adr",
+    "orbit::governance"
+  ],
+  "summary": [
+    "core::Issue/Task Seed に Priority Score を必須化し、算出根拠を統一する。",
+    "orbit::Analyzer の提案と governance/prioritization.yaml の重みを同期させる。"
+  ],
+  "tests": [
+    "check::docs/TASKS.md に ADR 0007 のリンクが存在するか確認",
+    "check::workflow-cookbook/TASK.codex.md が Priority Score 記法を維持しているか確認"
+  ]
+}

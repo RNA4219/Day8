@@ -552,6 +552,102 @@
     [
       "docs/ROADMAP_AND_SPECS.md",
       "docs/day8/spec/01_requirements.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/addenda/F_Provider_Matrix.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "workflow-cookbook/reflection.yaml",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "workflow-cookbook/scripts/analyze.py",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/addenda/E_Evaluator_Details.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/day8/quality/06_quality.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "workflow-cookbook/EVALUATION.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/TASKS.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "workflow-cookbook/TASK.codex.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "workflow-cookbook/governance/prioritization.yaml",
+      "docs/adr/0007-proposal-priority-handshake.md"
     ]
   ],
   "generated_at": "2025-10-21T19:48:39Z",
@@ -845,6 +941,26 @@
       "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
       "mtime": "2025-11-06T09:00:00Z",
       "role": "requirements"
+    },
+    "docs/adr/0004-provider-interface.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0004-provider-interface.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0005-reflection-manifest.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0005-reflection-manifest.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0006-evaluator-gates.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0006-evaluator-gates.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0007-proposal-priority-handshake.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
     }
   }
 }

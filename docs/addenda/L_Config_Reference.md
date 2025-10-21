@@ -27,6 +27,8 @@ Day8 を導入・運用する際に必要となる環境変数、設定ファイ
 | `docs/birdseye/index.json` / `hot.json` | 可視化メタ | ドキュメント依存関係とホットリスト。`generated_at` を同期し、Appendix H チェックリストに含まれる。 | [birdseye/README.md](../birdseye/README.md) |
 | `docs/addenda/H_Deploy_Guide.md` | デプロイ補助 | ローカル検証・Docker・GitHub Actions のチェックリストを保持。Appendix L と組み合わせて導入前後の差分確認を行う。 | [addenda/H_Deploy_Guide.md](H_Deploy_Guide.md) |
 
+> Reflection Manifest の既定値とフォールバック挙動は [ADR 0005](../adr/0005-reflection-manifest.md) を参照し、Manifest 更新時は本付録と同時に Birdseye を同期してください。
+
 ## デバッグフラグとトラブルシュート
 
 | コマンド / フラグ | 利用シーン | 効果 | 出典 |

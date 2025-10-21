@@ -17,6 +17,7 @@ Day8 のリリースは Katamari propose-only 方針に従い、全変更を PR 
 - [ ] Birdseye を `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps` で再生成し、`index.json` → `caps` → `hot.json` の順で差分を確認して `generated_at` を揃える。
 - [ ] Birdseye で新規に追加したノード／エッジが `docs/README.md`、`docs/ROADMAP_AND_SPECS.md` から到達可能か確認する。
 - [ ] `docs/addenda/M_Versioning_Release.md` の semver 区分に沿って `semver:*` ラベルを更新し、互換性根拠を PR 本文へ反映する。
+- [ ] `workflow-cookbook/reflection.yaml` を更新した場合は [ADR 0005](adr/0005-reflection-manifest.md) の既定値を再確認し、Appendix L / Birdseye の `generated_at` を同じコミットで揃える。
 
 ## 4. レビュー & 承認フロー
 - [ ] PR テンプレートに沿って、変更概要・影響範囲・検証結果・Birdseye コマンド出力を記載する。
