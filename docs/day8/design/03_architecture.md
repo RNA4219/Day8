@@ -28,6 +28,7 @@ sequenceDiagram
 
 ## ASCII フォールバック
 - Mermaid が利用できないレビュー環境では [docs/Architecture_ASCII.md](../../Architecture_ASCII.md) を参照し、Collector→Analyzer→Reporter→Proposer→Governance の責務と戻りフローを確認する。
+- UI 骨子や CLI/レポートの画面構成をオフラインで確認する際は [Appendix B: UI モック](../../addenda/B_UI_Mock.md) を併用し、Analyzer/Reporter の入出力イメージを擦り合わせる。
 - ドキュメント索引の手順は `docs/README.md` → `docs/ROADMAP_AND_SPECS.md` → 本ページの順に辿り、Birdseye (`docs/birdseye/index.json`) のノード差分があれば同じコミットで更新する。
 
 ## サブディレクトリ対応方針
