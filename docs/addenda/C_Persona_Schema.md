@@ -3,9 +3,11 @@
 Day8 の運用ログと CI 成果物を整理するうえで、Collector/Analyzer/Reporter/Proposer/Governance の各ロールが担う責務と、
 ハンドオフ時に必要なメタデータを統一するためのスキーマを定義する。
 
+Appendix C を参照したら、リポジトリ直下の [`personas/README.md`](../../personas/README.md) から代表ペルソナの YAML を開き、Task Seed 起票や Why-Why 解析で必要となる `insights_required`・`quality_gate` を実務フローへ転記する。
+
 ## 目的
-- CI ラン単位の運用ログから誰がどの情報を引き継ぐかを明確にし、Birdseye や Why-Why に反映する。 
-- Task Seed 起票や評価指標策定時に、ロールごとの視点・ログ断面・完了条件をぶれなく記述する。 
+- CI ラン単位の運用ログから誰がどの情報を引き継ぐかを明確にし、Birdseye や Why-Why に反映する。
+- Task Seed 起票や評価指標策定時に、ロールごとの視点・ログ断面・完了条件をぶれなく記述する。
 - Collector → Analyzer → Reporter → Proposer → Governance の順に、再現性の高いハンドオフを保証する。
 
 ## 必須フィールド
@@ -53,3 +55,7 @@ escalation:
   contact: "#day8-oncall"
   notes: "再現不能なログ欠損時は SRE へ即時連絡"
 ```
+
+## 運用導線
+- Task Seed の初稿を作成するときは Appendix C → [`personas/README.md`](../../personas/README.md) → 該当 YAML の順で開き、`insights_required`・`operations_hooks`・`handoff` をテンプレートへ移植する。
+- CI 障害レビュー会議では、Analyzer/Reporter ロールの YAML を併読し、Birdseye 上で Appendix C から `personas/README.md` へのエッジを辿って参照順序を統一する。

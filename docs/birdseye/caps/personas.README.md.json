@@ -1,0 +1,40 @@
+{
+  "deps": [
+    "in::docs/addenda/C_Persona_Schema.md",
+    "in::docs/day8/README.md",
+    "out::personas/day8-analyzer-oncall.yaml",
+    "out::personas/day8-reporter-concise-engineer.yaml"
+  ],
+  "deps_in": [
+    "docs/addenda/C_Persona_Schema.md",
+    "docs/day8/README.md"
+  ],
+  "deps_out": [
+    "personas/day8-analyzer-oncall.yaml",
+    "personas/day8-reporter-concise-engineer.yaml"
+  ],
+  "generated_at": "2025-11-08T09:00:00Z",
+  "id": "personas/README.md",
+  "maintenance": {
+    "refresh": "ペルソナ YAML を追加・更新したら Appendix C と同じコミットで index/caps/hot を再生成し、Task Seed テンプレートと整合させる。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "ペルソナ一覧が最新でないと Task Seed 起票時に品質ゲートが欠落する",
+    "Analyzer/Reporter のロール境界が不明瞭になると Why-Why の引き継ぎが滞る"
+  ],
+  "role": [
+    "core::persona-index",
+    "orbit::task-seed"
+  ],
+  "summary": [
+    "core::Appendix C のスキーマを参照しながら Day8 代表ペルソナの YAML を索引化するハブ。",
+    "orbit::Task Seed 起票や CI 障害レビューで参照するロール別の `insights_required` と品質ゲートをまとめる。"
+  ],
+  "tests": [
+    "check::各 YAML の persona_id が day8-<role>-<slug> を満たすか確認",
+    "check::Appendix C の必須フィールドが欠落していないか確認"
+  ]
+}

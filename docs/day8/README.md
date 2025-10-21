@@ -16,7 +16,7 @@ OSS でも安心して導入できる“第八日目”の基盤を提供しま�
 - `quality/` メトリクス・SLO・評価
 - `guides/` 貢献規約・タスク運用（Task Seeds）
 - `examples/` 反省DSL・ガバナンス・CI のサンプル
-- ペルソナ付録 — Task Seed 起票や評価指標策定時に参照する [Katamari ペルソナスキーマ](../addenda/C_Persona_Schema.md)
+- ペルソナ付録 — Task Seed 起票や評価指標策定時に参照する [Katamari ペルソナスキーマ](../addenda/C_Persona_Schema.md) と [Day8 Personas Index](../../personas/README.md)
 
 ## キーワード
 - [Day8 用語集](../addenda/A_Glossary.md) — レビュー前や Reflection DSL 設計の見直し時に、Collector/Analyzer/Proposer などの用語と DSL フィールドを整理するために参照。
