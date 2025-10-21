@@ -29,6 +29,7 @@ next_review_due: 2025-11-14
 8. 完了済みタスクは `CHANGELOG.md` へ移し、履歴を更新する。
 9. テスト/型/lint/CI の実行結果を確認し、`CHECKLISTS.md` でリリース可否を判断する。
 10. `docs/ROADMAP_AND_SPECS.md` (ROADMAP ハブ) を更新し、横断ロードマップと Guardrails 参照の整合性を維持する。
+11. `docs/adr/README.md` を参照し、Collector/Analyzer/Reporter/Proposer の設計判断と propose-only ポリシーを確認する。
 
 ## 実装原則
 
@@ -36,7 +37,8 @@ next_review_due: 2025-11-14
 - 例外設計：既存 errors 階層に合わせ、再試行可否を区別する。
 - 後方互換：CLI/JSON 出力は互換性を維持し、破壊的変更は明示的フラグで段階移行する。
 - インポート順序：標準ライブラリ→外部依存→内部モジュールの順で空行区切りとする。
-- 副作用の隔離：`utils` や `provider_spi` などのレイヤ分離を尊重する。
+- 副作用の隔離：`utils` や `provider_spi` などのレイヤ分離を尊重する。Collector/Analyzer/Reporter の境界は [docs/adr/0001](../docs/adr/0001-collector-analyzer-reporter-pipeline.md) に従う。
+- propose-only: Reporter/Proposer が Git 書き込みを行わないことを [docs/adr/0003](../docs/adr/0003-propose-only-governance.md) で確認する。
 - スコープ上限：1 回の変更は合計 100 行または 2 ファイルまで。本ループでは最優先の塊のみ対応する。単一ファイルが 400 行を超える場合は機能単位で分割を検討する。
 - 細かな Lint エラーはスコープ上限の例外とし、重大なルール逸脱のみを是正する。
 - 公開 API や CLI を変更した場合のみ、差分に簡潔な Docstring/Usage 例を添付する。

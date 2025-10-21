@@ -9,7 +9,9 @@
     "out::workflow-cookbook/CHECKLISTS.md",
     "out::workflow-cookbook/TASK.codex.md",
     "out::workflow-cookbook/tools/",
-    "out::workflow-cookbook/scripts/"
+    "out::workflow-cookbook/scripts/",
+    "out::docs/adr/0001-collector-analyzer-reporter-pipeline.md",
+    "out::docs/adr/0003-propose-only-governance.md"
   ],
   "deps_in": [
     "README.md",
@@ -25,9 +27,11 @@
     "workflow-cookbook/SECURITY.md",
     "workflow-cookbook/TASK.codex.md",
     "workflow-cookbook/scripts/",
-    "workflow-cookbook/tools/"
+    "workflow-cookbook/tools/",
+    "docs/adr/0001-collector-analyzer-reporter-pipeline.md",
+    "docs/adr/0003-propose-only-governance.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-11-05T09:00:00Z",
   "id": "workflow-cookbook/GUARDRAILS.md",
   "maintenance": {
     "refresh": "ガードレール更新時は関連資料とBirdseye(インデックス/カプセル)を同時更新する。",
