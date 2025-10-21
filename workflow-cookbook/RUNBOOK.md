@@ -80,3 +80,4 @@ next_review_due: 2025-11-14
 - `workflow-cookbook/scripts/analyze.py`：ログ解析および日次レポート生成。
 - `workflow-cookbook/CHECKLISTS.md`：運用判断の最終ゲート。
 - `workflow-cookbook/docs/IN-*.md`：インシデントサマリとロールバック記録。
+- `docs/addenda/J_Runbook.md`：SSE 断・初回遅延・OAuth 失敗など一次切り分け時の初動判断。

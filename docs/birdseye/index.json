@@ -66,6 +66,10 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/J_Runbook.md"
+    ],
+    [
+      "docs/README.md",
       "docs/safety.md"
     ],
     [
@@ -525,6 +529,11 @@
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
       "mtime": "2025-02-21T00:00:00Z",
       "role": "quality"
+    },
+    "docs/addenda/J_Runbook.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
+      "mtime": "2025-02-22T00:00:00Z",
+      "role": "operations"
     },
     "docs/addenda/G_Security_Privacy.md": {
       "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
