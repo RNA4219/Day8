@@ -293,7 +293,7 @@
       "docs/addenda/I_Test_Cases.md"
     ]
   ],
-  "generated_at": "2025-10-26T00:00:00Z",
+  "generated_at": "2025-10-21T00:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -474,31 +474,6 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.update.py.json",
       "mtime": "2025-02-16T00:00:00Z",
       "role": "automation"
-    },
-    "workflow-cookbook/scripts/analyze.py": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.scripts.analyze.py.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "analytics"
-    },
-    "workflow-cookbook/logs/test.jsonl": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.logs.test.jsonl.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "log"
-    },
-    "workflow-cookbook/reports/today.md": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.reports.today.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "report"
-    },
-    "workflow-cookbook/reports/issue_suggestions.md": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.reports.issue_suggestions.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "report"
-    },
-    "workflow-cookbook/docs/IN-20250115-001.md": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.docs.IN-20250115-001.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "incident"
     },
     "docs/addenda/I_Test_Cases.md": {
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
