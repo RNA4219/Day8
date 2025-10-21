@@ -29,9 +29,10 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [Day8 設定テンプレート](../config/env.example) / [モデルレジストリ雛形](../config/model_registry.json) — Appendix L/F の要件を満たすサンプル構成。`.env` とプロバイダー定義を Day8 用語へ合わせて初期化するときに利用。
 - [Day8 Release Checklist (Katamari Flow)](Release_Checklist.md) — propose-only 前提のリリース手順と Birdseye 更新順を整理したチェックリスト。
   - 運用コマンド例: `python scripts/birdseye_refresh.py --docs-dir docs/birdseye`
+- [Day8 セキュリティレビュー チェックリスト](Security_Review_Checklist.md) — Secrets/CORS/Rate limit/OAuth/依存性スキャンを PR 審査用に集約。実施結果は Appendix G と 05_security の詳細手順へ引き渡す。
 - [Versioning & Release Operations（Appendix M）](addenda/M_Versioning_Release.md) — semver ラベル運用とタグ作成フロー、互換性レビューの基準を集約。
 - [Day8 評価器構成（Appendix E）](addenda/E_Evaluator_Details.md) — BERTScore/ROUGE/ルール判定の設定と運用チェックリスト。
-- [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。Appendix G と連携し、Secrets/Rate limit/OAuth のチェックリストを提供。
+- [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。Appendix G と連携し、詳細な審査フローと例外承認手順を管理（速査は `Security_Review_Checklist.md` を参照）。
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
 
 ## API 仕様・監視契約
