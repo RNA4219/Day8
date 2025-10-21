@@ -24,6 +24,7 @@ Day8 の品質ゲートを統制する評価フレーム。Guardrails／Runbook�
 2. **実装準備と検証計画**
    - `workflow-cookbook/RUNBOOK.md` の「準備→実行→確認」をベースにテスト計画を整備し、最初にテスト（pytest / node:test 等）を追加・更新する。
    - KPI とトレードオフを定義し、Priority Score（値・根拠）を PR 本文に暫定記載する。
+   - [docs/day8/spec/02_spec.md](../docs/day8/spec/02_spec.md) のチェーン制御・Provider 抽象・性能指標セクションを読み、今回の差分が各フェーズの SLO（`duration_p95` / `pass_rate` / `retention_ratio`）と整合するか確認する。
 3. **検証とサインオフ**
    - `workflow-cookbook/CHECKLISTS.md` の Release/Hygiene を全て満たしたエビデンスを PR に添付し、lint/type/test の完走ログを提示する。
    - 受け入れ基準に未達がある場合はフォローアップ Task Seed を登録し、Birdseye index/caps/hot を同一コミットで再生成する。
@@ -37,6 +38,7 @@ Day8 の品質ゲートを統制する評価フレーム。Guardrails／Runbook�
 - `governance/policy.yaml` の forbidden_paths を変更していない（必要な場合は別途ガバナンス承認を経て専用 PR を起票）。
 - Day8 Guardrails のスコープ制約（1変更≤100行 or 2ファイル、ドキュメント除外）と例外ポリシーを遵守している。
 - 例外対応または障害対応時は docs/IN-YYYYMMDD-XXX.md を作成し、該当 PR と `workflow-cookbook/RUNBOOK.md` 「Observability」「Rollback / Retry」へ相互リンクを追記する。
+- 仕様で定義されたチェーン制御・Provider フォールバック・性能 SLO のエビデンス（ログ / メトリクス）を添付し、Birdseye 参照先を明記する。
 
 ### 推奨
 

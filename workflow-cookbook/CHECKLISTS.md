@@ -23,6 +23,7 @@ next_review_due: 2025-11-14
 - 成果物に LICENSE / NOTICE を同梱済み
 - lint / test を全ジョブ完走
 - Day8 `/healthz` で 200/JSON と `Cache-Control: no-store` を確認（[docs/addenda/M1_Metrics_Healthz_ADR.md](../docs/addenda/M1_Metrics_Healthz_ADR.md)）
+- [docs/day8/spec/02_spec.md](../docs/day8/spec/02_spec.md) の SLO（`duration_p95` / `pass_rate` / `retention_ratio`）とチェーン制御条件を確認し、メトリクス証跡を PR へ添付
 - Birdseye index/caps を `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps` で再生成
 - Docker イメージをビルドし主要機能のスモーク確認
 - PR に `type:*` および `semver:*` ラベルを付与済み
