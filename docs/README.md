@@ -16,7 +16,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [ADR 0003: Propose-only 運用と Governance 境界](adr/0003-propose-only-governance.md)
 
 ## 仕様・設計
-- [要件（Requirements）](day8/spec/01_requirements.md) — Day8 の機能要件と非機能要件。
+- [要件（Requirements）](day8/spec/01_requirements.md) — Katamari 章立てに沿って固定事項/スコープ/ユースケース/FR/NFR/データモデル/受入基準/マイルストーンを整理し、Appendix G/J/K/M1 などの参照を束ねた要件ハブ。
 - [仕様詳細（Spec）](day8/spec/02_spec.md) — ワークフローとコンポーネントの具体的な仕様。
 - [アーキテクチャ](day8/design/03_architecture.md) — システム構成とアーキテクチャガイドライン。
   - ASCII フォールバック: [Day8 Architecture ASCII Map](Architecture_ASCII.md) — Mermaid が読めない環境で Collector/Analyzer/Reporter/Proposer/Governance の流れを再確認するときに利用。
