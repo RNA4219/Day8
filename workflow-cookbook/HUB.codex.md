@@ -68,7 +68,7 @@ next_review_due: 2025-11-14
 - **Orchestration** (`orchestration/*.md`): ワークフロー構成・依存関係。優先順: 可変。
   備考: 最優先のブロッカーを提示。
 - **Birdseye Map** (`docs/birdseye/index.json` / `workflow-cookbook/docs/birdseye/index.json`): 依存トポロジと役割を把握。優先順: 高。
-  備考: Day8 ルートと cookbook 両方の Birdseye を `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` で同期し、`plan` 出力にノードID/役割を埋め込む基準面。
+  備考: Day8 ルートと cookbook 両方の Birdseye を `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` で同期し、`plan` 出力にノードID/役割を埋め込む基準面。
 - **Task Seeds** (`TASK.*-MM-DD-YYYY`): 既存タスクドラフト。優先順: 高。
   備考: 未着手タスクの候補。
 
@@ -164,5 +164,5 @@ in_progress → blocked → in_progress（解除後に戻す）
 - 生成後は `CHANGELOG.md` へ反映済みタスクを移すことで履歴が追える
 - Birdseye 鮮度: `docs/birdseye/index.json.generated_at` が最新コミットより古ければ再収集を要求。
   該当 Capsule も同時更新。
-- `codemap.update` は Birdseye 再生成時のみ実行。
+- `birdseye.refresh` は Birdseye 再生成時のみ実行。
   Dual Stack では関数呼び出し→`tool_request` ミラーを同一内容で送る。

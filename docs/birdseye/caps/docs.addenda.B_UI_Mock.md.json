@@ -3,18 +3,13 @@
     "docs/README.md",
     "docs/day8/design/03_architecture.md"
   ],
-  "deps_out": [
-    "docs/Architecture_ASCII.md",
-    "docs/day8/examples/10_examples.md",
-    "workflow-cookbook/scripts/analyze.py",
-    "workflow-cookbook/reports/today.md"
-  ],
-  "generated_at": "2025-10-27T00:00:00Z",
+  "deps_out": [],
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/addenda/B_UI_Mock.md",
   "maintenance": {
     "refresh": "CLI やレポートのレイアウトを変更したら ASCII モックとリンク先を更新し、Birdseye summary/maintenance/generated_at を揃える。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

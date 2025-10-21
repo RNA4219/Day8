@@ -1,14 +1,12 @@
 {
-  "deps_in": [
-    "docs/README.md"
-  ],
+  "deps_in": [],
   "deps_out": [],
-  "generated_at": "2025-10-21T19:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/addenda/A_Glossary.md",
   "maintenance": {
     "refresh": "Collector や Reflection DSL の項目を追加・改訂した際は本文と Birdseye カプセルの summary/risks を揃える。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],

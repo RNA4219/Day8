@@ -11,7 +11,10 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPS_DIR = REPO_ROOT / "docs" / "birdseye" / "caps"
-EXPECTED_TARGET = "docs/birdseye/index.json"
+EXPECTED_DOCS_DIRS = (
+    "docs/birdseye",
+    "workflow-cookbook/docs/birdseye",
+)
 
 
 @pytest.mark.parametrize("caps_path", sorted(CAPS_DIR.glob("*.json")))
@@ -21,28 +24,26 @@ def test_codemap_tooling_targets_index_json(caps_path: Path) -> None:
 
     maintenance = caps_data.get("maintenance", {})
     tooling_commands = maintenance.get("tooling", [])
-    codemap_commands = [
+    refresh_commands = [
         command
         for command in tooling_commands
-        if "workflow-cookbook/tools/codemap/update.py" in command
+        if "scripts/birdseye_refresh.py" in command
     ]
 
-    for command in codemap_commands:
+    for command in refresh_commands:
         args = shlex.split(command)
-        try:
-            targets_index = args.index("--targets")
-        except ValueError:
-            pytest.fail(
-                f"--targets が見つかりません: {caps_path} のコマンド {command!r}",
-            )
+        docs_dir_args = [
+            args[index + 1]
+            for index, token in enumerate(args)
+            if token == "--docs-dir" and index + 1 < len(args)
+        ]
 
-        if targets_index + 1 >= len(args):
-            pytest.fail(
-                f"--targets の引数が不足しています: {caps_path} のコマンド {command!r}",
-            )
-
-        target_arg = args[targets_index + 1]
-        targets = target_arg.split(",")
-        assert EXPECTED_TARGET in targets, (
-            f"{caps_path} の codemap コマンド {command!r} が index.json を指していません"
+        missing = [
+            expected
+            for expected in EXPECTED_DOCS_DIRS
+            if expected not in docs_dir_args
+        ]
+        assert not missing, (
+            f"{caps_path} の Birdseye refresh コマンド {command!r} に "
+            f"必要な --docs-dir が不足しています: {missing}"
         )

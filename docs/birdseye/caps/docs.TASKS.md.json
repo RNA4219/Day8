@@ -9,14 +9,15 @@
     "docs/README.md"
   ],
   "deps_out": [
+    "docs/adr/0007-proposal-priority-handshake.md",
     "docs/seeds/README.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/TASKS.md",
   "maintenance": {
     "refresh": "Katamari テンプレート（背景/手順/検証ログ/フォローアップ）の更新や Guardrails 差分を反映したら index/caps/hot を同じコミットで再生成する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

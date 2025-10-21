@@ -6,19 +6,15 @@
     "out::personas/day8-reporter-concise-engineer.yaml"
   ],
   "deps_in": [
-    "docs/addenda/C_Persona_Schema.md",
-    "docs/day8/README.md"
+    "docs/addenda/C_Persona_Schema.md"
   ],
-  "deps_out": [
-    "personas/day8-analyzer-oncall.yaml",
-    "personas/day8-reporter-concise-engineer.yaml"
-  ],
-  "generated_at": "2025-11-08T09:00:00Z",
+  "deps_out": [],
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "personas/README.md",
   "maintenance": {
     "refresh": "ペルソナ YAML を追加・更新したら Appendix C と同じコミットで index/caps/hot を再生成し、Task Seed テンプレートと整合させる。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

@@ -3,25 +3,43 @@
     "README.md"
   ],
   "deps_out": [
+    "README_PERSONAS_THEMES.md",
+    "config/env.example",
+    "config/model_registry.json",
+    "docs/Release_Checklist.md",
+    "docs/Security_Review_Checklist.md",
     "docs/TASKS.md",
     "docs/UPSTREAM.md",
+    "docs/addenda/B_UI_Mock.md",
+    "docs/addenda/C_Persona_Schema.md",
+    "docs/addenda/D_Trim_Design.md",
+    "docs/addenda/F_Provider_Matrix.md",
+    "docs/addenda/G_Security_Privacy.md",
     "docs/addenda/H_Deploy_Guide.md",
-    "docs/Architecture_ASCII.md",
-    "docs/day8/README.md",
-    "docs/safety.md",
-    "docs/adr/README.md",
+    "docs/addenda/J_Runbook.md",
+    "docs/addenda/K_Accessibility_UX.md",
+    "docs/addenda/L_Config_Reference.md",
+    "docs/addenda/M_Versioning_Release.md",
     "docs/adr/0001-collector-analyzer-reporter-pipeline.md",
     "docs/adr/0002-jsonl-event-contract.md",
     "docs/adr/0003-propose-only-governance.md",
-    "config/env.example",
-    "config/model_registry.json"
+    "docs/adr/0004-provider-interface.md",
+    "docs/adr/0005-reflection-manifest.md",
+    "docs/adr/0006-evaluator-gates.md",
+    "docs/adr/0007-proposal-priority-handshake.md",
+    "docs/adr/README.md",
+    "docs/day8/README.md",
+    "docs/day8/spec/01_requirements.md",
+    "docs/day8_wbs.csv",
+    "docs/openapi/day8_openapi.yaml",
+    "docs/safety.md"
   ],
-  "generated_at": "2025-11-10T09:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/README.md",
   "maintenance": {
     "refresh": "索引を更新したら Birdseye カプセルの deps_out を併せて更新する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],

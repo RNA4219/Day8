@@ -1,0 +1,22 @@
+{
+  "deps_in": [
+    "workflow-cookbook/tools/codemap/README.md"
+  ],
+  "deps_out": [
+    "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
+    "workflow-cookbook/docs/birdseye/index.json"
+  ],
+  "generated_at": "2025-10-21T23:38:07Z",
+  "id": "scripts/birdseye_refresh.py",
+  "public_api": [
+    "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
+  ],
+  "risks": [
+    "誤ったターゲット指定で Birdseye のメタデータを破壊するリスク"
+  ],
+  "role": "script",
+  "summary": "Birdseye の index.json と caps 群を --docs-dir で指定したディレクトリごとに再生成する CLI エントリポイント。",
+  "tests": [
+    "python scripts/birdseye_refresh.py --dry-run --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
+  ]
+}

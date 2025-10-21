@@ -2,13 +2,15 @@
   "deps_in": [
     "docs/UPSTREAM.md"
   ],
-  "deps_out": [],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "deps_out": [
+    "docs/FORK_NOTES.md"
+  ],
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/UPSTREAM_WEEKLY_LOG.md",
   "maintenance": {
     "refresh": "週次レビュー後に最新週の行を追記し、未完了の追加アクションが残っていないか確認する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],

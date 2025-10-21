@@ -1,7 +1,7 @@
 {
   "deps": [
     "in::workflow-cookbook/GUARDRAILS.md",
-    "in::workflow-cookbook/tools/codemap/update.py",
+    "in::scripts/birdseye_refresh.py",
     "out::docs/birdseye/index.json",
     "out::workflow-cookbook/docs/birdseye/index.json"
   ],
@@ -9,12 +9,12 @@
     "workflow-cookbook/RUNBOOK.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "workflow-cookbook/tools/codemap/README.md",
   "maintenance": {
-    "refresh": "codemap.update のCLIオプションに変更が入ったら使用例とBirdseye参照先を更新。",
+    "refresh": "birdseye.refresh のCLIオプションに変更が入ったら使用例とBirdseye参照先を更新。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [
@@ -25,11 +25,11 @@
     "orbit::birdseye-refresh"
   ],
   "summary": [
-    "core::codemap.update の挙動と --targets/--emit/--dry-run の使い分けを解説。",
+    "core::birdseye.refresh の挙動と --docs-dir/--dry-run の使い分けを解説。",
     "orbit::Birdseye index/caps の generated_at を同期させる運用上の注意点を記録。",
     "orbit::Python3.11 以外の依存が不要であることを明示し再現性を担保。"
   ],
   "tests": [
-    "check::READMEの例が update.py のCLI引数と一致するかを確認"
+    "check::READMEの例が scripts/birdseye_refresh.py の CLI 引数と一致するかを確認"
   ]
 }

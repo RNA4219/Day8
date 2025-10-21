@@ -91,7 +91,7 @@ next_review_due: 2025-11-14
    - 対応する caps/*.json のみ読み込み
 
    更新フロー:
-   - Day8 ルート文書を更新したら `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を実行し、index/caps を同期コミットする
+  - Day8 ルート文書を更新したら `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` を実行し、index/caps を同期コミットする
    <!-- /LLM-BOOTSTRAP -->
    ```
 
@@ -167,12 +167,12 @@ next_review_due: 2025-11-14
 - **条件**：`index.json.generated_at` が最新コミットより古い／Capsが見つからない／対象ノードが未登録。
 - **対応**：
   - **ツールあり環境**（Function Calling）
-    - 例：`codemap.update` を呼ぶ（論理名）。
+    - 例：`birdseye.refresh` を呼ぶ（論理名）。
   - **ツールなし環境**
     - 本文に **ミラー封筒**を出し、外部実行を待つ。
 
         ```tool_request
-        {"name":"codemap.update","arguments":{"targets":["frontend/src/App.tsx"],"emit":"index+caps"}}
+        {"name":"birdseye.refresh","arguments":{"docs_dir":["docs/birdseye","workflow-cookbook/docs/birdseye"]}}
         ```
 
     - 実行結果が到着するまで **偽の読込結果を作らない**。
@@ -180,12 +180,12 @@ next_review_due: 2025-11-14
   - `docs/BIRDSEYE.md` の **Edgesセクション**があればそこから ±1 hop を暫定抽出。
   - それも無ければ「直近変更ファイルN件（例：5件）」のみ読込。
 
-#### codemap 未実装時の暫定手順
+#### Birdseye refresh 未実装時の暫定手順
 
-- `codemap.update` を呼べない（実装未提供／環境未配備）場合は、**必ず人間に再生成を依頼**する。
+- `birdseye.refresh` を呼べない（実装未提供／環境未配備）場合は、**必ず人間に再生成を依頼**する。
 - 依頼フロー：
-  1. `tool_request` 封筒で `codemap.update` 要求を出力（対象と希望出力を明示）。
-  2. ノートに「人間が codemap スクリプトをローカルで実行し、成果物をコミットして戻す」旨を記載。
+  1. `tool_request` 封筒で `birdseye.refresh` 要求を出力（対象ディレクトリと希望オプションを明示）。
+  2. ノートに「人間が Birdseye 再生成スクリプトをローカルで実行し、成果物をコミットして戻す」旨を記載。
   3. 実行結果が共有されるまで Birdseye 参照を保留し、暫定読みは上記フォールバックのみ使用。
 - 可能なら `docs/birdseye/` を手動で更新するための最小手順（対象ファイル列挙、既存 JSON の削除有無）をノートに添える。
 - 手動生成後は `generated_at` の更新と差分確認を忘れない。
@@ -211,17 +211,17 @@ next_review_due: 2025-11-14
 
 ### 実装メモ（自動生成）
 
-- `codemap` 相当のスクリプトで **index.json** と **caps/*.json** を生成する。
+- Birdseye 再生成スクリプトで **index.json** と **caps/*.json** を生成する。
 - 失敗時でも人間向け `docs/BIRDSEYE.md` は残す。**機械読みは JSON を第一読者**にする。
 
 ---
 
 ### 互換のための論理ツール名（最小セット）
 
-- `codemap.update`: args
-  `{targets?: string[], emit?: "index"|"caps"|"index+caps"}`
+- `birdseye.refresh`: args
+  `{docs_dir?: string[], dry_run?: boolean}`
   — Birdseye再生成。
-  - **実装未提供**：人間がローカル `tools/codemap/*` などのスクリプトを走らせ、成果物（`index.json`, `caps/*.json`）をコミット。
+  - **実装未提供**：人間がローカル `scripts/birdseye_refresh.py` などのスクリプトを走らせ、成果物（`index.json`, `caps/*.json`）をコミット。
   - 代替操作例：対象ファイル一覧をメモし、`docs/BIRDSEYE.md` を基に手動で JSON を補完。
 - `web.search`: args
   `{q: string, recency?: number, domains?: string[]}`

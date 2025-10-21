@@ -3,7 +3,7 @@
     "README.md",
     "workflow-cookbook/RUNBOOK.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "workflow-cookbook/docs/birdseye/index.json",
   "katamari": {
     "dependencies": {
@@ -23,7 +23,7 @@
     "maintenance": {
       "cadence": "workflow-cookbook 側 Birdseye 更新または Guardrails 差分検知時（目安: 1 スプリント以内）",
       "steps": [
-        "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps を実行し、Day8 Birdseye とホットリストの generated_at を揃える。",
+        "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye を実行し、Day8 Birdseye とホットリストの generated_at を揃える。",
         "Cookbook 側の新規ノード/エッジを確認し、必要なカプセルを Katamari 形式で追記・更新する。",
         "README.md の Birdseye エッジが最新であることを確認し、差分をコミットに含める。"
       ],

@@ -50,7 +50,7 @@ Katamari 本家の安全審査ワークフローを Day8 に適用するため�
 ## リマインダー
 
 - 変更前に必ずテストと安全チェックリストを更新し、審査ログを添付してから承認を依頼する。
-- Birdseye の `generated_at` が古い場合は `workflow-cookbook/tools/codemap/update.py` を実行してインデックスとカプセルを同期する。
+- Birdseye の `generated_at` が古い場合は `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` を実行してインデックスとカプセルを同期する。
 - 監査対象のやり取りは `workflow-cookbook/logs/`・`docs/birdseye/` の両方へ記録し、監査トレイルを欠損させない。
 
 ## Birdseye / Minimal Context Intake Guardrails（鳥図×最小読込）

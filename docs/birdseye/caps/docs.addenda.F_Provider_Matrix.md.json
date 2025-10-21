@@ -1,19 +1,18 @@
 {
   "deps_in": [
     "docs/README.md",
+    "docs/addenda/D_Trim_Design.md",
     "docs/day8/spec/02_spec.md"
   ],
   "deps_out": [
-    "docs/day8/spec/02_spec.md",
-    "docs/addenda/G_Security_Privacy.md",
-    "docs/addenda/H_Deploy_Guide.md"
+    "docs/adr/0004-provider-interface.md"
   ],
-  "generated_at": "2025-10-26T00:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/addenda/F_Provider_Matrix.md",
   "maintenance": {
     "refresh": "プロバイダー構成やモデル既定値を更新したら本文と Birdseye の summary/risks/edges を再生成する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

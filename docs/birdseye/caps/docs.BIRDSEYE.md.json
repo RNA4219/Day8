@@ -2,14 +2,16 @@
   "deps": [
     "in::docs/ROADMAP_AND_SPECS.md"
   ],
-  "deps_in": [],
+  "deps_in": [
+    "docs/ROADMAP_AND_SPECS.md"
+  ],
   "deps_out": [],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/BIRDSEYE.md",
   "maintenance": {
     "refresh": "Birdseye ノード追加時は index/caps/hot を同時更新し、フォールバック手順を最新化する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

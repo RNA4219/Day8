@@ -1,11 +1,11 @@
 # Day8 Birdseye フォールバック手順
 
-Day8 では [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) に従い、Birdseye の index/caps/hot を用いた最小読込を必須としています。本ページは Katamari 版 `docs/BIRDSEYE.md` の構成を踏襲し、Guardrails の Birdseye セクションから参照した際に Day8 で必要となる確認手順を集約したフォールバックガイドです。`docs/birdseye/index.json` の `generated_at` が古い、対象ノードの Capsule が欠損している、`codemap.update` が実行できないといった例外時に参照してください。
+Day8 では [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) に従い、Birdseye の index/caps/hot を用いた最小読込を必須としています。本ページは Katamari 版 `docs/BIRDSEYE.md` の構成を踏襲し、Guardrails の Birdseye セクションから参照した際に Day8 で必要となる確認手順を集約したフォールバックガイドです。`docs/birdseye/index.json` の `generated_at` が古い、対象ノードの Capsule が欠損している、`scripts/birdseye_refresh.py` が実行できないといった例外時に参照してください。
 
 ## 1. フォールバック適用条件
 - `docs/birdseye/index.json.generated_at` が最新コミットより古く、Guardrails が求めるインデックス整合性を満たせない。
 - `docs/birdseye/index.json.edges` に対象ノードが存在しない、もしくは接続が欠落しており ±1 hop の追跡ができない。
-- 対応する `docs/birdseye/caps/*.json` や `docs/birdseye/hot.json` が欠損・旧版のままで、再生成ツール（`codemap.update`）を即時に実行できない。
+- 対応する `docs/birdseye/caps/*.json` や `docs/birdseye/hot.json` が欠損・旧版のままで、再生成ツール（`scripts/birdseye_refresh.py`）を即時に実行できない。
 
 上記のいずれかに該当した場合は、ここに記載のフォールバックのみで暫定対処し、恒久対応として JSON を再生成するタスクを併走させてください。
 
@@ -35,10 +35,10 @@ Guardrails では「Birdseye の人間向け資料は補助位置付け」と定
 - [docs/birdseye/README.md](birdseye/README.md): Birdseye 運用全体像と JSON スキーマ。
 - [docs/ROADMAP_AND_SPECS.md](ROADMAP_AND_SPECS.md): Birdseye 反映 4 ステップと Day8 索引ルール。
 - [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md): Guardrails が定義する最小読込とフォールバック要件。
-- [workflow-cookbook/tools/codemap/update.py](../workflow-cookbook/tools/codemap/update.py): インデックス再生成ツール。`--emit index+caps` で Capsule と合わせて更新できる。
+- [scripts/birdseye_refresh.py](../scripts/birdseye_refresh.py): インデックスと Capsule を同時更新する再生成ツール。`--dry-run` で書き込み前の差分を確認できる。
 
 ## 6. 恒久対応チェックリスト
-- [ ] `codemap.update` などの再生成ツールを実行し、`docs/birdseye/index.json` と `docs/birdseye/caps/` を最新化した。
+- [ ] `scripts/birdseye_refresh.py` などの再生成ツールを実行し、`docs/birdseye/index.json` と `docs/birdseye/caps/` を最新化した。
 - [ ] `docs/birdseye/hot.json` の `generated_at` と優先度を Birdseye 更新内容に合わせて見直した。
 - [ ] `docs/ROADMAP_AND_SPECS.md` と [docs/birdseye/README.md](birdseye/README.md) に恒久対応の差分を反映し、フォールバックが不要になったことを明示した。
 - [ ] レビュー時に本ページを参照し、フォールバックから正式運用へ戻したことをコミュニケーションした。

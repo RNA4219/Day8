@@ -41,8 +41,8 @@ canary rules.
       と整合する最小読込ガードレールを確認
     - [`tools/codemap/README.md`](tools/codemap/README.md) …… (`workflow-cookbook/tools/codemap/README.md`)
       Birdseye カプセル再生成前提と `codemap.update` の流れを把握
-    - [`tools/codemap/update.py`](tools/codemap/update.py) …… `python tools/codemap/update.py`
-      (`workflow-cookbook/tools/codemap/update.py`) で `codemap.update` を実行し Birdseye カプセルを再生成する
+     - [`scripts/birdseye_refresh.py`](../scripts/birdseye_refresh.py) …… `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye`
+       を実行し Birdseye index/caps を再生成する
       （`workflow-cookbook/GUARDRAILS.md` の[鮮度管理](GUARDRAILS.md#%E9%AE%AE%E5%BA%A6%E7%AE%A1%E7%90%86staleness-handling)参照）
     - [`HUB.codex.md`](HUB.codex.md) …… (`workflow-cookbook/HUB.codex.md`) 仕様集約とタスク分割ハブを整備し、Birdseye カプセルの依存関係を維持
     - [`docs/IN-20250115-001.md`](docs/IN-20250115-001.md) …… (`workflow-cookbook/docs/IN-20250115-001.md`)

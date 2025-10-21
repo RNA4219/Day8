@@ -8,7 +8,7 @@ Katamari 本家の `docs/FORK_NOTES.md` を前提に、Day8 フォークで追�
 - **workflow-cookbook サブツリー** — CI ログ・レポート・スクリプトは `workflow-cookbook/` をサブツリー取り込みして共有します。Collector 出力は `workflow-cookbook/logs/`、Reporter 出力は `workflow-cookbook/reports/` に揃え、[リポジトリ README](../README.md) に記載された参照順序を守ります。
 
 ## Day8 追加依存関係
-- **Python 3.11+** — Birdseye 再生成ツール `workflow-cookbook/tools/codemap/update.py` は標準ライブラリのみで動作しますが、実行には Python 3.11 以上が必須です。
+- **Python 3.11+** — Birdseye 再生成ツール `scripts/birdseye_refresh.py` は標準ライブラリのみで動作しますが、実行には Python 3.11 以上が必須です。
 - **Lint & Test スイート** — Katamari の既定に加え、Day8 では `mypy --strict`、`ruff`、`pytest`、`node --test` を常に通すことを [CONTRIBUTING.md](../CONTRIBUTING.md) で要求しています。フォークで追加モジュールを導入する場合は、CI で同じ順序のジョブを維持してください。
 - **GitHub Actions 反省フロー** — `test` → `reflection` → `pr_gate` の 3 ワークフローが Day8 導入手順の基本であり、`workflow-cookbook/scripts/analyze.py` を用いた Analyzer が必須です。[INSTALL.md](../INSTALL.md) を確認し、必要ファイルの同梱を忘れないでください。
 

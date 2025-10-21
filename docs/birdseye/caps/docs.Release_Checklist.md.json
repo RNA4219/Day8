@@ -1,20 +1,24 @@
 {
   "deps_in": [
+    "CHANGELOG.md",
     "docs/README.md",
-    "docs/ROADMAP_AND_SPECS.md"
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/Security_Review_Checklist.md",
+    "docs/openapi/day8_openapi.yaml"
   ],
   "deps_out": [
+    "Dockerfile",
     "Makefile",
     "docs/addenda/M_Versioning_Release.md",
     "scripts/perf/collect_metrics.py",
     "workflow-cookbook/CHECKLISTS.md"
   ],
-  "generated_at": "2025-12-20T12:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/Release_Checklist.md",
   "maintenance": {
     "refresh": "Release フローや Birdseye 更新順が変わったら docs/README.md・ROADMAP と合わせて更新し、codemap コマンドの出力を PR に添付する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],
