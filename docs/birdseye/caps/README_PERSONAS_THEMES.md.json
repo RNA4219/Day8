@@ -7,7 +7,8 @@
     "in::docs/addenda/K_Accessibility_UX.md",
     "out::docs/birdseye/index.json",
     "out::themes/CATALOG.md",
-    "out::personas/README.md"
+    "out::personas/README.md",
+    "out::scripts/switch_theme.py"
   ],
   "deps_in": [
     "README.md",
@@ -19,9 +20,10 @@
   "deps_out": [
     "docs/birdseye/index.json",
     "themes/CATALOG.md",
-    "personas/README.md"
+    "personas/README.md",
+    "scripts/switch_theme.py"
   ],
-  "generated_at": "2025-11-12T09:30:00Z",
+  "generated_at": "2025-12-21T00:00:00Z",
   "id": "README_PERSONAS_THEMES.md",
   "maintenance": {
     "refresh": "テーマやペルソナを追加したら TOML 設定・Appendix B/C/K とのリンクを更新し、Birdseye index/hot/caps の generated_at を同期する。",

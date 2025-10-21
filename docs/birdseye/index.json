@@ -752,9 +752,21 @@
     [
       "docs/Release_Checklist.md",
       "Dockerfile"
+    ],
+    [
+      "scripts/",
+      "scripts/switch_theme.py"
+    ],
+    [
+      "README_PERSONAS_THEMES.md",
+      "scripts/switch_theme.py"
+    ],
+    [
+      "themes/CATALOG.md",
+      "scripts/switch_theme.py"
     ]
   ],
-  "generated_at": "00002",
+  "generated_at": "00003",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -778,7 +790,7 @@
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
-      "mtime": "2025-11-12T09:30:00Z",
+      "mtime": "2025-12-21T00:00:00Z",
       "role": "guide"
     },
     "docs/BIRDSEYE.md": {
@@ -893,7 +905,7 @@
     },
     "scripts/": {
       "caps": "docs/birdseye/caps/scripts.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "2025-12-21T00:00:00Z",
       "role": "automation"
     },
     "tools/": {
@@ -1003,7 +1015,7 @@
     },
     "themes/CATALOG.md": {
       "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
-      "mtime": "2025-11-12T09:30:00Z",
+      "mtime": "2025-12-21T00:00:00Z",
       "role": "design"
     },
     "personas/README.md": {
@@ -1115,6 +1127,11 @@
       "caps": "docs/birdseye/caps/Dockerfile.json",
       "mtime": "2025-03-07T00:00:00Z",
       "role": "build"
+    },
+    "scripts/switch_theme.py": {
+      "caps": "docs/birdseye/caps/scripts.switch_theme.py.json",
+      "mtime": "2025-12-21T00:00:00Z",
+      "role": "automation"
     }
   }
 }

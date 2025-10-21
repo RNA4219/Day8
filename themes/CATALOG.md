@@ -13,8 +13,9 @@ Katamari 版 `themes/` をベースに、Day8 のブランドカラーと運用�
 ## 適用手順
 
 1. `chainlit.toml` の `[project.ui]` セクションに `theme_path = "themes/classic.theme.json"` などを設定します。
-2. `public/theme.json` を既定テーマとして配置すると、Chainlit Hosted Static から直接読み込まれます。
-3. `public/stylesheet.css` を `custom_css` で指定すると補助的なレイアウト調整が適用されます。
+2. テーマ切替時は `python scripts/switch_theme.py <theme-name>` を実行し、`themes/<theme-name>.theme.json` を `public/theme.json` へコピーします。
+3. `public/theme.json` を既定テーマとして配置すると、Chainlit Hosted Static から直接読み込まれます。
+4. `public/stylesheet.css` を `custom_css` で指定すると補助的なレイアウト調整が適用されます。
 
 ### Day8 での配布ポリシー
 
