@@ -19,6 +19,8 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 更新フロー:
 - Day8 ルート文書を更新したら `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を実行し、index/caps を同期コミットする
 - Birdseye の編集順序と `generated_at` 同期ルールは [docs/birdseye/README.md](docs/birdseye/README.md) を参照
+- Day8 固有の変更履歴は [CHANGELOG.md](CHANGELOG.md) に追記し、Katamari 本家の記録は [workflow-cookbook/CHANGELOG.md](workflow-cookbook/CHANGELOG.md) で管理する
+- ChangeLog を更新したら Release Checklist と Birdseye (`index`/`caps`/`hot`) の `generated_at` を同一コミットで揃える
 <!-- /LLM-BOOTSTRAP -->
 
 詳細な構成を確認する際は、上記の導線に沿って必要なドキュメントを順番に参照してください。

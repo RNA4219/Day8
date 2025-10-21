@@ -11,6 +11,11 @@
       "reason": "Day8/Workflow-cookbook双方の資料を横断索引し、ロードマップStep1内のBirdseye反映4ステップを明示して HUB への読み順を先導する。"
     },
     {
+      "caps": "docs/birdseye/caps/CHANGELOG.md.json",
+      "id": "CHANGELOG.md",
+      "reason": "Day8 固有の履歴を Katamari 本家の CHANGELOG と Release Checklist に橋渡しし、generated_at 同期を確認する起点。"
+    },
+    {
       "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
       "id": "docs/day8_wbs.csv",
       "reason": "マイルストーンの作業分解を一覧化し、計画策定とスプリントレビューでロードマップ差分を即座に洗い出すための基準表。"
@@ -81,5 +86,5 @@
       "reason": "Priority Score 記法と Task Seed/ガバナンスゲートの整合を即時確認するためのハンドシェイク基準。"
     }
   ],
-  "generated_at": "2025-11-12T09:30:00Z"
+  "generated_at": "2025-11-21T09:30:00Z"
 }
