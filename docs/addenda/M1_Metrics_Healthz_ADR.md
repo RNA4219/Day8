@@ -22,6 +22,15 @@ Katamari の ADR `M1_Metrics_Healthz_ADR` を Day8 の導入計画へ落とし�
 2. `/metrics` の公開粒度は Katamari ADR と同じネームスペース（`day8_*`）へ揃え、Prometheus スクレイプ間隔 30s を前提にサマリをエクスポートする。
 3. ダミー値を廃止するコミットでは、Day8 側のテストベンチにカウンタ初期値をモックするテストを追加し、Katamari の `M1` フェーズと同じ妥当性チェックを行う。
 
+### Metrics コレクタ CLI
+- `python scripts/perf/collect_metrics.py --prom-url http://localhost:8000/metrics --chainlit-log workflow-cookbook/logs/chainlit.jsonl`
+  - `day8_*` プレフィクスの Prometheus 値と Chainlit JSONL ログを同時に取得し、リリース判定時にカウンタが期待値へ到達しているか
+    を確認する。
+  - Chainlit 側の JSONL は Katamari と同じイベント契約（`metric` + `value`、もしくは `metrics` ディクショナリ）を想定し、欠損時は
+    0 件として扱う。
+  - スクレイプ先の URL / ログパスは環境に合わせて引数で上書きできる。Birdseye 生成対象の資料では本 CLI を正式な検証手順として採
+    用する。
+
 ### リリース・運用タイムライン
 | フェーズ | 依頼元 | 主要作業 | 完了条件 |
 | --- | --- | --- | --- |
