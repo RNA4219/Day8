@@ -11,6 +11,11 @@
       "reason": "Day8/Workflow-cookbook双方の資料を横断索引し、ロードマップStep1内のBirdseye反映4ステップを明示して HUB への読み順を先導する。"
     },
     {
+      "caps": "docs/birdseye/caps/docs.addenda.M1_Metrics_Healthz_ADR.md.json",
+      "id": "docs/addenda/M1_Metrics_Healthz_ADR.md",
+      "reason": "Katamari M1 の `/healthz` と MetricsRegistry 設計を Day8 へ移植する計画とタイムラインを集中管理し、Ops/Release 文書とチェックリスト更新の根拠を示す。"
+    },
+    {
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
       "id": "docs/TASKS.md",
       "reason": "Task Seed の作成・保守ルールと docs/seeds 配下への導線を示し、タスク運用を立ち上げる際の必読ハブとなる。"
@@ -56,5 +61,5 @@
       "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
     }
   ],
-  "generated_at": "2025-10-30T12:30:00Z"
+  "generated_at": "2025-10-31T09:30:00Z"
 }
