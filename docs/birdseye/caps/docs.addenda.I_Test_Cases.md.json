@@ -8,7 +8,7 @@
   "maintenance": {
     "refresh": "テスト観点を更新したら Quality ドキュメントと Birdseye エッジを同時に見直す。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/addenda/I_Test_Cases.md --emit index+caps"
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
   "public_api": [],

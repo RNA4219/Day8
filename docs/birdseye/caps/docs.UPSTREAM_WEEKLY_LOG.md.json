@@ -8,7 +8,7 @@
   "maintenance": {
     "refresh": "週次レビュー後に最新週の行を追記し、未完了の追加アクションが残っていないか確認する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/UPSTREAM_WEEKLY_LOG.md"
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
   "public_api": [],

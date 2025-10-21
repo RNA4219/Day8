@@ -11,7 +11,7 @@
   "maintenance": {
     "refresh": "subtree 取り込み後にチェックリストと週次ログの記述を必ず最新化する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/UPSTREAM.md"
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
     ]
   },
   "public_api": [],
