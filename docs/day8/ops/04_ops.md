@@ -14,6 +14,7 @@
 
 ## 監視・ヘルスチェック
 - Katamari ADR に準拠した `/healthz` 実装とメトリクス公開計画は [Day8 Addendum: M1 Metrics + Healthz ADR](../../addenda/M1_Metrics_Healthz_ADR.md) を参照します。
+- `/healthz` / `/metrics` の API 契約は [Day8 Observability OpenAPI](../../openapi/day8_openapi.yaml) で確認し、ヘッダ (`Cache-Control: no-store`) やレスポンス形式の検証チェックリストを Release フローへ同期します。
 - `/healthz` のレスポンスに `Cache-Control: no-store` を付与し、CDN 側のキャッシュを禁止します。リグレッションが発生した場合は Release チェックリストの「ヘルスチェック検証」を再実行します。
 - MetricsRegistry のダミー値は Sprint N+1 で置き換える計画です。ダッシュボードに計測漏れが出た場合は、`healthz_request_total` と `jobs_failed_total` の差分を確認し、Day8 API ログと突き合わせます。
 - Collector と Analyzer の JSONL 受け渡し契約は [ADR 0002](../../adr/0002-jsonl-event-contract.md) を参照し、`workflow-cookbook/logs/` 配下の整合性を点検します。

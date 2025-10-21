@@ -114,6 +114,10 @@
       "docs/adr/0003-propose-only-governance.md"
     ],
     [
+      "docs/README.md",
+      "docs/openapi/day8_openapi.yaml"
+    ],
+    [
       "docs/ROADMAP_AND_SPECS.md",
       "docs/BIRDSEYE.md"
     ],
@@ -179,6 +183,10 @@
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
+      "docs/openapi/day8_openapi.yaml"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
       "workflow-cookbook/TASK.codex.md"
     ],
     [
@@ -212,6 +220,10 @@
     [
       "docs/day8/ops/04_ops.md",
       "docs/adr/0003-propose-only-governance.md"
+    ],
+    [
+      "docs/day8/ops/04_ops.md",
+      "docs/openapi/day8_openapi.yaml"
     ],
     [
       "docs/UPSTREAM.md",
@@ -522,6 +534,18 @@
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
+      "docs/openapi/day8_openapi.yaml",
+      "docs/addenda/M1_Metrics_Healthz_ADR.md"
+    ],
+    [
+      "docs/openapi/day8_openapi.yaml",
+      "docs/day8/ops/04_ops.md"
+    ],
+    [
+      "docs/openapi/day8_openapi.yaml",
+      "docs/Release_Checklist.md"
+    ],
+    [
       "docs/README.md",
       "docs/day8/spec/01_requirements.md"
     ],
@@ -530,7 +554,7 @@
       "docs/day8/spec/01_requirements.md"
     ]
   ],
-  "generated_at": "2025-11-07T09:00:00Z",
+  "generated_at": "2025-10-21T19:48:39Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -549,12 +573,12 @@
     },
     "docs/README.md": {
       "caps": "docs/birdseye/caps/docs.README.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "2025-10-21T19:48:39Z",
       "role": "index"
     },
     "docs/ROADMAP_AND_SPECS.md": {
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "2025-10-21T19:48:39Z",
       "role": "roadmap"
     },
     "docs/Architecture_ASCII.md": {
@@ -571,6 +595,11 @@
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
       "mtime": "2025-02-24T12:00:00Z",
       "role": "checklist"
+    },
+    "docs/openapi/day8_openapi.yaml": {
+      "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
+      "mtime": "2025-10-21T19:48:39Z",
+      "role": "api-spec"
     },
     "docs/FORK_NOTES.md": {
       "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
@@ -779,7 +808,7 @@
     },
     "docs/day8/ops/04_ops.md": {
       "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "2025-10-21T19:48:39Z",
       "role": "operations"
     },
     "docs/adr/README.md": {

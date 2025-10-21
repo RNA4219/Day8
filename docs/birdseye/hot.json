@@ -26,6 +26,11 @@
       "reason": "Katamari M1 の `/healthz` と MetricsRegistry 設計を Day8 へ移植する計画とタイムラインを集中管理し、Ops/Release 文書とチェックリスト更新の根拠を示す。"
     },
     {
+      "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
+      "id": "docs/openapi/day8_openapi.yaml",
+      "reason": "Release 判定前に `/healthz` `/metrics` のレスポンス形式とヘッダ要件を即確認し、OpenAPI ベースで Ops/Checklist を整合させる。"
+    },
+    {
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
       "id": "docs/TASKS.md",
       "reason": "Task Seed の作成・保守ルールと docs/seeds 配下への導線を示し、タスク運用を立ち上げる際の必読ハブとなる。"
@@ -71,5 +76,5 @@
       "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
     }
   ],
-  "generated_at": "2025-11-07T09:00:00Z"
+  "generated_at": "2025-10-21T19:48:39Z"
 }
