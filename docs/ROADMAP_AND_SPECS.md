@@ -38,8 +38,8 @@
 | 仕様 | 画面・ユースケースの確定版 | [docs/day8/spec/02_spec.md](day8/spec/02_spec.md) | [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | HUB の自動タスク分解と整合させる |
 | 設計 | アーキテクチャと責務分担 | [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) | [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) | 設計判断を Guardrails の原則に沿って記録 |
 | 運用・品質 | リリース手順と品質ゲート | [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) / [docs/addenda/H_Deploy_Guide.md](addenda/H_Deploy_Guide.md) | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | 承認フローと計測指標を同期 |
-| セキュリティ | 脅威モデリングと権限設計 | [docs/day8/security/05_security.md](day8/security/05_security.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | 例外申請・緩和策は SECURITY.md の承認フローに従う |
-| 安全性レビュー | 倫理・安全配慮の基準 | [docs/safety.md](safety.md) | [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | SECURITY の結論を踏まえ追加配慮を SAFETY.md で確定 |
+| セキュリティ | 脅威モデリングと権限設計 | [docs/day8/security/05_security.md](day8/security/05_security.md) / [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | Appendix G で Secrets/ログ/通信の運用ノートを同期し、例外申請は SECURITY.md の承認フローに従う |
+| 安全性レビュー | 倫理・安全配慮の基準 | [docs/safety.md](safety.md) | [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | Appendix G・SECURITY からのハンドオフを受け、フェイルセーフと Hot 更新手順を適用 |
 | ガバナンス | 優先度・承認ルール | [governance/policy.yaml](../governance/policy.yaml) | [workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) / [workflow-cookbook/governance/prioritization.yaml](../workflow-cookbook/governance/prioritization.yaml) | Katamari ガバナンスに倣い意思決定を記録 |
 
 ## 2. 実装モジュールと対応仕様
@@ -80,6 +80,7 @@
 - [品質チェックリスト](../workflow-cookbook/CHECKLISTS.md)
 - [Day8 コントリビューションガイド](day8/guides/07_contributing.md)
 - [安全性レビュー基準](safety.md)
+- [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md)
 - [ガバナンス方針](../workflow-cookbook/governance/policy.yaml)
 - [Birdseye フォールバック手順](BIRDSEYE.md)
 - [Birdseye 反映 4 ステップ（ロードマップ Step1 の必須作業）](#roadmap-step1)

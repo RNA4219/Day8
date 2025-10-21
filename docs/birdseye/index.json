@@ -50,6 +50,10 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/README.md",
       "docs/safety.md"
     ],
     [
@@ -83,6 +87,10 @@
     [
       "docs/ROADMAP_AND_SPECS.md",
       "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/addenda/G_Security_Privacy.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -269,7 +277,7 @@
       "docs/addenda/I_Test_Cases.md"
     ]
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-22T09:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -470,6 +478,11 @@
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
       "mtime": "2025-02-21T00:00:00Z",
       "role": "quality"
+    },
+    "docs/addenda/G_Security_Privacy.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
+      "mtime": "2025-10-22T09:00:00Z",
+      "role": "security"
     },
     "docs/day8/quality/06_quality.md": {
       "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",

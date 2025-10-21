@@ -31,6 +31,11 @@
       "reason": "Guardrails/Safety 間の責務境界とインシデント初動を統合し、即時対応すべき窓口と手順を把握できる。"
     },
     {
+      "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
+      "id": "docs/addenda/G_Security_Privacy.md",
+      "reason": "Secrets・ログ衛生・OAuth ガードを Day8 用に整理し、SECURITY/Safety ハンドオフ時の運用メモを即参照できる。"
+    },
+    {
       "caps": "docs/birdseye/caps/workflow-cookbook.HUB.codex.md.json",
       "id": "workflow-cookbook/HUB.codex.md",
       "reason": "Cookbook 側の資料分類とタスク分割ルールを集中管理するオーケストレーション中枢。"
@@ -46,5 +51,5 @@
       "reason": "Birdseye index/caps/hot の欠損時に即参照し、Guardrails の最小読込手順をフォールバックで確保するための要点をまとめている。"
     }
   ],
-  "generated_at": "2025-10-20T20:29:16Z"
+  "generated_at": "2025-10-22T09:00:00Z"
 }
