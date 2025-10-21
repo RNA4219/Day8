@@ -6,10 +6,10 @@
   "deps_out": [
     "Makefile",
     "docs/addenda/M_Versioning_Release.md",
-    "workflow-cookbook/CHECKLISTS.md",
-    "Dockerfile"
+    "scripts/perf/collect_metrics.py",
+    "workflow-cookbook/CHECKLISTS.md"
   ],
-  "generated_at": "2025-03-07T00:00:00Z",
+  "generated_at": "2025-12-20T12:00:00Z",
   "id": "docs/Release_Checklist.md",
   "maintenance": {
     "refresh": "Release フローや Birdseye 更新順が変わったら docs/README.md・ROADMAP と合わせて更新し、codemap コマンドの出力を PR に添付する。",
