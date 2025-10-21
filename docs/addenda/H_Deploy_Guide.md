@@ -1,6 +1,6 @@
 # Day8 デプロイガイド付録（Appendix H）
 
-Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 つの観点で整理した付録です。Day8 のリポジトリ構成と workflow-cookbook の運用に合わせて最小限の変更で導入できるように設計しています。
+Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 つの観点で整理した付録です。Day8 のリポジトリ構成と workflow-cookbook の運用に合わせて最小限の変更で導入できるように設計しています。環境変数や設定ファイルの網羅チェックは Appendix L（[docs/addenda/L_Config_Reference.md](L_Config_Reference.md)）とセットで運用してください。
 
 ## 開発環境フロー
 
