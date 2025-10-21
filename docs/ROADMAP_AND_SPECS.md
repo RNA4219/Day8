@@ -30,6 +30,12 @@
 - [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md): タスク化した変更に潜むリスク対応や例外承認のルールを確認し、セキュリティ緩和策を手順へ織り込む。
 - [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md): Security で整理したリスクのうち倫理・安全面の追加確認が必要な項目を洗い出し、最終判断のガードを適用する。
 
+### ADR ハイライト（設計判断の根拠）
+
+- [docs/adr/0001-collector-analyzer-reporter-pipeline.md](adr/0001-collector-analyzer-reporter-pipeline.md): Collector / Analyzer / Reporter を 3 層で運用し、ログ処理の責務を分離する決定。
+- [docs/adr/0002-jsonl-event-contract.md](adr/0002-jsonl-event-contract.md): Collector が出力する JSONL スキーマと Analyzer の検証手順を規定し、`workflow-cookbook/logs/` の品質を保証する。
+- [docs/adr/0003-propose-only-governance.md](adr/0003-propose-only-governance.md): Reporter/Proposer が propose-only を遵守し、`governance/policy.yaml` の制約タグと連携する運用境界を定義する。
+
 上記の流れで HUB → Guardrails → Blueprint → Runbook → Evaluation → Checklists → Task → Security → Safety の順に確認したら、本節の索引表と「## 2. 実装モジュールと対応仕様」へ進み、Day8 側の更新対象とトレーサビリティを確定させる。
 
 | 種別 | 主な用途 | Day8 リポジトリ | workflow-cookbook | 備考 |

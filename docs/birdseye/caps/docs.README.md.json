@@ -8,9 +8,13 @@
     "docs/addenda/H_Deploy_Guide.md",
     "docs/Architecture_ASCII.md",
     "docs/day8/README.md",
-    "docs/safety.md"
+    "docs/safety.md",
+    "docs/adr/README.md",
+    "docs/adr/0001-collector-analyzer-reporter-pipeline.md",
+    "docs/adr/0002-jsonl-event-contract.md",
+    "docs/adr/0003-propose-only-governance.md"
   ],
-  "generated_at": "2025-10-25T12:00:00Z",
+  "generated_at": "2025-11-05T09:00:00Z",
   "id": "docs/README.md",
   "maintenance": {
     "refresh": "索引を更新したら Birdseye カプセルの deps_out を併せて更新する。",

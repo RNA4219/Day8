@@ -9,6 +9,12 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 ## Day8 コア資料
 - [Day8 Docs 総覧](day8/README.md) — サブディレクトリ構成とドキュメント群の概要。
 
+## Architecture Decision Records (ADR)
+- [ADR 目次](adr/README.md) — Collector / Analyzer / Reporter の設計判断や propose-only 運用方針を整理した記録。
+- [ADR 0001: Collector/Analyzer/Reporter の 3 層パイプライン](adr/0001-collector-analyzer-reporter-pipeline.md)
+- [ADR 0002: JSONL イベント契約と Analyzer 連携](adr/0002-jsonl-event-contract.md)
+- [ADR 0003: Propose-only 運用と Governance 境界](adr/0003-propose-only-governance.md)
+
 ## 仕様・設計
 - [要件（Requirements）](day8/spec/01_requirements.md) — Day8 の機能要件と非機能要件。
 - [仕様詳細（Spec）](day8/spec/02_spec.md) — ワークフローとコンポーネントの具体的な仕様。
