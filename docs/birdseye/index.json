@@ -6,6 +6,10 @@
     ],
     [
       "README.md",
+      "CHANGELOG.md"
+    ],
+    [
+      "README.md",
       "docs/README.md"
     ],
     [
@@ -59,6 +63,14 @@
     [
       "docs/README.md",
       "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "workflow-cookbook/CHANGELOG.md"
     ],
     [
       "docs/README.md",
@@ -738,12 +750,17 @@
       "requirements-dev.txt"
     ]
   ],
-  "generated_at": "2025-12-15T09:00:00Z",
+  "generated_at": "2025-10-21T09:30:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
       "mtime": "2025-12-01T00:00:00Z",
       "role": "setup"
+    },
+    "CHANGELOG.md": {
+      "caps": "docs/birdseye/caps/CHANGELOG.md.json",
+      "mtime": "2025-11-21T09:30:00Z",
+      "role": "changelog"
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
