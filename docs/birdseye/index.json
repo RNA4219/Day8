@@ -688,9 +688,17 @@
     [
       "workflow-cookbook/governance/prioritization.yaml",
       "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/addenda/H_Deploy_Guide.md",
+      "Dockerfile"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "Dockerfile"
     ]
   ],
-  "generated_at": "2025-11-12T09:30:00Z",
+  "generated_at": "2025-03-07T00:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -1026,6 +1034,11 @@
       "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
       "mtime": "2025-11-06T12:00:00Z",
       "role": "adr"
+    },
+    "Dockerfile": {
+      "caps": "docs/birdseye/caps/Dockerfile.json",
+      "mtime": "2025-03-07T00:00:00Z",
+      "role": "build"
     }
   }
 }
