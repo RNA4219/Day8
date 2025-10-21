@@ -12,7 +12,15 @@
     "README.md"
   ],
   "deps_out": [
+    "docs/BIRDSEYE.md",
     "docs/UPSTREAM.md",
+    "docs/day8/design/03_architecture.md",
+    "docs/day8/examples/10_examples.md",
+    "docs/day8/ops/04_ops.md",
+    "docs/day8/quality/06_quality.md",
+    "docs/day8/security/05_security.md",
+    "docs/day8/spec/01_requirements.md",
+    "docs/day8/spec/02_spec.md",
     "workflow-cookbook/BLUEPRINT.md",
     "workflow-cookbook/CHECKLISTS.md",
     "workflow-cookbook/EVALUATION.md",
@@ -21,7 +29,7 @@
     "workflow-cookbook/SAFETY.md",
     "workflow-cookbook/TASK.codex.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/ROADMAP_AND_SPECS.md",
   "maintenance": {
     "refresh": "Guardrails 承認後にクロスリンクと Birdseye（ノード追加→Capsule更新→hot.json更新→generated_at揃え）を同時更新し、ガバナンス差分と整合させる。",

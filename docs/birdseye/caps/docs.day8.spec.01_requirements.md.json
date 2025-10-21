@@ -1,0 +1,22 @@
+{
+  "deps_in": [
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/day8/README.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-21T07:57:51Z",
+  "id": "docs/day8/spec/01_requirements.md",
+  "maintenance": {
+    "refresh": "要件を追加・更新したら Birdseye index.json と依存関係を再生成する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "要件と仕様書の差分が可視化できないと実装判断が誤る"
+  ],
+  "role": "requirements",
+  "summary": "Day8 ワークフローが満たすべき機能・非機能要件を整理する基準書。",
+  "tests": []
+}

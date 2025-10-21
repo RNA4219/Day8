@@ -42,11 +42,11 @@
     ],
     [
       "docs/README.md",
-      "docs/day8/README.md"
+      "docs/addenda/H_Deploy_Guide.md"
     ],
     [
       "docs/README.md",
-      "docs/addenda/H_Deploy_Guide.md"
+      "docs/day8/README.md"
     ],
     [
       "docs/README.md",
@@ -59,6 +59,34 @@
     [
       "docs/ROADMAP_AND_SPECS.md",
       "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/design/03_architecture.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/examples/10_examples.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/ops/04_ops.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/security/05_security.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/spec/01_requirements.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/spec/02_spec.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -93,12 +121,44 @@
       "docs/seeds/README.md"
     ],
     [
+      "docs/UPSTREAM.md",
+      "docs/UPSTREAM_WEEKLY_LOG.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/design/03_architecture.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/examples/10_examples.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/ops/04_ops.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/security/05_security.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/spec/01_requirements.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/spec/02_spec.md"
+    ],
+    [
       "docs/day8/ops/04_ops.md",
       "docs/addenda/H_Deploy_Guide.md"
     ],
     [
-      "docs/UPSTREAM.md",
-      "docs/UPSTREAM_WEEKLY_LOG.md"
+      "docs/day8/quality/06_quality.md",
+      "docs/addenda/I_Test_Cases.md"
     ],
     [
       "docs/safety.md",
@@ -263,13 +323,9 @@
     [
       "workflow-cookbook/SECURITY.md",
       "workflow-cookbook/tools/"
-    ],
-    [
-      "docs/day8/quality/06_quality.md",
-      "docs/addenda/I_Test_Cases.md"
     ]
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -301,11 +357,6 @@
       "mtime": "2025-01-15T00:00:00Z",
       "role": "tasks"
     },
-    "docs/addenda/A_Glossary.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
-      "mtime": "2025-10-21T00:00:00Z",
-      "role": "glossary"
-    },
     "docs/UPSTREAM.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
       "mtime": "2025-02-15T10:00:00Z",
@@ -316,15 +367,60 @@
       "mtime": "2025-02-15T10:00:00Z",
       "role": "log"
     },
+    "docs/addenda/A_Glossary.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
+      "mtime": "2025-10-21T00:00:00Z",
+      "role": "glossary"
+    },
     "docs/addenda/H_Deploy_Guide.md": {
       "caps": "docs/birdseye/caps/docs.addenda.H_Deploy_Guide.md.json",
       "mtime": "2025-02-21T00:00:00Z",
       "role": "guide"
     },
+    "docs/addenda/I_Test_Cases.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "quality"
+    },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
       "mtime": "2025-01-15T00:00:00Z",
       "role": "overview"
+    },
+    "docs/day8/design/03_architecture.md": {
+      "caps": "docs/birdseye/caps/docs.day8.design.03_architecture.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "architecture"
+    },
+    "docs/day8/examples/10_examples.md": {
+      "caps": "docs/birdseye/caps/docs.day8.examples.10_examples.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "examples"
+    },
+    "docs/day8/ops/04_ops.md": {
+      "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "operations"
+    },
+    "docs/day8/quality/06_quality.md": {
+      "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "quality"
+    },
+    "docs/day8/security/05_security.md": {
+      "caps": "docs/birdseye/caps/docs.day8.security.05_security.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "security"
+    },
+    "docs/day8/spec/01_requirements.md": {
+      "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "requirements"
+    },
+    "docs/day8/spec/02_spec.md": {
+      "caps": "docs/birdseye/caps/docs.day8.spec.02_spec.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "spec"
     },
     "docs/safety.md": {
       "caps": "docs/birdseye/caps/docs.safety.md.json",
@@ -440,41 +536,6 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.update.py.json",
       "mtime": "2025-02-16T00:00:00Z",
       "role": "automation"
-    },
-    "workflow-cookbook/scripts/analyze.py": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.scripts.analyze.py.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "analytics"
-    },
-    "workflow-cookbook/logs/test.jsonl": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.logs.test.jsonl.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "log"
-    },
-    "workflow-cookbook/reports/today.md": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.reports.today.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "report"
-    },
-    "workflow-cookbook/reports/issue_suggestions.md": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.reports.issue_suggestions.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "report"
-    },
-    "workflow-cookbook/docs/IN-20250115-001.md": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.docs.IN-20250115-001.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "incident"
-    },
-    "docs/addenda/I_Test_Cases.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
-      "role": "quality"
-    },
-    "docs/day8/quality/06_quality.md": {
-      "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
-      "role": "quality"
     }
   }
 }

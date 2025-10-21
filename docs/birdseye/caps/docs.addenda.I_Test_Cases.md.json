@@ -1,9 +1,9 @@
 {
   "deps_in": [
-    "docs/addenda/I_Test_Cases.md"
+    "docs/day8/quality/06_quality.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-02-21T00:00:00Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/addenda/I_Test_Cases.md",
   "maintenance": {
     "refresh": "テスト観点を更新したら Quality ドキュメントと Birdseye エッジを同時に見直す。",

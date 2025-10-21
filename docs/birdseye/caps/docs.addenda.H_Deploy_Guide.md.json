@@ -10,12 +10,8 @@
     "docs/README.md",
     "docs/day8/ops/04_ops.md"
   ],
-  "deps_out": [
-    "workflow-cookbook/RUNBOOK.md",
-    "workflow-cookbook/CHECKLISTS.md",
-    "workflow-cookbook/scripts/analyze.py"
-  ],
-  "generated_at": "2025-02-21T00:00:00Z",
+  "deps_out": [],
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/addenda/H_Deploy_Guide.md",
   "maintenance": {
     "refresh": "デプロイフローや release.yml を更新したら ops/04_ops.md と合わせて本文・Birdseye（index→caps→generated_at）を更新する。",

@@ -1,0 +1,22 @@
+{
+  "deps_in": [
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/day8/README.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-21T07:57:51Z",
+  "id": "docs/day8/examples/10_examples.md",
+  "maintenance": {
+    "refresh": "CI サンプルを更新したら参照するワークフローとのリンクを Birdseye で再計算する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "サンプルが古いと Day8 の導入例が失敗し検証が滞る"
+  ],
+  "role": "examples",
+  "summary": "Day8 導入用の test.yml と reflection.yml を掲載する CI サンプル集。",
+  "tests": []
+}

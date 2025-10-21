@@ -6,7 +6,7 @@
   "deps_out": [
     "docs/UPSTREAM_WEEKLY_LOG.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/UPSTREAM.md",
   "maintenance": {
     "refresh": "subtree 取り込み後にチェックリストと週次ログの記述を必ず最新化する。",

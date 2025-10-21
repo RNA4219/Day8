@@ -2,8 +2,16 @@
   "deps_in": [
     "docs/README.md"
   ],
-  "deps_out": [],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "deps_out": [
+    "docs/day8/design/03_architecture.md",
+    "docs/day8/examples/10_examples.md",
+    "docs/day8/ops/04_ops.md",
+    "docs/day8/quality/06_quality.md",
+    "docs/day8/security/05_security.md",
+    "docs/day8/spec/01_requirements.md",
+    "docs/day8/spec/02_spec.md"
+  ],
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/day8/README.md",
   "maintenance": {
     "refresh": "構成が変わったら Birdseye カプセルの deps_out を最新化する。",

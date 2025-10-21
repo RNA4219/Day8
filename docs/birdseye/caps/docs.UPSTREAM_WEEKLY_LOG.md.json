@@ -3,7 +3,7 @@
     "docs/UPSTREAM.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/UPSTREAM_WEEKLY_LOG.md",
   "maintenance": {
     "refresh": "週次レビュー後に最新週の行を追記し、未完了の追加アクションが残っていないか確認する。",

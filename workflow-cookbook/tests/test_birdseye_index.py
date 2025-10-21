@@ -57,3 +57,40 @@ def test_birdseye_generated_at_matches_hot_json() -> None:
     assert (
         index_data["generated_at"] == hot_data["generated_at"]
     ), "docs/birdseye/index.json と docs/birdseye/hot.json の generated_at が一致しません"
+
+
+def test_day8_docs_are_registered_and_connected() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    index_path = repo_root / "docs" / "birdseye" / "index.json"
+
+    index_data = json.loads(index_path.read_text(encoding="utf-8"))
+
+    day8_docs = [
+        "docs/day8/spec/01_requirements.md",
+        "docs/day8/spec/02_spec.md",
+        "docs/day8/design/03_architecture.md",
+        "docs/day8/ops/04_ops.md",
+        "docs/day8/security/05_security.md",
+        "docs/day8/quality/06_quality.md",
+        "docs/day8/examples/10_examples.md",
+    ]
+
+    nodes = index_data["nodes"]
+    edges = {tuple(edge) for edge in index_data["edges"]}
+
+    for doc_path in day8_docs:
+        assert doc_path in nodes, f"{doc_path} が docs/birdseye/index.json の nodes に存在しません"
+        expected_caps = (
+            "docs/birdseye/caps/" + doc_path.replace("/", ".") + ".json"
+        )
+        assert nodes[doc_path].get(
+            "caps"
+        ) == expected_caps, f"{doc_path} の caps が想定と異なります"
+        assert (
+            "docs/ROADMAP_AND_SPECS.md",
+            doc_path,
+        ) in edges, f"docs/ROADMAP_AND_SPECS.md から {doc_path} へのエッジがありません"
+        assert (
+            "docs/day8/README.md",
+            doc_path,
+        ) in edges, f"docs/day8/README.md から {doc_path} へのエッジがありません"

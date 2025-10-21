@@ -1,11 +1,12 @@
 {
   "deps_in": [
-    "docs/day8/quality/06_quality.md"
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/day8/README.md"
   ],
   "deps_out": [
     "docs/addenda/I_Test_Cases.md"
   ],
-  "generated_at": "2025-02-21T00:00:00Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/day8/quality/06_quality.md",
   "maintenance": {
     "refresh": "品質メトリクスやテスト導線を更新したら付録および Birdseye index.json を揃える。",

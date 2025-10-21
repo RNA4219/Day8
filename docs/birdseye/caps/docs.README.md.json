@@ -9,7 +9,7 @@
     "docs/day8/README.md",
     "docs/safety.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T07:57:51Z",
   "id": "docs/README.md",
   "maintenance": {
     "refresh": "索引を更新したら Birdseye カプセルの deps_out を併せて更新する。",

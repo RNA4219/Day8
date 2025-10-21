@@ -1,0 +1,22 @@
+{
+  "deps_in": [
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/day8/README.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-21T07:57:51Z",
+  "id": "docs/day8/spec/02_spec.md",
+  "maintenance": {
+    "refresh": "ディレクトリ標準や DSL を改訂したら Birdseye を再生成してリンクを同期する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "仕様と実装ディレクトリ構成が乖離すると導入時の手順が破綻する"
+  ],
+  "role": "spec",
+  "summary": "Day8 のディレクトリ標準と反省 DSL・GitHub Actions の振る舞いを示す実装仕様。",
+  "tests": []
+}
