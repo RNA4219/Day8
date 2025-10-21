@@ -1,4 +1,5 @@
 # Day8（Eight-Day Starter）
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、安全に改善サイクルを回すためのスターターセットです。自動修正を行わず、レポートと Issue 提案で止めることで OSS プロジェクトでも安全に導入できます。
 
@@ -42,6 +43,9 @@ Day8 を新しいリポジトリへ導入する際は、[`INSTALL.md`](INSTALL.m
 ## 使い方のヒント
 - 初期状態では `workflow-cookbook/reflection.yaml` の `analysis.max_tokens` が 0 のため LLM 呼び出しは抑制されています。必要に応じて `engine` 設定と合わせて有効化してください。
 - 生成されたレポート（`workflow-cookbook/reports/` 配下）と提案を確認し、人間が修正 PR を作成する運用を前提としています。
+
+## License
+Apache-2.0. Unless noted otherwise, files copied from this repo into other projects remain Apache-2.0 and require retaining NOTICE text in redistributions.
 
 ---
 **キーワード**: Day8, safe autonomy, propose-only CI, reflective devops
