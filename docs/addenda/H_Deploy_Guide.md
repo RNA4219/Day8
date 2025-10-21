@@ -5,9 +5,10 @@ Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 
 ## 開発環境フロー
 
 1. **ブランチ戦略** — `main` から派生したトピックブランチで作業し、ドキュメント/ワークフロー更新は最小差分でコミットします。リリース前に `git rebase origin/main` を実行し、Birdseye の `generated_at` などメタデータの競合を解消します。
-2. **ローカル検証** — デプロイ前に `python workflow-cookbook/scripts/analyze.py --root . --emit report` を実行し、CI での差分検出を先取りします。必要に応じて `--focus docs` オプションで Day8 配下に絞り込み、リンク切れや Birdseye 未更新を確認します。
-3. **構成テスト** — リリースフローに追加するワークフロー/スクリプトは `python -m compileall` や `node --test` など既存ポリシーのコマンドで事前検証し、CI の失敗を予防します。
-4. **リリースタグ** — Day8 では GitHub Release に連動するタグ名を `day8-vYYYYMMDD` 形式で管理します。タグ作成前に `git status --short` と `git diff --stat origin/main` で差分を再確認してください。
+2. **依存セットアップ** — Python 依存はリポジトリ直下で `pip install -r requirements-dev.txt` を実行して同期します。`workflow-cookbook/scripts/run_ci_tests.py` が `python::root` を検出し、CI の Python ジョブでこの requirements を利用します。
+3. **ローカル検証** — デプロイ前に `python workflow-cookbook/scripts/analyze.py --root . --emit report` を実行し、CI での差分検出を先取りします。必要に応じて `--focus docs` オプションで Day8 配下に絞り込み、リンク切れや Birdseye 未更新を確認します。
+4. **構成テスト** — リリースフローに追加するワークフロー/スクリプトは `python -m compileall` や `node --test` など既存ポリシーのコマンドで事前検証し、CI の失敗を予防します。
+5. **リリースタグ** — Day8 では GitHub Release に連動するタグ名を `day8-vYYYYMMDD` 形式で管理します。タグ作成前に `git status --short` と `git diff --stat origin/main` で差分を再確認してください。
 
 ### チェックリスト（ローカル）
 - [ ] `python workflow-cookbook/scripts/analyze.py --root . --emit report`

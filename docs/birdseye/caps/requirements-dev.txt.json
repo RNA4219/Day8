@@ -1,0 +1,21 @@
+{
+  "deps_in": [
+    "INSTALL.md",
+    "docs/addenda/H_Deploy_Guide.md",
+    "docs/Release_Checklist.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-12-01T00:00:00Z",
+  "id": "requirements-dev.txt",
+  "maintenance": {
+    "refresh": "依存追加・バージョン固定を変更したら該当ドキュメントと同じコミットで更新する。",
+    "tooling": [
+      "pip install -r requirements-dev.txt"
+    ]
+  },
+  "role": "dependency",
+  "summary": "Day8 の CI / lint で利用する Python ランタイム依存をまとめた開発用 requirements ファイル。",
+  "tests": [
+    "python workflow-cookbook/scripts/run_ci_tests.py --select python::root"
+  ]
+}
