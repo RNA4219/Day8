@@ -1,0 +1,33 @@
+{
+  "deps": [
+    "in::themes/*.theme.json",
+    "out::public/theme.json"
+  ],
+  "deps_in": [
+    "README_PERSONAS_THEMES.md",
+    "themes/CATALOG.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-12-21T00:00:00Z",
+  "id": "scripts/switch_theme.py",
+  "maintenance": {
+    "refresh": "テーマファイルを追加・改名したら CLI のコピー先と README の案内を更新し、Birdseye を再生成する。",
+    "tooling": [
+      "python scripts/switch_theme.py <theme-name>"
+    ]
+  },
+  "risks": [
+    "存在しないテーマを指定すると public/theme.json が更新されず Hosted Static とローカルの表示に乖離が生じる"
+  ],
+  "role": [
+    "core::automation",
+    "orbit::theme-sync"
+  ],
+  "summary": [
+    "core::themes/<name>.theme.json を選択して public/theme.json を自動更新する Day8 用スイッチャー。",
+    "orbit::README_PERSONAS_THEMES.md / themes/CATALOG.md の手順と連動し、Hosted Static の既定テーマを即時に切り替える。"
+  ],
+  "tests": [
+    "check::pytest tests/scripts/test_switch_theme.py"
+  ]
+}

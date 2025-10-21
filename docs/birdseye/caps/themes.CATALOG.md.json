@@ -4,7 +4,8 @@
     "in::docs/addenda/B_UI_Mock.md",
     "in::docs/addenda/C_Persona_Schema.md",
     "in::docs/addenda/K_Accessibility_UX.md",
-    "out::docs/birdseye/index.json"
+    "out::docs/birdseye/index.json",
+    "out::scripts/switch_theme.py"
   ],
   "deps_in": [
     "README_PERSONAS_THEMES.md",
@@ -13,9 +14,10 @@
     "docs/addenda/K_Accessibility_UX.md"
   ],
   "deps_out": [
-    "docs/birdseye/index.json"
+    "docs/birdseye/index.json",
+    "scripts/switch_theme.py"
   ],
-  "generated_at": "2025-11-12T09:30:00Z",
+  "generated_at": "2025-12-21T00:00:00Z",
   "id": "themes/CATALOG.md",
   "maintenance": {
     "refresh": "テーマを追加・削除したら配色表と Appendix 参照を更新し、README_PERSONAS_THEMES.md と同時に Birdseye を再同期する。",
