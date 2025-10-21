@@ -28,6 +28,8 @@ report:
 ```
 
 > モデル差分を調査・反映する際は [Appendix F: プロバイダーマトリクス](../../addenda/F_Provider_Matrix.md) を参照し、`llm_model` の切替やフォールバック順序、ガードレール更新をガバナンスに記録する。
+>
+> ログ圧縮や保持率の調整は [Appendix D: トリム設計](../../addenda/D_Trim_Design.md) に従い、`workflow-cookbook/scripts/analyze.py` の `--trim` オプションや `reflection.yaml` の保持設定を更新する前に保持率指標 (`retention_ratio` など) の SLO と整合させる。
 
 ## GitHub Actions（要点）
 - `test.yml`: ログ生成→アーティファクト化

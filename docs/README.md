@@ -21,6 +21,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [Day8 設定リファレンス（Appendix L）](addenda/L_Config_Reference.md) — 環境変数・設定ファイル・デバッグフラグを網羅し、導入前チェックリストとして活用できる設定付録。
 - [Day8 Release Checklist (Katamari Flow)](Release_Checklist.md) — propose-only 前提のリリース手順と Birdseye 更新順を整理したチェックリスト。
 - [Versioning & Release Operations（Appendix M）](addenda/M_Versioning_Release.md) — semver ラベル運用とタグ作成フロー、互換性レビューの基準を集約。
+- [Day8 評価器構成（Appendix E）](addenda/E_Evaluator_Details.md) — BERTScore/ROUGE/ルール判定の設定と運用チェックリスト。
 - [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。Appendix G と連携し、Secrets/Rate limit/OAuth のチェックリストを提供。
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
 
@@ -38,4 +39,6 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 
 ## 付録
 - [Day8 用語集](addenda/A_Glossary.md) — ドキュメントレビューや新規タスク着手前に、Collector/Analyzer などの用語を素早く再確認するための参照先。
+- [トリム設計付録（Appendix D）](addenda/D_Trim_Design.md) — Sliding Window / Semantic / Memory Hybrid の圧縮戦略と保持率指標を整理し、ログトリムの判断と Birdseye メタデータ整合の根拠を提供。
+- [UI モック（Appendix B）](addenda/B_UI_Mock.md) — 画面共有できない環境で CLI/レポートの骨子をレビューし、Day8 の主要画面を擦り合わせるときに利用。
 - [プロバイダーマトリクス（Appendix F）](addenda/F_Provider_Matrix.md) — モデル差分調査やフォールバック順序の確認時に、Day8 が許容するプロバイダー構成と運用ガードを参照。
