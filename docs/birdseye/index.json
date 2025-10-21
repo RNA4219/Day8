@@ -754,7 +754,7 @@
       "Dockerfile"
     ]
   ],
-  "generated_at": "00001",
+  "generated_at": "2025-10-21T12:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -908,7 +908,7 @@
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.CHECKLISTS.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "2025-10-21T12:00:00Z",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
