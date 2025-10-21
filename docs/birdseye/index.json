@@ -50,7 +50,14 @@
     ],
     [
       "docs/README.md",
+      "docs/FORK_NOTES.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/M_Versioning_Release.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/C_Persona_Schema.md"
     ],
     [
@@ -72,6 +79,9 @@
     [
       "docs/README.md",
       "docs/addenda/K_Accessibility_UX.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/J_Runbook.md"
     ],
     [
@@ -149,6 +159,14 @@
     [
       "docs/UPSTREAM.md",
       "docs/UPSTREAM_WEEKLY_LOG.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/FORK_NOTES.md"
+    ],
+    [
+      "docs/UPSTREAM_WEEKLY_LOG.md",
+      "docs/FORK_NOTES.md"
     ],
     [
       "docs/safety.md",
@@ -369,9 +387,8 @@
     [
       "docs/addenda/M_Versioning_Release.md",
       "workflow-cookbook/CHECKLISTS.md"
-    ]
-  ],
-  "generated_at": "2025-02-24T12:00:00Z",
+    ],
+    [
       "docs/README.md",
       "docs/addenda/B_UI_Mock.md"
     ],
@@ -380,7 +397,7 @@
       "docs/addenda/B_UI_Mock.md"
     ]
   ],
-  "generated_at": "2025-10-31T12:45:00Z",
+  "generated_at": "2025-11-20T09:30:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -421,6 +438,11 @@
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
       "mtime": "2025-02-24T12:00:00Z",
       "role": "checklist"
+    },
+    "docs/FORK_NOTES.md": {
+      "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
+      "mtime": "2025-11-20T09:30:00Z",
+      "role": "guide"
     },
     "docs/addenda/A_Glossary.md": {
       "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
@@ -606,6 +628,7 @@
       "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
       "mtime": "2025-02-24T09:00:00Z",
       "role": "ux"
+    },
     "docs/addenda/B_UI_Mock.md": {
       "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
       "mtime": "2025-10-21T00:00:00Z",
