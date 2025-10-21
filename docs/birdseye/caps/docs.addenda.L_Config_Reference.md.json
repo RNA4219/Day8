@@ -7,6 +7,8 @@
     "out::docs/day8/examples/10_examples.md",
     "out::workflow-cookbook/scripts/analyze.py",
     "out::tools/ci/check_governance_gate.py",
+    "out::config/env.example",
+    "out::config/model_registry.json",
     "out::docs/birdseye/index.json",
     "out::docs/birdseye/hot.json"
   ],
@@ -20,10 +22,12 @@
     "docs/day8/examples/10_examples.md",
     "workflow-cookbook/scripts/analyze.py",
     "tools/ci/check_governance_gate.py",
+    "config/env.example",
+    "config/model_registry.json",
     "docs/birdseye/index.json",
     "docs/birdseye/hot.json"
   ],
-  "generated_at": "2025-10-30T12:30:00Z",
+  "generated_at": "2025-11-10T09:00:00Z",
   "id": "docs/addenda/L_Config_Reference.md",
   "maintenance": {
     "refresh": "環境変数や設定ファイルが追加・変更されたら Appendix L を更新し、関連する ops/H アップデートと同時に Birdseye (index→caps→hot→generated_at) を再同期する。",

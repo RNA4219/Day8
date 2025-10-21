@@ -8,6 +8,9 @@ Day8 を導入・運用する際に必要となる環境変数、設定ファイ
 | --- | --- | --- | --- | --- |
 | `DAY8_GITDIR` | ローカル運用 | `C:\Users\<user>\gitdirs\Day8.git` | `.git` を外出しする運用で Git メタデータを束ねるための必須変数。 | [ops/04_ops.md](../day8/ops/04_ops.md) |
 | `DAY8_WORK` | ローカル運用 | `C:\Users\<user>\Downloads\...\Day8` | ワークツリーのパス。`DAY8_GITDIR` とセットで Git 操作エイリアスから参照する。 | [ops/04_ops.md](../day8/ops/04_ops.md) |
+| `DAY8_TRIM_WINDOW` | Analyzer 調整 | `150` | Appendix D の保持率指標に合わせて Analyzer のトリム窓をオーバーライド。 | [addenda/D_Trim_Design.md](D_Trim_Design.md) |
+| `DAY8_TRIM_STRATEGY` | Analyzer 調整 | `window` | `workflow-cookbook/scripts/analyze.py` の `--trim` 引数を指定し、Semantic/Hybrid へ切り替える。 | [addenda/D_Trim_Design.md](D_Trim_Design.md) |
+| `DAY8_DEBUG` | ローカル運用 | `0` | CI と同じ挙動を維持しつつ、必要に応じて追加ログを出力。導入前検証で `1` に切り替え、Analyzer の詳細ログを収集する。 | [config/env.example](../../config/env.example) |
 | `GITHUB_OUTPUT` | GitHub Actions | 自動 | ステップ間で成果物パスを共有する GitHub 提供の予約変数。Day8 では反省レポートや Issue 下書きのパス共有に使用。 | [day8/examples/10_examples.md](../day8/examples/10_examples.md) |
 | `GITHUB_ENV` | GitHub Actions | 自動 | 後続ステップへ環境変数を引き継ぐ。`REPORT_PATH` など Day8 専用の派生変数を書き込む。 | [day8/examples/10_examples.md](../day8/examples/10_examples.md) |
 | `REPORT_PATH` / `ISSUE_CONTENT_PATH` / `ISSUE_HASH_PATH` | GitHub Actions 派生 | `reports/today.md` など | `GITHUB_OUTPUT`/`GITHUB_ENV` に流し込み、レポートの git add・Issue 草案コミットを安定化。 | [day8/examples/10_examples.md](../day8/examples/10_examples.md) |
@@ -16,6 +19,16 @@ Day8 を導入・運用する際に必要となる環境変数、設定ファイ
 | `PYTHONDONTWRITEBYTECODE` / `PYTHONUNBUFFERED` | Docker サンプル | `1` | Appendix H の Dockerfile で使用。CI 用コンテナで `.pyc` 生成抑制とログ即時出力を保証。 | [addenda/H_Deploy_Guide.md](H_Deploy_Guide.md) |
 
 > **導入前テスト:** まず ops 手順の `day8` エイリアスを設定し、`day8 status` で GitDir と Worktree が正しく紐づくか確認してください。その後 GitHub Actions サンプルワークフローの `Determine reflection outputs` ステップが `REPORT_PATH` を出力するかをローカル `act` などで検証すると設定漏れを早期発見できます。
+
+### サンプル設定ファイル
+- [config/env.example](../../config/env.example) — Appendix D/L が要求する必須キーとデバッグフラグを `.env` に転写するための Day8 固有テンプレート。
+- [config/model_registry.json](../../config/model_registry.json) — Appendix F のプロバイダーマトリクスを初期化するベースライン。Collector/Analyzer/Reporter で使用するモデル ID とフォールバック順序を定義。
+
+### 導入チェックリスト
+1. `config/env.example` を `.env` へコピーし、`DAY8_GITDIR` と `DAY8_WORK` を実環境のパスへ置き換える。
+2. Analyzer の運用方針に合わせて `DAY8_TRIM_WINDOW` と `DAY8_TRIM_STRATEGY` を調整し、`DAY8_DEBUG=1` で初期観測ログを記録する。
+3. `config/model_registry.json` のプロバイダーごとに API キー／エンドポイント環境変数を整理し、Appendix F の許容構成と照合する。
+4. Ops ガイドの外部 git-dir セクションに従い、`.env` の内容をローカルシェルの永続設定へ反映する。
 
 ## 主要設定ファイル
 
@@ -47,5 +60,5 @@ Day8 を導入・運用する際に必要となる環境変数、設定ファイ
 
 ---
 
-- **更新トリガ**: 新しい環境変数や設定ファイルが Day8 に追加された場合は Appendix L に追記し、Birdseye (`index` / `hot` / Capsule) の依存関係を同時更新してください。
+- **更新トリガ**: 新しい環境変数や設定ファイルが Day8 に追加された場合は Appendix L に追記し、[config/env.example](../../config/env.example) / [config/model_registry.json](../../config/model_registry.json) と Birdseye (`index` / `hot` / Capsule) の依存関係を同時更新してください。
 - **維持管理者**: Day8 運用チーム（ops）

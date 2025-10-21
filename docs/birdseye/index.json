@@ -83,6 +83,14 @@
     ],
     [
       "docs/README.md",
+      "config/env.example"
+    ],
+    [
+      "docs/README.md",
+      "config/model_registry.json"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/G_Security_Privacy.md"
     ],
     [
@@ -220,6 +228,14 @@
     [
       "docs/day8/ops/04_ops.md",
       "docs/adr/0003-propose-only-governance.md"
+    ],
+    [
+      "docs/day8/ops/04_ops.md",
+      "config/env.example"
+    ],
+    [
+      "docs/day8/ops/04_ops.md",
+      "config/model_registry.json"
     ],
     [
       "docs/day8/ops/04_ops.md",
@@ -626,6 +642,14 @@
       "docs/adr/0005-reflection-manifest.md"
     ],
     [
+      "docs/addenda/L_Config_Reference.md",
+      "config/env.example"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "config/model_registry.json"
+    ],
+    [
       "docs/addenda/E_Evaluator_Details.md",
       "docs/adr/0006-evaluator-gates.md"
     ],
@@ -650,7 +674,7 @@
       "docs/adr/0007-proposal-priority-handshake.md"
     ]
   ],
-  "generated_at": "2025-10-21T19:48:39Z",
+  "generated_at": "2025-11-10T09:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -669,7 +693,7 @@
     },
     "docs/README.md": {
       "caps": "docs/birdseye/caps/docs.README.md.json",
-      "mtime": "2025-10-21T19:48:39Z",
+      "mtime": "2025-11-10T09:00:00Z",
       "role": "index"
     },
     "docs/ROADMAP_AND_SPECS.md": {
@@ -729,8 +753,18 @@
     },
     "docs/addenda/L_Config_Reference.md": {
       "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
-      "mtime": "2025-10-30T12:30:00Z",
+      "mtime": "2025-11-10T09:00:00Z",
       "role": "configuration"
+    },
+    "config/env.example": {
+      "caps": "docs/birdseye/caps/config.env.example.json",
+      "mtime": "2025-11-10T09:00:00Z",
+      "role": "configuration"
+    },
+    "config/model_registry.json": {
+      "caps": "docs/birdseye/caps/config.model_registry.json",
+      "mtime": "2025-11-10T09:00:00Z",
+      "role": "provider"
     },
     "docs/addenda/M_Versioning_Release.md": {
       "caps": "docs/birdseye/caps/docs.addenda.M_Versioning_Release.md.json",
@@ -904,7 +938,7 @@
     },
     "docs/day8/ops/04_ops.md": {
       "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
-      "mtime": "2025-10-21T19:48:39Z",
+      "mtime": "2025-11-10T09:00:00Z",
       "role": "operations"
     },
     "docs/adr/README.md": {

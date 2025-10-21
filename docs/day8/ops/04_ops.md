@@ -3,9 +3,16 @@
 ## 導入手順（サブディレクトリ運用の例）
 1. `workflow-cookbook/` をリポジトリ直下に配置
 2. `.github/workflows/test.yml` と `reflection.yml` を配置
-3. コミット＆プッシュ → `test` 実行 → `reflection` 連動
+3. `config/env.example` と `config/model_registry.json` をコピーし、ローカル環境に合わせて `.env` / モデル登録を初期化
+4. コミット＆プッシュ → `test` 実行 → `reflection` 連動
 
-> 導入作業を Day8 デプロイ付録（[docs/addenda/H_Deploy_Guide.md](../../addenda/H_Deploy_Guide.md)）と併用し、ローカル検証とリリース判断を同じチェックリストで管理します。CI 設定や Docker 化が必要になった段階で参照してください。環境変数や設定ファイルの事前確認は [Day8 設定リファレンス（Appendix L）](../../addenda/L_Config_Reference.md) を併読し、`DAY8_GITDIR` などの前提が揃っているかを導入前に点検します。
+> 導入作業を Day8 デプロイ付録（[docs/addenda/H_Deploy_Guide.md](../../addenda/H_Deploy_Guide.md)）と併用し、ローカル検証とリリース判断を同じチェックリストで管理します。CI 設定や Docker 化が必要になった段階で参照してください。環境変数や設定ファイルの事前確認は [Day8 設定リファレンス（Appendix L）](../../addenda/L_Config_Reference.md) を併読し、`DAY8_GITDIR` などの前提が揃っているかを導入前に点検します。サンプル構成は [config/env.example](../../../config/env.example) / [config/model_registry.json](../../../config/model_registry.json) を基点にカスタマイズします。
+
+### 導入チェックリスト（Ops quickstart）
+- [ ] `.env` を `config/env.example` から生成し、`DAY8_GITDIR` / `DAY8_WORK` / `DAY8_DEBUG` をローカルの GitDir & Worktree へ合わせる。
+- [ ] Analyzer のトリム戦略を Appendix D と突き合わせ、`DAY8_TRIM_WINDOW` / `DAY8_TRIM_STRATEGY` を設定する。
+- [ ] `config/model_registry.json` の各プロバイダーに対する API キーとエンドポイントを Secrets/Vault と整合させる。
+- [ ] Ops alias (`day8 status` など) を `.env` 参照で再読み込みし、反映漏れがないか確認する。
 
 ## 失敗時の切り分け
 - `test` がこける: ログが生成されているか確認（Artifacts）

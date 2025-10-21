@@ -12,9 +12,11 @@
     "docs/adr/README.md",
     "docs/adr/0001-collector-analyzer-reporter-pipeline.md",
     "docs/adr/0002-jsonl-event-contract.md",
-    "docs/adr/0003-propose-only-governance.md"
+    "docs/adr/0003-propose-only-governance.md",
+    "config/env.example",
+    "config/model_registry.json"
   ],
-  "generated_at": "2025-11-05T09:00:00Z",
+  "generated_at": "2025-11-10T09:00:00Z",
   "id": "docs/README.md",
   "maintenance": {
     "refresh": "索引を更新したら Birdseye カプセルの deps_out を併せて更新する。",
