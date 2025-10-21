@@ -9,6 +9,7 @@ Day8 のリリースは Katamari propose-only 方針に従い、全変更を PR 
 
 ## 2. 実装ブランチ準備
 - [ ] lint (`ruff`)、型検査 (`mypy --strict`)、テスト（`pytest` / `node --test`）のローカル実行結果を記録し、失敗時は fixup ではなく再実装で対応する。
+- [ ] `pip install -r requirements-dev.txt` で Python 依存を同期し、`workflow-cookbook/scripts/run_ci_tests.py` の `python::root` ジョブが同 requirements を参照することを確認する。
 - [ ] リリース対象ファイルに係るドキュメント差分を作成し、Birdseye 対象の更新が必要か判定する。
 - [ ] `NOTICE` / `LICENSE` の同梱に影響する依存追加がないかチェックし、必要なら `docs/addenda/H_Deploy_Guide.md` の同梱手順を参照する。
 

@@ -688,13 +688,25 @@
     [
       "workflow-cookbook/governance/prioritization.yaml",
       "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "INSTALL.md",
+      "requirements-dev.txt"
+    ],
+    [
+      "docs/addenda/H_Deploy_Guide.md",
+      "requirements-dev.txt"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "requirements-dev.txt"
     ]
   ],
-  "generated_at": "2025-11-12T09:30:00Z",
+  "generated_at": "2025-12-01T00:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "2025-12-01T00:00:00Z",
       "role": "setup"
     },
     "README.md": {
@@ -734,7 +746,7 @@
     },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
-      "mtime": "2025-02-24T12:00:00Z",
+      "mtime": "2025-12-01T00:00:00Z",
       "role": "checklist"
     },
     "docs/openapi/day8_openapi.yaml": {
@@ -769,7 +781,7 @@
     },
     "docs/addenda/H_Deploy_Guide.md": {
       "caps": "docs/birdseye/caps/docs.addenda.H_Deploy_Guide.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
+      "mtime": "2025-12-01T00:00:00Z",
       "role": "guide"
     },
     "docs/addenda/L_Config_Reference.md": {
@@ -1026,6 +1038,11 @@
       "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
       "mtime": "2025-11-06T12:00:00Z",
       "role": "adr"
+    },
+    "requirements-dev.txt": {
+      "caps": "docs/birdseye/caps/requirements-dev.txt.json",
+      "mtime": "2025-12-01T00:00:00Z",
+      "role": "dependency"
     }
   }
 }
