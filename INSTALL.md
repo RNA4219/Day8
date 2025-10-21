@@ -19,6 +19,8 @@
 - `workflow-cookbook/logs/test.jsonl`（ダミー。最初の動作確認用）
 - `workflow-cookbook/reports/.gitkeep`
 
+セットアップ時はリポジトリ直下で `pip install -r requirements-dev.txt` を実行し、Python 依存を一括導入してください。`workflow-cookbook/scripts/run_ci_tests.py` は `python::root` を自動検出し、同コマンド経由の CI 検証でこの requirements を前提とします。
+
 `workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。`pr_gate` ワークフローは `workflow-cookbook/tools/ci/check_governance_gate.py` を `python tools/ci/check_governance_gate.py` で実行します。デフォルトの作業ディレクトリ（`workflow-cookbook/`）からの呼び出しを成立させるため、`workflow-cookbook/tools/ci/` 配下と、ラッパーとして `tools/ci/check_governance_gate.py` の両方を確実にコピーしてください。
 
 ## 使い方
@@ -26,6 +28,8 @@
 2. `reflection` が実行され `workflow-cookbook/reports/today.md` を生成
 3. 失敗があれば `workflow-cookbook/reports/issue_suggestions.md` から Issue を自動作成
 4. 自動修正は **無効**（安全デチューン）。提案を読み、人間が修正PRを作成。
+
+ローカル確認では `make check`（lint・型・pytest の一括実行）や `make test`（pytest のみ）を利用し、CI と同じ観点で検証してください。
 
 ## 注意
 - `CODEOWNERS` を適切なユーザー/チームに設定してください。

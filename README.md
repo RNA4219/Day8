@@ -19,6 +19,8 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 更新フロー:
 - Day8 ルート文書を更新したら `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps` を実行し、index/caps を同期コミットする
 - Birdseye の編集順序と `generated_at` 同期ルールは [docs/birdseye/README.md](docs/birdseye/README.md) を参照
+- Day8 固有の変更履歴は [CHANGELOG.md](CHANGELOG.md) に追記し、上流の記録は [workflow-cookbook/CHANGELOG.md](workflow-cookbook/CHANGELOG.md) で管理する
+- ChangeLog を更新したら Release Checklist と Birdseye (`index`/`caps`/`hot`) の `generated_at` を同一コミットで揃える
 <!-- /LLM-BOOTSTRAP -->
 
 詳細な構成を確認する際は、上記の導線に沿って必要なドキュメントを順番に参照してください。
@@ -40,6 +42,8 @@ Day8 は「観測 → 反省 → 提案」のループを CI に組み込み、�
 
 ## セットアップ
 Day8 を新しいリポジトリへ導入する際は、[`INSTALL.md`](INSTALL.md) の手順に従ってワークフローや初期ファイルをルートに配置してください。GitHub Actions では `test` → `reflection` → `pr_gate` の順で実行され、安全デチューンされた反省レポートを生成します。
+
+ローカルでは `make check` を実行することで `ruff` / `mypy --strict` / `pytest` をまとめて検証できます。単体テストのみ確認したい場合は `make test` を利用してください。
 
 ## 使い方のヒント
 - 初期状態では `workflow-cookbook/reflection.yaml` の `analysis.max_tokens` が 0 のため LLM 呼び出しは抑制されています。必要に応じて `engine` 設定と合わせて有効化してください。

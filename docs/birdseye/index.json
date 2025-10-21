@@ -6,6 +6,10 @@
     ],
     [
       "README.md",
+      "CHANGELOG.md"
+    ],
+    [
+      "README.md",
       "docs/README.md"
     ],
     [
@@ -30,6 +34,14 @@
     ],
     [
       "README.md",
+      "Makefile"
+    ],
+    [
+      "INSTALL.md",
+      "Makefile"
+    ],
+    [
+      "README.md",
       "workflow-cookbook/docs/birdseye/index.json"
     ],
     [
@@ -51,6 +63,38 @@
     [
       "docs/README.md",
       "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "workflow-cookbook/CHANGELOG.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/Security_Review_Checklist.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/day8/security/05_security.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "workflow-cookbook/SECURITY.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/safety.md"
     ],
     [
       "docs/README.md",
@@ -562,6 +606,10 @@
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
+      "docs/Release_Checklist.md",
+      "Makefile"
+    ],
+    [
       "docs/addenda/M_Versioning_Release.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
@@ -702,13 +750,23 @@
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "2025-12-01T00:00:00Z",
       "role": "setup"
+    },
+    "CHANGELOG.md": {
+      "caps": "docs/birdseye/caps/CHANGELOG.md.json",
+      "mtime": "2025-11-21T09:30:00Z",
+      "role": "changelog"
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "2025-02-28T12:00:00Z",
       "role": "overview"
+    },
+    "Makefile": {
+      "caps": "docs/birdseye/caps/Makefile.json",
+      "mtime": "2025-02-28T12:00:00Z",
+      "role": "build"
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
@@ -742,8 +800,13 @@
     },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
-      "mtime": "2025-02-24T12:00:00Z",
+      "mtime": "2025-12-01T00:00:00Z",
       "role": "checklist"
+    },
+    "docs/Security_Review_Checklist.md": {
+      "caps": "docs/birdseye/caps/docs.Security_Review_Checklist.md.json",
+      "mtime": "2025-12-15T09:00:00Z",
+      "role": "security-checklist"
     },
     "docs/openapi/day8_openapi.yaml": {
       "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
@@ -777,7 +840,7 @@
     },
     "docs/addenda/H_Deploy_Guide.md": {
       "caps": "docs/birdseye/caps/docs.addenda.H_Deploy_Guide.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
+      "mtime": "2025-12-01T00:00:00Z",
       "role": "guide"
     },
     "docs/addenda/L_Config_Reference.md": {

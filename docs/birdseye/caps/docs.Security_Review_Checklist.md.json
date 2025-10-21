@@ -1,0 +1,46 @@
+{
+  "deps": [
+    "in::docs/README.md",
+    "in::docs/day8/security/05_security.md",
+    "out::docs/day8/security/05_security.md",
+    "out::docs/addenda/G_Security_Privacy.md",
+    "out::docs/Release_Checklist.md",
+    "out::workflow-cookbook/SECURITY.md",
+    "out::docs/safety.md"
+  ],
+  "deps_in": [
+    "docs/README.md",
+    "docs/day8/security/05_security.md"
+  ],
+  "deps_out": [
+    "docs/day8/security/05_security.md",
+    "docs/addenda/G_Security_Privacy.md",
+    "docs/Release_Checklist.md",
+    "workflow-cookbook/SECURITY.md",
+    "docs/safety.md"
+  ],
+  "generated_at": "2025-12-15T09:00:00Z",
+  "id": "docs/Security_Review_Checklist.md",
+  "maintenance": {
+    "refresh": "Secrets/CORS/Rate limit/OAuth/依存性スキャンの審査項目が更新されたら本チェックリストを修正し、05_security.md と Appendix G の対応を揃えて Birdseye index/hot/caps の generated_at を同期。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "チェックリストが古いと PR 審査で Secrets や OAuth の漏れを見逃す", 
+    "Birdseye 側のリンクが同期されていないと Ops/Release が参照を誤る"
+  ],
+  "role": [
+    "core::security-checklist",
+    "orbit::release-handoff"
+  ],
+  "summary": [
+    "core::Secrets/CORS/Rate limit/OAuth/依存性スキャンの確認を 1 ページに集約し、Day8 レビュー用に最適化。",
+    "orbit::05_security.md・Appendix G・Release Checklist へのハンドオフ順序を明示し、審査から運用への受け渡しを簡素化。"
+  ],
+  "tests": [
+    "check::README.md と 05_security.md から本チェックリストへのリンクが有効か確認",
+    "check::Appendix G/Release Checklist/workflow-cookbook SECURITY の要件と整合しているか点検"
+  ]
+}

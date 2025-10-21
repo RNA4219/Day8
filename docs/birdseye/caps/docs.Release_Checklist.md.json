@@ -4,6 +4,7 @@
     "docs/ROADMAP_AND_SPECS.md"
   ],
   "deps_out": [
+    "Makefile",
     "docs/addenda/M_Versioning_Release.md",
     "workflow-cookbook/CHECKLISTS.md",
     "Dockerfile"
