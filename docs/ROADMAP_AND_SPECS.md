@@ -78,6 +78,8 @@
 - [Katamari ガードレール](../workflow-cookbook/GUARDRAILS.md)
 - [運用 RUNBOOK](../workflow-cookbook/RUNBOOK.md)
 - [品質チェックリスト](../workflow-cookbook/CHECKLISTS.md)
+- [Day8 Release Checklist (Katamari Flow)](Release_Checklist.md)
+- [Versioning & Release Operations（Appendix M）](addenda/M_Versioning_Release.md)
 - [Day8 コントリビューションガイド](day8/guides/07_contributing.md)
 - [安全性レビュー基準](safety.md)
 - [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md)

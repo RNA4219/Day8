@@ -46,6 +46,11 @@
     ],
     [
       "docs/README.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/M_Versioning_Release.md"
       "docs/addenda/C_Persona_Schema.md"
     ],
     [
@@ -112,6 +117,10 @@
     [
       "docs/ROADMAP_AND_SPECS.md",
       "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/Release_Checklist.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -350,6 +359,19 @@
       "docs/addenda/L_Config_Reference.md"
     ],
     [
+      "docs/Release_Checklist.md",
+      "docs/addenda/M_Versioning_Release.md"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "docs/addenda/M_Versioning_Release.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ]
+  ],
+  "generated_at": "2025-02-24T12:00:00Z",
       "docs/README.md",
       "docs/addenda/B_UI_Mock.md"
     ],
@@ -395,6 +417,11 @@
       "mtime": "2025-01-15T00:00:00Z",
       "role": "tasks"
     },
+    "docs/Release_Checklist.md": {
+      "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
+      "mtime": "2025-02-24T12:00:00Z",
+      "role": "checklist"
+    },
     "docs/addenda/A_Glossary.md": {
       "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
       "mtime": "2025-10-21T00:00:00Z",
@@ -424,6 +451,11 @@
       "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
       "mtime": "2025-10-30T12:30:00Z",
       "role": "configuration"
+    },
+    "docs/addenda/M_Versioning_Release.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.M_Versioning_Release.md.json",
+      "mtime": "2025-02-24T12:00:00Z",
+      "role": "release"
     },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
