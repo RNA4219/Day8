@@ -6,7 +6,8 @@
     "out::workflow-cookbook/RUNBOOK.md",
     "out::workflow-cookbook/EVALUATION.md",
     "out::workflow-cookbook/CHECKLISTS.md",
-    "out::workflow-cookbook/TASK.codex.md"
+    "out::workflow-cookbook/TASK.codex.md",
+    "out::docs/Architecture_ASCII.md"
   ],
   "deps_in": [
     "README.md"
@@ -19,9 +20,10 @@
     "workflow-cookbook/GUARDRAILS.md",
     "workflow-cookbook/RUNBOOK.md",
     "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/TASK.codex.md"
+    "workflow-cookbook/TASK.codex.md",
+    "docs/Architecture_ASCII.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-25T12:00:00Z",
   "id": "docs/ROADMAP_AND_SPECS.md",
   "maintenance": {
     "refresh": "Guardrails 承認後にクロスリンクと Birdseye（ノード追加→Capsule更新→hot.json更新→generated_at揃え）を同時更新し、ガバナンス差分と整合させる。",
