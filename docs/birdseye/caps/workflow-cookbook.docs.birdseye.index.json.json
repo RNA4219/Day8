@@ -1,8 +1,9 @@
 {
   "deps_in": [
-    "README.md"
+    "README.md",
+    "workflow-cookbook/RUNBOOK.md"
   ],
-  "generated_at": "2025-10-20T19:59:01Z",
+  "generated_at": "2025-10-20T20:29:16Z",
   "id": "workflow-cookbook/docs/birdseye/index.json",
   "katamari": {
     "dependencies": {

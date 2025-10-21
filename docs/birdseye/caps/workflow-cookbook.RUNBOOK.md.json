@@ -20,22 +20,24 @@
     "docs/ROADMAP_AND_SPECS.md",
     "workflow-cookbook/BLUEPRINT.md",
     "workflow-cookbook/GUARDRAILS.md",
+    "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/SECURITY.md",
-    "workflow-cookbook/tools/codemap/README.md",
-    "workflow-cookbook/tools/codemap/update.py",
-    "workflow-cookbook/scripts/analyze.py",
-    "workflow-cookbook/docs/IN-20250115-001.md",
-    "workflow-cookbook/logs/test.jsonl",
-    "workflow-cookbook/reports/today.md",
-    "workflow-cookbook/reports/issue_suggestions.md"
+    "workflow-cookbook/SECURITY.md"
   ],
   "deps_out": [
     "docs/birdseye/index.json",
     "workflow-cookbook/CHECKLISTS.md",
-    "workflow-cookbook/docs/birdseye/index.json"
+    "workflow-cookbook/EVALUATION.md",
+    "workflow-cookbook/docs/IN-20250115-001.md",
+    "workflow-cookbook/docs/birdseye/index.json",
+    "workflow-cookbook/logs/test.jsonl",
+    "workflow-cookbook/reports/issue_suggestions.md",
+    "workflow-cookbook/reports/today.md",
+    "workflow-cookbook/scripts/analyze.py",
+    "workflow-cookbook/tools/codemap/README.md",
+    "workflow-cookbook/tools/codemap/update.py"
   ],
-  "generated_at": "2025-02-16T00:00:00Z",
+  "generated_at": "2025-10-20T20:29:16Z",
   "id": "workflow-cookbook/RUNBOOK.md",
   "maintenance": {
     "refresh": "Preparation/Execution/Verificationの各手順を更新した際は Birdseye index/caps と CHECKLISTS を同時更新。",

@@ -1,12 +1,7 @@
 {
-  "deps_in": [
-    "workflow-cookbook/EVALUATION.md",
-    "workflow-cookbook/GUARDRAILS.md"
-  ],
-  "deps_out": [
-    "workflow-cookbook/CHECKLISTS.md"
-  ],
-  "generated_at": "2025-02-20T11:28:45Z",
+  "deps_in": [],
+  "deps_out": [],
+  "generated_at": "2025-10-20T20:29:16Z",
   "id": "governance/policy.yaml",
   "maintenance": {
     "refresh": "禁止パスや権限ポリシーを更新した際は Guardrails・Evaluation・Checklist と Birdseye index/caps を同時更新。",
