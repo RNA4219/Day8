@@ -1,22 +1,19 @@
 {
   "deps_in": [
-    "docs/adr/README.md",
+    "docs/README.md",
+    "docs/ROADMAP_AND_SPECS.md",
     "docs/TASKS.md",
+    "docs/adr/README.md",
     "workflow-cookbook/TASK.codex.md",
     "workflow-cookbook/governance/prioritization.yaml"
   ],
-  "deps_out": [
-    "docs/TASKS.md",
-    "workflow-cookbook/TASK.codex.md",
-    "workflow-cookbook/tools/ci/check_governance_gate.py",
-    "docs/birdseye/index.json"
-  ],
-  "generated_at": "2025-11-06T12:00:00Z",
+  "deps_out": [],
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/adr/0007-proposal-priority-handshake.md",
   "maintenance": {
     "refresh": "Priority Score の重みやテンプレートを更新したら Task Seed/TASK.codex/ガバナンスゲートと本 ADR を同時に改訂する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

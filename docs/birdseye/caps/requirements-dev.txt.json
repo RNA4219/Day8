@@ -1,11 +1,7 @@
 {
-  "deps_in": [
-    "INSTALL.md",
-    "docs/addenda/H_Deploy_Guide.md",
-    "docs/Release_Checklist.md"
-  ],
+  "deps_in": [],
   "deps_out": [],
-  "generated_at": "2025-12-01T00:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "requirements-dev.txt",
   "maintenance": {
     "refresh": "依存追加・バージョン固定を変更したら該当ドキュメントと同じコミットで更新する。",

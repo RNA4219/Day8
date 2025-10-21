@@ -4,14 +4,15 @@
     "docs/ROADMAP_AND_SPECS.md"
   ],
   "deps_out": [
+    "docs/FORK_NOTES.md",
     "docs/UPSTREAM_WEEKLY_LOG.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/UPSTREAM.md",
   "maintenance": {
     "refresh": "subtree 取り込み後にチェックリストと週次ログの記述を必ず最新化する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],

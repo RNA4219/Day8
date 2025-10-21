@@ -1,16 +1,16 @@
 {
   "deps_in": [
-    "README.md",
     "INSTALL.md",
+    "README.md",
     "docs/Release_Checklist.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-02-28T12:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "Makefile",
   "maintenance": {
     "refresh": "Makefile を更新したら docs/birdseye/index.json とカプセルを同一コミットで再生成する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],

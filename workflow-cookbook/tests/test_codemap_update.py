@@ -33,7 +33,7 @@ def _invoke(*args: str, capture_output: bool = False) -> subprocess.CompletedPro
     return subprocess.run(
         [
             "python",
-            "workflow-cookbook/tools/codemap/update.py",
+            "scripts/birdseye_refresh.py",
             *args,
         ],
         check=True,
@@ -108,8 +108,7 @@ def test_update_recomputes_dependencies_for_all_targets(tmp_path: Path) -> None:
     for target in (day8_target, cookbook_target):
         _prepare_fixture(target)
 
-    targets_arg = f"{day8_target / 'index.json'},{cookbook_target / 'index.json'}"
-    _invoke("--targets", targets_arg, "--emit", "index+caps")
+    _invoke("--docs-dir", str(day8_target), "--docs-dir", str(cookbook_target))
 
     for target in (day8_target, cookbook_target):
         index = _load_json(target / "index.json")
@@ -125,7 +124,7 @@ def test_update_recomputes_dependencies_for_all_targets(tmp_path: Path) -> None:
             assert capsule["deps_in"] == deps_in.get(node_id, [])
 
 
-def test_emit_modes_and_dry_run_behaviour(tmp_path: Path) -> None:
+def test_refresh_dry_run_and_updates(tmp_path: Path) -> None:
     repo_root = Path.cwd()
     target = tmp_path / "docs" / "birdseye"
     _copy_tree(repo_root / "docs" / "birdseye", target)
@@ -138,7 +137,7 @@ def test_emit_modes_and_dry_run_behaviour(tmp_path: Path) -> None:
     index_before = index_path.read_text(encoding="utf-8")
     cap_before = cap_path.read_text(encoding="utf-8")
 
-    result = _invoke("--targets", str(index_path), "--emit", "index+caps", "--dry-run", capture_output=True)
+    result = _invoke("--docs-dir", str(target), "--dry-run", capture_output=True)
     assert result.stdout
     assert "[dry-run]" in result.stdout
     assert str(index_path) in result.stdout
@@ -146,23 +145,18 @@ def test_emit_modes_and_dry_run_behaviour(tmp_path: Path) -> None:
     assert index_path.read_text(encoding="utf-8") == index_before
     assert cap_path.read_text(encoding="utf-8") == cap_before
 
-    _invoke("--targets", str(index_path), "--emit", "caps")
+    _invoke("--docs-dir", str(target))
     cap_after_caps = cap_path.read_text(encoding="utf-8")
-    assert index_path.read_text(encoding="utf-8") == index_before
     assert cap_after_caps != cap_before
+    index_after_first = index_path.read_text(encoding="utf-8")
+    assert index_after_first != index_before
 
-    _invoke("--targets", str(index_path), "--emit", "caps")
-    assert cap_path.read_text(encoding="utf-8") == cap_after_caps
-
-    _invoke("--targets", str(index_path), "--emit", "index")
-    index_after_index = index_path.read_text(encoding="utf-8")
-    assert index_after_index != index_before
-    _invoke("--targets", str(index_path), "--emit", "index")
-    second_index_text = index_path.read_text(encoding="utf-8")
-    assert second_index_text != index_after_index
+    _invoke("--docs-dir", str(target))
+    assert index_path.read_text(encoding="utf-8") != index_after_first
+    assert cap_path.read_text(encoding="utf-8") != cap_after_caps
 
 
-def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> None:
+def test_refresh_syncs_timestamps_for_normalised_edges(tmp_path: Path) -> None:
     repo_root = Path.cwd()
     target = tmp_path / "docs" / "birdseye"
     _copy_tree(repo_root / "docs" / "birdseye", target)
@@ -189,10 +183,8 @@ def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> No
         original_cap_timestamp = cap_payload.get("generated_at")
 
     dry_run = _invoke(
-        "--targets",
-        str(index_path),
-        "--emit",
-        "index",
+        "--docs-dir",
+        str(target),
         "--dry-run",
         capture_output=True,
     )
@@ -206,32 +198,32 @@ def test_emit_index_updates_timestamp_for_normalised_edges(tmp_path: Path) -> No
     if cap_path is not None:
         assert _load_json(cap_path)["generated_at"] == original_cap_timestamp
 
-    _invoke("--targets", str(index_path), "--emit", "index")
+    _invoke("--docs-dir", str(target))
     updated_index = _load_json(index_path)
     first_timestamp = str(updated_index["generated_at"])
     assert first_timestamp != original_timestamp
     if hot_path.exists():
         assert _load_json(hot_path)["generated_at"] == first_timestamp
     if cap_path is not None:
-        assert _load_json(cap_path)["generated_at"] == original_cap_timestamp
+        assert _load_json(cap_path)["generated_at"] == first_timestamp
 
-    _invoke("--targets", str(index_path), "--emit", "index")
+    _invoke("--docs-dir", str(target))
     second_index = _load_json(index_path)
     second_timestamp = str(second_index["generated_at"])
     assert second_timestamp != first_timestamp
     if hot_path.exists():
         assert _load_json(hot_path)["generated_at"] == second_timestamp
     if cap_path is not None:
-        assert _load_json(cap_path)["generated_at"] == original_cap_timestamp
+        assert _load_json(cap_path)["generated_at"] == second_timestamp
 
-    _invoke("--targets", str(index_path), "--emit", "index+caps")
+    _invoke("--docs-dir", str(target))
     final_index = _load_json(index_path)
     final_timestamp = str(final_index["generated_at"])
     assert final_timestamp != second_timestamp
     _assert_timestamp_sync(target)
 
 
-def test_emit_caps_does_not_sync_hot_timestamp(tmp_path: Path) -> None:
+def test_refresh_syncs_hot_timestamp_when_present(tmp_path: Path) -> None:
     repo_root = Path.cwd()
     target = tmp_path / "docs" / "birdseye"
     _copy_tree(repo_root / "docs" / "birdseye", target)
@@ -247,8 +239,8 @@ def test_emit_caps_does_not_sync_hot_timestamp(tmp_path: Path) -> None:
         hot_payload["generated_at"] = "1999-12-31T23:59:59Z"
         _write_json(hot_path, hot_payload)
 
-    _invoke("--targets", str(index_path), "--emit", "caps")
+    _invoke("--docs-dir", str(target))
 
     if hot_path.exists():
-        assert _load_json(hot_path)["generated_at"] == "1999-12-31T23:59:59Z"
-    assert _load_json(index_path)["generated_at"] == "2000-01-01T00:00:00Z"
+        hot_payload = _load_json(hot_path)
+        assert hot_payload["generated_at"] == _load_json(index_path)["generated_at"]

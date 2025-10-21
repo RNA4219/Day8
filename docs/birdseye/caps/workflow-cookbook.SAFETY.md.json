@@ -14,6 +14,7 @@
   ],
   "deps_in": [
     "docs/ROADMAP_AND_SPECS.md",
+    "docs/day8/spec/02_spec.md",
     "docs/safety.md",
     "workflow-cookbook/GUARDRAILS.md",
     "workflow-cookbook/SECURITY.md"
@@ -24,12 +25,12 @@
     "workflow-cookbook/EVALUATION.md",
     "workflow-cookbook/RUNBOOK.md"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "workflow-cookbook/SAFETY.md",
   "maintenance": {
     "refresh": "月次レビューまたは安全例外/RCA 更新時に本文と Birdseye (index/hot/caps) を再生成し、generated_at を同期する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

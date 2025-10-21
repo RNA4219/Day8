@@ -1,12 +1,32 @@
 {
   "edges": [
     [
+      "CHANGELOG.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "CHANGELOG.md",
+      "workflow-cookbook/CHANGELOG.md"
+    ],
+    [
+      "INSTALL.md",
+      "Makefile"
+    ],
+    [
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    [
       "README.md",
       "INSTALL.md"
     ],
     [
       "README.md",
-      "CHANGELOG.md"
+      "Makefile"
+    ],
+    [
+      "README.md",
+      "README_PERSONAS_THEMES.md"
     ],
     [
       "README.md",
@@ -34,92 +54,7 @@
     ],
     [
       "README.md",
-      "Makefile"
-    ],
-    [
-      "INSTALL.md",
-      "Makefile"
-    ],
-    [
-      "README.md",
       "workflow-cookbook/docs/birdseye/index.json"
-    ],
-    [
-      "README.md",
-      "README_PERSONAS_THEMES.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/TASKS.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/UPSTREAM.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/day8/README.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/Release_Checklist.md"
-    ],
-    [
-      "CHANGELOG.md",
-      "docs/Release_Checklist.md"
-    ],
-    [
-      "CHANGELOG.md",
-      "workflow-cookbook/CHANGELOG.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/Security_Review_Checklist.md"
-    ],
-    [
-      "docs/Security_Review_Checklist.md",
-      "docs/day8/security/05_security.md"
-    ],
-    [
-      "docs/Security_Review_Checklist.md",
-      "docs/addenda/G_Security_Privacy.md"
-    ],
-    [
-      "docs/Security_Review_Checklist.md",
-      "docs/Release_Checklist.md"
-    ],
-    [
-      "docs/Security_Review_Checklist.md",
-      "workflow-cookbook/SECURITY.md"
-    ],
-    [
-      "docs/Security_Review_Checklist.md",
-      "docs/safety.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/day8_wbs.csv"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/M_Versioning_Release.md",
-      "docs/FORK_NOTES.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/M_Versioning_Release.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/C_Persona_Schema.md"
-    ],
-    [
-      "docs/README.md",
-      "README_PERSONAS_THEMES.md"
-    ],
-    [
-      "docs/addenda/C_Persona_Schema.md",
-      "personas/README.md"
     ],
     [
       "README_PERSONAS_THEMES.md",
@@ -127,19 +62,7 @@
     ],
     [
       "docs/README.md",
-      "docs/addenda/F_Provider_Matrix.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/H_Deploy_Guide.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/B_UI_Mock.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/L_Config_Reference.md"
+      "README_PERSONAS_THEMES.md"
     ],
     [
       "docs/README.md",
@@ -151,11 +74,43 @@
     ],
     [
       "docs/README.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/Security_Review_Checklist.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/TASKS.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/B_UI_Mock.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/C_Persona_Schema.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/D_Trim_Design.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/F_Provider_Matrix.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/G_Security_Privacy.md"
     ],
     [
       "docs/README.md",
-      "docs/addenda/K_Accessibility_UX.md"
+      "docs/addenda/H_Deploy_Guide.md"
     ],
     [
       "docs/README.md",
@@ -163,11 +118,15 @@
     ],
     [
       "docs/README.md",
-      "docs/safety.md"
+      "docs/addenda/K_Accessibility_UX.md"
     ],
     [
       "docs/README.md",
-      "docs/adr/README.md"
+      "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/M_Versioning_Release.md"
     ],
     [
       "docs/README.md",
@@ -183,7 +142,47 @@
     ],
     [
       "docs/README.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/adr/README.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/day8/README.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/day8/spec/01_requirements.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/day8_wbs.csv"
+    ],
+    [
+      "docs/README.md",
       "docs/openapi/day8_openapi.yaml"
+    ],
+    [
+      "docs/README.md",
+      "docs/safety.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/Architecture_ASCII.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -191,7 +190,51 @@
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
       "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0001-collector-analyzer-reporter-pipeline.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0002-jsonl-event-contract.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0003-propose-only-governance.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/adr/README.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8/spec/01_requirements.md"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -199,7 +242,7 @@
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
-      "docs/Architecture_ASCII.md"
+      "docs/openapi/day8_openapi.yaml"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -215,22 +258,6 @@
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/README.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0001-collector-analyzer-reporter-pipeline.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0002-jsonl-event-contract.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0003-propose-only-governance.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
       "workflow-cookbook/GUARDRAILS.md"
     ],
     [
@@ -243,23 +270,67 @@
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
-      "docs/addenda/G_Security_Privacy.md"
+      "workflow-cookbook/TASK.codex.md"
     ],
     [
-      "docs/ROADMAP_AND_SPECS.md",
+      "docs/Release_Checklist.md",
+      "Dockerfile"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "Makefile"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "docs/addenda/M_Versioning_Release.md"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "scripts/perf/collect_metrics.py"
+    ],
+    [
+      "docs/Release_Checklist.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
       "docs/Release_Checklist.md"
     ],
     [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/openapi/day8_openapi.yaml"
+      "docs/Security_Review_Checklist.md",
+      "docs/addenda/G_Security_Privacy.md"
     ],
     [
-      "docs/ROADMAP_AND_SPECS.md",
-      "workflow-cookbook/TASK.codex.md"
+      "docs/Security_Review_Checklist.md",
+      "docs/day8/security/05_security.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "docs/safety.md"
+    ],
+    [
+      "docs/Security_Review_Checklist.md",
+      "workflow-cookbook/SECURITY.md"
+    ],
+    [
+      "docs/TASKS.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
     ],
     [
       "docs/TASKS.md",
       "docs/seeds/README.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/FORK_NOTES.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/UPSTREAM_WEEKLY_LOG.md"
+    ],
+    [
+      "docs/UPSTREAM_WEEKLY_LOG.md",
+      "docs/FORK_NOTES.md"
     ],
     [
       "docs/addenda/C_Persona_Schema.md",
@@ -270,8 +341,112 @@
       "docs/day8/spec/02_spec.md"
     ],
     [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/C_Persona_Schema.md"
+      "docs/addenda/C_Persona_Schema.md",
+      "personas/README.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/addenda/F_Provider_Matrix.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "workflow-cookbook/scripts/analyze.py"
+    ],
+    [
+      "docs/addenda/E_Evaluator_Details.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/addenda/F_Provider_Matrix.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/addenda/H_Deploy_Guide.md",
+      "Dockerfile"
+    ],
+    [
+      "docs/addenda/H_Deploy_Guide.md",
+      "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "config/env.example"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "config/model_registry.json"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/addenda/L_Config_Reference.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/addenda/M1_Metrics_Healthz_ADR.md",
+      "scripts/perf/collect_metrics.py"
+    ],
+    [
+      "docs/addenda/M_Versioning_Release.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/adr/README.md",
+      "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/day8/design/03_architecture.md",
+      "docs/Architecture_ASCII.md"
+    ],
+    [
+      "docs/day8/design/03_architecture.md",
+      "docs/addenda/B_UI_Mock.md"
+    ],
+    [
+      "docs/day8/design/03_architecture.md",
+      "docs/adr/0001-collector-analyzer-reporter-pipeline.md"
+    ],
+    [
+      "docs/day8/design/03_architecture.md",
+      "docs/adr/0002-jsonl-event-contract.md"
+    ],
+    [
+      "docs/day8/design/03_architecture.md",
+      "docs/adr/0003-propose-only-governance.md"
+    ],
+    [
+      "docs/day8/ops/04_ops.md",
+      "config/env.example"
+    ],
+    [
+      "docs/day8/ops/04_ops.md",
+      "config/model_registry.json"
     ],
     [
       "docs/day8/ops/04_ops.md",
@@ -291,27 +466,95 @@
     ],
     [
       "docs/day8/ops/04_ops.md",
-      "config/env.example"
-    ],
-    [
-      "docs/day8/ops/04_ops.md",
-      "config/model_registry.json"
-    ],
-    [
-      "docs/day8/ops/04_ops.md",
       "docs/openapi/day8_openapi.yaml"
     ],
     [
-      "docs/UPSTREAM.md",
-      "docs/UPSTREAM_WEEKLY_LOG.md"
+      "docs/day8/quality/06_quality.md",
+      "docs/addenda/I_Test_Cases.md"
     ],
     [
-      "docs/UPSTREAM.md",
-      "docs/FORK_NOTES.md"
+      "docs/day8/quality/06_quality.md",
+      "docs/adr/0006-evaluator-gates.md"
     ],
     [
-      "docs/UPSTREAM_WEEKLY_LOG.md",
-      "docs/FORK_NOTES.md"
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/C_Persona_Schema.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/D_Trim_Design.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/E_Evaluator_Details.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/F_Provider_Matrix.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/H_Deploy_Guide.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/I_Test_Cases.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/J_Runbook.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/M1_Metrics_Healthz_ADR.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/M_Versioning_Release.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/adr/0004-provider-interface.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "docs/day8/ops/04_ops.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "workflow-cookbook/EVALUATION.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "workflow-cookbook/RUNBOOK.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "docs/day8/spec/02_spec.md",
+      "workflow-cookbook/SECURITY.md"
+    ],
+    [
+      "docs/openapi/day8_openapi.yaml",
+      "docs/Release_Checklist.md"
+    ],
+    [
+      "docs/openapi/day8_openapi.yaml",
+      "docs/addenda/M1_Metrics_Healthz_ADR.md"
+    ],
+    [
+      "docs/openapi/day8_openapi.yaml",
+      "docs/day8/ops/04_ops.md"
     ],
     [
       "docs/safety.md",
@@ -327,7 +570,19 @@
     ],
     [
       "workflow-cookbook/EVALUATION.md",
+      "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "workflow-cookbook/EVALUATION.md",
       "workflow-cookbook/CHECKLISTS.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "docs/adr/0001-collector-analyzer-reporter-pipeline.md"
+    ],
+    [
+      "workflow-cookbook/GUARDRAILS.md",
+      "docs/adr/0003-propose-only-governance.md"
     ],
     [
       "workflow-cookbook/GUARDRAILS.md",
@@ -366,14 +621,6 @@
       "workflow-cookbook/tools/"
     ],
     [
-      "workflow-cookbook/GUARDRAILS.md",
-      "docs/adr/0001-collector-analyzer-reporter-pipeline.md"
-    ],
-    [
-      "workflow-cookbook/GUARDRAILS.md",
-      "docs/adr/0003-propose-only-governance.md"
-    ],
-    [
       "workflow-cookbook/HUB.codex.md",
       "workflow-cookbook/BLUEPRINT.md"
     ],
@@ -400,6 +647,10 @@
     [
       "workflow-cookbook/RUNBOOK.md",
       "docs/birdseye/index.json"
+    ],
+    [
+      "workflow-cookbook/RUNBOOK.md",
+      "scripts/birdseye_refresh.py"
     ],
     [
       "workflow-cookbook/RUNBOOK.md",
@@ -438,10 +689,6 @@
       "workflow-cookbook/tools/codemap/README.md"
     ],
     [
-      "workflow-cookbook/RUNBOOK.md",
-      "workflow-cookbook/tools/codemap/update.py"
-    ],
-    [
       "workflow-cookbook/SAFETY.md",
       "workflow-cookbook/BLUEPRINT.md"
     ],
@@ -486,258 +733,6 @@
       "workflow-cookbook/tools/"
     ],
     [
-      "docs/day8/design/03_architecture.md",
-      "docs/Architecture_ASCII.md"
-    ],
-    [
-      "docs/day8/design/03_architecture.md",
-      "docs/addenda/B_UI_Mock.md"
-    ],
-    [
-      "docs/day8/design/03_architecture.md",
-      "docs/adr/0001-collector-analyzer-reporter-pipeline.md"
-    ],
-    [
-      "docs/day8/design/03_architecture.md",
-      "docs/adr/0002-jsonl-event-contract.md"
-    ],
-    [
-      "docs/day8/design/03_architecture.md",
-      "docs/adr/0003-propose-only-governance.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/F_Provider_Matrix.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/D_Trim_Design.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/E_Evaluator_Details.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/L_Config_Reference.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/M1_Metrics_Healthz_ADR.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/H_Deploy_Guide.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/J_Runbook.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/I_Test_Cases.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/addenda/M_Versioning_Release.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/day8/ops/04_ops.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "workflow-cookbook/EVALUATION.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "workflow-cookbook/RUNBOOK.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "workflow-cookbook/SAFETY.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "workflow-cookbook/SECURITY.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/addenda/D_Trim_Design.md"
-    ],
-    [
-      "docs/addenda/D_Trim_Design.md",
-      "workflow-cookbook/scripts/analyze.py"
-    ],
-    [
-      "docs/addenda/D_Trim_Design.md",
-      "docs/addenda/F_Provider_Matrix.md"
-    ],
-    [
-      "docs/addenda/D_Trim_Design.md",
-      "docs/addenda/G_Security_Privacy.md"
-    ],
-    [
-      "docs/addenda/D_Trim_Design.md",
-      "docs/addenda/L_Config_Reference.md"
-    ],
-    [
-      "docs/addenda/D_Trim_Design.md",
-      "docs/day8/quality/06_quality.md"
-    ],
-    [
-      "docs/day8/quality/06_quality.md",
-      "docs/addenda/I_Test_Cases.md"
-    ],
-    [
-      "docs/addenda/H_Deploy_Guide.md",
-      "docs/addenda/L_Config_Reference.md"
-    ],
-    [
-      "docs/Release_Checklist.md",
-      "docs/addenda/M_Versioning_Release.md"
-    ],
-    [
-      "docs/Release_Checklist.md",
-      "scripts/perf/collect_metrics.py"
-    ],
-    [
-      "docs/Release_Checklist.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "docs/Release_Checklist.md",
-      "Makefile"
-    ],
-    [
-      "docs/addenda/M_Versioning_Release.md",
-      "workflow-cookbook/CHECKLISTS.md"
-    ],
-    [
-      "docs/openapi/day8_openapi.yaml",
-      "docs/addenda/M1_Metrics_Healthz_ADR.md"
-    ],
-    [
-      "docs/openapi/day8_openapi.yaml",
-      "docs/day8/ops/04_ops.md"
-    ],
-    [
-      "docs/openapi/day8_openapi.yaml",
-      "docs/Release_Checklist.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/day8/spec/01_requirements.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/day8/spec/01_requirements.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/adr/0004-provider-interface.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/adr/0006-evaluator-gates.md"
-    ],
-    [
-      "docs/README.md",
-      "docs/adr/0007-proposal-priority-handshake.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0004-provider-interface.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0006-evaluator-gates.md"
-    ],
-    [
-      "docs/ROADMAP_AND_SPECS.md",
-      "docs/adr/0007-proposal-priority-handshake.md"
-    ],
-    [
-      "docs/adr/README.md",
-      "docs/adr/0004-provider-interface.md"
-    ],
-    [
-      "docs/adr/README.md",
-      "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "docs/adr/README.md",
-      "docs/adr/0006-evaluator-gates.md"
-    ],
-    [
-      "docs/adr/README.md",
-      "docs/adr/0007-proposal-priority-handshake.md"
-    ],
-    [
-      "docs/addenda/F_Provider_Matrix.md",
-      "docs/adr/0004-provider-interface.md"
-    ],
-    [
-      "docs/addenda/L_Config_Reference.md",
-      "docs/adr/0004-provider-interface.md"
-    ],
-    [
-      "docs/day8/spec/02_spec.md",
-      "docs/adr/0004-provider-interface.md"
-    ],
-    [
-      "workflow-cookbook/reflection.yaml",
-      "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "workflow-cookbook/scripts/analyze.py",
-      "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "docs/addenda/L_Config_Reference.md",
-      "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "docs/addenda/L_Config_Reference.md",
-      "config/env.example"
-    ],
-    [
-      "docs/addenda/L_Config_Reference.md",
-      "config/model_registry.json"
-    ],
-    [
-      "docs/addenda/M1_Metrics_Healthz_ADR.md",
-      "scripts/perf/collect_metrics.py"
-    ],
-    [
-      "docs/addenda/E_Evaluator_Details.md",
-      "docs/adr/0006-evaluator-gates.md"
-    ],
-    [
-      "docs/day8/quality/06_quality.md",
-      "docs/adr/0006-evaluator-gates.md"
-    ],
-    [
-      "workflow-cookbook/EVALUATION.md",
-      "docs/adr/0006-evaluator-gates.md"
-    ],
-    [
-      "docs/TASKS.md",
-      "docs/adr/0007-proposal-priority-handshake.md"
-    ],
-    [
       "workflow-cookbook/TASK.codex.md",
       "docs/adr/0007-proposal-priority-handshake.md"
     ],
@@ -746,44 +741,69 @@
       "docs/adr/0007-proposal-priority-handshake.md"
     ],
     [
-      "docs/addenda/H_Deploy_Guide.md",
-      "Dockerfile"
+      "workflow-cookbook/reflection.yaml",
+      "docs/adr/0005-reflection-manifest.md"
     ],
     [
-      "docs/Release_Checklist.md",
-      "Dockerfile"
+      "workflow-cookbook/scripts/analyze.py",
+      "docs/adr/0005-reflection-manifest.md"
     ]
   ],
-  "generated_at": "00002",
+  "generated_at": "2025-10-21T23:38:07Z",
   "nodes": {
-    "INSTALL.md": {
-      "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "2025-12-01T00:00:00Z",
-      "role": "setup"
-    },
     "CHANGELOG.md": {
       "caps": "docs/birdseye/caps/CHANGELOG.md.json",
       "mtime": "2025-11-21T09:30:00Z",
       "role": "changelog"
     },
-    "README.md": {
-      "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "2025-02-28T12:00:00Z",
-      "role": "overview"
+    "Dockerfile": {
+      "caps": "docs/birdseye/caps/Dockerfile.json",
+      "mtime": "2025-03-07T00:00:00Z",
+      "role": "build"
+    },
+    "INSTALL.md": {
+      "caps": "docs/birdseye/caps/INSTALL.md.json",
+      "mtime": "2025-12-01T00:00:00Z",
+      "role": "setup"
     },
     "Makefile": {
       "caps": "docs/birdseye/caps/Makefile.json",
       "mtime": "2025-02-28T12:00:00Z",
       "role": "build"
     },
+    "README.md": {
+      "caps": "docs/birdseye/caps/README.md.json",
+      "mtime": "2025-02-28T12:00:00Z",
+      "role": "overview"
+    },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
       "mtime": "2025-11-12T09:30:00Z",
       "role": "guide"
     },
+    "config/env.example": {
+      "caps": "docs/birdseye/caps/config.env.example.json",
+      "mtime": "2025-11-10T09:00:00Z",
+      "role": "configuration"
+    },
+    "config/model_registry.json": {
+      "caps": "docs/birdseye/caps/config.model_registry.json",
+      "mtime": "2025-11-10T09:00:00Z",
+      "role": "provider"
+    },
+    "docs/Architecture_ASCII.md": {
+      "caps": "docs/birdseye/caps/docs.Architecture_ASCII.md.json",
+      "mtime": "2025-10-25T12:00:00Z",
+      "role": "architecture"
+    },
     "docs/BIRDSEYE.md": {
       "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
       "mtime": "2025-10-20T18:08:52Z",
+      "role": "guide"
+    },
+    "docs/FORK_NOTES.md": {
+      "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
+      "mtime": "2025-11-20T09:30:00Z",
       "role": "guide"
     },
     "docs/README.md": {
@@ -796,16 +816,6 @@
       "mtime": "2025-10-21T19:48:39Z",
       "role": "roadmap"
     },
-    "docs/Architecture_ASCII.md": {
-      "caps": "docs/birdseye/caps/docs.Architecture_ASCII.md.json",
-      "mtime": "2025-10-25T12:00:00Z",
-      "role": "architecture"
-    },
-    "docs/TASKS.md": {
-      "caps": "docs/birdseye/caps/docs.TASKS.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
-      "role": "tasks"
-    },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
       "mtime": "2025-12-20T12:00:00Z",
@@ -816,25 +826,10 @@
       "mtime": "2025-12-15T09:00:00Z",
       "role": "security-checklist"
     },
-    "docs/openapi/day8_openapi.yaml": {
-      "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
-      "mtime": "2025-10-21T19:48:39Z",
-      "role": "api-spec"
-    },
-    "docs/FORK_NOTES.md": {
-      "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
-      "mtime": "2025-11-20T09:30:00Z",
-      "role": "guide"
-    },
-    "docs/addenda/A_Glossary.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
-      "mtime": "2025-10-21T00:00:00Z",
-      "role": "glossary"
-    },
-    "docs/addenda/F_Provider_Matrix.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.F_Provider_Matrix.md.json",
-      "mtime": "2025-10-26T00:00:00Z",
-      "role": "provider"
+    "docs/TASKS.md": {
+      "caps": "docs/birdseye/caps/docs.TASKS.md.json",
+      "mtime": "2025-01-15T00:00:00Z",
+      "role": "tasks"
     },
     "docs/UPSTREAM.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
@@ -846,10 +841,50 @@
       "mtime": "2025-02-15T10:00:00Z",
       "role": "log"
     },
+    "docs/addenda/A_Glossary.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
+      "mtime": "2025-10-21T00:00:00Z",
+      "role": "glossary"
+    },
+    "docs/addenda/B_UI_Mock.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
+      "mtime": "2025-10-21T00:00:00Z",
+      "role": "design"
+    },
+    "docs/addenda/C_Persona_Schema.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
+      "mtime": "2025-11-08T09:00:00Z",
+      "role": "persona"
+    },
+    "docs/addenda/F_Provider_Matrix.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.F_Provider_Matrix.md.json",
+      "mtime": "2025-10-26T00:00:00Z",
+      "role": "provider"
+    },
+    "docs/addenda/G_Security_Privacy.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
+      "mtime": "2025-10-22T09:00:00Z",
+      "role": "security"
+    },
     "docs/addenda/H_Deploy_Guide.md": {
       "caps": "docs/birdseye/caps/docs.addenda.H_Deploy_Guide.md.json",
       "mtime": "2025-12-01T00:00:00Z",
       "role": "guide"
+    },
+    "docs/addenda/I_Test_Cases.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
+      "mtime": "2025-02-21T00:00:00Z",
+      "role": "quality"
+    },
+    "docs/addenda/J_Runbook.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
+      "mtime": "2025-02-22T00:00:00Z",
+      "role": "operations"
+    },
+    "docs/addenda/K_Accessibility_UX.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
+      "mtime": "2025-02-24T09:00:00Z",
+      "role": "ux"
     },
     "docs/addenda/L_Config_Reference.md": {
       "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
@@ -861,25 +896,95 @@
       "mtime": "2025-12-20T12:00:00Z",
       "role": "operations"
     },
-    "config/env.example": {
-      "caps": "docs/birdseye/caps/config.env.example.json",
-      "mtime": "2025-11-10T09:00:00Z",
-      "role": "configuration"
-    },
-    "config/model_registry.json": {
-      "caps": "docs/birdseye/caps/config.model_registry.json",
-      "mtime": "2025-11-10T09:00:00Z",
-      "role": "provider"
-    },
     "docs/addenda/M_Versioning_Release.md": {
       "caps": "docs/birdseye/caps/docs.addenda.M_Versioning_Release.md.json",
       "mtime": "2025-02-24T12:00:00Z",
       "role": "release"
     },
+    "docs/adr/0000-template.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0000-template.md.json",
+      "mtime": "2025-11-05T09:00:00Z",
+      "role": "adr-template"
+    },
+    "docs/adr/0001-collector-analyzer-reporter-pipeline.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0001-collector-analyzer-reporter-pipeline.md.json",
+      "mtime": "2025-11-05T09:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0002-jsonl-event-contract.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0002-jsonl-event-contract.md.json",
+      "mtime": "2025-11-05T09:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0003-propose-only-governance.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0003-propose-only-governance.md.json",
+      "mtime": "2025-11-05T09:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0004-provider-interface.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0004-provider-interface.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0005-reflection-manifest.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0005-reflection-manifest.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0006-evaluator-gates.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0006-evaluator-gates.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/0007-proposal-priority-handshake.md": {
+      "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
+      "mtime": "2025-11-06T12:00:00Z",
+      "role": "adr"
+    },
+    "docs/adr/README.md": {
+      "caps": "docs/birdseye/caps/docs.adr.README.md.json",
+      "mtime": "2025-11-05T09:00:00Z",
+      "role": "adr"
+    },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
       "mtime": "2025-01-15T00:00:00Z",
       "role": "overview"
+    },
+    "docs/day8/design/03_architecture.md": {
+      "caps": "docs/birdseye/caps/docs.day8.design.03_architecture.md.json",
+      "mtime": "2025-11-05T09:00:00Z",
+      "role": "architecture"
+    },
+    "docs/day8/ops/04_ops.md": {
+      "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
+      "mtime": "2025-11-10T09:00:00Z",
+      "role": "operations"
+    },
+    "docs/day8/quality/06_quality.md": {
+      "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
+      "mtime": "2025-02-24T09:00:00Z",
+      "role": "quality"
+    },
+    "docs/day8/spec/01_requirements.md": {
+      "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
+      "mtime": "2025-11-06T09:00:00Z",
+      "role": "requirements"
+    },
+    "docs/day8/spec/02_spec.md": {
+      "caps": "docs/birdseye/caps/docs.day8.spec.02_spec.md.json",
+      "mtime": "2025-11-06T09:00:00Z",
+      "role": "spec"
+    },
+    "docs/day8_wbs.csv": {
+      "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
+      "mtime": "2025-11-07T09:00:00Z",
+      "role": "planning"
+    },
+    "docs/openapi/day8_openapi.yaml": {
+      "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
+      "mtime": "2025-10-21T19:48:39Z",
+      "role": "api-spec"
     },
     "docs/safety.md": {
       "caps": "docs/birdseye/caps/docs.safety.md.json",
@@ -891,10 +996,25 @@
       "mtime": "2025-01-15T00:00:00Z",
       "role": "seeds"
     },
+    "personas/README.md": {
+      "caps": "docs/birdseye/caps/personas.README.md.json",
+      "mtime": "2025-11-08T09:00:00Z",
+      "role": "persona"
+    },
     "scripts/": {
       "caps": "docs/birdseye/caps/scripts.DIR.json",
       "mtime": "2025-01-17T00:00:00Z",
       "role": "automation"
+    },
+    "scripts/birdseye_refresh.py": {
+      "caps": "docs/birdseye/caps/scripts.birdseye_refresh.py.json",
+      "mtime": "2025-02-16T00:00:00Z",
+      "role": "automation"
+    },
+    "themes/CATALOG.md": {
+      "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
+      "mtime": "2025-11-12T09:30:00Z",
+      "role": "design"
     },
     "tools/": {
       "caps": "docs/birdseye/caps/tools.DIR.json",
@@ -990,131 +1110,6 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.README.md.json",
       "mtime": "2025-02-16T00:00:00Z",
       "role": "guide"
-    },
-    "workflow-cookbook/tools/codemap/update.py": {
-      "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.update.py.json",
-      "mtime": "2025-02-16T00:00:00Z",
-      "role": "automation"
-    },
-    "docs/addenda/C_Persona_Schema.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
-      "mtime": "2025-11-08T09:00:00Z",
-      "role": "persona"
-    },
-    "themes/CATALOG.md": {
-      "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
-      "mtime": "2025-11-12T09:30:00Z",
-      "role": "design"
-    },
-    "personas/README.md": {
-      "caps": "docs/birdseye/caps/personas.README.md.json",
-      "mtime": "2025-11-08T09:00:00Z",
-      "role": "persona"
-    },
-    "docs/addenda/I_Test_Cases.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
-      "role": "quality"
-    },
-    "docs/addenda/J_Runbook.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
-      "mtime": "2025-02-22T00:00:00Z",
-      "role": "operations"
-    },
-    "docs/addenda/G_Security_Privacy.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
-      "mtime": "2025-10-22T09:00:00Z",
-      "role": "security"
-    },
-    "docs/day8/quality/06_quality.md": {
-      "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
-      "mtime": "2025-02-24T09:00:00Z",
-      "role": "quality"
-    },
-    "docs/addenda/K_Accessibility_UX.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
-      "mtime": "2025-02-24T09:00:00Z",
-      "role": "ux"
-    },
-    "docs/addenda/B_UI_Mock.md": {
-      "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
-      "mtime": "2025-10-21T00:00:00Z",
-      "role": "design"
-    },
-    "docs/day8/spec/02_spec.md": {
-      "caps": "docs/birdseye/caps/docs.day8.spec.02_spec.md.json",
-      "mtime": "2025-11-06T09:00:00Z",
-      "role": "spec"
-    },
-    "docs/day8/design/03_architecture.md": {
-      "caps": "docs/birdseye/caps/docs.day8.design.03_architecture.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
-      "role": "architecture"
-    },
-    "docs/day8/ops/04_ops.md": {
-      "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
-      "mtime": "2025-11-10T09:00:00Z",
-      "role": "operations"
-    },
-    "docs/adr/README.md": {
-      "caps": "docs/birdseye/caps/docs.adr.README.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
-      "role": "adr"
-    },
-    "docs/adr/0000-template.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0000-template.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
-      "role": "adr-template"
-    },
-    "docs/adr/0001-collector-analyzer-reporter-pipeline.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0001-collector-analyzer-reporter-pipeline.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
-      "role": "adr"
-    },
-    "docs/adr/0002-jsonl-event-contract.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0002-jsonl-event-contract.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
-      "role": "adr"
-    },
-    "docs/adr/0003-propose-only-governance.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0003-propose-only-governance.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
-      "role": "adr"
-    },
-    "docs/day8_wbs.csv": {
-      "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
-      "mtime": "2025-11-07T09:00:00Z",
-      "role": "planning"
-    },
-    "docs/day8/spec/01_requirements.md": {
-      "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
-      "mtime": "2025-11-06T09:00:00Z",
-      "role": "requirements"
-    },
-    "docs/adr/0004-provider-interface.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0004-provider-interface.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
-      "role": "adr"
-    },
-    "docs/adr/0005-reflection-manifest.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0005-reflection-manifest.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
-      "role": "adr"
-    },
-    "docs/adr/0006-evaluator-gates.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0006-evaluator-gates.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
-      "role": "adr"
-    },
-    "docs/adr/0007-proposal-priority-handshake.md": {
-      "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
-      "role": "adr"
-    },
-    "Dockerfile": {
-      "caps": "docs/birdseye/caps/Dockerfile.json",
-      "mtime": "2025-03-07T00:00:00Z",
-      "role": "build"
     }
   }
 }

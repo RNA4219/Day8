@@ -1,21 +1,17 @@
 {
   "deps_in": [
-    "README.md",
-    "docs/ROADMAP_AND_SPECS.md",
-    "docs/FORK_NOTES.md"
+    "README.md"
   ],
   "deps_out": [
     "docs/Release_Checklist.md",
-    "workflow-cookbook/CHANGELOG.md",
-    "docs/birdseye/index.json",
-    "docs/birdseye/hot.json"
+    "workflow-cookbook/CHANGELOG.md"
   ],
-  "generated_at": "2025-11-21T09:30:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "CHANGELOG.md",
   "maintenance": {
     "refresh": "Day8 固有の差分を追記したら、workflow-cookbook/CHANGELOG.md と Release Checklist を確認し、Birdseye index/caps/hot の generated_at を同じコミットで揃える。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [],

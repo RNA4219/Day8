@@ -11,22 +11,17 @@
   ],
   "deps_in": [
     "README.md",
-    "docs/README.md",
-    "docs/addenda/B_UI_Mock.md",
-    "docs/addenda/C_Persona_Schema.md",
-    "docs/addenda/K_Accessibility_UX.md"
+    "docs/README.md"
   ],
   "deps_out": [
-    "docs/birdseye/index.json",
-    "themes/CATALOG.md",
-    "personas/README.md"
+    "themes/CATALOG.md"
   ],
-  "generated_at": "2025-11-12T09:30:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "README_PERSONAS_THEMES.md",
   "maintenance": {
     "refresh": "テーマやペルソナを追加したら TOML 設定・Appendix B/C/K とのリンクを更新し、Birdseye index/hot/caps の generated_at を同期する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

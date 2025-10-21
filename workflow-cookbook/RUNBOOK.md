@@ -51,9 +51,9 @@ next_review_due: 2025-11-14
 1. 作業ブランチを作成し、Blueprint / Guardrails を参照して差分を設計。
 2. 変更適用後、Birdseye を同期。
    ```bash
-   python workflow-cookbook/tools/codemap/update.py \
-     --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json \
-     --emit index+caps
+   python scripts/birdseye_refresh.py \
+     --docs-dir docs/birdseye \
+     --docs-dir workflow-cookbook/docs/birdseye
    ```
 3. 運用ログを収集し、必要に応じて解析レポートを出力。
    ```bash
@@ -76,7 +76,7 @@ next_review_due: 2025-11-14
 ## References
 
 - `docs/birdseye/index.json` / `workflow-cookbook/docs/birdseye/index.json`：ノード間依存の鳥瞰図。
-- `workflow-cookbook/tools/codemap/update.py`：Birdseye 自動再生成スクリプト。
+- `scripts/birdseye_refresh.py`：Birdseye 自動再生成スクリプト。
 - `workflow-cookbook/scripts/analyze.py`：ログ解析および日次レポート生成。
 - `workflow-cookbook/CHECKLISTS.md`：運用判断の最終ゲート。
 - `workflow-cookbook/docs/IN-*.md`：インシデントサマリとロールバック記録。

@@ -1,25 +1,15 @@
 {
   "deps_in": [
-    "docs/ROADMAP_AND_SPECS.md",
-    "docs/Release_Checklist.md",
-    "docs/addenda/J_Runbook.md",
-    "docs/addenda/G_Security_Privacy.md",
-    "docs/addenda/K_Accessibility_UX.md",
-    "docs/addenda/M_Versioning_Release.md",
-    "docs/addenda/M1_Metrics_Healthz_ADR.md"
+    "docs/README.md",
+    "docs/ROADMAP_AND_SPECS.md"
   ],
-  "deps_out": [
-    "docs/day8/spec/02_spec.md",
-    "docs/TASKS.md",
-    "docs/birdseye/index.json",
-    "docs/birdseye/hot.json"
-  ],
-  "generated_at": "2025-11-06T09:00:00Z",
+  "deps_out": [],
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/day8/spec/01_requirements.md",
   "maintenance": {
     "refresh": "要件の固定事項や受入基準を更新したら README / ROADMAP / Birdseye (index+hot) を同じコミットで再同期する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json docs/birdseye/hot.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [

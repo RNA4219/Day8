@@ -1,0 +1,36 @@
+{
+  "deps": [
+    "in::workflow-cookbook/tools/codemap/README.md",
+    "in::docs/birdseye/index.json",
+    "in::workflow-cookbook/docs/birdseye/index.json",
+    "out::docs/birdseye/index.json",
+    "out::workflow-cookbook/docs/birdseye/index.json"
+  ],
+  "deps_in": [
+    "workflow-cookbook/RUNBOOK.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-21T23:38:07Z",
+  "id": "scripts/birdseye_refresh.py",
+  "maintenance": {
+    "refresh": "codemap.update モジュールへの委譲部と CLI 引数 (`--docs-dir` / `--dry-run`) を変更時に合わせて更新。",
+    "tooling": [
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
+    ]
+  },
+  "risks": [
+    "JSONスキーマ差異を見落とすと生成物が壊れる"
+  ],
+  "role": [
+    "core::birdseye-automation",
+    "orbit::metadata-normalizer"
+  ],
+  "summary": [
+    "core::--docs-dir を繰り返し指定して Day8 / cookbook 両方の Birdseye index と caps を再生成する CLI。",
+    "orbit::codemap.update モジュールを内部で呼び出し generated_at 同期と dry-run 差分表示を委譲。",
+    "orbit::RefreshError で引数解決やモジュール読込の失敗を即座に検知。"
+  ],
+  "tests": [
+    "check::unit-testsでdry-runと書き込みの差分検知がカバーされているか確認"
+  ]
+}

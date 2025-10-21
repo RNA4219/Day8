@@ -9,26 +9,25 @@
     "out::docs/safety.md"
   ],
   "deps_in": [
-    "docs/README.md",
-    "docs/day8/security/05_security.md"
+    "docs/README.md"
   ],
   "deps_out": [
-    "docs/day8/security/05_security.md",
-    "docs/addenda/G_Security_Privacy.md",
     "docs/Release_Checklist.md",
-    "workflow-cookbook/SECURITY.md",
-    "docs/safety.md"
+    "docs/addenda/G_Security_Privacy.md",
+    "docs/day8/security/05_security.md",
+    "docs/safety.md",
+    "workflow-cookbook/SECURITY.md"
   ],
-  "generated_at": "2025-12-15T09:00:00Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/Security_Review_Checklist.md",
   "maintenance": {
     "refresh": "Secrets/CORS/Rate limit/OAuth/依存性スキャンの審査項目が更新されたら本チェックリストを修正し、05_security.md と Appendix G の対応を揃えて Birdseye index/hot/caps の generated_at を同期。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "risks": [
-    "チェックリストが古いと PR 審査で Secrets や OAuth の漏れを見逃す", 
+    "チェックリストが古いと PR 審査で Secrets や OAuth の漏れを見逃す",
     "Birdseye 側のリンクが同期されていないと Ops/Release が参照を誤る"
   ],
   "role": [

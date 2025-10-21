@@ -5,16 +5,16 @@
     "docs/day8/ops/04_ops.md"
   ],
   "deps_out": [
+    "docs/Release_Checklist.md",
     "docs/addenda/M1_Metrics_Healthz_ADR.md",
-    "docs/day8/ops/04_ops.md",
-    "docs/Release_Checklist.md"
+    "docs/day8/ops/04_ops.md"
   ],
-  "generated_at": "2025-10-21T19:48:39Z",
+  "generated_at": "2025-10-21T23:38:07Z",
   "id": "docs/openapi/day8_openapi.yaml",
   "maintenance": {
     "refresh": "ヘルスチェック/メトリクス仕様を更新したら OpenAPI と ADR/Release チェックリストを同時に同期する。",
     "tooling": [
-      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
   },
   "public_api": [
