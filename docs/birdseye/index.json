@@ -50,6 +50,10 @@
     ],
     [
       "docs/README.md",
+      "docs/day8_wbs.csv"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/M_Versioning_Release.md",
       "docs/FORK_NOTES.md"
     ],
@@ -116,6 +120,10 @@
     [
       "docs/ROADMAP_AND_SPECS.md",
       "docs/UPSTREAM.md"
+    ],
+    [
+      "docs/ROADMAP_AND_SPECS.md",
+      "docs/day8_wbs.csv"
     ],
     [
       "docs/ROADMAP_AND_SPECS.md",
@@ -522,7 +530,7 @@
       "docs/day8/spec/01_requirements.md"
     ]
   ],
-  "generated_at": "2025-11-06T09:00:00Z",
+  "generated_at": "2025-11-07T09:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -798,6 +806,11 @@
       "caps": "docs/birdseye/caps/docs.adr.0003-propose-only-governance.md.json",
       "mtime": "2025-11-05T09:00:00Z",
       "role": "adr"
+    },
+    "docs/day8_wbs.csv": {
+      "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
+      "mtime": "2025-11-07T09:00:00Z",
+      "role": "planning"
     },
     "docs/day8/spec/01_requirements.md": {
       "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
