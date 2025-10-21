@@ -46,6 +46,10 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/A_Glossary.md"
+    ],
+    [
+      "docs/README.md",
       "docs/safety.md"
     ],
     [
@@ -292,6 +296,11 @@
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
       "mtime": "2025-01-15T00:00:00Z",
       "role": "tasks"
+    },
+    "docs/addenda/A_Glossary.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
+      "mtime": "2025-10-21T00:00:00Z",
+      "role": "glossary"
     },
     "docs/UPSTREAM.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
