@@ -7,6 +7,11 @@
 
 メトリクスを整理したら、[付録I: Day8 テストケース観点](../../addenda/I_Test_Cases.md)でチェックリスト化やレビュー前の観点洗い出しを行い、CI・レポート基盤に必要な検証項目を漏れなく揃える。
 
+## アクセシビリティ観点
+- メトリクス設計と同時に [付録K: アクセシビリティ & UX](../../addenda/K_Accessibility_UX.md) を参照し、CLI 出力・レポート・ドキュメントの書式がスクリーンリーダーと色覚多様性に配慮しているか確認する。
+- QA / レビューでは 06_quality.md → 付録I → 付録K の順で読み合わせ、テスト計画にアクセシビリティ検証ケース（配色コントラスト、キーボード操作、代替テキスト）を追加する。
+- Birdseye 更新時は index → caps の `generated_at` を揃え、付録K の運用指針と差分がないかをチェックする。
+
 ## 自動評価手順
 1. ケース定義を [`workflow-cookbook/EVALUATION.md`](../../../workflow-cookbook/EVALUATION.md) と同期し、入力 YAML の `prompt`/`expected`/`metadata` を整備する。
 2. 推論ログを `quality/pipeline/normalize.py` で前処理したうえで、[付録E: 評価器構成](../../addenda/E_Evaluator_Details.md) に従い BERTScore・ROUGE・ルール判定を実行する。

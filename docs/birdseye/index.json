@@ -66,6 +66,7 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/K_Accessibility_UX.md"
       "docs/addenda/J_Runbook.md"
     ],
     [
@@ -566,9 +567,13 @@
     },
     "docs/day8/quality/06_quality.md": {
       "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
+      "mtime": "2025-02-24T09:00:00Z",
       "role": "quality"
     },
+    "docs/addenda/K_Accessibility_UX.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
+      "mtime": "2025-02-24T09:00:00Z",
+      "role": "ux"
     "docs/addenda/B_UI_Mock.md": {
       "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
       "mtime": "2025-10-21T00:00:00Z",
