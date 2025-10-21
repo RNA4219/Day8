@@ -15,4 +15,5 @@ Day8 と Katamari の差分同期を定期的に記録するための表形式�
 2. `upstream commit` は `git ls-remote upstream main` などで確認した最新 SHA を記入する。
 3. `Day8 sync commit` には Day8 側の取り込みコミット (PR merge commit) を記入する。
 4. 差分対応で未完了項目がある場合は `追加アクション・Owner` の列に追記し、完了するまで維持する。
-5. ログ更新と同時に [docs/UPSTREAM.md](UPSTREAM.md) のチェックリスト項目と Birdseye の `generated_at` を確認する。
+5. ログ更新前に [Day8 Fork Notes](FORK_NOTES.md) の差分反映状況を確認し、追加依存やライセンス同梱に影響があれば本テンプレートへメモする。
+6. ログ更新と同時に [docs/UPSTREAM.md](UPSTREAM.md) のチェックリスト項目と Birdseye の `generated_at` を確認する。

@@ -51,6 +51,14 @@
     [
       "docs/README.md",
       "docs/addenda/M_Versioning_Release.md",
+      "docs/FORK_NOTES.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/M_Versioning_Release.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/C_Persona_Schema.md"
     ],
     [
@@ -75,7 +83,10 @@
     ],
     [
       "docs/README.md",
-      "docs/addenda/K_Accessibility_UX.md",
+      "docs/addenda/K_Accessibility_UX.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/J_Runbook.md"
     ],
     [
@@ -193,6 +204,14 @@
     [
       "docs/UPSTREAM.md",
       "docs/UPSTREAM_WEEKLY_LOG.md"
+    ],
+    [
+      "docs/UPSTREAM.md",
+      "docs/FORK_NOTES.md"
+    ],
+    [
+      "docs/UPSTREAM_WEEKLY_LOG.md",
+      "docs/FORK_NOTES.md"
     ],
     [
       "docs/safety.md",
@@ -480,6 +499,11 @@
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
       "mtime": "2025-02-24T12:00:00Z",
       "role": "checklist"
+    },
+    "docs/FORK_NOTES.md": {
+      "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
+      "mtime": "2025-11-20T09:30:00Z",
+      "role": "guide"
     },
     "docs/addenda/A_Glossary.md": {
       "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",

@@ -32,6 +32,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
 
 ## Upstream 運用
+- [Day8 Fork Notes](FORK_NOTES.md) — Katamari 本家の Fork Notes を補完し、Day8 固有の追加コンポーネント・依存・ライセンス同梱ルールを確認する際の入口。
 - [Day8 Upstream 運用ガイド](UPSTREAM.md) — Katamari ワークフロー資産との同期手順と週次チェックの基準。
 - [Day8 Upstream 週次ログ テンプレート](UPSTREAM_WEEKLY_LOG.md) — 週次レビュー用の記録テンプレート。
 
