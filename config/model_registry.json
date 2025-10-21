@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "default_provider": "openai",
+  "providers": [
+    {
+      "name": "openai",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "OPENAI_BASE_URL",
+      "models": [
+        {
+          "id": "collector",
+          "model": "gpt-4o-mini",
+          "roles": ["collector", "triage"],
+          "capabilities": ["ingest", "summarize"],
+          "default": true
+        },
+        {
+          "id": "analyzer",
+          "model": "gpt-4o",
+          "roles": ["analyzer", "reporter"],
+          "capabilities": ["reflection", "root-cause"],
+          "fallback": ["azure-openai:analyzer"]
+        }
+      ]
+    },
+    {
+      "name": "azure-openai",
+      "api_key_env": "AZURE_OPENAI_API_KEY",
+      "base_url_env": "AZURE_OPENAI_ENDPOINT",
+      "deployment_env": "AZURE_OPENAI_DEPLOYMENT",
+      "models": [
+        {
+          "id": "analyzer",
+          "model": "gpt-4o-mini",
+          "roles": ["analyzer"],
+          "capabilities": ["reflection"],
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "anthropic",
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "models": [
+        {
+          "id": "fallback",
+          "model": "claude-3-5-sonnet",
+          "roles": ["analysis", "safety"],
+          "capabilities": ["fallback", "guardrail"],
+          "default": false
+        }
+      ]
+    }
+  ]
+}

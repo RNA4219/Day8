@@ -26,6 +26,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [運用ガイド](day8/ops/04_ops.md) — 導入・運用フローとサブディレクトリ管理手順。
 - [Day8 デプロイ付録（Appendix H）](addenda/H_Deploy_Guide.md) — ローカル検証、Docker 化、GitHub Actions リリースの要点をまとめた導入補助資料。
 - [Day8 設定リファレンス（Appendix L）](addenda/L_Config_Reference.md) — 環境変数・設定ファイル・デバッグフラグを網羅し、導入前チェックリストとして活用できる設定付録。
+- [Day8 設定テンプレート](../config/env.example) / [モデルレジストリ雛形](../config/model_registry.json) — Appendix L/F の要件を満たすサンプル構成。`.env` とプロバイダー定義を Day8 用語へ合わせて初期化するときに利用。
 - [Day8 Release Checklist (Katamari Flow)](Release_Checklist.md) — propose-only 前提のリリース手順と Birdseye 更新順を整理したチェックリスト。
 - [Versioning & Release Operations（Appendix M）](addenda/M_Versioning_Release.md) — semver ラベル運用とタグ作成フロー、互換性レビューの基準を集約。
 - [Day8 評価器構成（Appendix E）](addenda/E_Evaluator_Details.md) — BERTScore/ROUGE/ルール判定の設定と運用チェックリスト。
