@@ -14,7 +14,7 @@
    - Scope: 対象領域と除外範囲を箇条書きで整理。
    - Requirements: 期待挙動、I/O 契約、制約、受入基準をテンプレート順に埋める。
    - Affected Paths / Local Commands: 変更予定パスを `glob` で列挙し、lint/type/test などのローカルコマンドを明記する。
-   - Deliverables: PR で報告すべき Intent ID、Priority Score、リスク、フォローアップを整理する。
+   - Deliverables: PR で報告すべき Intent ID、Priority Score、リスク、フォローアップを整理する（Priority Score の形式は [ADR 0007](adr/0007-proposal-priority-handshake.md) に従う）。
 3. **Plan 以降のトラッキング**
    - Plan/ Patch/ Tests/ Commands/ Notes の各セクションで進捗ログを更新し、検証結果と残タスクを逐次反映する。
    - Guardrails に変更があった場合は [docs/UPSTREAM_WEEKLY_LOG.md](UPSTREAM_WEEKLY_LOG.md) を参照し、Seed の要件差分を追記する。
