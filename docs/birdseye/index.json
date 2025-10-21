@@ -46,6 +46,10 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/C_Persona_Schema.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/F_Provider_Matrix.md"
     ],
     [
@@ -63,6 +67,7 @@
     [
       "docs/README.md",
       "docs/addenda/K_Accessibility_UX.md"
+      "docs/addenda/J_Runbook.md"
     ],
     [
       "docs/README.md",
@@ -115,6 +120,14 @@
     [
       "docs/TASKS.md",
       "docs/seeds/README.md"
+    ],
+    [
+      "docs/addenda/C_Persona_Schema.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
+      "docs/addenda/C_Persona_Schema.md",
+      "docs/day8/spec/02_spec.md"
     ],
     [
       "docs/day8/ops/04_ops.md",
@@ -301,15 +314,51 @@
       "docs/addenda/F_Provider_Matrix.md"
     ],
     [
+      "docs/day8/spec/02_spec.md",
+      "docs/addenda/D_Trim_Design.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/D_Trim_Design.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "workflow-cookbook/scripts/analyze.py"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/addenda/F_Provider_Matrix.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/addenda/D_Trim_Design.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
       "docs/day8/quality/06_quality.md",
       "docs/addenda/I_Test_Cases.md"
     ],
     [
       "docs/addenda/H_Deploy_Guide.md",
       "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/B_UI_Mock.md"
+    ],
+    [
+      "docs/day8/design/03_architecture.md",
+      "docs/addenda/B_UI_Mock.md"
     ]
   ],
-  "generated_at": "2025-10-21T00:00:00Z",
+  "generated_at": "2025-10-31T12:45:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -496,10 +545,20 @@
       "mtime": "2025-02-16T00:00:00Z",
       "role": "automation"
     },
+    "docs/addenda/C_Persona_Schema.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
+      "mtime": "2025-10-24T09:00:00Z",
+      "role": "persona"
+    },
     "docs/addenda/I_Test_Cases.md": {
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
       "mtime": "2025-02-21T00:00:00Z",
       "role": "quality"
+    },
+    "docs/addenda/J_Runbook.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
+      "mtime": "2025-02-22T00:00:00Z",
+      "role": "operations"
     },
     "docs/addenda/G_Security_Privacy.md": {
       "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
@@ -515,6 +574,10 @@
       "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
       "mtime": "2025-02-24T09:00:00Z",
       "role": "ux"
+    "docs/addenda/B_UI_Mock.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
+      "mtime": "2025-10-21T00:00:00Z",
+      "role": "design"
     }
   }
 }
