@@ -30,6 +30,14 @@
     ],
     [
       "README.md",
+      "Makefile"
+    ],
+    [
+      "INSTALL.md",
+      "Makefile"
+    ],
+    [
+      "README.md",
       "workflow-cookbook/docs/birdseye/index.json"
     ],
     [
@@ -562,6 +570,10 @@
       "workflow-cookbook/CHECKLISTS.md"
     ],
     [
+      "docs/Release_Checklist.md",
+      "Makefile"
+    ],
+    [
       "docs/addenda/M_Versioning_Release.md",
       "workflow-cookbook/CHECKLISTS.md"
     ],
@@ -711,8 +723,13 @@
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "2025-02-28T12:00:00Z",
       "role": "overview"
+    },
+    "Makefile": {
+      "caps": "docs/birdseye/caps/Makefile.json",
+      "mtime": "2025-02-28T12:00:00Z",
+      "role": "build"
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",

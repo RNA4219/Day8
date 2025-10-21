@@ -2,6 +2,7 @@
   "deps_in": [],
   "deps_out": [
     "INSTALL.md",
+    "Makefile",
     "docs/README.md",
     "docs/ROADMAP_AND_SPECS.md",
     "scripts/",
@@ -10,7 +11,7 @@
     "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/docs/birdseye/index.json"
   ],
-  "generated_at": "2025-10-20T20:29:16Z",
+  "generated_at": "2025-02-28T12:00:00Z",
   "id": "README.md",
   "maintenance": {
     "refresh": "README.md を更新したら docs/birdseye/index.json とカプセルを同一コミットで再生成する。",

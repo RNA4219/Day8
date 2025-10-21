@@ -14,7 +14,7 @@ Day8 のリリースは Katamari propose-only 方針に従い、全変更を PR 
 - [ ] `NOTICE` / `LICENSE` の同梱に影響する依存追加がないかチェックし、必要なら `docs/addenda/H_Deploy_Guide.md` の同梱手順を参照する。
 
 ## 3. CI & ドキュメント整合
-- [ ] GitHub Actions / ローカル CI の全ジョブ（mypy, ruff, pytest, node:test, Docker ビルド）が成功したログを取得する。
+- [ ] GitHub Actions / ローカル CI の全ジョブ（`make check`, node:test, Docker ビルド）が成功したログを取得する。
 - [ ] Birdseye を `python scripts/birdseye_refresh.py` で再生成し、`index.json` → `caps` → `hot.json` を含む全ファイルの `generated_at` を同一値へ揃える。
 - [ ] Birdseye で新規に追加したノード／エッジが `docs/README.md`、`docs/ROADMAP_AND_SPECS.md` から到達可能か確認する。
 - [ ] `docs/addenda/M_Versioning_Release.md` の semver 区分に沿って `semver:*` ラベルを更新し、互換性根拠を PR 本文へ反映する。
