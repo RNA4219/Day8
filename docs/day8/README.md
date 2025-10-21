@@ -17,5 +17,6 @@ OSS でも安心して導入できる“第八日目”の基盤を提供しま�
 - `guides/` 貢献規約・タスク運用（Task Seeds）
 - `examples/` 反省DSL・ガバナンス・CI のサンプル
 
----
-**キーワード**: Day8, workflow-cookbook, reflective devops, safe autonomy, propose-only
+## キーワード
+- [Day8 用語集](../addenda/A_Glossary.md) — レビュー前や Reflection DSL 設計の見直し時に、Collector/Analyzer/Proposer などの用語と DSL フィールドを整理するために参照。
+- Day8, workflow-cookbook, reflective devops, safe autonomy, propose-only
