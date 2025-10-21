@@ -22,6 +22,7 @@ next_review_due: 2025-11-14
 - 影響範囲の再確認
 - 成果物に LICENSE / NOTICE を同梱済み
 - lint / test を全ジョブ完走
+- Day8 `/healthz` で 200/JSON と `Cache-Control: no-store` を確認（[docs/addenda/M1_Metrics_Healthz_ADR.md](../docs/addenda/M1_Metrics_Healthz_ADR.md)）
 - Birdseye index/caps を `python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json,workflow-cookbook/docs/birdseye/index.json --emit index+caps` で再生成
 - Docker イメージをビルドし主要機能のスモーク確認
 - PR に `type:*` および `semver:*` ラベルを付与済み

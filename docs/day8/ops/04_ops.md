@@ -12,6 +12,11 @@
 - `reflection` がこける: `analyze.py` のパスと Python バージョンを確認
 - 既存の CI と競合する場合: ワークフロー名やトリガを調整
 
+## 監視・ヘルスチェック
+- Katamari ADR に準拠した `/healthz` 実装とメトリクス公開計画は [Day8 Addendum: M1 Metrics + Healthz ADR](../../addenda/M1_Metrics_Healthz_ADR.md) を参照します。
+- `/healthz` のレスポンスに `Cache-Control: no-store` を付与し、CDN 側のキャッシュを禁止します。リグレッションが発生した場合は Release チェックリストの「ヘルスチェック検証」を再実行します。
+- MetricsRegistry のダミー値は Sprint N+1 で置き換える計画です。ダッシュボードに計測漏れが出た場合は、`healthz_request_total` と `jobs_failed_total` の差分を確認し、Day8 API ログと突き合わせます。
+
 ## 併用例（Codex 近似環境）
 - 失敗時のみ `ghcr.io/openai/codex-universal` で再実行し、環境差分を切り分ける
 
