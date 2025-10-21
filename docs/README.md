@@ -5,6 +5,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 ## ハブドキュメント
 - [Day8 ROADMAP & SPECS ハブ](ROADMAP_AND_SPECS.md) — Guardrails や workflow-cookbook との横断整合を確認する際の起点。
   - 参照優先度: 横断計画・ロードマップの確認は本ハブ→本索引の順、Day8 専用ディレクトリの詳細閲覧は本索引を優先。
+- [Day8 マイルストーン WBS](day8_wbs.csv) — マイルストーン別の作業分解を可視化し、スプリント計画やレビューでロードマップと整合を取る際のチェックリストとして利用。
 
 ## Day8 コア資料
 - [Day8 Docs 総覧](day8/README.md) — サブディレクトリ構成とドキュメント群の概要。
@@ -30,6 +31,9 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [Day8 評価器構成（Appendix E）](addenda/E_Evaluator_Details.md) — BERTScore/ROUGE/ルール判定の設定と運用チェックリスト。
 - [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。Appendix G と連携し、Secrets/Rate limit/OAuth のチェックリストを提供。
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
+
+## API 仕様・監視契約
+- [Day8 Observability OpenAPI](openapi/day8_openapi.yaml) — `/healthz` と `/metrics` のコントラクトを確認し、Ops/Release のヘルスチェック検証前にレスポンス形式とヘッダ要件を整合させる。
 
 ## Upstream 運用
 - [Day8 Fork Notes](FORK_NOTES.md) — Katamari 本家の Fork Notes を補完し、Day8 固有の追加コンポーネント・依存・ライセンス同梱ルールを確認する際の入口。

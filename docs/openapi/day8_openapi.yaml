@@ -1,0 +1,141 @@
+openapi: 3.1.0
+info:
+  title: Day8 Observability API
+  version: 0.1.0-draft
+  description: >-
+    Day8 の運用監視レイヤーが公開する `/healthz` と `/metrics` のコントラクトを定義
+    します。Katamari `M1_Metrics_Healthz_ADR` を引き継ぎ、軽量ヘルスチェックと
+    Prometheus 互換メトリクスを提供するための最小仕様です。
+    
+    計画中 API: 現時点 (2025-10-21) では追加エンドポイントは検討中のみで確定なし。
+    新規エンドポイントの審議は `docs/addenda/M1_Metrics_Healthz_ADR.md` と
+    `docs/day8/ops/04_ops.md` の更新で追跡します。
+  termsOfService: https://example.com/terms
+  contact:
+    name: Day8 Observability Squad
+    url: https://example.com/day8
+    email: day8-observability@example.com
+servers:
+  - url: https://api.day8.example.com
+    description: Day8 production API gateway
+  - url: https://staging.day8.example.com
+    description: Day8 staging environment
+tags:
+  - name: Health
+    description: プロセス健全性チェックのエンドポイント群。
+  - name: Metrics
+    description: Prometheus 互換のメトリクスエクスポート。
+paths:
+  /healthz:
+    get:
+      tags:
+        - Health
+      summary: ライトウェイトなプロセスヘルスチェック
+      description: >-
+        アプリケーションの即時健全性を返す軽量ヘルスチェックです。依存サービス
+        への深い疎通は行わず、`Cache-Control: no-store` を強制して CDN キャッシュを
+        禁止します。失敗時は 503 を返し、詳細はメトリクスに委譲します。
+      responses:
+        "200":
+          description: プロセスが稼働中で即応可能。
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthzResponse'
+              examples:
+                ok:
+                  summary: 正常応答の例
+                  value:
+                    status: ok
+                    revision: b4f8c9d
+                    generated_at: 2025-10-21T19:45:00Z
+        "503":
+          description: プロセスが復旧を必要としている状態。
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthzResponse'
+              examples:
+                degraded:
+                  summary: 依存関係が復旧待ちの場合
+                  value:
+                    status: degraded
+                    revision: b4f8c9d
+                    generated_at: 2025-10-21T19:45:00Z
+        default:
+          description: ガードレール違反を示す予期せぬ応答。
+  /metrics:
+    get:
+      tags:
+        - Metrics
+      summary: Prometheus 互換のメトリクスダンプ
+      description: >-
+        Prometheus が 30 秒間隔でスクレイプすることを前提としたメトリクスを返却
+        します。レスポンスは OpenMetrics 互換のテキスト形式で、`day8_` プレフィクス
+        の付いたカウンタとゲージを提供します。
+      responses:
+        "200":
+          description: メトリクスダンプの取得に成功。
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: OpenMetrics/Prometheus テキストフォーマット。
+              examples:
+                baseline:
+                  summary: 初期導入時の想定メトリクス
+                  value: |-
+                    # TYPE day8_app_boot_timestamp gauge
+                    day8_app_boot_timestamp 1.6988007e+09
+                    # TYPE day8_jobs_processed_total counter
+                    day8_jobs_processed_total 42
+                    # TYPE day8_jobs_failed_total counter
+                    day8_jobs_failed_total 0
+                    # TYPE day8_healthz_request_total counter
+                    day8_healthz_request_total 128
+        "503":
+          description: メトリクス生成が一時的に失敗した状態。
+components:
+  headers:
+    NoStore:
+      description: >-
+        `Cache-Control: no-store` を固定値として返却し、ヘルスチェックのキャッシュ
+        を禁止します。
+      schema:
+        type: string
+        const: no-store
+  schemas:
+    HealthzResponse:
+      type: object
+      required:
+        - status
+        - revision
+        - generated_at
+      properties:
+        status:
+          type: string
+          description: プロセス健全性。`ok` / `degraded` / `fail` のいずれか。
+          enum:
+            - ok
+            - degraded
+            - fail
+        revision:
+          type: string
+          description: >-
+            デプロイ中の Git コミットハッシュまたはビルド番号。Katamari 準拠で 7+ 桁
+            の 16 進文字列を推奨。
+        generated_at:
+          type: string
+          format: date-time
+          description: レスポンスを生成した UTC タイムスタンプ。
+        notes:
+          type: string
+          nullable: true
+          description: 追加の観測メモ。運用ダッシュボードと突き合わせる際に使用。
+      description: Day8 `/healthz` 応答の標準 JSON 形式。

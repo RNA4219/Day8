@@ -1,0 +1,31 @@
+{
+  "deps_in": [
+    "docs/README.md",
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/day8/ops/04_ops.md"
+  ],
+  "deps_out": [
+    "docs/addenda/M1_Metrics_Healthz_ADR.md",
+    "docs/day8/ops/04_ops.md",
+    "docs/Release_Checklist.md"
+  ],
+  "generated_at": "2025-10-21T19:48:39Z",
+  "id": "docs/openapi/day8_openapi.yaml",
+  "maintenance": {
+    "refresh": "ヘルスチェック/メトリクス仕様を更新したら OpenAPI と ADR/Release チェックリストを同時に同期する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "public_api": [
+    "GET /healthz",
+    "GET /metrics"
+  ],
+  "risks": [
+    "OpenAPI が ADR や実装から乖離するとリリースゲートの検証結果が無効化される",
+    "Cache-Control 要件を更新し忘れると CDN キャッシュが有効化される"
+  ],
+  "role": "api-spec",
+  "summary": "Day8 `/healthz` `/metrics` の OpenAPI 契約。Katamari ADR に基づく監視エンドポイントの整合を確保する。",
+  "tests": []
+}

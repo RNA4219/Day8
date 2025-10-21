@@ -1,0 +1,40 @@
+{
+  "deps": [
+    "in::docs/README.md",
+    "in::docs/ROADMAP_AND_SPECS.md",
+    "out::docs/day8/spec/01_requirements.md",
+    "out::docs/Release_Checklist.md",
+    "out::docs/TASKS.md"
+  ],
+  "deps_in": [
+    "docs/README.md",
+    "docs/ROADMAP_AND_SPECS.md"
+  ],
+  "deps_out": [
+    "docs/day8/spec/01_requirements.md",
+    "docs/Release_Checklist.md",
+    "docs/TASKS.md"
+  ],
+  "generated_at": "2025-11-07T09:00:00Z",
+  "id": "docs/day8_wbs.csv",
+  "maintenance": {
+    "refresh": "マイルストーンやスプリント計画を更新した際は docs/README.md / docs/ROADMAP_AND_SPECS.md と同じコミットで CSV と Birdseye を同期し、計画レビューで参照するリンクを検証する。",
+    "tooling": [
+      "python workflow-cookbook/tools/codemap/update.py --targets docs/birdseye/index.json --emit index+caps"
+    ]
+  },
+  "risks": [
+    "WBS が古いとマイルストーン進行とロードマップ判断が乖離する"
+  ],
+  "role": [
+    "core::planning",
+    "orbit::milestone-tracking"
+  ],
+  "summary": [
+    "core::Day8 のマイルストーンを作業分解した CSV。計画策定時に進行状況と依存関係を即把握できる。",
+    "orbit::スプリントレビューでロードマップや Release Checklist と整合を確認する参照表。"
+  ],
+  "tests": [
+    "check::docs/README.md と docs/ROADMAP_AND_SPECS.md の WBS リンクが最新であることを確認"
+  ]
+}
