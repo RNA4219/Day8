@@ -66,6 +66,10 @@
       "docs/addenda/C_Persona_Schema.md"
     ],
     [
+      "docs/addenda/C_Persona_Schema.md",
+      "personas/README.md"
+    ],
+    [
       "docs/README.md",
       "docs/addenda/F_Provider_Matrix.md"
     ],
@@ -893,7 +897,12 @@
     },
     "docs/addenda/C_Persona_Schema.md": {
       "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
-      "mtime": "2025-10-24T09:00:00Z",
+      "mtime": "2025-11-08T09:00:00Z",
+      "role": "persona"
+    },
+    "personas/README.md": {
+      "caps": "docs/birdseye/caps/personas.README.md.json",
+      "mtime": "2025-11-08T09:00:00Z",
       "role": "persona"
     },
     "docs/addenda/I_Test_Cases.md": {

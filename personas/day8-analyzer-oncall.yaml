@@ -1,0 +1,39 @@
+persona_id: "day8-analyzer-oncall"
+role: "Analyzer"
+mission: "Why-Why ログと Why/How ノートを突き合わせ、失敗ランの再現条件と優先度を即時に整理する"
+log_slice:
+  source: "whywhy://runs/latest-failure"
+  filters:
+    - key: "severity"
+      op: ">="
+      values: ["warn"]
+    - key: "stage"
+      op: "in"
+      values: ["analyze", "verify"]
+insights_required:
+  - "metrics.failed_tests"
+  - "logs.timeline.first_failure_at"
+  - "root_cause.candidate_modules"
+  - "retry.plan.summary"
+handoff:
+  to: "Reporter"
+  deliverables:
+    - type: "markdown"
+      path: "reports/latest/analyzer/summary.md"
+    - type: "json"
+      path: "reports/latest/analyzer/findings.json"
+  quality_gate:
+    - "first_failure_at populated"
+    - "candidate root cause ranked"
+operations_hooks:
+  - service: "pagerduty"
+    event: "ci-analyzer-oncall"
+    on_failure: "notify-runbook://analyzer"
+  - service: "github-projects"
+    event: "task-seed-update"
+    on_failure: "comment://task-seed/analyzer"
+review_cadence: "per-incident"
+escalation:
+  retryable: true
+  contact: "#day8-analyzer-oncall"
+  notes: "CI ログ収集が欠損した場合は Collector へ戻し、再収集後に Why-Why を更新する"
