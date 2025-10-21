@@ -44,3 +44,16 @@ def test_birdseye_registers_docs_birdseye_md() -> None:
     hot_data = json.loads(hot_path.read_text(encoding="utf-8"))
     hot_ids = {entry["id"] for entry in hot_data["entries"]}
     assert "docs/BIRDSEYE.md" in hot_ids, "docs/BIRDSEYE.md がホットリストに登録されていません"
+
+
+def test_birdseye_generated_at_matches_hot_json() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    index_path = repo_root / "docs" / "birdseye" / "index.json"
+    hot_path = repo_root / "docs" / "birdseye" / "hot.json"
+
+    index_data = json.loads(index_path.read_text(encoding="utf-8"))
+    hot_data = json.loads(hot_path.read_text(encoding="utf-8"))
+
+    assert (
+        index_data["generated_at"] == hot_data["generated_at"]
+    ), "docs/birdseye/index.json と docs/birdseye/hot.json の generated_at が一致しません"

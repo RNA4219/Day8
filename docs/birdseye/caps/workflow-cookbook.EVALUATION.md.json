@@ -14,14 +14,12 @@
     "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/RUNBOOK.md",
     "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/SECURITY.md",
-    "governance/policy.yaml"
+    "workflow-cookbook/SECURITY.md"
   ],
   "deps_out": [
-    "workflow-cookbook/CHECKLISTS.md",
-    "docs/birdseye/index.json"
+    "workflow-cookbook/CHECKLISTS.md"
   ],
-  "generated_at": "2025-02-20T11:29:30Z",
+  "generated_at": "2025-10-20T20:29:16Z",
   "id": "workflow-cookbook/EVALUATION.md",
   "maintenance": {
     "refresh": "受け入れ基準やPriority Score運用を更新したら CHECKLISTS/RUNBOOK と governance/policy.yaml の関連節、Birdseye index/caps/hot を同一コミットで再生成。",

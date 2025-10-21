@@ -6,14 +6,10 @@
     "out::workflow-cookbook/reports/issue_suggestions.md"
   ],
   "deps_in": [
-    "workflow-cookbook/logs/test.jsonl",
-    "workflow-cookbook/reflection.yaml"
+    "workflow-cookbook/RUNBOOK.md"
   ],
-  "deps_out": [
-    "workflow-cookbook/reports/today.md",
-    "workflow-cookbook/reports/issue_suggestions.md"
-  ],
-  "generated_at": "2025-02-16T00:00:00Z",
+  "deps_out": [],
+  "generated_at": "2025-10-20T20:29:16Z",
   "id": "workflow-cookbook/scripts/analyze.py",
   "maintenance": {
     "refresh": "ログフォーマットや出力パスが変わったら reflection.yaml と併せて更新。",
