@@ -754,7 +754,7 @@
       "Dockerfile"
     ]
   ],
-  "generated_at": "2025-12-20T12:00:00Z",
+  "generated_at": "00001",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
