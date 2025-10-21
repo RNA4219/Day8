@@ -13,7 +13,7 @@
     {
       "caps": "docs/birdseye/caps/CHANGELOG.md.json",
       "id": "CHANGELOG.md",
-      "reason": "Day8 固有の履歴を Katamari 本家の CHANGELOG と Release Checklist に橋渡しし、generated_at 同期を確認する起点。"
+      "reason": "Day8 固有の履歴を上流の CHANGELOG と Release Checklist に橋渡しし、generated_at 同期を確認する起点。"
     },
     {
       "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",

@@ -1,6 +1,6 @@
 # Day8 Fork Notes（Katamari 派生向け）
 
-Katamari 本家の `docs/FORK_NOTES.md` を前提に、Day8 フォークで追加運用するコンポーネント・依存関係・ライセンス同梱ルールをまとめます。Katamari 側の更新を取り込んだら本ページと Birdseye (`docs/birdseye/index.json` / `docs/birdseye/caps/docs.FORK_NOTES.md.json`) を同じコミットで再同期してください。リリース履歴は Day8 固有の差分を [CHANGELOG.md](../CHANGELOG.md) に、Katamari 本家の履歴を [workflow-cookbook/CHANGELOG.md](../workflow-cookbook/CHANGELOG.md) に記録し、両者の反映タイミングを合わせます。
+Katamari 本家の `docs/FORK_NOTES.md` を前提に、Day8 フォークで追加運用するコンポーネント・依存関係・ライセンス同梱ルールをまとめます。Katamari 側の更新を取り込んだら本ページと Birdseye (`docs/birdseye/index.json` / `docs/birdseye/caps/docs.FORK_NOTES.md.json`) を同じコミットで再同期してください。リリース履歴は Day8 固有の差分を [CHANGELOG.md](../CHANGELOG.md) に、上流側の履歴を [workflow-cookbook/CHANGELOG.md](../workflow-cookbook/CHANGELOG.md) に記録し、両者の反映タイミングを合わせます。
 
 ## Day8 固有コンポーネント
 - **Day8 ドキュメント群** — `docs/day8/` 配下の仕様・設計・運用ディレクトリを一括で維持します。Collector / Analyzer / Reporter / Proposer / Governance の責務は [Day8 アーキテクチャ](day8/design/03_architecture.md) を最優先で参照し、Mermaid が読めない環境では [Architecture ASCII](Architecture_ASCII.md) を併用します。

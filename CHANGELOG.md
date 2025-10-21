@@ -8,7 +8,7 @@ next_review_due: 2025-12-05
 
 # Day8 Changelog
 
-Day8 リポジトリ固有の変更履歴を記録します。Katamari 本家のアップデートは `workflow-cookbook/CHANGELOG.md` で管理し、必要に応じて Day8 側へ反映した差分のみ本書へ記載します。
+Day8 リポジトリ固有の変更履歴を記録します。上流のアップデートは `workflow-cookbook/CHANGELOG.md` で管理し、必要に応じて Day8 側へ反映した差分のみ本書へ記載します。
 
 ## [Unreleased]
 - Day8 propose-only フローで取り込む予定の変更があれば、`docs/Release_Checklist.md` の結果とともにここへ追記する。

@@ -24,6 +24,6 @@
     "ChangeLog 更新と Birdseye generated_at の同期を怠ると、可視化と Release Checklist の整合が崩れる"
   ],
   "role": "changelog",
-  "summary": "Day8 リポジトリ固有の変更履歴を管理し、Katamari 本家の CHANGELOG と Release Checklist を接続する基準点。",
+  "summary": "Day8 リポジトリ固有の変更履歴を管理し、上流の CHANGELOG と Release Checklist を接続する基準点。",
   "tests": []
 }
