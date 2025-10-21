@@ -19,6 +19,7 @@ Day8 の仕様・設計・運用資料を一覧化した索引用ページです
 - [運用ガイド](day8/ops/04_ops.md) — 導入・運用フローとサブディレクトリ管理手順。
 - [Day8 デプロイ付録（Appendix H）](addenda/H_Deploy_Guide.md) — ローカル検証、Docker 化、GitHub Actions リリースの要点をまとめた導入補助資料。
 - [Day8 設定リファレンス（Appendix L）](addenda/L_Config_Reference.md) — 環境変数・設定ファイル・デバッグフラグを網羅し、導入前チェックリストとして活用できる設定付録。
+- [Day8 評価器構成（Appendix E）](addenda/E_Evaluator_Details.md) — BERTScore/ROUGE/ルール判定の設定と運用チェックリスト。
 - [セキュリティ指針](day8/security/05_security.md) — セキュリティ/ガバナンスポリシーと対応方針。Appendix G と連携し、Secrets/Rate limit/OAuth のチェックリストを提供。
 - [品質評価](day8/quality/06_quality.md) — メトリクス、SLO、評価プロセス。
 
