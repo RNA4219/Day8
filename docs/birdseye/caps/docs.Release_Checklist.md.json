@@ -6,9 +6,10 @@
   "deps_out": [
     "Makefile",
     "docs/addenda/M_Versioning_Release.md",
-    "workflow-cookbook/CHECKLISTS.md"
+    "workflow-cookbook/CHECKLISTS.md",
+    "Dockerfile"
   ],
-  "generated_at": "2025-02-28T12:00:00Z",
+  "generated_at": "2025-03-07T00:00:00Z",
   "id": "docs/Release_Checklist.md",
   "maintenance": {
     "refresh": "Release フローや Birdseye 更新順が変わったら docs/README.md・ROADMAP と合わせて更新し、codemap コマンドの出力を PR に添付する。",
@@ -22,6 +23,6 @@
     "Birdseye 更新順が守られないと index/caps/hot の generated_at が不整合になる"
   ],
   "role": "checklist",
-  "summary": "Katamari propose-only 運用を前提に Day8 のリリース手順・CI 確認・Birdseye 同期を統合したチェックリスト。",
+  "summary": "propose-only 運用を前提に Day8 のリリース手順・CI 確認・Birdseye 同期を統合したチェックリスト。",
   "tests": []
 }
