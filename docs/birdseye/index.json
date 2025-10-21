@@ -46,6 +46,10 @@
     ],
     [
       "docs/README.md",
+      "docs/addenda/C_Persona_Schema.md"
+    ],
+    [
+      "docs/README.md",
       "docs/addenda/F_Provider_Matrix.md"
     ],
     [
@@ -59,6 +63,10 @@
     [
       "docs/README.md",
       "docs/addenda/G_Security_Privacy.md"
+    ],
+    [
+      "docs/README.md",
+      "docs/addenda/J_Runbook.md"
     ],
     [
       "docs/README.md",
@@ -111,6 +119,14 @@
     [
       "docs/TASKS.md",
       "docs/seeds/README.md"
+    ],
+    [
+      "docs/addenda/C_Persona_Schema.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
+      "docs/addenda/C_Persona_Schema.md",
+      "docs/day8/spec/02_spec.md"
     ],
     [
       "docs/day8/ops/04_ops.md",
@@ -313,7 +329,7 @@
       "docs/addenda/E_Evaluator_Details.md"
     ]
   ],
-  "generated_at": "2025-10-28T09:00:00Z",
+  "generated_at": "2025-10-21T09:00:00Z",
   "nodes": {
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
@@ -500,10 +516,20 @@
       "mtime": "2025-02-16T00:00:00Z",
       "role": "automation"
     },
+    "docs/addenda/C_Persona_Schema.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
+      "mtime": "2025-10-24T09:00:00Z",
+      "role": "persona"
+    },
     "docs/addenda/I_Test_Cases.md": {
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
       "mtime": "2025-02-21T00:00:00Z",
       "role": "quality"
+    },
+    "docs/addenda/J_Runbook.md": {
+      "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
+      "mtime": "2025-02-22T00:00:00Z",
+      "role": "operations"
     },
     "docs/addenda/G_Security_Privacy.md": {
       "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
@@ -517,7 +543,7 @@
     },
     "docs/addenda/E_Evaluator_Details.md": {
       "caps": "docs/birdseye/caps/docs.addenda.E_Evaluator_Details.md.json",
-      "mtime": "2025-10-28T09:00:00Z",
+      "mtime": "2025-10-21T09:00:00Z",
       "role": "quality"
     }
   }

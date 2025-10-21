@@ -5,6 +5,7 @@
 ## 1. ドキュメント体系
 - **一次ハブ**: [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) — Katamari 本家と整合した安全審査フレーム。
 - **セキュリティ接続**: [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) / [docs/day8/security/05_security.md](day8/security/05_security.md) — 技術的な緩和策とチェックリスト。
+- **一次切り分け**: [docs/addenda/J_Runbook.md](addenda/J_Runbook.md) — Day8 代表事象の一次切り分けと初動整理。
 - **付録**: [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) — キー管理・ログ衛生・通信保護の運用ノート。
 - **索引用**: [docs/ROADMAP_AND_SPECS.md](ROADMAP_AND_SPECS.md) / [docs/README.md](README.md) — Birdseye 更新と cross-doc 整合のエントリポイント。
 
