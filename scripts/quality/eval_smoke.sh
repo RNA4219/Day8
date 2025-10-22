@@ -45,6 +45,29 @@ else
 fi
 
 NORMALIZED_PATH="$(mktemp "${TMPDIR:-/tmp}/eval-smoke-normalized.XXXXXX")"
+DEFAULT_METRICS_PATH="${PROJECT_ROOT}/scripts/quality/metrics.json"
+METRICS_PATH="${EVAL_SMOKE_METRICS_PATH:-${DEFAULT_METRICS_PATH}}"
+
+OUTPUT_SPECIFIED=0
+for ((index = 0; index < ${#FORWARDED_ARGS[@]}; index++)); do
+  arg="${FORWARDED_ARGS[${index}]}"
+  if [[ "${arg}" == "--output" ]]; then
+    OUTPUT_SPECIFIED=1
+    next_index=$((index + 1))
+    if ((next_index < ${#FORWARDED_ARGS[@]})); then
+      METRICS_PATH="${FORWARDED_ARGS[${next_index}]}"
+    fi
+    break
+  elif [[ "${arg}" == --output=* ]]; then
+    OUTPUT_SPECIFIED=1
+    METRICS_PATH="${arg#--output=}"
+    break
+  fi
+done
+
+if [[ -n "${METRICS_PATH}" ]]; then
+  mkdir -p "$(dirname "${METRICS_PATH}")"
+fi
 
 cleanup() {
   rm -f "${NORMALIZED_PATH}"
@@ -57,8 +80,16 @@ trap cleanup EXIT
 
 python -m quality.pipeline.normalize --input "${INPUT_PATH}" --output "${NORMALIZED_PATH}"
 
-if ((${#FORWARDED_ARGS[@]})); then
-  python -m quality.evaluator.cli --ruleset "${RULESET_PATH}" "${NORMALIZED_PATH}" "${FORWARDED_ARGS[@]}"
-else
-  python -m quality.evaluator.cli --ruleset "${RULESET_PATH}" "${NORMALIZED_PATH}"
+EVALUATOR_CMD=(python -m quality.evaluator.cli --ruleset "${RULESET_PATH}")
+
+if [[ "${OUTPUT_SPECIFIED}" == 0 ]]; then
+  EVALUATOR_CMD+=(--output "${METRICS_PATH}")
 fi
+
+EVALUATOR_CMD+=("${NORMALIZED_PATH}")
+
+if ((${#FORWARDED_ARGS[@]})); then
+  EVALUATOR_CMD+=("${FORWARDED_ARGS[@]}")
+fi
+
+"${EVALUATOR_CMD[@]}"
