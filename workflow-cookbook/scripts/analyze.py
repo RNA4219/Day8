@@ -1,27 +1,96 @@
 from __future__ import annotations
 
+import argparse
 import ast
 import datetime
 import logging
 import json
 import math
 import statistics
+import sys
 from collections import Counter
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Sequence
 
 StatusMap = dict[str, set[str]]
 
 WORKFLOW_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
-BASE_DIR: Final[Path] = WORKFLOW_ROOT
+DEFAULT_BASE_DIR: Final[Path] = WORKFLOW_ROOT
 DEFAULT_LOG: Final[Path] = WORKFLOW_ROOT / "logs" / "test.jsonl"
-LOG: Final[Path] = DEFAULT_LOG
 DEFAULT_REPORT: Final[Path] = WORKFLOW_ROOT / "reports" / "today.md"
-REPORT: Final[Path] = DEFAULT_REPORT
-ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
-REFLECTION_MANIFEST: Final[Path] = WORKFLOW_ROOT / "reflection.yaml"
+DEFAULT_ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
+DEFAULT_REFLECTION_MANIFEST: Final[Path] = WORKFLOW_ROOT / "reflection.yaml"
+
+BASE_DIR: Path = DEFAULT_BASE_DIR
+LOG: Path = DEFAULT_LOG
+REPORT: Path = DEFAULT_REPORT
+ISSUE_OUT: Path = DEFAULT_ISSUE_OUT
+REFLECTION_MANIFEST: Path = DEFAULT_REFLECTION_MANIFEST
 
 logger = logging.getLogger(__name__)
+
+
+def _resolve_under_root(root: Path, default: Path) -> Path:
+    if default == DEFAULT_BASE_DIR:
+        return root
+    try:
+        relative = default.relative_to(WORKFLOW_ROOT)
+    except ValueError:
+        return default
+    return root / relative
+
+
+def configure_paths(root: Path | None) -> None:
+    if root is None:
+        return
+    resolved = root.resolve()
+    global BASE_DIR, LOG, REPORT, ISSUE_OUT, REFLECTION_MANIFEST
+    BASE_DIR = resolved
+    LOG = _resolve_under_root(resolved, DEFAULT_LOG)
+    REPORT = _resolve_under_root(resolved, DEFAULT_REPORT)
+    ISSUE_OUT = _resolve_under_root(resolved, DEFAULT_ISSUE_OUT)
+    REFLECTION_MANIFEST = _resolve_under_root(resolved, DEFAULT_REFLECTION_MANIFEST)
+
+
+def _split_tokens(raw: str | None) -> list[str]:
+    if not raw:
+        return []
+    tokens: list[str] = []
+    seen: set[str] = set()
+    for part in raw.split("/"):
+        token = part.strip()
+        if not token or token in seen:
+            continue
+        seen.add(token)
+        tokens.append(token)
+    return tokens
+
+
+def _parse_window_spec(value: str | None) -> datetime.timedelta | None:
+    if value is None:
+        return None
+    stripped = value.strip()
+    if not stripped:
+        return None
+    if stripped[-1].isdigit():
+        try:
+            seconds = int(stripped)
+        except ValueError as exc:  # pragma: no cover - defensive guard
+            raise ValueError("window must be an integer with optional unit") from exc
+        return datetime.timedelta(seconds=seconds)
+    magnitude_str, unit = stripped[:-1], stripped[-1]
+    if not magnitude_str.isdigit():
+        raise ValueError("window must be an integer optionally suffixed with s/m/h")
+    magnitude = int(magnitude_str)
+    if unit == "s":
+        seconds = magnitude
+    elif unit == "m":
+        seconds = magnitude * 60
+    elif unit == "h":
+        seconds = magnitude * 3600
+    else:
+        raise ValueError("window unit must be one of s, m, h")
+    return datetime.timedelta(seconds=seconds)
 
 
 def _coerce_bool(value: object) -> bool | None:
@@ -477,9 +546,13 @@ def p95(values: list[int]) -> int:
         return int(values_sorted[capped_idx])
 
 
-def main() -> None:
-    manifest = load_reflection_manifest()
-    tests, durs, fails, statuses = load_results(manifest=manifest)
+def generate_report(
+    *, manifest: dict[str, Any] | None = None, focuses: Sequence[str] | None = None
+) -> None:
+    if focuses:
+        logger.debug("Generating report (focus=%s)", ",".join(focuses))
+    manifest_data = manifest if manifest is not None else load_reflection_manifest()
+    tests, durs, fails, statuses = load_results(manifest=manifest_data)
     total = len(tests)
     if total == 0:
         pass_rate: float = 0.0
@@ -493,8 +566,8 @@ def main() -> None:
         flaky_rate = flaky_tests / unique_tests
     dur_p95 = p95(durs)
     now = datetime.datetime.now(datetime.UTC).isoformat()
-    report_path = load_report_output_path(manifest=manifest)
-    include_why = load_report_include_why(manifest=manifest)
+    report_path = load_report_output_path(manifest=manifest_data)
+    include_why = load_report_include_why(manifest=manifest_data)
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with report_path.open("w", encoding="utf-8") as f:
@@ -512,7 +585,7 @@ def main() -> None:
                 )
 
     # Issue候補のメモ（Actionsで拾ってIssue化）
-    suggest_issues = load_actions_suggest_issues(manifest=manifest)
+    suggest_issues = load_actions_suggest_issues(manifest=manifest_data)
     issue_output_path = ISSUE_OUT
     if not issue_output_path.is_absolute():
         issue_output_path = BASE_DIR / issue_output_path
@@ -532,5 +605,120 @@ def main() -> None:
         issue_output_path.unlink()
 
 
+def emit_samples(
+    *,
+    manifest: dict[str, Any] | None = None,
+    focuses: Sequence[str] | None = None,
+    window: datetime.timedelta | None = None,
+    fail_on: Sequence[str] | None = None,
+) -> None:
+    manifest_data = manifest if manifest is not None else load_reflection_manifest()
+    tests, durs, fails, statuses = load_results(manifest=manifest_data)
+    entries: list[dict[str, object]] = []
+    for index, name in enumerate(tests):
+        duration = durs[index] if index < len(durs) else 0
+        entries.append(
+            {
+                "name": name,
+                "duration_ms": duration,
+                "statuses": sorted(statuses.get(name, set())),
+                "failed": name in fails,
+            }
+        )
+    window_seconds = int(window.total_seconds()) if window is not None else None
+    fail_on_tokens = sorted(set(fail_on or ()))
+    focus_tokens = list(focuses or ("general",))
+    for focus in focus_tokens:
+        output_path = BASE_DIR / "reports" / f"samples_{focus}.json"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "focus": focus,
+            "window_seconds": window_seconds,
+            "fail_on": fail_on_tokens,
+            "entries": entries,
+        }
+        output_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+
+
+def emit_ping(
+    *,
+    manifest: dict[str, Any] | None = None,
+    focuses: Sequence[str] | None = None,
+    fail_on: Sequence[str] | None = None,
+) -> None:
+    manifest_data = manifest if manifest is not None else load_reflection_manifest()
+    tests, _durs, fails, statuses = load_results(manifest=manifest_data)
+    payload = {
+        "status": "ok" if not fails else "degraded",
+        "total_tests": len(tests),
+        "flaky_tests": [
+            name
+            for name, status_set in statuses.items()
+            if {"pass", "fail"}.issubset(status_set)
+        ],
+        "focus": sorted(set(focuses or ())),
+        "fail_on": sorted(set(fail_on or ())),
+        "failures": sorted(set(fails)),
+    }
+    output_path = BASE_DIR / "reports" / "ping.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Analyze workflow reflection logs")
+    parser.add_argument("--root", type=Path, default=None, help="Base directory override")
+    parser.add_argument("--emit", default=None, help="Slash-separated emit targets")
+    parser.add_argument("--focus", default=None, help="Slash-separated focus areas")
+    parser.add_argument(
+        "--window", default=None, help="Optional window (e.g. 15m, 1h) for sampling"
+    )
+    parser.add_argument(
+        "--fail-on",
+        dest="fail_on",
+        default=None,
+        help="Slash-separated failure thresholds (e.g. warnings)",
+    )
+    argv_list = list(argv) if argv is not None else []
+    args = parser.parse_args(argv_list)
+
+    configure_paths(args.root)
+
+    try:
+        window = _parse_window_spec(args.window)
+    except ValueError as exc:
+        parser.error(str(exc))
+        return 2  # pragma: no cover - argparse.error raises SystemExit
+
+    emit_tokens = _split_tokens(args.emit)
+    if not emit_tokens:
+        emit_tokens = ["report"]
+    focus_tokens = _split_tokens(args.focus)
+    fail_on_tokens = _split_tokens(args.fail_on)
+
+    manifest = load_reflection_manifest()
+
+    for emit in emit_tokens:
+        if emit == "report":
+            generate_report(manifest=manifest, focuses=focus_tokens)
+        elif emit == "samples":
+            emit_samples(
+                manifest=manifest,
+                focuses=focus_tokens,
+                window=window,
+                fail_on=fail_on_tokens,
+            )
+        elif emit == "ping":
+            emit_ping(manifest=manifest, focuses=focus_tokens, fail_on=fail_on_tokens)
+        else:
+            logger.warning("Unknown emit target: %s", emit)
+
+    return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main(tuple(sys.argv[1:])))
