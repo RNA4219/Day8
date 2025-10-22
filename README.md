@@ -45,6 +45,8 @@ Day8 を新しいリポジトリへ導入する際は、[`INSTALL.md`](INSTALL.m
 
 ローカルでは `make check` を実行することで `ruff` / `mypy --strict` / `pytest` をまとめて検証できます。単体テストのみ確認したい場合は `make test` を利用してください。
 
+品質評価ラインの再現が必要なときは、Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch など評価専用ライブラリを導入してください。
+
 ## 使い方のヒント
 - 初期状態では `workflow-cookbook/reflection.yaml` の `analysis.max_tokens` が 0 のため LLM 呼び出しは抑制されています。必要に応じて `engine` 設定と合わせて有効化してください。
 - 生成されたレポート（`workflow-cookbook/reports/` 配下）と提案を確認し、人間が修正 PR を作成する運用を前提としています。

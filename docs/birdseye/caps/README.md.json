@@ -13,7 +13,7 @@
     "workflow-cookbook/HUB.codex.md",
     "workflow-cookbook/docs/birdseye/index.json"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "2025-11-05T00:00:00Z",
   "id": "README.md",
   "maintenance": {
     "refresh": "README.md を更新したら docs/birdseye/index.json とカプセルを同一コミットで再生成する。",
@@ -26,6 +26,6 @@
     "Birdseye が陳腐化すると LLM-BOOTSTRAP の誘導が破綻する"
   ],
   "role": "overview",
-  "summary": "Day8 全体像と導線を示すトップレベルのオリエン資料。Birdseye から個別仕様へ絞り込む起点。",
+  "summary": "Day8 全体像と導線を示すトップレベルのオリエン資料。Birdseye から個別仕様へ絞り込む起点であり、評価系の追加 requirements の導入方法も案内する。",
   "tests": []
 }

@@ -14,6 +14,10 @@ Katamari 付録Eの評価器設計を Day8 の自動評価ラインへ適用し�
 | ROUGE 評価器 | 要約タスクの文字列一致度を測定 | `rougeL`, `rouge1`（トークン化: SentencePiece）、`stemmer=ja_jumanpp` | 正解テキスト、モデル生成テキスト | ROUGE-1/L スコア、閾値 `>=0.70` で合格判定補助 |
 | ルール判定エンジン | Guardrails 由来の制約チェック | `ruleset=quality/guardrails/rules.yaml`、`mode=blocking` | モデル生成テキスト、メタ情報（タスク種別、ユーザー指示） | 違反コード（`minor`, `major`, `critical`）、自動失格判定 |
 
+## セットアップ
+- Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece を含む評価専用依存を導入する。
+- CI は `requirements-eval.txt` をインストールしないため、ローカル検証や品質 WG のバッチ計測時のみ追加セットアップが必要になる。
+
 ## 入力と前処理
 1. **正解テキスト** — `workflow-cookbook/EVALUATION.md` に準拠した YAML ケースから取得。`prompt`, `expected`, `metadata` を含め、正解側はマスク済み個人情報であることを確認する。
 2. **モデル生成テキスト** — Day8 Analyzer の推論ログから取得。HTML や Markdown を含む場合でも、`quality/pipeline/normalize.py` の正規化処理を通してから評価器に渡す。

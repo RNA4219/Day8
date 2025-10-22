@@ -7,7 +7,7 @@
     "docs/addenda/I_Test_Cases.md",
     "docs/adr/0006-evaluator-gates.md"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "2025-11-05T00:00:00Z",
   "id": "docs/day8/quality/06_quality.md",
   "maintenance": {
     "refresh": "品質メトリクスやテスト導線を更新したら付録および Birdseye index.json を揃える。",
@@ -21,6 +21,6 @@
     "アクセシビリティ導線が欠けると CLI/レポートの品質レビューが形骸化する"
   ],
   "role": "quality",
-  "summary": "Day8 品質ガイドのメトリクス節。付録へのテスト観点導線を提供する。アクセシビリティ観点を付録Kと連動させる。",
+  "summary": "Day8 品質ガイドのメトリクス節。付録へのテスト観点導線に加え、評価器を動かす際の追加 requirements 導入手順を指示する。アクセシビリティ観点を付録Kと連動させる。",
   "tests": []
 }
