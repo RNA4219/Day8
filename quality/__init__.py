@@ -2,4 +2,6 @@
 
 from __future__ import annotations
 
-__all__ = ["pipeline"]
+from . import evaluator
+
+__all__ = ["pipeline", "evaluator"]
