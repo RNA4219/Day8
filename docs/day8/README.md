@@ -13,6 +13,7 @@ OSS でも安心して導入できる“第八日目”の基盤を提供しま�
 - `design/` アーキテクチャ・データモデル・図
 - `ops/` 運用・導入・サブディレクトリ対応
 - `perf/` 性能ガイド・SLO 運用
+  - [03_performance.md](perf/03_performance.md) — Day8 の SLO・計測・ウォームアップ手順
 - `security/` セキュリティ・ガバナンス
 - `quality/` メトリクス・SLO・評価
 - `guides/` 貢献規約・タスク運用（Task Seeds）

@@ -36,6 +36,6 @@ scripts/warmup.sh
 ## 参照リンク
 
 - [docs/day8/ops/04_ops.md](../day8/ops/04_ops.md)：SSE 運用設定。
-- [docs/day8/perf/03_performance.md](../day8/perf/03_performance.md)：性能計測とウォームアップ手順。
+- [docs/day8/perf/03_performance.md](../day8/perf/03_performance.md)：Day8 SLO・計測ワークフロー・ウォームアップの統合ガイド。
 - [docs/addenda/G_Security_Privacy.md](G_Security_Privacy.md)：OAuth 周辺のキー管理と監査ログ。
 - [workflow-cookbook/RUNBOOK.md](../../workflow-cookbook/RUNBOOK.md)：全体運用フローとロール責務。
