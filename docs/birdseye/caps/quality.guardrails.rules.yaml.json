@@ -1,0 +1,23 @@
+{
+  "deps_in": [
+    "docs/addenda/E_Evaluator_Details.md",
+    "docs/day8/quality/06_quality.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-11-05T00:00:00Z",
+  "id": "quality/guardrails/rules.yaml",
+  "maintenance": {
+    "refresh": "ルールセットを更新したら Appendix E・06_quality.md・Birdseye index/hot/caps の generated_at を同期する。",
+    "tooling": [
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
+    ]
+  },
+  "risks": [
+    "severity 定義と実装が乖離すると品質ゲートが誤判定する"
+  ],
+  "role": "guardrail",
+  "summary": "Day8 評価ラインで利用する Guardrails ルールセット。重大度 minor/major/critical を含む最小構成。",
+  "tests": [
+    "check::scripts/quality/eval_smoke.sh を通じて BERTScore/ROUGE/ルール判定のスモークを検証"
+  ]
+}

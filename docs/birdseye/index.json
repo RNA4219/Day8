@@ -373,6 +373,14 @@
       "docs/adr/0006-evaluator-gates.md"
     ],
     [
+      "docs/addenda/E_Evaluator_Details.md",
+      "quality/guardrails/rules.yaml"
+    ],
+    [
+      "docs/day8/quality/06_quality.md",
+      "quality/guardrails/rules.yaml"
+    ],
+    [
       "docs/addenda/F_Provider_Matrix.md",
       "docs/adr/0004-provider-interface.md"
     ],
@@ -1009,6 +1017,11 @@
       "caps": "docs/birdseye/caps/personas.README.md.json",
       "mtime": "2025-11-08T09:00:00Z",
       "role": "persona"
+    },
+    "quality/guardrails/rules.yaml": {
+      "caps": "docs/birdseye/caps/quality.guardrails.rules.yaml.json",
+      "mtime": "2025-11-05T00:00:00Z",
+      "role": "guardrail"
     },
     "scripts/": {
       "caps": "docs/birdseye/caps/scripts.DIR.json",

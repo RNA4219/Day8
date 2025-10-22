@@ -1,0 +1,24 @@
+version: 1
+metadata:
+  name: day8-minimal
+  description: Day8 評価ライン向け Guardrails ルールセットの最小構成。
+  owner: quality-wg
+rules:
+  - id: content.minor.placeholder
+    description: 軽微なトーン逸脱を検出するプレースホルダー。
+    severity: minor
+    match:
+      any:
+        - contains: TODO
+  - id: content.major.placeholder
+    description: 重大度 major の逸脱を検出するプレースホルダー。
+    severity: major
+    match:
+      any:
+        - contains: FIXME
+  - id: content.critical.placeholder
+    description: 重大な逸脱を検出するプレースホルダー。
+    severity: critical
+    match:
+      any:
+        - contains: SECRET
