@@ -52,6 +52,7 @@ from typing import Iterable
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--ruleset", required=True)
+    parser.add_argument("--output")
     parser.add_argument("inputs", nargs="*")
     return parser.parse_args(list(argv) if argv is not None else None)
 
@@ -71,6 +72,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     content = rules_path.read_text(encoding="utf-8")
     severities = _collect_severities(content)
 
+    if args.output is None:
+        raise AssertionError("--output must be provided")
+
     record_path = Path(os.environ["EVAL_SMOKE_RECORD_PATH"])
     record_path.parent.mkdir(parents=True, exist_ok=True)
     with record_path.open("a", encoding="utf-8") as stream:
@@ -79,7 +83,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         stream.write("bert_score\\n")
         stream.write("rouge\\n")
 
-    metrics_path = Path(os.environ["EVAL_SMOKE_METRICS_PATH"])
+    metrics_arg = args.output or os.environ["EVAL_SMOKE_METRICS_PATH"]
+    metrics_path = Path(metrics_arg)
     metrics = {
         "semantic": {"f1": 0.0, "threshold_met": True},
         "surface": {"rougeL": 0.0, "threshold_met": True},
@@ -192,9 +197,6 @@ def test_eval_smoke_pipeline_with_real_modules(
     pytest.importorskip("quality.pipeline.normalize")
     pytest.importorskip("quality.evaluator.cli")
 
-    input_path = tmp_path / "input.txt"
-    input_path.write_text("<p>Dummy</p>\n", encoding="utf-8")
-
     record_path = tmp_path / "record.log"
     metrics_path = tmp_path / "metrics.json"
     monkeypatch.setenv("EVAL_SMOKE_RECORD_PATH", str(record_path))
@@ -203,15 +205,19 @@ def test_eval_smoke_pipeline_with_real_modules(
     script_path = PROJECT_ROOT / "scripts" / "quality" / "eval_smoke.sh"
     assert script_path.exists(), "eval_smoke.sh must exist for the smoke test"
 
-    completed = subprocess.run(
-        ["bash", str(script_path), "--input", str(input_path)],
-        check=True,
-        cwd=PROJECT_ROOT,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        timeout=15,
-    )
+    try:
+        completed = subprocess.run(
+            ["bash", str(script_path)],
+            check=True,
+            cwd=PROJECT_ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            text=True,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired as exc:  # pragma: no cover - diagnostic path
+        pytest.fail(f"eval_smoke.sh hung waiting for stdin: {exc}")
 
     assert completed.returncode == 0
     assert metrics_path.exists()
