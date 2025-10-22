@@ -16,6 +16,12 @@ Katamari 付録 J をベースに、Day8 の代表的な運用事象と一次切
 2. **Birdseye 同期** — 本付録を参照した際は、`docs/birdseye/index.json` と該当 Capsule の `generated_at` を同一値へ揃え、`maintenance.refresh` に一次切り分け結果を残す。
 3. **再発防止の接続** — 断続的な障害が続く場合は `docs/addenda/L_Config_Reference.md` と `workflow-cookbook/CHECKLISTS.md` を併読し、設定値やデイリー手順の修正を検討する。
 
+## 性能チェックリスト
+
+- [ ] [docs/day8/perf/03_performance.md](../day8/perf/03_performance.md) の SLO 表と `workflow-cookbook/reports/today.md` を突き合わせた
+- [ ] Cold Start 事象ではウォームアップ手順の 1〜5 を実施し、結果を Capsule `maintenance.refresh` へ記録した
+- [ ] Appendix H のローカルチェックリストへ性能計測の結果と `generated_at` を反映した
+
 ## 参照リンク
 
 - [docs/day8/ops/04_ops.md](../day8/ops/04_ops.md)：SSE 運用設定。
