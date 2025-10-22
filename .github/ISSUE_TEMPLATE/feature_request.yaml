@@ -1,0 +1,51 @@
+name: "提案: Feature Request"
+description: "Day8 に対する新機能・改善案を提案するテンプレート"
+labels:
+  - "ci:improvement"
+  - "needs-triage"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 事前チェック
+        - 近いアイデアが既に存在しないか、既存 Issue と [docs/ROADMAP_AND_SPECS.md](../../docs/ROADMAP_AND_SPECS.md) を確認してください。
+        - なぜ今この改善が必要か、優先度の根拠を整理してから記載してください。
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景
+      description: 現状の課題やユースケース、関係者などの前提情報を記載してください。
+      placeholder: "例: レポート出力に 15 分以上かかり、サポート対応が滞留している。"
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: やりたいこと・期待する価値
+      description: 実現したい状態や業務インパクトを、定量/定性の指標で記載してください。
+      placeholder: "例: レポート生成を 5 分以内に短縮し、夜間バッチの SLA を満たす。"
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: 解決策のアイデア
+      description: 想定しているアプローチや代替案があれば記載してください（未定でも構いません）。
+  - type: textarea
+    id: scope
+    attributes:
+      label: スコープと除外項目
+      description: 今回の提案で含めたい項目、含めない項目を整理してください。
+  - type: textarea
+    id: verification
+    attributes:
+      label: 確認方法
+      description: 実装後に効果を検証するための手順やメトリクスを記載してください。
+      placeholder: "例: node --test tests/perf/report-benchmark.test.mjs で SLA を計測し、P95 <= 5 分を確認する。"
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: 参考情報
+      description: 関連する設計メモ、リンク、スクリーンショットなどがあれば添付してください。
