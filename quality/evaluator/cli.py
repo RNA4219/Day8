@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 _SEVERITY_PRIORITY = {"critical": 3, "major": 2, "minor": 1}
+_BERT_F1_THRESHOLD = 0.85
+_ROUGE_L_THRESHOLD = 0.70
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -104,6 +107,17 @@ def _evaluate_surface(outputs: Sequence[str], references: Sequence[str]) -> dict
     }
 
 
+def _apply_thresholds(
+    bert_score: dict[str, float], surface_metrics: dict[str, float]
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    bert_with_threshold = dict(bert_score)
+    bert_with_threshold["threshold_met"] = bert_with_threshold.get("f1", 0.0) >= _BERT_F1_THRESHOLD
+
+    surface_with_threshold = dict(surface_metrics)
+    surface_with_threshold["threshold_met"] = surface_with_threshold.get("rougeL", 0.0) >= _ROUGE_L_THRESHOLD
+    return bert_with_threshold, surface_with_threshold
+
+
 def _load_ruleset(path: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
     try:
@@ -185,6 +199,22 @@ def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str
     return {"counts": counts, "violations": violations, "max_severity": max_severity}
 
 
+def _summarize_results(
+    bert_score: dict[str, Any], surface_metrics: dict[str, Any], violations: dict[str, Any]
+) -> dict[str, Any]:
+    bert_pass = bool(bert_score.get("threshold_met"))
+    rouge_pass = bool(surface_metrics.get("threshold_met"))
+    severity = str(violations.get("max_severity", "none"))
+    severity_score = _SEVERITY_PRIORITY.get(severity, 0)
+    overall_pass = bert_pass and rouge_pass and severity_score <= _SEVERITY_PRIORITY["minor"]
+    needs_review = not overall_pass or severity_score >= _SEVERITY_PRIORITY["major"]
+    return {
+        "overall_pass": overall_pass,
+        "needs_review": needs_review,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     bundle = Path(args.bundle) if args.bundle else None
@@ -196,15 +226,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("inputs, expected, output を指定してください")
 
     outputs, references = _collect_pairs(inputs_path, expected_path)
+    bert_score = _evaluate_semantic(outputs, references)
+    surface_metrics = _evaluate_surface(outputs, references)
+    bert_score_with_threshold, surface_with_threshold = _apply_thresholds(bert_score, surface_metrics)
+    violations = _evaluate_guardrails(Path(args.ruleset), outputs)
+    summary = _summarize_results(bert_score_with_threshold, surface_with_threshold, violations)
+
     metrics = {
-        "semantic": {"bert_score": _evaluate_semantic(outputs, references)},
-        "surface": _evaluate_surface(outputs, references),
-        "violations": _evaluate_guardrails(Path(args.ruleset), outputs),
+        "semantic": {"bert_score": bert_score_with_threshold},
+        "surface": surface_with_threshold,
+        "violations": violations,
+        **summary,
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
-    return 0
+    return 0 if summary["overall_pass"] else 1
 
 
 if __name__ == "__main__":  # pragma: no cover
