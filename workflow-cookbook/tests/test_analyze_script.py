@@ -4,6 +4,8 @@ import importlib.util
 import json
 import py_compile
 import statistics
+import subprocess
+import sys
 from importlib.abc import Loader
 from pathlib import Path
 from types import ModuleType
@@ -138,6 +140,49 @@ def test_load_results_prefers_manifest_logs(
     assert "Total tests: 1" in contents
     assert "- Failures: 0" in contents
 
+
+def test_cli_accepts_emit_focus_window_and_fail_on(tmp_path: Path) -> None:
+    script_path = WORKFLOW_ROOT / "scripts" / "analyze.py"
+    command = [
+        sys.executable,
+        str(script_path),
+        "--root",
+        str(tmp_path),
+        "--emit",
+        "report/samples/ping",
+        "--focus",
+        "latency/reliability/runtime/auth/docs",
+        "--window",
+        "15m",
+        "--fail-on",
+        "warnings",
+    ]
+    result = subprocess.run(command, capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0, result.stderr
+
+    report_path = tmp_path / "reports" / "today.md"
+    assert report_path.exists()
+
+    for focus in ["latency", "reliability", "runtime", "auth", "docs"]:
+        sample_path = tmp_path / "reports" / f"samples_{focus}.json"
+        assert sample_path.exists(), f"missing sample file for {focus}"
+        payload = json.loads(sample_path.read_text(encoding="utf-8"))
+        assert payload["focus"] == focus
+        assert payload["window_seconds"] == 900
+        assert payload["fail_on"] == ["warnings"]
+
+    ping_path = tmp_path / "reports" / "ping.json"
+    assert ping_path.exists()
+    ping_payload = json.loads(ping_path.read_text(encoding="utf-8"))
+    assert sorted(ping_payload["focus"]) == [
+        "auth",
+        "docs",
+        "latency",
+        "reliability",
+        "runtime",
+    ]
+    assert ping_payload["fail_on"] == ["warnings"]
 
 def test_load_results_prefers_manifest_logs_even_when_log_overridden(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
