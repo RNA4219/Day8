@@ -321,6 +321,10 @@
       "docs/seeds/README.md"
     ],
     [
+      "docs/seeds/README.md",
+      "docs/seeds/TASK.template-YYYY-MM-DD.md"
+    ],
+    [
       "docs/UPSTREAM.md",
       "docs/FORK_NOTES.md"
     ],
@@ -994,6 +998,11 @@
     "docs/seeds/README.md": {
       "caps": "docs/birdseye/caps/docs.seeds.README.md.json",
       "mtime": "2025-01-15T00:00:00Z",
+      "role": "seeds"
+    },
+    "docs/seeds/TASK.template-YYYY-MM-DD.md": {
+      "caps": "docs/birdseye/caps/docs.seeds.TASK.template-YYYY-MM-DD.md.json",
+      "mtime": "2025-02-20T12:00:00Z",
       "role": "seeds"
     },
     "personas/README.md": {
