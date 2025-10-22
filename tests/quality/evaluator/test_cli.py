@@ -93,8 +93,62 @@ def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.Monkey
     assert metrics["surface"] == {"rouge1": 0.78, "rougeL": 0.72, "threshold_met": True}
     assert metrics["violations"]["counts"] == {"minor": 1, "major": 0, "critical": 0}
     assert metrics["violations"]["violations"][0]["severity"] == "minor"
+    assert metrics["violations"]["threshold_met"] is True
     assert metrics["overall_pass"] is True
     assert metrics["needs_review"] is False
+    assert isinstance(metrics["generated_at"], str)
+
+
+def test_cli_treats_single_metric_threshold_as_pass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    metrics_path = tmp_path / "metrics.json"
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+    rules_path = tmp_path / "rules.yaml"
+
+    inputs_path.write_text("{\"id\": \"0\", \"output\": \"hello\"}\n", encoding="utf-8")
+    expected_path.write_text("{\"id\": \"0\", \"expected\": \"world\"}\n", encoding="utf-8")
+    rules_path.write_text("version: 1\nrules: []\n", encoding="utf-8")
+
+    module = import_module("quality.evaluator.cli")
+
+    def _fake_guardrail(*_: Any, **__: Any) -> dict[str, Any]:
+        return {
+            "counts": {"minor": 0, "major": 0, "critical": 0},
+            "violations": [],
+            "max_severity": "none",
+        }
+
+    monkeypatch.setattr(module, "_evaluate_guardrails", _fake_guardrail)
+    monkeypatch.setattr(
+        module,
+        "_evaluate_surface",
+        lambda *_: {"rouge1": 0.6, "rougeL": 0.6},
+    )
+
+    argv = [
+        "quality-evaluator",
+        "--ruleset",
+        str(rules_path),
+        "--inputs",
+        str(inputs_path),
+        "--expected",
+        str(expected_path),
+        "--output",
+        str(metrics_path),
+    ]
+
+    exit_code = module.main(argv)
+
+    assert exit_code == 0
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+
+    assert metrics["semantic"]["bert_score"]["threshold_met"] is True
+    assert metrics["surface"]["threshold_met"] is False
+    assert metrics["violations"]["threshold_met"] is True
+    assert metrics["overall_pass"] is True
+    assert metrics["needs_review"] is True
     assert isinstance(metrics["generated_at"], str)
 
 
@@ -144,5 +198,6 @@ def test_cli_fails_on_critical_violation(tmp_path: Path, monkeypatch: pytest.Mon
 
     metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     assert metrics["violations"]["max_severity"] == "critical"
+    assert metrics["violations"]["threshold_met"] is False
     assert metrics["overall_pass"] is False
     assert metrics["needs_review"] is True

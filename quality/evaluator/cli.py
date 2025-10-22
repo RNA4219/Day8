@@ -118,6 +118,14 @@ def _apply_thresholds(
     return bert_with_threshold, surface_with_threshold
 
 
+def _apply_violation_threshold(violations: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(violations)
+    severity = str(normalized.get("max_severity", "none")).lower()
+    normalized["max_severity"] = severity
+    normalized["threshold_met"] = severity != "critical"
+    return normalized
+
+
 def _load_ruleset(path: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
     try:
@@ -206,8 +214,13 @@ def _summarize_results(
     rouge_pass = bool(surface_metrics.get("threshold_met"))
     severity = str(violations.get("max_severity", "none"))
     severity_score = _SEVERITY_PRIORITY.get(severity, 0)
-    overall_pass = bert_pass and rouge_pass and severity_score <= _SEVERITY_PRIORITY["minor"]
-    needs_review = not overall_pass or severity_score >= _SEVERITY_PRIORITY["major"]
+    rules_pass = severity != "critical"
+    overall_pass = rules_pass and (bert_pass or rouge_pass)
+    needs_review = (
+        not overall_pass
+        or not (bert_pass and rouge_pass)
+        or severity_score >= _SEVERITY_PRIORITY.get("major", 0)
+    )
     return {
         "overall_pass": overall_pass,
         "needs_review": needs_review,
@@ -229,7 +242,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     bert_score = _evaluate_semantic(outputs, references)
     surface_metrics = _evaluate_surface(outputs, references)
     bert_score_with_threshold, surface_with_threshold = _apply_thresholds(bert_score, surface_metrics)
-    violations = _evaluate_guardrails(Path(args.ruleset), outputs)
+    violations = _apply_violation_threshold(
+        _evaluate_guardrails(Path(args.ruleset), outputs)
+    )
     summary = _summarize_results(bert_score_with_threshold, surface_with_threshold, violations)
 
     metrics = {

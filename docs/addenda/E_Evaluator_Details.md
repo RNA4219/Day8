@@ -25,8 +25,8 @@ Katamari 付録Eの評価器設計を Day8 の自動評価ラインへ適用し�
 
 ## 出力整形
 - **BERTScore / ROUGE**: 小数第4位で四捨五入し、`metrics.json` の `semantic`・`surface` セクションへ格納する。評価ログには `threshold_met` のブール値を追加する。
-- **ルール判定**: 最も高い重大度を `violations.max_severity` として記録。`critical` の場合は即座に `overall_pass=false` とし、Birdseye Hot リストへ追加する。
-- **集計**: 3 評価の結果から `overall_pass` を決定する。`critical` 違反が無く、かつ BERTScore F1 と ROUGE-L のいずれかが閾値を満たす場合に合格とする。閾値未達でもヒューリスティックで再審査対象（`needs_review=true`）。
+- **ルール判定**: 最も高い重大度を `violations.max_severity` として記録し、`critical` を検出した場合は `violations.threshold_met=false` として即座に Gate 失敗扱いにする。
+- **集計**: 3 評価の結果から `overall_pass` を決定する。`critical` 違反が無く、かつ BERTScore F1 または ROUGE-L の少なくとも一方が閾値を満たす場合に合格 (`overall_pass=true`)。いずれかのスコアが閾値未満、もしくは重大度が `major` 以上の場合は再審査対象として `needs_review=true` を付与する。
 
 ## 運用チェックリスト
 1. `quality/pipeline/normalize.py` と `workflow-cookbook/EVALUATION.md` の入力形式が一致しているか照合する。
