@@ -1045,6 +1045,11 @@
       "mtime": "2025-02-16T00:00:00Z",
       "role": "automation"
     },
+    "scripts/warmup.sh": {
+      "caps": "docs/birdseye/caps/scripts.warmup.sh.json",
+      "mtime": "2025-10-22T09:15:00Z",
+      "role": "automation"
+    },
     "themes/CATALOG.md": {
       "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
       "mtime": "2025-11-12T09:30:00Z",

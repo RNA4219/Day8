@@ -21,6 +21,17 @@ set +a
 scripts/warmup.sh
 ```
 
+### 前提環境変数
+
+`scripts/warmup.sh` は以下の環境変数を参照する。`.env` を読み込めない場合は手動で export してから実行する。
+
+- `DAY8_API_HEALTHCHECK_URL`（必須）: ヘルスチェック API の完全 URL。
+- `DAY8_API_HEALTHCHECK_TIMEOUT`（任意）: ヘルスチェックのタイムアウト秒数。未設定時は 5 秒。
+- `DAY8_API_WARMUP_URL`（必須）: ウォームアップ API の完全 URL。
+- `DAY8_API_WARMUP_METHOD`（任意）: ウォームアップ API の HTTP メソッド。未設定時は `POST`。
+- `DAY8_API_WARMUP_TIMEOUT`（任意）: ウォームアップ API のタイムアウト秒数。未設定時は 5 秒。
+- `DAY8_API_WARMUP_PAYLOAD`（任意）: ウォームアップ API に送信する JSON ペイロード。空文字のときは送信しない。
+
 ## 影響評価とフォローアップ
 
 1. **影響スコープの記録** — 事象別に `workflow-cookbook/logs/test.jsonl` の対象行を `workflow-cookbook/docs/IN-YYYYMMDD-XXX.md` へ添付し、タイムスタンプと関連ロールを明記する。

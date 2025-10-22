@@ -13,6 +13,15 @@ Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 
 ### チェックリスト（ローカル）
 - [ ] `python workflow-cookbook/scripts/analyze.py --root . --emit report`
 - [ ] `set -a; source config/env.example; set +a` → `scripts/warmup.sh` で Cold Start を事前解消
+  - `.env` を利用できない場合は以下の環境変数を個別に export する: `DAY8_API_HEALTHCHECK_URL`（必須）, `DAY8_API_HEALTHCHECK_TIMEOUT`（任意）, `DAY8_API_WARMUP_URL`（必須）, `DAY8_API_WARMUP_METHOD`（任意, 既定は `POST`）, `DAY8_API_WARMUP_TIMEOUT`（任意）, `DAY8_API_WARMUP_PAYLOAD`（任意）。
+  - 実行例:
+
+    ```bash
+    set -a
+    source config/env.example
+    set +a
+    scripts/warmup.sh
+    ```
 - [ ] 必要な Docker build を手元で `docker build` し、ランタイム依存の抜けを確認
 - [ ] `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` を実行し、`index.json` → `caps` → `hot.json` を含む全ファイルの `generated_at` を同一タイムスタンプへ揃える
 - [ ] `git tag -a day8-vYYYYMMDD -m "Day8 release YYYYMMDD"` を作成（Release 発行前）
