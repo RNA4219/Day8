@@ -17,12 +17,13 @@
     "Dockerfile",
     "docs/addenda/L_Config_Reference.md"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "2025-10-22T07:33:29Z",
   "id": "docs/addenda/H_Deploy_Guide.md",
   "maintenance": {
     "refresh": "デプロイフローや release.yml を更新したら ops/04_ops.md と合わせて本文・Birdseye（index→caps→generated_at）を更新する。",
     "tooling": [
-      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye",
+      "scripts/warmup.sh"
     ]
   },
   "risks": [

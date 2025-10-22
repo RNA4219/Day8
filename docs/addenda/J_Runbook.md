@@ -10,6 +10,17 @@ Katamari 付録 J をベースに、Day8 の代表的な運用事象と一次切
 | 初回応答遅延（Cold Start 遅延） | - `workflow-cookbook/reports/today.md` の P95 応答時間が 5 秒超<br>- `logs/test.jsonl` に `cold_start=true` が集中 | 1. `workflow-cookbook/scripts/analyze.py --root . --emit report --focus latency` を実行し、対象リクエスト ID を特定。<br>2. `docs/day8/perf/03_performance.md` のウォームアップ手順に沿って `scripts/warmup.sh` を再実行。<br>3. Birdseye Capsule `docs/day8/perf/03_performance.md` の `maintenance.refresh` に遅延計測値をメモ。 | - P95 が 10 分間改善しない<br>- SLA 2 分超のリクエストが 3 件以上 |
 | OAuth 認証失敗 | - `logs/test.jsonl` の `oauth_error` カウントが 5 分で 3 件超<br>- PagerDuty の `auth-gateway` サービスが Warning | 1. `workflow-cookbook/scripts/analyze.py --root . --emit report --focus auth` を実行し、エラーコードとテナントを抽出。<br>2. `docs/addenda/G_Security_Privacy.md` のトークン回転手順に沿って、直近のキー更新状況を確認。<br>3. `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye --dry-run` で依存更新の有無を可視化し、必要に応じて本番実行。 | - `invalid_client` が連続 5 件<br>- 管理者テナントの `invalid_grant` が発生 |
 
+## ウォームアップスクリプト実行例
+
+Day8 API の Cold Start を解消する際は、`.env` を読み込んでから `scripts/warmup.sh` を実行する。
+
+```bash
+set -a
+source config/env.example
+set +a
+scripts/warmup.sh
+```
+
 ## 影響評価とフォローアップ
 
 1. **影響スコープの記録** — 事象別に `workflow-cookbook/logs/test.jsonl` の対象行を `workflow-cookbook/docs/IN-YYYYMMDD-XXX.md` へ添付し、タイムスタンプと関連ロールを明記する。
