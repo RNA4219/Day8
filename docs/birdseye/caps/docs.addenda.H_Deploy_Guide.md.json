@@ -2,6 +2,7 @@
   "deps": [
     "in::docs/README.md",
     "in::docs/day8/ops/04_ops.md",
+    "in::scripts/birdseye_refresh.py",
     "out::workflow-cookbook/RUNBOOK.md",
     "out::workflow-cookbook/CHECKLISTS.md",
     "out::workflow-cookbook/scripts/analyze.py",

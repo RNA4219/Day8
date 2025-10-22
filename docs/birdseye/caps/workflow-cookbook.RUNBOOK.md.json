@@ -59,6 +59,6 @@
     "orbit::CHECKLISTS/インシデント記録/Observability資料との同期ポイントを列挙し運用判断を支援。"
   ],
   "tests": [
-    "check::Preparation/Execution/Verification手順が CHECKLISTS と codemap/analyze スクリプトに追従しているか確認"
+    "check::Preparation/Execution/Verification手順が CHECKLISTS と birdseye_refresh/analyze スクリプトに追従しているか確認"
   ]
 }

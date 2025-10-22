@@ -3,6 +3,7 @@
     "in::docs/README.md",
     "in::docs/day8/ops/04_ops.md",
     "in::docs/addenda/H_Deploy_Guide.md",
+    "in::scripts/birdseye_refresh.py",
     "out::docs/day8/spec/02_spec.md",
     "out::docs/day8/examples/10_examples.md",
     "out::workflow-cookbook/scripts/analyze.py",

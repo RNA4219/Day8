@@ -56,7 +56,7 @@ Day8 を導入・運用する際に必要となる環境変数、設定ファイ
 
 1. **導入前の環境構築チェック** — Appendix H の「開発環境フロー」を読みながら本付録の環境変数を網羅的に設定し、`python workflow-cookbook/scripts/analyze.py --root . --emit report --fail-on warnings` をローカルで一度実行する。 | [addenda/H_Deploy_Guide.md](H_Deploy_Guide.md)
 2. **CI トラブル時の切り分け** — `test` / `reflection` ワークフローが失敗した場合、`REPORT_PATH` 等の派生変数を `GITHUB_STEP_SUMMARY` に出力して比較し、Appendix L の表と突き合わせる。 | [day8/examples/10_examples.md](../day8/examples/10_examples.md)
-3. **Birdseye 再生成** — `docs/birdseye/index.json` と `hot.json` の `generated_at` を本付録で確認し、Appendix H のチェックリストを経て codemap ツールで再生成する。 | [birdseye/README.md](../birdseye/README.md)
+3. **Birdseye 再生成** — `docs/birdseye/index.json` と `hot.json` の `generated_at` を本付録で確認し、Appendix H のチェックリストを経て `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` で再生成する。 | [birdseye/README.md](../birdseye/README.md)
 
 ---
 
