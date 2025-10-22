@@ -481,6 +481,42 @@
       "docs/openapi/day8_openapi.yaml"
     ],
     [
+      "docs/day8/perf/03_performance.md",
+      "docs/addenda/H_Deploy_Guide.md"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "docs/addenda/J_Runbook.md"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "docs/day8/quality/06_quality.md"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "docs/day8/spec/02_spec.md"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "docs/birdseye/index.json"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "workflow-cookbook/logs/test.jsonl"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "workflow-cookbook/reports/today.md"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "workflow-cookbook/scripts/analyze.py"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
+      "workflow-cookbook/scripts/run_ci_tests.py"
+    ],
+    [
       "docs/day8/quality/06_quality.md",
       "docs/addenda/I_Test_Cases.md"
     ],
@@ -773,7 +809,7 @@
       "docs/day8/perf/03_performance.md"
     ]
   ],
-  "generated_at": "2025-10-22T09:00:00Z",
+  "generated_at": "2025-03-09T00:00:00Z",
   "nodes": {
     "CHANGELOG.md": {
       "caps": "docs/birdseye/caps/CHANGELOG.md.json",
@@ -1152,7 +1188,7 @@
     },
     "docs/day8/perf/03_performance.md": {
       "caps": "docs/birdseye/caps/docs.day8.perf.03_performance.md.json",
-      "mtime": "2025-10-22T09:00:00Z",
+      "mtime": "2025-03-09T00:00:00Z",
       "role": "performance"
     }
   }

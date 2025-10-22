@@ -2,6 +2,8 @@
   "deps_in": [
     "docs/day8/quality/06_quality.md",
     "docs/day8/spec/02_spec.md",
+    "docs/addenda/H_Deploy_Guide.md",
+    "docs/addenda/J_Runbook.md",
     "workflow-cookbook/logs/test.jsonl",
     "workflow-cookbook/reports/today.md",
     "workflow-cookbook/scripts/analyze.py",
@@ -9,24 +11,28 @@
   ],
   "deps_out": [
     "docs/addenda/H_Deploy_Guide.md",
-    "docs/addenda/J_Runbook.md"
+    "docs/addenda/J_Runbook.md",
+    "docs/birdseye/index.json"
   ],
-  "generated_at": "2025-10-22T09:00:00Z",
+  "generated_at": "2025-03-09T00:00:00Z",
   "id": "docs/day8/perf/03_performance.md",
   "maintenance": {
-    "refresh": "SLO 逸脱時は計測ログとウォームアップ結果を反映し、Appendix H/J のチェックリスト更新を忘れない。",
+    "refresh": "SLO 判定・ウォームアップ結果を Appendix H/J と同期し、Birdseye tests セクションへ参照済みレポートを追記する。",
     "tooling": [
-      "python workflow-cookbook/scripts/analyze.py --root . --emit report --focus latency"
+      "python workflow-cookbook/scripts/analyze.py --root . --emit report --focus latency",
+      "python workflow-cookbook/scripts/analyze.py --root . --emit samples --focus latency --window 15m",
+      "python workflow-cookbook/scripts/run_ci_tests.py --suite analyzer_smoke"
     ]
   },
   "risks": [
-    "SLO 表が spec/quality の値と乖離し、Birdseye から誤った閾値が参照される",
-    "ウォームアップ手順の更新が Capsule に反映されず、Cold Start 事象が再発する"
+    "spec/quality と SLO しきい値が乖離し、運用チームが誤った Error Budget を算出する",
+    "ウォームアップ手順が Birdseye に未反映のまま再実行され、Cold Start が連鎖する"
   ],
   "role": "performance",
-  "summary": "Day8 SLO 指標・計測フロー・ウォームアップ手順を Katamari 版から移植し、Birdseye/Appendix の同期要件を明確化する。",
+  "summary": "Day8 SLO 指標・計測ワークフロー・ウォームアップ手順を整理し、Birdseye と Appendix を同期するための運用ガイド。",
   "tests": [
     "check::reports/today.md の latency.p95 ≤ 45s を確認",
-    "check::reports/today.md の summary.pass_rate ≥ 0.99 を確認"
+    "check::reports/today.md の summary.pass_rate ≥ 0.99 を確認",
+    "check::logs/test.jsonl の cold_start=true 件数 ≤ 3 を確認"
   ]
 }
