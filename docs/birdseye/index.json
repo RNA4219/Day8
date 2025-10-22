@@ -759,9 +759,21 @@
     [
       "workflow-cookbook/scripts/analyze.py",
       "docs/adr/0005-reflection-manifest.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/perf/03_performance.md"
+    ],
+    [
+      "docs/addenda/H_Deploy_Guide.md",
+      "docs/day8/perf/03_performance.md"
+    ],
+    [
+      "docs/addenda/J_Runbook.md",
+      "docs/day8/perf/03_performance.md"
     ]
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "2025-10-22T09:00:00Z",
   "nodes": {
     "CHANGELOG.md": {
       "caps": "docs/birdseye/caps/CHANGELOG.md.json",
@@ -1132,6 +1144,11 @@
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.README.md.json",
       "mtime": "2025-02-16T00:00:00Z",
       "role": "guide"
+    },
+    "docs/day8/perf/03_performance.md": {
+      "caps": "docs/birdseye/caps/docs.day8.perf.03_performance.md.json",
+      "mtime": "2025-10-22T09:00:00Z",
+      "role": "performance"
     }
   }
 }
