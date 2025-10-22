@@ -15,7 +15,7 @@ Katamari 付録Eの評価器設計を Day8 の自動評価ラインへ適用し�
 | ルール判定エンジン | Guardrails 由来の制約チェック | `ruleset=quality/guardrails/rules.yaml`、`mode=blocking` | モデル生成テキスト、メタ情報（タスク種別、ユーザー指示） | 違反コード（`minor`, `major`, `critical`）、自動失格判定 |
 
 ## セットアップ
-- Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece を含む評価専用依存を導入する。
+- Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece・BeautifulSoup（bs4）を含む評価専用依存を導入する。
 - CI は `requirements-eval.txt` をインストールしないため、ローカル検証や品質 WG のバッチ計測時のみ追加セットアップが必要になる。
 
 ## 入力と前処理

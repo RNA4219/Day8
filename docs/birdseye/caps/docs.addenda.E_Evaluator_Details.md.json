@@ -12,7 +12,7 @@
   "deps_out": [
     "docs/adr/0006-evaluator-gates.md"
   ],
-  "generated_at": "2025-11-05T00:00:00Z",
+  "generated_at": "2025-12-26T00:00:00Z",
   "id": "docs/addenda/E_Evaluator_Details.md",
   "maintenance": {
     "refresh": "BERTScore/ROUGE/ルール判定の閾値やルールセットを更新したら Appendix E・06_quality.md・Birdseye index/hot/caps の generated_at を同期。",
