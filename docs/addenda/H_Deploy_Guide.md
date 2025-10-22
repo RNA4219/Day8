@@ -13,7 +13,7 @@ Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 
 ### チェックリスト（ローカル）
 - [ ] `python workflow-cookbook/scripts/analyze.py --root . --emit report`
 - [ ] 必要な Docker build を手元で `docker build` し、ランタイム依存の抜けを確認
-- [ ] `python scripts/birdseye_refresh.py` を実行し、`index.json` → `caps` → `hot.json` を含む全ファイルの `generated_at` を同一タイムスタンプへ揃える
+- [ ] `python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` を実行し、`index.json` → `caps` → `hot.json` を含む全ファイルの `generated_at` を同一タイムスタンプへ揃える
 - [ ] `git tag -a day8-vYYYYMMDD -m "Day8 release YYYYMMDD"` を作成（Release 発行前）
 
 ## Docker デプロイ
@@ -32,7 +32,7 @@ Day8 のワークフローをコンテナ化する際は、リポジトリ直下
 ## GitHub Actions リリース設定
 
 1. **ワークフローファイル** — `.github/workflows/release.yml` を作成し、`push` の `tags: ["day8-v*"]` トリガで発火させます。ビルド→テスト→Docker push→GitHub Release 更新の順でジョブを配置します。
-2. **ローカル検証の再実行** — `analyze` ステップを最初に実行し、ドキュメントや Birdseye の整合性チェックを CI で再確認します。`python workflow-cookbook/scripts/analyze.py --root . --emit report --fail-on warnings` のように、警告で失敗させるフラグを有効化します。Birdseye の再生成には `python scripts/birdseye_refresh.py --dry-run` で差分を確認してから本実行する運用を推奨します。
+2. **ローカル検証の再実行** — `analyze` ステップを最初に実行し、ドキュメントや Birdseye の整合性チェックを CI で再確認します。`python workflow-cookbook/scripts/analyze.py --root . --emit report --fail-on warnings` のように、警告で失敗させるフラグを有効化します。Birdseye の再生成には `python scripts/birdseye_refresh.py --dry-run --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` で差分を確認してから本実行する運用を推奨します。
 3. **Docker ビルド & プッシュ** — `docker/login-action` と `docker/build-push-action` を利用し、`day8-v*` タグごとのイメージをビルドします。GitHub Actions のキャッシュは `actions/cache` で `workflow-cookbook/` の依存インストールを短縮します。
 4. **成果物の添付** — `actions/upload-artifact` で `workflow-cookbook/scripts/analyze.py` の出力や `docs/birdseye/*.json` の差分をアーカイブし、リリース監査を容易にします。
 5. **権限管理** — `permissions: contents: write, packages: write` を設定し、タグ付き push 時のみリリース更新・コンテナ公開が成功するようにします。
@@ -48,7 +48,7 @@ Day8 のワークフローをコンテナ化する際は、リポジトリ直下
 - pytest / node --test
 
 ## Notes
-- Birdseye generated_at: <YYYY-MM-DDTHH:MM:SSZ>（`python scripts/birdseye_refresh.py` 実行後に `index.json` / `caps` / `hot.json` で揃える）
+- Birdseye generated_at: <YYYY-MM-DDTHH:MM:SSZ>（`python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye` 実行後に `index.json` / `caps` / `hot.json` で揃える）
 - Related PRs: <リンク>
 ```
 

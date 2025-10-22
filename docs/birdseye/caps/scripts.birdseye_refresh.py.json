@@ -1,5 +1,6 @@
 {
   "deps": [
+    "in::scripts/birdseye_refresh.py",
     "in::workflow-cookbook/tools/codemap/README.md",
     "in::docs/birdseye/index.json",
     "in::workflow-cookbook/docs/birdseye/index.json",
