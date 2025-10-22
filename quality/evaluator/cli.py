@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 _SEVERITY_PRIORITY = {"critical": 3, "major": 2, "minor": 1}
+_BERT_F1_THRESHOLD = 0.85
+_ROUGE_L_THRESHOLD = 0.70
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -75,6 +78,18 @@ def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
 def _mean(values: Iterable[float]) -> float:
     numbers = [float(value) for value in values]
     return sum(numbers) / len(numbers) if numbers else 0.0
+
+
+def _is_semantic_threshold_met(scores: dict[str, float]) -> bool:
+    return float(scores.get("f1", 0.0)) >= _BERT_F1_THRESHOLD
+
+
+def _is_surface_threshold_met(scores: dict[str, float]) -> bool:
+    return float(scores.get("rougeL", 0.0)) >= _ROUGE_L_THRESHOLD
+
+
+def _severity_value(severity: str) -> int:
+    return _SEVERITY_PRIORITY.get(severity, 0)
 
 
 def _evaluate_semantic(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float]:
@@ -159,7 +174,12 @@ def _matches_rule(rule: dict[str, Any], text: str) -> bool:
 def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str, Any]:
     counts = {severity: 0 for severity in _SEVERITY_PRIORITY}
     if not outputs:
-        return {"counts": counts, "violations": [], "max_severity": "none"}
+        return {
+            "counts": counts,
+            "violations": [],
+            "max_severity": "none",
+            "threshold_met": True,
+        }
 
     loaded = _load_ruleset(ruleset_path)
     violations: list[dict[str, Any]] = []
@@ -182,7 +202,13 @@ def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str
         if counts[severity] > 0:
             max_severity = severity
             break
-    return {"counts": counts, "violations": violations, "max_severity": max_severity}
+    threshold_met = _severity_value(max_severity) < _SEVERITY_PRIORITY["critical"]
+    return {
+        "counts": counts,
+        "violations": violations,
+        "max_severity": max_severity,
+        "threshold_met": threshold_met,
+    }
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -196,11 +222,33 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("inputs, expected, output を指定してください")
 
     outputs, references = _collect_pairs(inputs_path, expected_path)
+    semantic_scores = _evaluate_semantic(outputs, references)
+    surface_scores = _evaluate_surface(outputs, references)
+    violations = _evaluate_guardrails(Path(args.ruleset), outputs)
+
+    semantic_threshold_met = _is_semantic_threshold_met(semantic_scores)
+    surface_threshold_met = _is_surface_threshold_met(surface_scores)
+    violations_threshold_met = bool(violations.get("threshold_met", False))
+    violations["threshold_met"] = violations_threshold_met
+
     metrics = {
-        "semantic": {"bert_score": _evaluate_semantic(outputs, references)},
-        "surface": _evaluate_surface(outputs, references),
-        "violations": _evaluate_guardrails(Path(args.ruleset), outputs),
+        "semantic": {"bert_score": semantic_scores, "threshold_met": semantic_threshold_met},
+        "surface": {**surface_scores, "threshold_met": surface_threshold_met},
+        "violations": violations,
     }
+
+    overall_pass = violations_threshold_met and (
+        semantic_threshold_met or surface_threshold_met
+    )
+    needs_review = not (
+        semantic_threshold_met and surface_threshold_met and violations_threshold_met
+    )
+
+    metrics["overall_pass"] = overall_pass
+    metrics["needs_review"] = needs_review
+    metrics["generated_at"] = (
+        datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
