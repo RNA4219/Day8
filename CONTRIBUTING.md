@@ -8,6 +8,8 @@
    - 安全策や運用ルールは [`workflow-cookbook/GUARDRAILS.md`](workflow-cookbook/GUARDRAILS.md) と [`workflow-cookbook/RUNBOOK.md`](workflow-cookbook/RUNBOOK.md) を参照。
 2. Issue を立てる
    - `.github/ISSUE_TEMPLATE/` に沿って「背景・やりたいこと・確認方法」を書く。
+   - 不具合報告は `不具合: Bug Report`（再現手順・期待値・確認方法が必須）、改善提案は `提案: Feature Request`（効果検証の手順を含める）を利用する。
+   - 恒久対策を深掘りするふりかえりは既存の `反省: Why-Why` テンプレートを使い、バグ・改善テンプレートとは役割を分ける。
    - 小さな改善ならドラフトでも OK。後で整えれば十分です。
 3. 手を動かす
    - `INSTALL.md` の環境構築を済ませ、差分は最小限に。
