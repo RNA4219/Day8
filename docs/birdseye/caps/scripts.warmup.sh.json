@@ -1,0 +1,26 @@
+{
+  "deps_in": [
+    "config/env.example"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-22T09:15:00Z",
+  "id": "scripts/warmup.sh",
+  "maintenance": {
+    "refresh": "API エンドポイントや環境変数を更新した際は config/env.example と合わせて反映し、ヘルスチェック→ウォームアップの順序を崩さない。",
+    "tooling": [
+      "scripts/warmup.sh"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "環境変数が未設定のまま実行するとウォームアップが失敗し、Cold Start が長期化する"
+  ],
+  "role": "automation",
+  "summary": [
+    "core::ヘルスチェック API を叩いてからウォームアップ API を呼び出し Cold Start を短縮する Bash スクリプト。",
+    "orbit::config/env.example の Day8 API プレフィックスを利用し、タイムアウトやペイロードを環境変数で切り替え可能。"
+  ],
+  "tests": [
+    "pytest::tests/scripts/test_warmup_sh.py"
+  ]
+}

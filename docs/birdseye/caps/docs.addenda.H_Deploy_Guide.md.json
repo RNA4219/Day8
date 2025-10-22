@@ -17,7 +17,7 @@
     "Dockerfile",
     "docs/addenda/L_Config_Reference.md"
   ],
-  "generated_at": "2025-10-22T07:33:29Z",
+  "generated_at": "2025-10-22T09:15:00Z",
   "id": "docs/addenda/H_Deploy_Guide.md",
   "maintenance": {
     "refresh": "デプロイフローや release.yml を更新したら ops/04_ops.md と合わせて本文・Birdseye（index→caps→generated_at）を更新する。",
