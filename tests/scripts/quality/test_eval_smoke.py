@@ -45,6 +45,7 @@ STUB_EVALUATOR_SOURCE = """from __future__ import annotations
 import argparse
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -86,9 +87,23 @@ def main(argv: Iterable[str] | None = None) -> int:
     metrics_arg = args.output or os.environ["EVAL_SMOKE_METRICS_PATH"]
     metrics_path = Path(metrics_arg)
     metrics = {
-        "semantic": {"f1": 0.0, "threshold_met": True},
-        "surface": {"rougeL": 0.0, "threshold_met": True},
-        "violations": {"max_severity": severities[-1] if severities else ""},
+        "semantic": {
+            "bert_score": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0,
+                "threshold_met": True,
+            }
+        },
+        "surface": {"rouge1": 0.0, "rougeL": 0.0, "threshold_met": True},
+        "violations": {
+            "counts": {"minor": 0, "major": 0, "critical": 0},
+            "violations": [],
+            "max_severity": severities[-1] if severities else "none",
+        },
+        "overall_pass": True,
+        "needs_review": False,
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
     metrics_path.write_text(json.dumps(metrics), encoding="utf-8")
     return 0
@@ -186,8 +201,9 @@ def test_eval_smoke_pipeline_invokes_stubs(
     assert "rouge" in lines
 
     metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
-    assert metrics["semantic"]["threshold_met"] is True
+    assert metrics["semantic"]["bert_score"]["threshold_met"] is True
     assert metrics["surface"]["threshold_met"] is True
+    assert metrics["overall_pass"] is True
 
 
 def test_eval_smoke_pipeline_with_real_modules(

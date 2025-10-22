@@ -4,10 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Iterable, Mapping, Sequence
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any
 
-_SEVERITY_PRIORITY = {"critical": 3, "major": 2, "minor": 1}
+_SEVERITY_PRIORITY: dict[str, int] = {"critical": 3, "major": 2, "minor": 1}
+_BERT_F1_THRESHOLD = 0.85
+_ROUGE_L_THRESHOLD = 0.70
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -77,31 +81,37 @@ def _mean(values: Iterable[float]) -> float:
     return sum(numbers) / len(numbers) if numbers else 0.0
 
 
-def _evaluate_semantic(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float]:
+def _evaluate_semantic(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float | bool]:
     if not outputs or not references:
-        return {"precision": 0.0, "recall": 0.0, "f1": 0.0}
+        return {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "threshold_met": False,
+        }
     from bert_score import BERTScorer
 
     scorer = BERTScorer(lang="en", rescale_with_baseline=True)
     precisions, recalls, f1s = scorer.score(outputs, references)
-    return {
+    result = {
         "precision": round(_mean(precisions), 4),
         "recall": round(_mean(recalls), 4),
         "f1": round(_mean(f1s), 4),
     }
+    result["threshold_met"] = bool(result["f1"] >= _BERT_F1_THRESHOLD)
+    return result
 
 
-def _evaluate_surface(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float]:
+def _evaluate_surface(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float | bool]:
     if not outputs or not references:
-        return {"rouge1": 0.0, "rougeL": 0.0}
+        return {"rouge1": 0.0, "rougeL": 0.0, "threshold_met": False}
     import evaluate
 
     rouge = evaluate.load("rouge")
     result = rouge.compute(predictions=list(outputs), references=list(references), use_stemmer=True)
-    return {
-        "rouge1": round(float(result.get("rouge1", 0.0)), 4),
-        "rougeL": round(float(result.get("rougeL", 0.0)), 4),
-    }
+    rouge1 = round(float(result.get("rouge1", 0.0)), 4)
+    rouge_l = round(float(result.get("rougeL", 0.0)), 4)
+    return {"rouge1": rouge1, "rougeL": rouge_l, "threshold_met": bool(rouge_l >= _ROUGE_L_THRESHOLD)}
 
 
 def _load_ruleset(path: Path) -> dict[str, Any]:
@@ -185,6 +195,33 @@ def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str
     return {"counts": counts, "violations": violations, "max_severity": max_severity}
 
 
+def _resolve_max_severity(guardrails: Mapping[str, Any]) -> str:
+    raw = guardrails.get("max_severity")
+    if isinstance(raw, str) and raw:
+        return raw
+    counts = guardrails.get("counts", {})
+    for severity in sorted(_SEVERITY_PRIORITY, key=_SEVERITY_PRIORITY.get, reverse=True):
+        value = counts.get(severity) if isinstance(counts, Mapping) else None
+        try:
+            if value is not None and int(value) > 0:
+                return severity
+        except (TypeError, ValueError):
+            continue
+    return "none"
+
+
+def _summarize_outcome(
+    semantic: Mapping[str, Any], surface: Mapping[str, Any], guardrails: Mapping[str, Any]
+) -> tuple[bool, bool, str]:
+    max_severity = _resolve_max_severity(guardrails)
+    semantic_threshold = bool(semantic.get("threshold_met"))
+    surface_threshold = bool(surface.get("threshold_met"))
+    blocking = max_severity == "critical"
+    overall_pass = not blocking and (semantic_threshold or surface_threshold)
+    needs_review = (not overall_pass) and not blocking
+    return overall_pass, needs_review, max_severity
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     bundle = Path(args.bundle) if args.bundle else None
@@ -196,10 +233,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("inputs, expected, output を指定してください")
 
     outputs, references = _collect_pairs(inputs_path, expected_path)
+    semantic = _evaluate_semantic(outputs, references)
+    surface = _evaluate_surface(outputs, references)
+    violations = _evaluate_guardrails(Path(args.ruleset), outputs)
+
+    overall_pass, needs_review, max_severity = _summarize_outcome(
+        semantic, surface, violations
+    )
+    violations = {**violations, "max_severity": max_severity}
+
     metrics = {
-        "semantic": {"bert_score": _evaluate_semantic(outputs, references)},
-        "surface": _evaluate_surface(outputs, references),
-        "violations": _evaluate_guardrails(Path(args.ruleset), outputs),
+        "semantic": {"bert_score": semantic},
+        "surface": surface,
+        "violations": violations,
+        "overall_pass": overall_pass,
+        "needs_review": needs_review,
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
