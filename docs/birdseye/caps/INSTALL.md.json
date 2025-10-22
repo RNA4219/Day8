@@ -5,7 +5,7 @@
   "deps_out": [
     "Makefile"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "2025-11-05T00:00:00Z",
   "id": "INSTALL.md",
   "maintenance": {
     "refresh": "インストール手順を更新したら Birdseye の対象ノードを同じコミットで再収集する。",
@@ -18,6 +18,6 @@
     "導入手順と Birdseye の指し示す依存が乖離すると誤導線が発生する"
   ],
   "role": "setup",
-  "summary": "Day8 を他リポジトリへ導入する際の初期配置と CI 設定手順。",
+  "summary": "Day8 を他リポジトリへ導入する際の初期配置と CI 設定手順。開発用 requirements と評価用 requirements の分離運用も明示する。",
   "tests": []
 }

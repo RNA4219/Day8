@@ -20,6 +20,7 @@
 - `workflow-cookbook/reports/.gitkeep`
 
 セットアップ時はリポジトリ直下で `pip install -r requirements-dev.txt` を実行し、Python 依存を一括導入してください。`workflow-cookbook/scripts/run_ci_tests.py` は `python::root` を自動検出し、同コマンド経由の CI 検証でこの requirements を前提とします。
+品質評価レポートをローカルで再現する場合は、同じ場所で `pip install -r requirements-eval.txt` を追加実行し、BERTScore・ROUGE・PyTorch といった評価専用依存を導入してください。CI ではこのファイルをスキップし、ローカル利用時のみインストールする運用です。
 
 `workflow-cookbook/governance/policy.yaml` は CI が参照するテンプレートです。`governance/` 配下を整備する際は、このディレクトリごとコピーし、`governance/policy.yaml` を最新のポリシーで上書きしてください。`pr_gate` ワークフローは `workflow-cookbook/tools/ci/check_governance_gate.py` を `python tools/ci/check_governance_gate.py` で実行します。デフォルトの作業ディレクトリ（`workflow-cookbook/`）からの呼び出しを成立させるため、`workflow-cookbook/tools/ci/` 配下と、ラッパーとして `tools/ci/check_governance_gate.py` の両方を確実にコピーしてください。
 

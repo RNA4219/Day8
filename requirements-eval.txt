@@ -1,0 +1,5 @@
+bert-score==0.3.13
+evaluate==0.4.1
+rouge-score==0.1.2
+sentencepiece==0.1.99
+torch==2.1.2

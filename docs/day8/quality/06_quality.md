@@ -13,6 +13,7 @@
 - Birdseye 更新時は index → caps の `generated_at` を揃え、付録K の運用指針と差分がないかをチェックする。
 
 ## 自動評価手順
+評価器をローカルで動かす場合は、事前に Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch など評価用依存を導入しておく。
 1. ケース定義を [`workflow-cookbook/EVALUATION.md`](../../../workflow-cookbook/EVALUATION.md) と同期し、入力 YAML の `prompt`/`expected`/`metadata` を整備する。
 2. 推論ログを `quality/pipeline/normalize.py` で前処理したうえで、[付録E: 評価器構成](../../addenda/E_Evaluator_Details.md) に従い BERTScore・ROUGE・ルール判定を実行する。
 3. 生成された `metrics.json` をレビューし、`overall_pass`/`needs_review` を評価ログへ記録する。ルール違反が `critical` の場合は即時にガバナンスへエスカレーションする。

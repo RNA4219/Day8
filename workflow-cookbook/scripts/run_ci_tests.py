@@ -14,6 +14,7 @@ WORKFLOW_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = WORKFLOW_ROOT.parent
 LOG_DIR = WORKFLOW_ROOT / "logs"
 LOG_FILE = LOG_DIR / "test.jsonl"
+OPTIONAL_REQUIREMENTS = {"requirements-eval.txt"}
 
 
 def write_output(had_failures: bool) -> None:
@@ -130,6 +131,12 @@ def gather_python_suites() -> list[tuple[str, Path]]:
 def install_python_deps(directory: Path) -> bool:
     ok = True
     for req in sorted(directory.glob("requirements*.txt")):
+        if req.name in OPTIONAL_REQUIREMENTS:
+            print(
+                "::notice title=tests::Skipping optional requirements file"
+                f" {req.name}",
+            )
+            continue
         result = subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(req)], check=False)
         ok = ok and result.returncode == 0
     if (directory / "pyproject.toml").is_file():
