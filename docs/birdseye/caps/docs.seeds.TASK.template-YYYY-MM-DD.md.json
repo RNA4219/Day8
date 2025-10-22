@@ -1,0 +1,24 @@
+{
+  "deps_in": [
+    "docs/TASKS.md",
+    "docs/seeds/README.md",
+    "workflow-cookbook/TASK.codex.md"
+  ],
+  "deps_out": [],
+  "generated_at": "2025-10-21T23:38:07Z",
+  "id": "docs/seeds/TASK.template-YYYY-MM-DD.md",
+  "maintenance": {
+    "refresh": "テンプレート構成や front matter の必須フィールドに変更が入った際は README と TASKS の要件に合わせて更新し、Birdseye の参照関係を確認する。",
+    "tooling": [
+      "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
+    ]
+  },
+  "public_api": [],
+  "risks": [
+    "テンプレートが古い場合、作成される Task Seed が Day8 ガバナンスや Priority 判定と齟齬を起こす",
+    "front matter の必須フィールドが欠落すると後続のワークフローでメタデータが解釈できない"
+  ],
+  "role": "seeds",
+  "summary": "Day8 Task Seed を作成する際にコピーして使用するテンプレート。front matter・Objective/Scope/Requirements などの必須セクションをサンプル値付きで示す。",
+  "tests": []
+}

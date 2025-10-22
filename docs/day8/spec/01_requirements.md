@@ -20,7 +20,7 @@ Katamari `docs/Katamari_Requirements_v3_ja.md` の章立てを踏襲し、Day8 �
 
 ## 機能要件（FR）
 1. **反省パイプラインの自動実行** — `scripts/birdseye_refresh.py` 等の CI 成果物と連携し、入力ログから Analyzer が指標計算を行い、Reporter が `reports/today.md` を生成する。生成時は [Appendix E Evaluator Details](../../addenda/E_Evaluator_Details.md) のメトリクス閾値を参照する。
-2. **提案成果物の生成** — Reporter がまとめた改善候補は Proposer により Issue 草案（`docs/seeds/TASK.<slug>-YYYY-MM-DD.md`）として保存できる。Draft PR を出す場合も propose-only を厳守し、`workflow-cookbook/CHANGELOG.md` には直接書き込まない。
+2. **提案成果物の生成** — Reporter がまとめた改善候補は Proposer により Issue 草案（`docs/seeds/TASK.<slug>-YYYY-MM-DD.md`）として保存できる。Draft PR を出す場合も propose-only を厳守し、`workflow-cookbook/CHANGELOG.md` には直接書き込まない。Seed 作成時は [docs/seeds/TASK.template-YYYY-MM-DD.md](../seeds/TASK.template-YYYY-MM-DD.md) をコピーし、Day8 ガバナンスの front matter・セクション順序を保つこと。
 3. **自動改変の抑止** — 本番コードや `workflow-cookbook/` 外ディレクトリへの書き込みは禁止。差分は Issue/Draft PR の添付ファイルに限定し、Git 操作は人間レビューを経て適用する。
 4. **サブディレクトリ運用** — `defaults.run.working-directory` 設定を利用し、Collector が `workflow-cookbook/` 配下のログを処理しつつ `reports/`（ルート配下）へ成果物を配置できるようにする。
 
