@@ -10,6 +10,6 @@ type:
 mypy --strict workflow-cookbook
 
 test:
-pytest -q workflow-cookbook/tests
+pytest -q tests workflow-cookbook/tests
 
 check: lint type test

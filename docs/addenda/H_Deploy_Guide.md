@@ -18,11 +18,11 @@ Day8 環境向けのデプロイ手順を開発・Docker・GitHub Actions の 3 
 
 ## Docker デプロイ
 
-Day8 のワークフローをコンテナ化する際は、リポジトリ直下の `Dockerfile` を利用します。`python:3.11-slim` をベースに `requirements-dev.txt` をインストールしたうえで、Day8 リポジトリを `/opt/day8` にコピーし、CI 互換のデフォルトコマンドとして `pytest -q workflow-cookbook/tests` を実行します。
+Day8 のワークフローをコンテナ化する際は、リポジトリ直下の `Dockerfile` を利用します。`python:3.11-slim` をベースに `requirements-dev.txt` をインストールしたうえで、Day8 リポジトリを `/opt/day8` にコピーし、CI 互換のデフォルトコマンドとして `pytest -q tests workflow-cookbook/tests` を実行します。
 
 ### ビルドと検証手順
 1. ルートで `docker build -t day8 .` を実行し、`requirements-dev.txt` の依存が解決できることを確認します。ビルド時に追加の OS パッケージが必要な場合は `Dockerfile` の `apt-get` レイヤへ追記し、`pip install` レイヤを分割し直します。
-2. `docker run --rm day8` を実行し、Day8 CI と同じ `pytest -q workflow-cookbook/tests` が完走することを確認します。失敗した場合はテストログを収集し、Day8 CI の pytest ジョブと差分がないか確認してください。
+2. `docker run --rm day8` を実行し、Day8 CI と同じ `pytest -q tests workflow-cookbook/tests` が完走することを確認します。失敗した場合はテストログを収集し、Day8 CI の pytest ジョブと差分がないか確認してください。
 
 ### 運用メモ
 - `Dockerfile` の `CMD` は pytest を既定としています。アプリケーション起動用途で利用する場合は override するか、`ENTRYPOINT`/`CMD` を適宜差し替えてください。
