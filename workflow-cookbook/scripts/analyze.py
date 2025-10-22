@@ -7,8 +7,9 @@ import json
 import math
 import statistics
 from collections import Counter
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Iterator
 
 StatusMap = dict[str, set[str]]
 
@@ -21,7 +22,33 @@ REPORT: Final[Path] = DEFAULT_REPORT
 ISSUE_OUT: Final[Path] = WORKFLOW_ROOT / "reports" / "issue_suggestions.md"
 REFLECTION_MANIFEST: Final[Path] = WORKFLOW_ROOT / "reflection.yaml"
 
+_REL_LOG = DEFAULT_LOG.relative_to(BASE_DIR)
+_REL_REPORT = DEFAULT_REPORT.relative_to(BASE_DIR)
+_REL_ISSUE = ISSUE_OUT.relative_to(BASE_DIR)
+_REL_MANIFEST = REFLECTION_MANIFEST.relative_to(BASE_DIR)
+
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def _override_paths(root: Path | None) -> Iterator[None]:
+    if root is None:
+        yield
+        return
+    resolved = root.resolve()
+    overrides = {
+        "BASE_DIR": resolved,
+        "LOG": resolved / _REL_LOG,
+        "REPORT": resolved / _REL_REPORT,
+        "ISSUE_OUT": resolved / _REL_ISSUE,
+        "REFLECTION_MANIFEST": resolved / _REL_MANIFEST,
+    }
+    previous = {name: globals()[name] for name in overrides}
+    globals().update(overrides)
+    try:
+        yield
+    finally:
+        globals().update(previous)
 
 
 def _coerce_bool(value: object) -> bool | None:
@@ -532,5 +559,86 @@ def main() -> None:
         issue_output_path.unlink()
 
 
+def cli(argv: list[str] | None = None) -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Analyze workflow logs")
+    parser.add_argument("--root", type=Path, default=None)
+    parser.add_argument("--emit", choices=("report", "samples", "ping"), default="report")
+    parser.add_argument("--focus", default=None)
+    parser.add_argument("--window", default=None)
+    parser.add_argument("--fail-on", choices=("never", "warnings", "errors"), default="never")
+    args = parser.parse_args(argv)
+
+    root = Path(args.root) if args.root else None
+    with _override_paths(root):
+        manifest = load_reflection_manifest()
+        tests, durs, fails, statuses = load_results(manifest=manifest)
+        report_dir = (REPORT if REPORT.is_absolute() else BASE_DIR / REPORT).parent
+        if args.emit == "report":
+            total = len(tests)
+            pass_rate = (total - len(fails)) / total if total else 0.0
+            unique = len(statuses)
+            flaky = sum(1 for vals in statuses.values() if {"pass", "fail"}.issubset(vals))
+            metrics = {
+                "total": total,
+                "failures": len(fails),
+                "pass_rate": pass_rate,
+                "flaky_rate": flaky / unique if unique else 0.0,
+                "duration_p95": p95(durs),
+            }
+            main()
+            if args.focus:
+                focus_slug = args.focus.replace("/", "_")
+                with (report_dir / f"{focus_slug}.json").open("w", encoding="utf-8") as f:
+                    json.dump({**metrics, "focus": args.focus}, f, ensure_ascii=False, indent=2)
+            if args.fail_on in {"warnings", "errors"} and metrics["failures"] > 0:
+                return 1
+            return 0
+        if args.emit == "samples":
+            entries = [
+                {
+                    "name": name,
+                    "duration_ms": duration,
+                    "statuses": sorted(statuses.get(name, set())),
+                }
+                for name, duration in zip(tests, durs)
+            ]
+            if args.window and args.window.isdigit():
+                entries = entries[: int(args.window)]
+            focus_slug = (args.focus or "samples").replace("/", "_")
+            report_dir.mkdir(parents=True, exist_ok=True)
+            with (report_dir / f"samples_{focus_slug}.json").open("w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        "focus": args.focus,
+                        "window": args.window,
+                        "count": len(entries),
+                        "samples": entries,
+                    },
+                    f,
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            return 0
+        if args.emit == "ping":
+            log_path = _resolve_log_path(manifest=manifest)
+            status = "ok" if log_path.exists() else "missing"
+            print(
+                json.dumps(
+                    {
+                        "status": status,
+                        "focus": args.focus,
+                        "log_path": str(log_path),
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            if status != "ok" and args.fail_on in {"warnings", "errors"}:
+                return 1
+            return 0
+    return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(cli())

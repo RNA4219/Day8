@@ -4,6 +4,8 @@ import importlib.util
 import json
 import py_compile
 import statistics
+import subprocess
+import sys
 from importlib.abc import Loader
 from pathlib import Path
 from types import ModuleType
@@ -964,3 +966,98 @@ def test_main_generates_report_when_yaml_unavailable(
 
     report_path = tmp_path / "reports" / "#1.md"
     assert report_path.exists()
+
+
+def _prepare_cli_workspace(tmp_path: Path, *, failing: bool = False) -> Path:
+    root = tmp_path / "workspace"
+    (root / "logs").mkdir(parents=True)
+    entries = [
+        {"name": "alpha", "status": "pass", "duration_ms": 10},
+        {"name": "bravo", "status": "fail" if failing else "pass", "duration_ms": 20},
+    ]
+    log_path = root / "logs" / "test.jsonl"
+    log_path.write_text("\n".join(json.dumps(entry) for entry in entries) + "\n", encoding="utf-8")
+    manifest = root / "reflection.yaml"
+    manifest.write_text(
+        "targets:\n  - name: unit\n    logs: [\"logs/test.jsonl\"]\n",
+        encoding="utf-8",
+    )
+    return root
+
+
+def test_cli_report_honors_fail_on(tmp_path: Path) -> None:
+    root = _prepare_cli_workspace(tmp_path, failing=True)
+    script = WORKFLOW_ROOT / "scripts" / "analyze.py"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--root",
+            str(root),
+            "--emit",
+            "report",
+            "--focus",
+            "latency",
+            "--fail-on",
+            "warnings",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 1
+    report_path = root / "reports" / "today.md"
+    assert report_path.exists()
+    focus_path = root / "reports" / "latency.json"
+    data = json.loads(focus_path.read_text(encoding="utf-8"))
+    assert data["failures"] == 1
+
+
+def test_cli_samples_respects_window(tmp_path: Path) -> None:
+    root = _prepare_cli_workspace(tmp_path)
+    script = WORKFLOW_ROOT / "scripts" / "analyze.py"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--root",
+            str(root),
+            "--emit",
+            "samples",
+            "--focus",
+            "latency",
+            "--window",
+            "1",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    samples_path = root / "reports" / "samples_latency.json"
+    payload = json.loads(samples_path.read_text(encoding="utf-8"))
+    assert payload["count"] == 1
+    assert payload["samples"][0]["name"] == "alpha"
+
+
+def test_cli_ping_reports_status(tmp_path: Path) -> None:
+    root = _prepare_cli_workspace(tmp_path)
+    script = WORKFLOW_ROOT / "scripts" / "analyze.py"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--root",
+            str(root),
+            "--emit",
+            "ping",
+            "--focus",
+            "runtime",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout.strip())
+    assert payload["status"] == "ok"
