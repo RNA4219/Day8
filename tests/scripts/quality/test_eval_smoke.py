@@ -102,6 +102,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         "violations": {
             "counts": {"minor": 0, "major": 0, "critical": 0},
             "max_severity": severities[-1] if severities else "none",
+            "threshold_met": True,
             "violations": [],
         },
         "overall_pass": True,
@@ -206,6 +207,7 @@ def test_eval_smoke_pipeline_invokes_stubs(
     metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     assert metrics["semantic"]["bert_score"]["threshold_met"] is True
     assert metrics["surface"]["threshold_met"] is True
+    assert metrics["violations"]["threshold_met"] is True
     assert metrics["overall_pass"] is True
     assert metrics["needs_review"] is False
     assert "generated_at" in metrics

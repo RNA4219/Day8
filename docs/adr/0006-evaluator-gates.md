@@ -12,7 +12,7 @@
 
 ## 決定
 - Day8 の評価ラインは BERTScore（F1 >= 0.85）、ROUGE-L（>= 0.70）、ルール判定（違反最大重大度 < critical）を組み合わせ、いずれかのスコアが閾値を満たし、かつ重大なルール違反が無い場合に `overall_pass=true` とする。
-- 評価結果は `metrics.json` に `semantic`（BERTScore）、`surface`（ROUGE）、`violations`（ルール判定）の 3 セクションで記録し、Appendix E と同期する。
+- 評価結果は `metrics.json` に `semantic`（BERTScore）、`surface`（ROUGE）、`violations`（ルール判定）の 3 セクションで記録し、各セクションへ `threshold_met` を付与して Appendix E と同期する。
 - Gate 未通過 (`overall_pass=false`) の場合は自動提案を Draft として扱い、ガバナンス承認があるまで公開を停止する。
 - 閾値やルールセットを更新する際は Appendix E / `quality/06_quality.md` / Birdseye index/caps/hot を同一コミットで更新し、本 ADR を変更履歴に明記する。
 
