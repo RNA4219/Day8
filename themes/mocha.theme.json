@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/Chainlit/chainlit/main/schema/theme.schema.json",
   "name": "day8-mocha",
-  "description": "Katamari Mocha のコントラストを Day8 のウォームダーク配色へ寄せたナイトテーマ",
+  "description": "Day8 の夜間レビュー用に暖色トーンで視線負荷を抑え、優先タスクを立体的に示すナイトテーマ",
   "colors": {
     "primary": "#E48D6A",
     "onPrimary": "#1B1320",
