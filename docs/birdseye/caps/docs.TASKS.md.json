@@ -12,10 +12,10 @@
     "docs/adr/0007-proposal-priority-handshake.md",
     "docs/seeds/README.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00002",
   "id": "docs/TASKS.md",
   "maintenance": {
-    "refresh": "Katamari テンプレート（背景/手順/検証ログ/フォローアップ）の更新や Guardrails 差分を反映したら index/caps/hot を同じコミットで再生成する。",
+    "refresh": "Day8 ガバナンスのテンプレート更新や Guardrails 差分を反映したら index/caps/hot を同じコミットで再生成する。",
     "tooling": [
       "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
@@ -25,14 +25,14 @@
   ],
   "role": [
     "core::task-seed-policy",
-    "orbit::katamari-template"
+    "orbit::day8-governance-template"
   ],
   "summary": [
-    "core::Task Seed 作成/更新フローと Katamari テンプレートの要点を定義する運用基準。",
+    "core::Task Seed 作成/更新フローと Day8 ガバナンスが要求するテンプレート運用を定義する基準。",
     "orbit::UPSTREAM ドキュメントと連携しレビュー履歴・差分の参照ハブとなる。"
   ],
   "tests": [
-    "check::Katamari 4 セクションが最新テンプレートと一致しているか確認",
+    "check::Day8 ガバナンスで定義される 4 セクション構成が最新テンプレートと一致しているか確認",
     "check::UPSTREAM 連携リンクが有効か確認"
   ]
 }
