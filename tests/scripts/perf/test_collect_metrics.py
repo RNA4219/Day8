@@ -201,6 +201,23 @@ def test_main_succeeds_when_prometheus_unreachable(
     assert "Failed to collect Prometheus metrics" in captured.err
 
 
+def test_collect_chainlit_metrics_parses_info_metrics_line(
+    collect_metrics_module, tmp_path: Path
+) -> None:
+    log_path = tmp_path / "chainlit.log"
+    log_path.write_text(
+        "INFO metrics={\"day8_jobs_processed_total\": 2, \"day8_jobs_failed_total\": 1}\n",
+        encoding="utf-8",
+    )
+
+    metrics = collect_metrics_module.collect_chainlit_metrics(log_path)
+
+    assert metrics == {
+        "day8_jobs_processed_total": 2.0,
+        "day8_jobs_failed_total": 1.0,
+    }
+
+
 def test_main_writes_output_file_when_requested(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
