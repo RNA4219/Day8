@@ -4,12 +4,13 @@ info:
   version: 0.1.0-draft
   description: >-
     Day8 の運用監視レイヤーが公開する `/healthz` と `/metrics` のコントラクトを定義
-    します。Katamari `M1_Metrics_Healthz_ADR` を引き継ぎ、軽量ヘルスチェックと
-    Prometheus 互換メトリクスを提供するための最小仕様です。
-    
+    します。Day8 Observability Council が承認した M1 フェーズのガードレールを反映し、
+    軽量ヘルスチェックと Prometheus 互換メトリクスを提供するための最小仕様です。
+
     計画中 API: 現時点 (2025-10-21) では追加エンドポイントは検討中のみで確定なし。
-    新規エンドポイントの審議は `docs/addenda/M1_Metrics_Healthz_ADR.md` と
-    `docs/day8/ops/04_ops.md` の更新で追跡します。
+    新規エンドポイントの審議は Day8 Observability Addendum
+    (`docs/addenda/M1_Metrics_Healthz_ADR.md`) と `docs/day8/ops/04_ops.md` の更新で追跡
+    します。
   termsOfService: https://example.com/terms
   contact:
     name: Day8 Observability Squad
@@ -128,8 +129,8 @@ components:
         revision:
           type: string
           description: >-
-            デプロイ中の Git コミットハッシュまたはビルド番号。Katamari 準拠で 7+ 桁
-            の 16 進文字列を推奨。
+            デプロイ中の Git コミットハッシュまたはビルド番号。Day8 リリース管理基準で
+            求められる 7 文字以上の 16 進文字列を推奨。
         generated_at:
           type: string
           format: date-time
