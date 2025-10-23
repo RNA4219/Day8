@@ -23,12 +23,14 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
-def _resolve_path(raw: str | None, bundle: Path | None, default_name: str) -> Path | None:
+def _resolve_path(
+    raw: str | None, bundle: Path | None, default_name: str, *, allow_missing: bool = False
+) -> Path | None:
     if raw:
         return Path(raw)
     if bundle and bundle.is_dir():
         candidate = bundle / default_name
-        if candidate.exists():
+        if allow_missing or candidate.exists():
             return candidate
     return None
 
@@ -234,7 +236,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     inputs_path = _resolve_path(args.inputs, bundle, "inputs.jsonl")
     expected_path = _resolve_path(args.expected, bundle, "expected.jsonl")
-    output_path = _resolve_path(args.output, bundle, "metrics.json")
+    output_path = _resolve_path(args.output, bundle, "metrics.json", allow_missing=True)
     if not inputs_path or not expected_path or not output_path:
         raise SystemExit("inputs, expected, output を指定してください")
 
