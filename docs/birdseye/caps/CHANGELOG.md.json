@@ -6,7 +6,7 @@
     "docs/Release_Checklist.md",
     "workflow-cookbook/CHANGELOG.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "CHANGELOG.md",
   "maintenance": {
     "refresh": "Day8 固有の差分を追記したら、workflow-cookbook/CHANGELOG.md と Release Checklist を確認し、Birdseye index/caps/hot の generated_at を同じコミットで揃える。",

@@ -10,15 +10,10 @@
   ],
   "deps_in": [
     "README.md",
-    "workflow-cookbook/RUNBOOK.md",
-    "docs/ROADMAP_AND_SPECS.md",
-    "workflow-cookbook/GUARDRAILS.md"
+    "workflow-cookbook/RUNBOOK.md"
   ],
-  "deps_out": [
-    "docs/birdseye/index.json",
-    "docs/birdseye/hot.json"
-  ],
-  "generated_at": "00001",
+  "deps_out": [],
+  "generated_at": "00003",
   "id": "workflow-cookbook/docs/birdseye/index.json",
   "maintenance": {
     "cadence": "workflow-cookbook 側 Birdseye 更新または Guardrails 差分検知時（目安: 1 スプリント以内）",

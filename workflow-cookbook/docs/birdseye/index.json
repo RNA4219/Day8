@@ -277,96 +277,96 @@
       "workflow-cookbook/docs/birdseye/index.json"
     ]
   ],
-  "generated_at": "00002",
+  "generated_at": "00003",
   "nodes": {
     "scripts/birdseye_refresh.py": {
       "caps": "workflow-cookbook/docs/birdseye/caps/scripts.birdseye_refresh.py.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "script"
     },
     "workflow-cookbook/BLUEPRINT.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/BLUEPRINT.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "requirements"
     },
     "workflow-cookbook/CHANGELOG.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/CHANGELOG.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "history"
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/CHECKLISTS.md.json",
-      "mtime": "00002",
+      "mtime": "00003",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/EVALUATION.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "quality"
     },
     "workflow-cookbook/GUARDRAILS.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/GUARDRAILS.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "policy"
     },
     "workflow-cookbook/HUB.codex.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/HUB.codex.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "navigation"
     },
     "workflow-cookbook/README.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/README.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "overview"
     },
     "workflow-cookbook/RUNBOOK.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/RUNBOOK.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "operations"
     },
     "workflow-cookbook/SECURITY.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/SECURITY.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "security"
     },
     "workflow-cookbook/TASK.codex.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/TASK.codex.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "template"
     },
     "workflow-cookbook/docs/IN-20250115-001.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.IN-20250115-001.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "incident"
     },
     "workflow-cookbook/docs/INCIDENT_TEMPLATE.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.INCIDENT_TEMPLATE.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "template"
     },
     "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "collection"
     },
     "workflow-cookbook/docs/birdseye/index.json": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.birdseye.index.json.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "index"
     },
     "workflow-cookbook/governance/policy.yaml": {
       "caps": "workflow-cookbook/docs/birdseye/caps/governance.policy.yaml.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "governance"
     },
     "workflow-cookbook/governance/prioritization.yaml": {
       "caps": "workflow-cookbook/docs/birdseye/caps/governance.prioritization.yaml.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "governance"
     },
     "workflow-cookbook/tools/codemap/README.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/tools.codemap.README.md.json",
-      "mtime": "00001",
+      "mtime": "00003",
       "role": "guide"
     }
   }
