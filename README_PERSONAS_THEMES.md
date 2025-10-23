@@ -1,6 +1,6 @@
 # Day8 Personas & Themes ガイド
 
-Katamari `README_PERSONAS_THEMES.md` をベースに、Day8 へ導入する Chainlit テーマと今後拡張するペルソナ運用ルールを集約します。Appendix B (UI Mock) と Appendix C (Persona Schema) を主導線とし、Birdseye と TOML 設定で即時適用できる構成を維持します。
+Day8 の運用で利用する Chainlit テーマとペルソナ管理ルールを集約したハブです。Appendix B (UI Mock) と Appendix C (Persona Schema) を主導線とし、Birdseye と TOML 設定を併用して Day8 独自のテーマ適用とペルソナ拡張を一貫管理します。
 
 ## 1. Chainlit 設定
 
@@ -40,9 +40,9 @@ public = "public"
 
 ## 4. Appendix 参照
 
-- **Appendix B:** UI Mock でテーマ別の画面バランスを確認。
-- **Appendix C:** ペルソナスキーマの必須フィールドと UI 要件を再確認。
-- **Appendix K:** アクセシビリティ基準 (High Contrast) を満たしているか検証。
+- **Appendix B:** [docs/addenda/B_UI_Mock.md](docs/addenda/B_UI_Mock.md) でテーマ別の画面バランスを確認。
+- **Appendix C:** [docs/addenda/C_Persona_Schema.md](docs/addenda/C_Persona_Schema.md) でペルソナスキーマの必須フィールドと UI 要件を再確認。
+- **Appendix K:** [docs/addenda/K_Accessibility_UX.md](docs/addenda/K_Accessibility_UX.md) の基準に従い High Contrast 運用を検証。
 
 ## 5. Birdseye 連携
 
