@@ -3,11 +3,15 @@
 `workflow-cookbook/SAFETY.md` を一次ハブ、`docs/addenda/G_Security_Privacy.md` を補助付録として参照し、Day8 における安全配慮・倫理判断の動線をまとめる。自動化は検知とレポートに限定し、本番影響のある判断は人間責任者が必ず確認する。
 
 ## 1. ドキュメント体系
-- **一次ハブ**: [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) — Katamari 本家と整合した安全審査フレーム。
-- **セキュリティ接続**: [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) / [docs/day8/security/05_security.md](day8/security/05_security.md) — 技術的な緩和策とチェックリスト。
-- **一次切り分け**: [docs/addenda/J_Runbook.md](addenda/J_Runbook.md) — Day8 代表事象の一次切り分けと初動整理。
-- **付録**: [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) — キー管理・ログ衛生・通信保護の運用ノート。
-- **索引用**: [docs/ROADMAP_AND_SPECS.md](ROADMAP_AND_SPECS.md) / [docs/README.md](README.md) — Birdseye 更新と cross-doc 整合のエントリポイント。
+Day8 Safety ハブは一次ハブから周辺資料へ「Safety → Security → Runbook → Privacy → Index」の順で辿る。
+
+1. **一次ハブ**: [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) — Day8 の安全審査フローとエスカレーション基準を定義する中心資料。
+2. **セキュリティ接続**: [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) / [docs/day8/security/05_security.md](day8/security/05_security.md) — 技術的な緩和策とチェックリストを束ね、安全レビューとセキュリティレビューを連携させる。
+3. **一次切り分け**: [docs/addenda/J_Runbook.md](addenda/J_Runbook.md) — Day8 代表事象の一次切り分けと初動整理を提供し、緊急対応へ橋渡しする。
+4. **付録**: [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) — キー管理・ログ衛生・通信保護の運用ノートを集約し、Runbook で定義した措置の詳細を補強する。
+5. **索引用**: [docs/ROADMAP_AND_SPECS.md](ROADMAP_AND_SPECS.md) / [docs/README.md](README.md) — Birdseye 更新と cross-doc 整合を確認するエントリポイントとして、上記資料の索引と改訂履歴を追跡する。
+
+[^upstream]: 旧 Katamari Safety ガイドライン由来の原則は Day8 手順へ移植済み。外部差分は `workflow-cookbook/HUB.codex.md` の注記で追跡する。
 
 ## 2. フェイルセーフ
 - 自動化は **観察→レポート→Issue 起票** に限定し、`src/**` / `infrastructure/**` / `secrets/**` の直接変更は禁止。

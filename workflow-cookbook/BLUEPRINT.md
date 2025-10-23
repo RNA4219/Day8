@@ -10,7 +10,9 @@ next_review_due: 2025-11-14
 
 ## 1. 目的 / Purpose
 
-- Day8 と Katamari の要求を統合し、Collector→Analyzer→Reporter→Proposer パイプラインの基準線を共有する。
+Day8 の Collector→Analyzer→Reporter→Proposer パイプラインを運用する全ロールが同じ前提で意思決定できるように基準線を定義する。
+
+- Day8 の観測要件とガバナンス制約を統合し、Collector→Analyzer→Reporter→Proposer パイプラインの基準線を共有する。
 - Guardrails・RUNBOOK・EVALUATION へ展開する前に、課題背景・制約・成功指標を明文化し、差分検出時の参照点とする。
 - Birdseye・ROADMAP_AND_SPECS の索引更新時に参照し、運用と設計の同期を保つ。
 
@@ -27,7 +29,7 @@ next_review_due: 2025-11-14
 ## 3. スコープ In-Out / Scope In-Out
 
 - **In:** Day8 ログとイベントの収集、Analyzer の変換ロジック、Reporter 出力、Proposer の propose-only 運用、Birdseye・ROADMAP_AND_SPECS とのトレーサビリティ。
-- **Out:** 実装コード詳細（`scripts/`・`tools/` の具体コマンド）、Katamari 以外の運用環境、個別チームのリソース配分。
+- **Out:** 実装コード詳細（`scripts/`・`tools/` の具体コマンド）、Day8 自動化パイプラインの範囲外にある運用環境、個別チームのリソース配分。
 
 ## 4. システム像 / System Image
 
@@ -60,7 +62,7 @@ flowchart LR
 
 | フェーズ | Input | Output | バリデーション |
 | --- | --- | --- | --- |
-| Collector | Katamari 監視イベント (JSONL) | 正規化 JSONL (`workflow-cookbook/logs/incoming/*.jsonl`) | `docs/adr/0002-jsonl-event-contract.md` | 
+| Collector | Day8 監視イベント (JSONL) | 正規化 JSONL (`workflow-cookbook/logs/incoming/*.jsonl`) | `docs/adr/0002-jsonl-event-contract.md` |
 | Analyzer | 正規化 JSONL | 解析済み JSONL (`workflow-cookbook/logs/analyzed/*.jsonl`) と特徴量 CSV | CI JSON Schema Validator (`workflow-cookbook/scripts/run_ci_tests.py`) |
 | Reporter | 解析済み JSONL/CSV | 日次レポート Markdown (`workflow-cookbook/reports/*.md`) | `docs/day8/quality/06_quality.md` の QA チェックリスト |
 | Proposer | 日次レポート・差分提案 | `governance/policy.yaml` への Pull Request 提案 | `workflow-cookbook/TASK.codex.md` の propose-only ガイド |

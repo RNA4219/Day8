@@ -30,6 +30,7 @@
     "orbit::problem-scope"
   ],
   "summary": [
+    "core::Day8 の Collector→Analyzer→Reporter→Proposer パイプラインを運用する全ロールが同じ前提で意思決定できる基準線を定義。",
     "core::Collector→Analyzer→Reporter→Proposer フローの目的・SLO・フェイルセーフを定義。",
     "core::I/O契約とガードレールを RUNBOOK/EVALUATION へ橋渡しする。",
     "orbit::Birdseye・ROADMAP_AND_SPECS 更新動線の起点。"
