@@ -5,7 +5,7 @@
 - Steward: Day8 Quality WG
 
 ## 目的
-Katamari 付録Eの評価器設計を Day8 の自動評価ラインへ適用し、BERTScore・ROUGE・ルール判定で構成される複合スコアリングの前提、入力形式、出力解釈を一元化する。品質レビューで参照すべき運用上の注意点を整理し、Birdseye / Guardrails での差分追跡に備える。
+Day8 品質 WG が運用する自動評価ライン（Evaluation Line; E-Line）における BERTScore・ROUGE・ルール判定から成る複合スコアリングの前提条件、入力形式、出力解釈を一元化する。`docs/day8/quality/06_quality.md` に記載された品質評価プロセスや `workflow-cookbook/EVALUATION.md` のケース定義との連携背景を明示し、Birdseye / Guardrails での差分追跡を行う際の参照点を整理する。
 
 ## コンポーネント概要
 | コンポーネント | 役割 | 主要設定 | 入力 | 出力 |
@@ -37,7 +37,7 @@ Katamari 付録Eの評価器設計を Day8 の自動評価ラインへ適用し�
 ## 連携ドキュメント
 - [ADR 0006: Evaluator ゲートとハイブリッド評価ライン](../adr/0006-evaluator-gates.md)
 - [Day8 品質評価プロセス](../day8/quality/06_quality.md)
-- [Katamari Evaluation Baseline](../../workflow-cookbook/EVALUATION.md)
+- [Day8 評価ケース定義 (workflow-cookbook/EVALUATION.md)](../../workflow-cookbook/EVALUATION.md)
 - [Appendix I: Day8 テストケース観点](I_Test_Cases.md)
 
 ## 改訂ガイド
