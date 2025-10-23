@@ -1,14 +1,14 @@
 # Day8 Theme Catalog
 
-Katamari 版 `themes/` をベースに、Day8 のブランドカラーと運用要件へ最適化したテーマセットです。Chainlit 1.x の `theme_path` へ `.theme.json` を指定すると UI 全体へ即時適用されます。
+Day8 のテーマセットは、ブランド体験とオペレーション効率の両立を目的にチューニングした UI プリセットです。各テーマは Day8 の評価ワークフローとペルソナ導線を前提に配色・奥行きを再構成しており、Chainlit 1.x の `theme_path` へ `.theme.json` を指定するだけで適用できます。
 
 ## プリセット一覧
 
 | ファイル | 説明 | アクセント | 想定シーン |
 | --- | --- | --- | --- |
-| `classic.theme.json` | Katamari Classic を Day8 ロゴブルーへ合わせた標準テーマ。最小限の変更で Katamari 互換運用を継続できます。 | `#1F6FEB` | デフォルト UI、オンボーディング、Docs 共有 |
-| `mocha.theme.json` | ナイトモードを前提にウォームトーンへ再調整。Evaluator/Reporter の夜間レビューで視認性を確保します。 | `#E48D6A` | 夜間レビュー、低照度環境 |
-| `highcontrast.theme.json` | Appendix K の AA コントラスト基準を満たすアクセシビリティ特化パック。主要操作の輪郭を強調します。 | `#0EA5E9` | アクセシビリティレビュー、投影資料 |
+| `classic.theme.json` | Day8 のロゴブルーを軸に情報密度の高い画面でも視線誘導しやすいよう設計したオールラウンダー。 | `#1F6FEB` | デフォルト UI、オンボーディング、Docs 共有 |
+| `mocha.theme.json` | 夜間稼働するレビューチーム向けにウォームダークで目の疲労を軽減し、ハイライトの温度差で優先度を伝える構成。 | `#E48D6A` | 夜間レビュー、低照度環境 |
+| `highcontrast.theme.json` | Appendix K 準拠で Day8 の操作ハイライトを強調し、色覚多様性にも配慮したアシスト重視のセット。 | `#0EA5E9` | アクセシビリティレビュー、投影資料 |
 
 ## 適用手順
 

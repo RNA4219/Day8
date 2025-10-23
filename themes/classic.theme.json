@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/Chainlit/chainlit/main/schema/theme.schema.json",
   "name": "day8-classic",
-  "description": "Katamari Classic をベースに Day8 ロゴカラー (#1F6FEB) へ合わせた標準テーマ",
+  "description": "Day8 のコアブランドブルーを中心に、評価ダッシュボードでも集中を保てるようコントラストを整えたベーステーマ",
   "colors": {
     "primary": "#1F6FEB",
     "onPrimary": "#F8FAFC",
