@@ -50,6 +50,12 @@ def collect_prometheus_metrics(
         normalized_metric = _normalize_prometheus_metric_name(metric)
         if not normalized_metric.startswith(metric_prefix):
             continue
+        name_end = len(metric)
+        for delimiter in ("{", "["):
+            position = metric.find(delimiter)
+            if position != -1:
+                name_end = min(name_end, position)
+        base_name = metric[:name_end]
         try:
             numeric_value = float(value)
         except ValueError:
