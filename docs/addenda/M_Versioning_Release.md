@@ -1,6 +1,6 @@
 # Appendix M — Versioning & Release Operations
 
-Day8 のバージョニングは Katamari 全体の semver ポリシーを継承しつつ、propose-only 運用と CI ドキュメント同期を重視します。本付録はリリース判定の根拠を整理し、`workflow-cookbook/CHECKLISTS.md` の Release セクションと整合するための参照ガイドです。
+Day8 はワークフロー自動化と公開インターフェースの整合性を守るため、プロジェクト単体でセマンティックバージョニング (SemVer) を採用しています。CI の完走とドキュメント同期を Release 判定の基準とし、`docs/Release_Checklist.md` および `workflow-cookbook/CHECKLISTS.md` の Release セクションと相互に参照しながら、バージョン引き上げの根拠を明確化します。本付録はその判断材料を集約したガイドです。
 
 ## 1. セマンティックバージョニング方針
 - **MAJOR (`vX.0.0`)**: 後方互換性を壊す変更。Day8 では CLI/JSON 出力・ガバナンスポリシー・主要ワークフローに破壊的変更が含まれる場合のみ該当。PR 冒頭で互換性対策（feature flag や deprecation window）を明記し、ガバナンス承認を必須とする。
