@@ -1,6 +1,8 @@
 # Day8 セキュリティレビュー チェックリスト
 
-Katamari の `docs/Security_Review_Checklist.md` を Day8 の運用と用語へ合わせて再編したチェックリストです。`docs/day8/security/05_security.md` の審査手順と Appendix G（`docs/addenda/G_Security_Privacy.md`）で定義された運用ノートを補完し、PR 審査やリリース判定で Secrets / CORS / Rate limit / OAuth / 依存性スキャンの整合を即座に確認できる単一ページを提供します。
+Day8 では Guardrails で定義された propose-only 運用を維持するため、Secrets / CORS / Rate limit / OAuth / 依存性スキャンの 5 つを共通の審査ラインとして扱います。本チェックリストは Day8 のレビュー体制に合わせて編成した基準を束ね、変更提案の段階で安全面の抜け漏れを抑止するための入口となります。
+
+`docs/day8/security/05_security.md` の審査手順と Appendix G（`docs/addenda/G_Security_Privacy.md`）で定義された運用ノートを補完し、PR 審査やリリース判定で上記 5 項目の整合を即座に確認できる単一ページを提供します。
 
 ## 利用手順
 1. 審査対象の変更点を確認したら、本チェックリストの対象セクションをすべて開き、該当項目を順に確認してください。
