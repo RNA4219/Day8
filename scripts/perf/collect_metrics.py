@@ -126,11 +126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         chainlit_metrics = collect_chainlit_metrics(args.chainlit_log, metric_prefix=args.metric_prefix)
 
     merged = _merge_metrics(prom_metrics, chainlit_metrics)
-
     missing = sorted(metric for metric in REQUIRED_METRICS if metric not in merged)
-    if missing:
-        print(f"Missing required metrics: {', '.join(missing)}", file=sys.stderr)
-        raise SystemExit(1)
 
     output = {
         "prometheus": prom_metrics,
@@ -142,6 +138,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.output is not None:
         args.output.write_text(f"{formatted}\n", encoding="utf-8")
+
+    if missing:
+        print(f"Missing required metrics: {', '.join(missing)}", file=sys.stderr)
+        raise SystemExit(1)
 
     return 0
 

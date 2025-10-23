@@ -121,6 +121,43 @@ def test_main_fails_when_required_metric_missing(
     assert exc_info.value.code == 1
     captured = capsys.readouterr()
     assert "Missing required metrics" in captured.err
+    payload = json.loads(captured.out)
+    assert payload == {
+        "prometheus": prom_metrics,
+        "chainlit": chainlit_metrics,
+        "metrics": {**prom_metrics, **chainlit_metrics},
+    }
+
+
+def test_main_writes_output_file_when_missing_metric(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {"day8_app_boot_timestamp": 1.0}
+    chainlit_metrics: Dict[str, float] = {}
+
+    _configure_collectors(monkeypatch, collect_metrics_module, prom_metrics, chainlit_metrics)
+
+    output_path = tmp_path / "metrics.json"
+
+    with pytest.raises(SystemExit) as exc_info:
+        collect_metrics_module.main(
+            _prepare_args(tmp_path, ["--output", str(output_path)])
+        )
+
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert "Missing required metrics" in captured.err
+    payload = json.loads(captured.out)
+    expected = {
+        "prometheus": prom_metrics,
+        "chainlit": chainlit_metrics,
+        "metrics": {**prom_metrics, **chainlit_metrics},
+    }
+    assert payload == expected
+    assert json.loads(output_path.read_text()) == expected
 
 
 def test_main_writes_output_file_when_requested(
