@@ -1,6 +1,6 @@
 # Appendix G: セキュリティ & プライバシー（Day8 移植版）
 
-Katamari Appendix G を Day8 の現行運用とツール構成へ合わせて再編したリファレンス。`workflow-cookbook/SECURITY.md` と `docs/day8/security/05_security.md` を補完し、キーや認証情報の扱いから監査ログ・データ保持・通信保護の実装ノートを 1 箇所で確認できるようにする。
+Day8 のセキュリティ / プライバシー運用を Appendix G 形式で集約したリファレンス。`workflow-cookbook/SECURITY.md` と `docs/day8/security/05_security.md` を補完し、Day8 Vault を含む秘密管理や監査ログ・データ保持・通信保護の実装ノートを 1 箇所で確認できるようにする。Day8 Vault のオペレーション詳細は [docs/day8/ops/04_ops.md](../day8/ops/04_ops.md) を参照。
 
 ## 0. ハブ & 参照順
 - **一次ハブ**: [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md)（承認プロセス・例外記録）、[workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md)（倫理/安全配慮）。
@@ -10,7 +10,7 @@ Katamari Appendix G を Day8 の現行運用とツール構成へ合わせて再
 ## 1. キー管理
 - **保管ポリシー**: Git トラッキング禁止。`secrets/` テンプレートはプレースホルダのみ残し、実値は Day8 Vault（環境変数注入）で管理。
 - **ローテーション**: 90 日サイクル。更新時は `workflow-cookbook/SECURITY.md` の「キー更新ワークフロー」を起票し、Birdseye Hot リストへ暫定エントリを追加して監視する。
-- **共有手順**: 権限所有者のみ。共有チャネルは Guardrails 承認済み（Katamari KeySafe）に限定し、転送ログを `workflow-cookbook/logs/` に保管。
+- **共有手順**: 権限所有者のみ。共有チャネルは Guardrails 承認済みの Day8 Vault セキュアワークスペースに限定し、転送ログを `workflow-cookbook/logs/` に保管。
 - **デリバリ**: CI/CD へ渡す際は GitHub Encrypted Secrets と OIDC フェデレーションを優先し、自己ホスト Runner は禁止。
 
 ## 2. ログ衛生
