@@ -70,4 +70,4 @@ report:
 ## 評価器ロードマップ
 - 現行: Heuristic Evaluator を標準化し、`metrics: [pass_rate, duration_p95, flaky_rate]` を必須評価とする。
 - 短期: [Appendix E: Evaluator 詳細](../../addenda/E_Evaluator_Details.md) の Hybrid Evaluator（LLM + Rule）の PoC を、Persona 毎にゴールデンシナリオを追加して検証する。
-- 中期: Katamari Evaluator SDK の導入準備として、`docs/addenda/M_Versioning_Release.md` に沿ったセマンティックバージョニングと互換 API を整備し、Birdseye Caps を用いた依存追跡を強化する。
+- 中期: Day8 Evaluation Platform のロードマップに合わせて、`docs/addenda/M_Versioning_Release.md` に沿ったセマンティックバージョニングと互換 API を維持しつつ、`docs/day8/quality/06_quality.md` に定義した評価ワークフロー要件と互換レイヤーを整備し、Birdseye Caps を用いた依存追跡を強化する。
