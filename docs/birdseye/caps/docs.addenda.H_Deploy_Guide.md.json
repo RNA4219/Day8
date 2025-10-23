@@ -19,7 +19,7 @@
     "docs/addenda/L_Config_Reference.md",
     "docs/day8/perf/03_performance.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "docs/addenda/H_Deploy_Guide.md",
   "maintenance": {
     "refresh": "デプロイフローや release.yml を更新したら ops/04_ops.md と合わせて本文・Birdseye（index→caps→generated_at）を更新する。",

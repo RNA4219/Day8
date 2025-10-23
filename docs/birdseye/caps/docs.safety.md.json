@@ -4,14 +4,9 @@
     "docs/Security_Review_Checklist.md"
   ],
   "deps_out": [
-    "workflow-cookbook/SAFETY.md",
-    "workflow-cookbook/SECURITY.md",
-    "docs/addenda/J_Runbook.md",
-    "docs/addenda/G_Security_Privacy.md",
-    "docs/ROADMAP_AND_SPECS.md",
-    "docs/README.md"
+    "workflow-cookbook/SAFETY.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "docs/safety.md",
   "maintenance": {
     "refresh": "安全ポリシーや参照順が変わったら Birdseye の参照先を Safety→Security→Runbook→Privacy→Index の順で更新し、関連ガードレール文書と workflow-cookbook/SAFETY.md を整合させる。",

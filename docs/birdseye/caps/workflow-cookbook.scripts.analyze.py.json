@@ -13,7 +13,7 @@
   "deps_out": [
     "docs/adr/0005-reflection-manifest.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "workflow-cookbook/scripts/analyze.py",
   "maintenance": {
     "refresh": "ログフォーマットや出力パスが変わったら reflection.yaml と併せて更新。",

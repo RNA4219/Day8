@@ -3,7 +3,7 @@
     "docs/seeds/README.md"
   ],
   "deps_out": [],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "docs/seeds/TASK.template-YYYY-MM-DD.md",
   "maintenance": {
     "refresh": "テンプレート構成や front matter の必須フィールドに変更が入った際は README と TASKS の要件に合わせて更新し、Birdseye の参照関係を確認する。",

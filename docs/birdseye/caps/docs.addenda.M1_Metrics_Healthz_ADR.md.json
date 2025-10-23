@@ -17,7 +17,7 @@
   "deps_out": [
     "scripts/perf/collect_metrics.py"
   ],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "docs/addenda/M1_Metrics_Healthz_ADR.md",
   "maintenance": {
     "refresh": "Day8 の M1 ADR や MetricsRegistry 実装が更新されたら、本 addendum の計画・タイムラインを見直し、ops/roadmap/checklist 反映と同時に Birdseye を再同期する。",

@@ -17,7 +17,7 @@
   "deps_out": [
     "themes/CATALOG.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00003",
   "id": "README_PERSONAS_THEMES.md",
   "maintenance": {
     "refresh": "テーマやペルソナを追加したら TOML 設定・Appendix B/C/K とのリンクを更新し、Birdseye index/hot/caps の generated_at を同期する。",
