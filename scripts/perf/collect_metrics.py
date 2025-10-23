@@ -73,9 +73,15 @@ def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PRE
             if start == -1 or end == -1 or start >= end:
                 continue
             try:
-                record = json.loads(raw_line[start : end + 1])
+                fallback_record = json.loads(raw_line[start : end + 1])
             except json.JSONDecodeError:
                 continue
+            if isinstance(fallback_record, Mapping) and not any(
+                key in fallback_record for key in ("metric", "name", "metrics")
+            ):
+                record = {"metrics": fallback_record}
+            else:
+                record = fallback_record
         for metric, value in _iter_metric_entries(record):
             if not metric.startswith(metric_prefix):
                 continue
