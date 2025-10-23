@@ -5,10 +5,10 @@
   "deps_out": [
     "docs/FORK_NOTES.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00002",
   "id": "docs/UPSTREAM_WEEKLY_LOG.md",
   "maintenance": {
-    "refresh": "週次レビュー後に最新週の行を追記し、未完了の追加アクションが残っていないか確認する。",
+    "refresh": "週次レビュー後に最新週の行を追記し、Day8 起点の同期手順で未完了の追加アクションが残っていないか確認する。",
     "tooling": [
       "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
@@ -19,6 +19,6 @@
     "Birdseye のリンクが古い場合に索引から最新ログへ辿れなくなる"
   ],
   "role": "log",
-  "summary": "Day8 と Katamari の Upstream 同期履歴を ISO 週次で記録するテンプレート。",
+  "summary": "Day8 を起点とした upstream 同期履歴を ISO 週次で記録するテンプレート。",
   "tests": []
 }
