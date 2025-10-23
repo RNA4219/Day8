@@ -52,8 +52,10 @@ from typing import Iterable
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--ruleset", required=True)
+    parser.add_argument("--inputs")
+    parser.add_argument("--expected")
     parser.add_argument("--output")
-    parser.add_argument("inputs", nargs="*")
+    parser.add_argument("extras", nargs="*")
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
@@ -72,6 +74,10 @@ def main(argv: Iterable[str] | None = None) -> int:
     content = rules_path.read_text(encoding="utf-8")
     severities = _collect_severities(content)
 
+    if args.inputs is None:
+        raise AssertionError("--inputs must be provided")
+    if args.expected is None:
+        raise AssertionError("--expected must be provided")
     if args.output is None:
         raise AssertionError("--output must be provided")
 
@@ -80,6 +86,8 @@ def main(argv: Iterable[str] | None = None) -> int:
     with record_path.open("a", encoding="utf-8") as stream:
         stream.write(f"ruleset={rules_path}\\n")
         stream.write("severities=" + ",".join(severities) + "\\n")
+        stream.write(f"inputs={args.inputs}\\n")
+        stream.write(f"expected={args.expected}\\n")
         stream.write("bert_score\\n")
         stream.write("rouge\\n")
 
@@ -201,6 +209,10 @@ def test_eval_smoke_pipeline_invokes_stubs(
     assert lines[0] == "normalize"
     severity_line = next(line for line in lines if line.startswith("severities="))
     assert severity_line == "severities=minor,major,critical"
+    inputs_line = next(line for line in lines if line.startswith("inputs="))
+    expected_line = next(line for line in lines if line.startswith("expected="))
+    assert inputs_line.endswith("inputs.jsonl")
+    assert expected_line.endswith("expected.jsonl")
     assert "bert_score" in lines
     assert "rouge" in lines
 
