@@ -1,6 +1,8 @@
 # Day8 Architecture Decision Records
 
-Day8 の設計判断を追跡するための ADR 集約ディレクトリです。Collector / Analyzer / Reporter などの主要コンポーネントについて、Katamari で策定された方針を Day8 に適合させた記録を配置します。
+Day8 の設計判断を継続的に集約する ADR ディレクトリです。Collector / Analyzer / Reporter などの主要コンポーネントについて、Day8 の運用で採択した方針とその根拠を横断的に参照できるよう整理しています。
+
+> 補足: 旧称「Katamari」で記録された経緯が必要な場合は Appendix 系資料を参照してください。本 README では Day8 で確定した判断を一次情報として扱います。
 
 ## 目次
 

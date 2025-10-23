@@ -6,9 +6,9 @@
 - **関連チケット/タスク**: docs/TASKS.md#architecture, workflow-cookbook/CHECKLISTS.md#release
 
 ## 背景
-- Katamari では CI ログ収集 → 解析 → レポート生成を分離した 3 層構成を採用し、責務ごとにフォールトアイソレーションを行っていた。
-- Day8 でも workflow-cookbook で複数のスクリプトと GitHub Actions が協調するため、Collector が生成する JSONL ログの正規化と Analyzer の計算ロジック、Reporter の出力を混在させると保守コストが高まる。
-- リポジトリ内では `docs/day8/design/03_architecture.md` が Collector → Analyzer → Reporter → Proposer → Governance の流れを提示しているが、決定根拠が散在しており Birdseye でのトレースが困難だった。
+- Day8 の GitHub Actions（`test.yml` / `reflection.yml`）と workflow-cookbook スクリプトは、CI 実行ログを `workflow-cookbook/logs/` に集約し、Analyzer・Reporter で後続処理する構成を継続運用している。
+- 2025 年のリリースレビューで、収集・解析・レポート生成を単一スクリプトに統合した検証では障害切り戻しが難しく、CI 停止時のトリアージが 2 倍以上に膨らんだことが Ops チームにより報告された（`docs/day8/ops/04_ops.md`）。
+- `docs/day8/design/03_architecture.md` では Collector → Analyzer → Reporter → Proposer → Governance の流れを提示しているが、意思決定の根拠が散在しており Birdseye でのトレースが困難だった。
 
 ## 決定
 1. **Collector**
@@ -24,9 +24,9 @@
    - 3 層の境界は Birdseye (`docs/birdseye/index.json`) に Collector → Analyzer → Reporter → Proposer へのエッジとして登録し、`docs/day8/design/03_architecture.md` に図解する。
 
 ## 根拠
-- Katamari での運用実績に基づき、Collector と Analyzer を分離することで障害箇所の特定が容易になる。
-- Analyzer と Reporter を分けることで、メトリクス再計算とレポート再生成を独立して実行できる。
-- propose-only 制約下で Reporter が勝手にリポジトリを書き換えないことを Birdseye から追跡できるようにする。
+- Day8 Ops の障害記録では、Collector と Analyzer の処理を分離した運用に切り戻したことで、ログ欠損時の再投入が 1 ワークフロー単位で完結し、復旧時間が短縮された。
+- Analyzer と Reporter を分けることで、`workflow-cookbook/scripts/analyze.py` の再実行だけでメトリクスを再計算でき、`reports/` 配下の生成は Reporter で安全に再試行できる。
+- propose-only 制約下で Reporter がリポジトリを書き換えないよう、Birdseye から Collector/Analyzer/Reporter の境界を追跡する必要があり、本 ADR が依存関係の一次根拠となる。
 
 ## 影響
 - `docs/day8/design/03_architecture.md` は本 ADR を根拠とする説明を追加する。

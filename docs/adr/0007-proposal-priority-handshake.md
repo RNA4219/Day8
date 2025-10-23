@@ -6,8 +6,8 @@
 - **関連チケット/タスク**: docs/TASKS.md, workflow-cookbook/governance/prioritization.yaml, workflow-cookbook/TASK.codex.md
 
 ## 背景
-- Katamari では Analyzer/Proposer が提案する Issue や Draft PR に Priority Score を必ず付与し、ガバナンス審査と同期していた。
-- Day8 の propose-only 運用でも Priority Score を基準にレビュー順序を決定しているが、自動生成される `reports/issue_suggestions.md` と Task Seed の整合ルールが ADR にまとめられていなかった。
+- Day8 の Analyzer/Proposer は週次トリアージで Priority Score を基準にレビュー順序を決定しており、`workflow-cookbook/governance/prioritization.yaml` に重み付けが定義されている。
+- 自動生成される `reports/issue_suggestions.md` と Task Seed の整合ルールが ADR にまとまっておらず、レビュー時に Score の根拠が参照しづらかった。
 - `docs/TASKS.md` や `workflow-cookbook/TASK.codex.md` では Priority Score 記法を要求しているものの、Analyzer が生成する提案にどのように埋め込むかが不明確だった。
 
 ## 決定
@@ -17,7 +17,7 @@
 - Priority Score テンプレートの変更や重み付けの更新が発生した場合は、本 ADR・`docs/TASKS.md`・`workflow-cookbook/TASK.codex.md` を同時に更新し、Birdseye の依存グラフを再生成する。
 
 ## 根拠
-- Katamari の Priority Score ルールを Day8 でも統一することで、レビュー順序と提案の緊急度が自動的に整合し、手動補正が不要になる。
+- Priority Score を必須にすることで、レビュー順序と提案の緊急度が自動的に整合し、手動補正が不要になる。
 - Analyzer がメトリクスを同時に記録することで、Priority Score の根拠が明示され、ガバナンス審査のトレーサビリティが向上する。
 - Task Seed と Issue 下書きが同じフォーマットを持つことで、提案内容を手動で移植する際のフォーマット崩れを防げる。
 
