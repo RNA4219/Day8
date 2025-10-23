@@ -4,12 +4,17 @@
     "docs/Security_Review_Checklist.md"
   ],
   "deps_out": [
-    "workflow-cookbook/SAFETY.md"
+    "workflow-cookbook/SAFETY.md",
+    "workflow-cookbook/SECURITY.md",
+    "docs/addenda/J_Runbook.md",
+    "docs/addenda/G_Security_Privacy.md",
+    "docs/ROADMAP_AND_SPECS.md",
+    "docs/README.md"
   ],
   "generated_at": "00001",
   "id": "docs/safety.md",
   "maintenance": {
-    "refresh": "安全ポリシーが変わったら Birdseye の参照先も同期し、関連ガードレール文書と workflow-cookbook/SAFETY.md を整合させる。",
+    "refresh": "安全ポリシーや参照順が変わったら Birdseye の参照先を Safety→Security→Runbook→Privacy→Index の順で更新し、関連ガードレール文書と workflow-cookbook/SAFETY.md を整合させる。",
     "tooling": [
       "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
@@ -19,6 +24,6 @@
     "安全性と Birdseye の誘導が矛盾すると運用事故を招く"
   ],
   "role": "safety",
-  "summary": "Day8 の安全性ガイドラインとオペレーション上の制約を記述し、Birdseye から workflow-cookbook/SAFETY.md へ誘導する役割を担う。",
+  "summary": "Day8 の安全性ガイドラインとオペレーション上の制約を記述し、Safety→Security→Runbook→Privacy→Index の参照順で関連ハブへ誘導する役割を担う。",
   "tests": []
 }
