@@ -6,9 +6,9 @@
 - **関連チケット/タスク**: docs/TASKS.md#telemetry, workflow-cookbook/CHECKLISTS.md#quality
 
 ## 背景
-- Katamari では CI 実行ログを JSONL として収集し、Analyzer がストリーム処理しやすいフォーマットに統一していた。
-- Day8 でも Collector が複数の CI ワークフローからログを受け取るが、フォーマットが揃っていないと Analyzer が例外で停止し、Reporter が参照できなくなる。
-- `/healthz` と MetricsRegistry の整合性を確保するため、ログの欠損やフィールド追加があった場合に Analyzer が検知できる仕組みが必要になった。
+- Day8 の Collector は GitHub Actions（`test`・`reflection`）と補助スクリプトからのログを `workflow-cookbook/logs/` に集約し、Analyzer がストリーム処理する前提で運用している。
+- 2025 年の品質レビューで、ワークフローごとに JSON フィールドの揺れが発生し `workflow-cookbook/scripts/analyze.py` が例外停止、Reporter が成果物を生成できない事象が複数回確認された。
+- `/healthz` と MetricsRegistry の値を整合させるには、ログ欠損やフィールド追加を Analyzer が即座に検知し、`docs/day8/ops/04_ops.md` の切り分け手順に沿って隔離できることが求められる。
 
 ## 決定
 - Collector は以下の JSONL スキーマを必須とする：
@@ -32,9 +32,9 @@
 - Reporter は Analyzer が生成した中間成果物に対してのみ依存し、生ログには触れない。
 
 ## 根拠
-- JSONL はストリーム処理が容易で、Katamari でも再利用実績がある。
-- `payload` ネストにより後方互換性を保ちながらメタデータを拡張できる。
-- チェックサム検証を行うことで、CI の断続的な I/O 障害を早期に検知できる。
+- JSONL を採用することで Analyzer が逐次読み込みを維持でき、Day8 の CI が生成する数万行規模のログでもメモリ使用量が安定する。
+- `payload` ネストで拡張フィールドを隔離すれば、既存の Analyzer/Reporter テスト（`docs/day8/quality/06_quality.md` の最低メトリクス）を壊さずにメタデータを追加できる。
+- チェックサム検証を行うことで、Ops が報告した I/O 障害や部分的なアップロード失敗を早期検知し、再取得リトライの判断が迅速になる。
 
 ## 影響
 - Collector 実装は JSONL スキーマに準拠するためのバリデーションを組み込む必要がある。

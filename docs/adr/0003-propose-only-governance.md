@@ -6,8 +6,8 @@
 - **関連チケット/タスク**: governance/policy.yaml, docs/Release_Checklist.md
 
 ## 背景
-- Katamari では自律エージェントが Issue や Draft PR を提案するが、Git ツリーを直接変更しない「propose-only」ポリシーを採用していた。
-- Day8 でも Reporter/Proposer が自動生成する成果物が誤って main ブランチへ書き込まれると、ガードレール違反となりロールバックが困難になる。
+- Day8 の自動化は `workflow-cookbook/scripts/analyze.py` と補助 CLI が Issue/ドラフト PR の作成までを担っており、Git 操作を誤ると `governance/policy.yaml` で定義された人間レビュー前提が破綻する。
+- 2025 年のリリースチェックで Reporter が `git commit` を実行した誤設定が発生し、main ブランチへ提案が直接入るリスクが顕在化した。
 - `workflow-cookbook/GUARDRAILS.md` と `governance/policy.yaml` の間で propose-only の責務境界が明示されておらず、Docs/ADR に根拠が欠けていた。
 
 ## 決定
@@ -17,8 +17,8 @@
 - `governance/policy.yaml` の制約タグ（例: `propose_only`, `requires_human_merge`）と本 ADR を紐付け、Birdseye で参照できるようにする。
 
 ## 根拠
-- Katamari の運用では propose-only により、自動化の誤動作が直接 main ブランチへ影響するリスクを回避できた。
-- Day8 のリリース承認フローは人間のレビューとガードレールで管理されており、自動化による意図しない変更があると承認記録の整合が崩れる。
+- Day8 の `workflow-cookbook/GUARDRAILS.md` では人間の承認を必須としており、自動化が直接コミットするとチェッカーが検知できない既成事実が生まれる。
+- リリース承認フローを `governance/policy.yaml` に閉じ込めることで、提案ステップと実際の Git 操作が分離され、監査ログが整合する。
 
 ## 影響
 - Reporter/Proposer に新しい機能を追加する場合は、本 ADR を遵守して CLI オプションやコメント出力のみで完結させる必要がある。

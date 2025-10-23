@@ -6,9 +6,9 @@
 - **関連チケット/タスク**: workflow-cookbook/reflection.yaml, workflow-cookbook/scripts/analyze.py, docs/addenda/L_Config_Reference.md
 
 ## 背景
-- Katamari の Reflection DSL は `reflection.yaml` を単一の真実源として扱い、Collector/Analyzer/Reporter の挙動を設定ファイルで切り替えていた。
-- Day8 でも `workflow-cookbook/reflection.yaml` を同梱しているが、スクリプトが YAML 読み込みに失敗した場合のフォールバックや Why-Why 生成の既定値が明文化されていなかった。
-- Appendix L（設定リファレンス）や spec 02 の記述に反映されていない運用ルール（suggest_issues の既定値など）が存在し、レビュー時に判定が揺れていた。
+- Day8 の Reflection DSL は `workflow-cookbook/reflection.yaml` を真実源として運用し、Collector/Analyzer/Reporter の挙動を設定ファイルで切り替えている。
+- スクリプトが YAML 読み込みに失敗した際のフォールバックや Why-Why 生成の既定値が明文化されておらず、CI での復旧手順がレビューごとに変動していた。
+- Appendix L（設定リファレンス）や spec 02 の記述に反映されていない運用ルール（`suggest_issues` の既定値など）が存在し、レビュー時に判定が揺れていた。
 
 ## 決定
 - `workflow-cookbook/reflection.yaml` を Day8 の Reflection Manifest と定義し、Analyzer/Reporter/Proposer の挙動は Manifest を介してのみ変更する。
@@ -17,7 +17,7 @@
 - Why-Why 出力と Issue 提案の有効化は Manifest による制御を優先し、コマンドライン引数から上書きしない。
 
 ## 根拠
-- Katamari で採用されている Manifest 方式を Day8 でも明文化することで、CI とローカルで一致したパラメータが適用される。
+- Manifest を一次情報と定義すると、CI とローカルで同じ設定が適用され、再現検証の際に差分を排除できる。
 - フォールバック既定値を固定することで、YAML パース失敗時でもレポート/提案が欠落せず、Day8 Ops のトリアージが容易になる。
 - Why-Why や Issue 提案の有効化条件を Manifest へ集中させることで、ガードレールや propose-only ポリシーと矛盾しない。
 

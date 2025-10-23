@@ -6,9 +6,9 @@
 - **関連チケット/タスク**: docs/addenda/E_Evaluator_Details.md, docs/day8/quality/06_quality.md, workflow-cookbook/EVALUATION.md
 
 ## 背景
-- Katamari では BERTScore・ROUGE・ルール判定を組み合わせたハイブリッド評価を採用し、Gate を通過しなければ提案を公開しない運用だった。
-- Day8 の品質ドキュメントでも同じ構成を想定しているが、Evaluator の閾値や `overall_pass` 判定基準が ADR で明文化されていなかった。
-- Appendix E（評価器構成）や `docs/day8/quality/06_quality.md` のチェックリストが ADR 不在のまま引用されており、変更時の根拠が追跡しづらい。
+- Day8 では BERTScore・ROUGE・ルール判定を組み合わせたハイブリッド評価を `workflow-cookbook/EVALUATION.md` のフローで運用し、提案公開前に Gate を通過させている。
+- `docs/day8/quality/06_quality.md` のチェックリストはこの構成を前提としているが、Evaluator の閾値や `overall_pass` 判定基準が ADR で明文化されていなかった。
+- Appendix E（評価器構成）や Birdseye の品質ノードが本決定を引用しておらず、閾値変更時に根拠を辿りづらい。
 
 ## 決定
 - Day8 の評価ラインは BERTScore（F1 >= 0.85）、ROUGE-L（>= 0.70）、ルール判定（違反最大重大度 < critical）を組み合わせ、いずれかのスコアが閾値を満たし、かつ重大なルール違反が無い場合に `overall_pass=true` とする。
@@ -17,7 +17,7 @@
 - 閾値やルールセットを更新する際は Appendix E / `quality/06_quality.md` / Birdseye index/caps/hot を同一コミットで更新し、本 ADR を変更履歴に明記する。
 
 ## 根拠
-- ハイブリッド評価は Katamari で proven な構成であり、Day8 でも LLM 依存度を抑えつつ品質ゲートを維持できる。
+- ハイブリッド評価により LLM のばらつきとルール判定のギャップを補完し、Day8 の品質指標（pass_rate/duration_p95）のレビューラインを安定させられる。
 - `metrics.json` の構造を固定することで、CI・ダッシュボード・ガバナンスチェックが同じ根拠を参照できる。
 - Gate 失敗時に Draft 扱いとする決定は propose-only ポリシーと整合し、未承認提案が公開されるリスクを防ぐ。
 
