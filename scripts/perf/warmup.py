@@ -22,6 +22,8 @@ def send_warmup_request(
     """Send a warmup request, defaulting to GET when no payload is provided."""
     method = "POST" if payload is not None else "GET"
     req = request.Request(url, data=payload, method=method)
+    if payload is not None:
+        req.add_header("Content-Type", "application/json")
     with request.urlopen(req, timeout=timeout) as response:  # type: ignore[arg-type]
         response.read()
 
