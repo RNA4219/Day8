@@ -47,13 +47,23 @@ def collect_prometheus_metrics(
         if len(parts) < 2:
             continue
         metric, value = parts[0], parts[1]
-        if not metric.startswith(metric_prefix):
+        normalized_metric = _normalize_prometheus_metric_name(metric)
+        if not normalized_metric.startswith(metric_prefix):
             continue
         try:
-            results[metric] = float(value)
+            numeric_value = float(value)
         except ValueError:
             continue
+        results[normalized_metric] = results.get(normalized_metric, 0.0) + numeric_value
     return results
+
+
+def _normalize_prometheus_metric_name(metric: str) -> str:
+    for delimiter in ("{", "[", "("):
+        index = metric.find(delimiter)
+        if index != -1:
+            return metric[:index]
+    return metric
 
 
 def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PREFIX) -> Dict[str, float]:
