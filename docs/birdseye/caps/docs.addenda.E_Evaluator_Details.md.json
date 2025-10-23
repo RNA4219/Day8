@@ -27,7 +27,7 @@
   ],
   "role": [
     "core::quality-evaluator",
-    "orbit::katamari-alignment"
+    "orbit::alignment"
   ],
   "summary": [
     "core::Day8 Appendix E を評価ライン向けに再構成し、BERTScore/ROUGE/ルール判定の入力・出力・閾値運用を統合した。",
