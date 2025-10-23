@@ -161,6 +161,69 @@ def test_main_writes_output_file_when_missing_metric(
     assert json.loads(output_path.read_text()) == expected
 
 
+def test_collect_prometheus_metrics_handles_url_error(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    error = URLError("network unreachable")
+
+    def fake_urlopen(url: str, timeout: float | None = None):
+        raise error
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        fake_urlopen,
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://localhost:8000/metrics"
+    )
+    assert result == {}
+
+    captured = capsys.readouterr()
+    assert (
+        "Failed to collect Prometheus metrics from http://localhost:8000/metrics"
+        in captured.err
+    )
+    assert captured.out == ""
+
+    chainlit_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_processed_total": 2.0,
+        "day8_jobs_failed_total": 3.0,
+        "day8_healthz_request_total": 4.0,
+    }
+
+    def fake_collect_chainlit(path: Path, metric_prefix: str = "day8_") -> Dict[str, float]:
+        assert metric_prefix == "day8_"
+        return chainlit_metrics
+
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        fake_collect_chainlit,
+    )
+
+    exit_code = collect_metrics_module.main(_prepare_args(tmp_path))
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    assert (
+        "Failed to collect Prometheus metrics from http://localhost:8000/metrics"
+        in captured.err
+    )
+
+    payload = json.loads(captured.out)
+    assert payload == {
+        "prometheus": {},
+        "chainlit": chainlit_metrics,
+        "metrics": chainlit_metrics,
+    }
+
+
 def test_main_succeeds_when_prometheus_unreachable(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

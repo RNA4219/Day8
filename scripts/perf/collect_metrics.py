@@ -19,10 +19,22 @@ REQUIRED_METRICS = (
 )
 
 
-def collect_prometheus_metrics(url: str, metric_prefix: str = DEFAULT_METRIC_PREFIX) -> Dict[str, float]:
+def collect_prometheus_metrics(
+    url: str,
+    metric_prefix: str = DEFAULT_METRIC_PREFIX,
+    *,
+    timeout: float | None = None,
+) -> Dict[str, float]:
     """Fetch metrics from a Prometheus endpoint and filter by prefix."""
     try:
-        with urllib.request.urlopen(url) as response:  # type: ignore[no-untyped-call]
+        if timeout is None:
+            response_cm = urllib.request.urlopen(url)  # type: ignore[no-untyped-call]
+        else:
+            response_cm = urllib.request.urlopen(  # type: ignore[no-untyped-call]
+                url,
+                timeout=timeout,
+            )
+        with response_cm as response:
             payload = response.read().decode("utf-8")
     except (urllib.error.URLError, OSError) as exc:
         print(
