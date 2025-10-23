@@ -34,7 +34,7 @@
     "orbit::persona-handbook"
   ],
   "summary": [
-    "core::Chainlit の theme_path / custom_css 設定を Day8 配布構成へまとめ、Katamari 互換の移植手順を提供する。",
+    "core::Chainlit の theme_path / custom_css 設定を Day8 配布構成へまとめ、移植手順を提供する。",
     "core::Appendix B/C/K との参照ルールと TODO を整理し、テーマ追加時のレビューフローを明文化する。",
     "orbit::ペルソナ YAML 追加の導線と Birdseye 同期フローを共有し、差分検知と整合性を保つ。"
   ],

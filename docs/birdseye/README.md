@@ -1,7 +1,7 @@
 # Day8 Birdseye 運用ガイド
 
 ## 概要
-Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガードレールを鳥瞰的に把握するための可視化レイヤーです。Katamari 版の情報整理フローを踏襲しつつ、Day8 固有の索引（`docs/ROADMAP_AND_SPECS.md`）と安全審査ライン（`docs/safety.md`）を同一ホップ内で辿れるように最適化しています。LLM やレビュー担当者が最小限の読み込みで必要資料へアクセスできるよう、`index.json`・Capsule 群・ホットリストを同期させることが運用の前提です。
+Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガードレールを鳥瞰的に把握するための可視化レイヤーです。Day8 が運用する索引（`docs/ROADMAP_AND_SPECS.md`）と安全審査ライン（`docs/safety.md`）を同一ホップ内で辿れるように最適化しており、LLM やレビュー担当者が最小限の読み込みで必要資料へアクセスできるよう `index.json`・Capsule 群・ホットリストの同期を前提としています。初期設計は前身プロジェクトの Birdseye ガイドを参照していますが、Day8 固有の審査フローを優先して運用してください[^katamari]。
 
 推奨参照順序:
 1. `docs/ROADMAP_AND_SPECS.md` — Day8 全体像と Birdseye 更新必須ステップの確認。
@@ -9,6 +9,8 @@ Day8 の Birdseye は、リポジトリ内の主要ドキュメントとガー�
 3. `docs/birdseye/caps/` 以下の Capsule JSON — 必要ノードの要約と保守手順を point read。
 4. `docs/birdseye/hot.json` — 優先参照ノードと直近リスクのチェック。
 5. `docs/BIRDSEYE.md` — Guardrails 参照順と `edges` チェックポイントをまとめたフォールバック手順、および恒久対応チェックリスト。
+
+[^katamari]: Day8 Birdseye は前身プロジェクトで確立した運用手順をベースにしているが、Day8 の安全審査・索引要件を優先する。
 
 ## JSON ファイル構成（index → caps → hot）
 ### 1. `docs/birdseye/index.json`

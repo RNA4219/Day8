@@ -7,7 +7,7 @@
   "generated_at": "00001",
   "id": "docs/FORK_NOTES.md",
   "maintenance": {
-    "refresh": "Katamari 本家 Fork Notes や Day8 固有依存の更新を取り込んだら、本ページ・Birdseye・ライセンス表記を同時に更新する。",
+    "refresh": "元リポジトリの Fork Notes や Day8 固有依存の更新を取り込んだら、本ページ・Birdseye・ライセンス表記を同時に更新する。",
     "tooling": [
       "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
@@ -15,9 +15,9 @@
   "public_api": [],
   "risks": [
     "Day8 固有の依存やライセンス差分を記録し忘れると、フォーク先で Birdseye とドキュメントの整合が崩れる",
-    "Katamari 本家の Fork Notes 更新を追従しないと Day8 特有の追加コンポーネントが最新化されない"
+    "元リポジトリの Fork Notes 更新を追従しないと Day8 特有の追加コンポーネントが最新化されない"
   ],
   "role": "guide",
-  "summary": "Katamari Fork Notes を前提に Day8 固有の追加コンポーネント・依存・ライセンス同梱ルールを整理したフォーク運用ノート。",
+  "summary": "Day8 固有の追加コンポーネント・依存・ライセンス同梱ルールを整理したフォーク運用ノート。",
   "tests": []
 }

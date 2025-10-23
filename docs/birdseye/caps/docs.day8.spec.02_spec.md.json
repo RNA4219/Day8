@@ -35,7 +35,7 @@
     "Provider マトリクスの更新漏れでフォールバックが失敗する"
   ],
   "role": "spec",
-  "summary": "Katamari 仕様に倣った Day8 の主要ユースケース、チェーン制御、エラー処理、Provider 抽象、SLO、デプロイ条件、評価器ロードマップを集約。",
+  "summary": "Day8 の主要ユースケース、チェーン制御、エラー処理、Provider 抽象、SLO、デプロイ条件、評価器ロードマップを集約。",
   "tests": [
     "check::リンク切れがないか markdownlint で検査",
     "check::Birdseye index edges が deps_out と同期しているか確認"

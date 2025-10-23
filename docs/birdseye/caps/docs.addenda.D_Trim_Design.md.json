@@ -26,7 +26,7 @@
   "summary": [
     "core::Day8 の Sliding Window / Semantic / Memory Hybrid 圧縮戦略を比較し、どのワークフローで起動するかを明示した。",
     "core::保持率指標と制御パラメータを表形式で整理し、Collector/Analyzer/Governance の判断基準を同期できるようにした。",
-    "orbit::Katamari Appendix D を Day8 ログ基盤に合わせて再構成し、Birdseye メタデータ整合と SLO 監査の手順を補強した。"
+    "orbit::Day8 ログ基盤に合わせて再構成し、Birdseye メタデータ整合と SLO 監査の手順を補強した。"
   ],
   "tests": [
     "check::docs/day8/spec/02_spec.md の DSL 節が Appendix D の保持率指標を参照していること",

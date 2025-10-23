@@ -41,7 +41,7 @@
     "orbit::day8-operations"
   ],
   "summary": [
-    "core::Katamari SAFETY を Day8 プロセスへローカライズし、人間承認と自動化境界を定義する基準書。",
+    "core::Day8 SAFETY ポリシーを運用フローへローカライズし、人間承認と自動化境界を定義する基準書。",
     "orbit::Guardrails・Runbook・docs/safety.md と整合させ、審査ログと Birdseye 更新を義務化する。",
     "orbit::重大度 S1/S2 への即時対応と例外手順を明文化し、ホットリスト反映条件を示す。"
   ],

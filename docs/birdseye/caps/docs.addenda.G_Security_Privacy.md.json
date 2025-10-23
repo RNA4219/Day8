@@ -31,7 +31,7 @@
     "orbit::safety-handoff"
   ],
   "summary": [
-    "core::Katamari Appendix G を Day8 向けに再編し、Secrets・ログ衛生・データ保持・通信保護・OAuth ガードを統合した運用ノート。",
+    "core::Day8 Appendix G を基盤に、Secrets・ログ衛生・データ保持・通信保護・OAuth ガードを統合した運用ノート。",
     "core::workflow-cookbook/SECURITY.md と SAFETY.md のハンドオフ地点を明示し、Birdseye 更新順序を指示する。",
     "orbit::フェイルセーフ発動時のログ記録と Hot リスト更新を 1 ページで案内する。"
   ],

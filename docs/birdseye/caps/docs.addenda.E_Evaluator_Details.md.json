@@ -30,7 +30,7 @@
     "orbit::katamari-alignment"
   ],
   "summary": [
-    "core::Katamari Appendix E を Day8 評価ライン向けに再構成し、BERTScore/ROUGE/ルール判定の入力・出力・閾値運用を統合した。",
+    "core::Day8 Appendix E を評価ライン向けに再構成し、BERTScore/ROUGE/ルール判定の入力・出力・閾値運用を統合した。",
     "core::評価パイプラインで利用する正規化処理とルールセットの同期手順を明文化し、評価専用 requirements の導入手順を記載した。",
     "orbit::Birdseye と Guardrails の差分チェックに必要な generated_at 管理のハンドオフを定義した。"
   ],

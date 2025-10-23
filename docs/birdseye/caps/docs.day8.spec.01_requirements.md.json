@@ -17,7 +17,7 @@
     "Appendix G/J/K/M1 とのリンクが失効するとセキュリティ・運用判断の根拠が失われる"
   ],
   "role": "requirements",
-  "summary": "Katamari 章立てに沿って Day8 反省パイプラインの固定事項/スコープ/ユースケース/FR/NFR/データモデル/受入基準/マイルストーンを統合した要件リファレンス。",
+  "summary": "Day8 反省パイプラインの固定事項/スコープ/ユースケース/FR/NFR/データモデル/受入基準/マイルストーンを統合した要件リファレンス。",
   "tests": [
     "check::docs/README.md の要件リンクが最新か確認",
     "check::docs/ROADMAP_AND_SPECS.md の要求行が同期されているか確認"

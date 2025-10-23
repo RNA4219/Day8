@@ -28,7 +28,7 @@
     "orbit::ux-guardrail"
   ],
   "summary": [
-    "core::Katamari Appendix K を Day8 向けに移植し、CLI/レポート/ドキュメントのアクセシビリティ要件を統一する。",
+    "core::Day8 Appendix K を基に、CLI/レポート/ドキュメントのアクセシビリティ要件を統一する。",
     "core::品質ゲートと Birdseye 更新フローにアクセシビリティ観点を組み込み、配色・スクリーンリーダー支援を明示する。",
     "orbit::テストケース付録や Guardrails から参照し、色覚多様性と入力支援のチェックを抜け漏れなくする。"
   ],
