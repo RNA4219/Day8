@@ -1,4 +1,4 @@
-# C. Day8 ペルソナスキーマ（Katamari 版）
+# C. Day8 専用ペルソナスキーマ
 
 Day8 の運用ログと CI 成果物を整理するうえで、Collector/Analyzer/Reporter/Proposer/Governance の各ロールが担う責務と、
 ハンドオフ時に必要なメタデータを統一するためのスキーマを定義する。
