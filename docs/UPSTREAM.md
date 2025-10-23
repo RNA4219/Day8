@@ -1,16 +1,16 @@
 # Day8 Upstream 運用ガイド
 
-Day8 リポジトリ内で workflow-cookbook 参照資産を同期するための Upstream 運用手順をまとめたガイドです。フォーク運用時に守るべきリモート定義、`git subtree` を用いた取り込み手順、週次の確認ポイントをここで統一します。Day8 固有の要件やライセンス同梱ルールを把握するときは、必ず先に [Day8 Fork Notes](FORK_NOTES.md) を確認してから本ガイドに進んでください。
+Day8 正規リポジトリとローカル環境で workflow-cookbook 参照資産を同期するための Upstream 運用手順をまとめたガイドです。社内 Day8 Git サービス上のリモート定義、`git subtree` を用いた取り込み手順、週次の確認ポイントをここで統一します。Day8 固有の要件やライセンス同梱ルールを把握するときは、必ず先に [Day8 Fork Notes](FORK_NOTES.md) を確認してから本ガイドに進んでください。
 
 ## 1. Upstream 定義
 
 | 名称 | 役割 | URL/取得方法 | 備考 |
 | --- | --- | --- | --- |
-| `upstream` | Day8 の正規リポジトリ | `git@github.com:openai/day8.git` | `main` ブランチが単一のソース・オブ・トゥルース。リードのみ実行権限。 |
-| `origin` | 個人またはチームのフォークリポジトリ | `git@github.com:<your-account>/day8.git` | フォーク先。PR 作成および検証用。`main` には直接 push しない。 |
-| `workflow-cookbook` | Day8 が参照するワークフロー資産リポジトリ | `git@github.com:openai/workflow-cookbook.git` | `workflow-cookbook/` ディレクトリを `git subtree` で取り込む。読み取り専用。 |
+| `upstream` | Day8 の正規リポジトリ | `ssh://git.day8.local/day8.git` | `main` ブランチが単一のソース・オブ・トゥルース。リードのみ実行権限。 |
+| `origin` | 個人またはチームのミラー/ローカルリポジトリ | `ssh://git.day8.local/<team>/day8.git` またはローカルパス | 開発・検証用。`main` には直接 push しない。 |
+| `workflow-cookbook` | Day8 が参照するワークフロー資産ミラー | `ssh://git.day8.local/workflow-cookbook.git` | `workflow-cookbook/` ディレクトリを `git subtree` で取り込む。読み取り専用。 |
 
-> 初回セットアップ: `git remote add upstream git@github.com:openai/day8.git` / `git remote add workflow-cookbook git@github.com:openai/workflow-cookbook.git`
+> 初回セットアップ: `git remote add upstream ssh://git.day8.local/day8.git` / `git remote add workflow-cookbook ssh://git.day8.local/workflow-cookbook.git`
 
 ## 2. `git subtree` による同期手順
 
@@ -30,7 +30,7 @@ Day8 リポジトリ内で workflow-cookbook 参照資産を同期するため�
    git subtree pull --prefix workflow-cookbook workflow-cookbook main --squash --rejoin
    ```
 4. **Day8 への反映** — 取り込んだ差分を Day8 側へ調整します。必要に応じて `docs/ROADMAP_AND_SPECS.md`・`docs/birdseye/index.json`・`docs/birdseye/caps/` を同期し、CI (mypy / ruff / pytest / node:test) をローカルで実行してから PR を作成します。
-5. **参照リポジトリへのフィードバック（必要時）** — Day8 側で生じた修正を workflow-cookbook に提案する場合は、`git subtree push --prefix workflow-cookbook workflow-cookbook <branch>` でブランチを分岐し、別途 workflow-cookbook リポジトリへ PR を提出してレビューを受けます。
+5. **参照資産へのフィードバック整理（必要時）** — Day8 側で生じた修正を workflow-cookbook に提案する場合は、差分内容と根拠をまとめて Day8 内部の担当窓口に共有し、同期タイミングを調整します。直接リモートへ push する運用は行いません。
 
 > `--rejoin` を付与することで、サブツリー履歴の再結合が保証されます。エラーが発生した場合は `git subtree split` の結果と `workflow-cookbook` リモートの HEAD を照合し、再度 `--rejoin` を実行してください。
 
