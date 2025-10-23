@@ -277,7 +277,7 @@
       "workflow-cookbook/docs/birdseye/index.json"
     ]
   ],
-  "generated_at": "00001",
+  "generated_at": "00002",
   "nodes": {
     "scripts/birdseye_refresh.py": {
       "caps": "workflow-cookbook/docs/birdseye/caps/scripts.birdseye_refresh.py.json",
@@ -296,7 +296,7 @@
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/CHECKLISTS.md.json",
-      "mtime": "00001",
+      "mtime": "00002",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
