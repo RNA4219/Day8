@@ -3,12 +3,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, Sequence, Tuple
 import urllib.request
 
 DEFAULT_PROM_URL = "http://localhost:8000/metrics"
 DEFAULT_METRIC_PREFIX = "day8_"
+REQUIRED_METRICS = (
+    "day8_app_boot_timestamp",
+    "day8_jobs_processed_total",
+    "day8_jobs_failed_total",
+    "day8_healthz_request_total",
+)
 
 
 def collect_prometheus_metrics(url: str, metric_prefix: str = DEFAULT_METRIC_PREFIX) -> Dict[str, float]:
@@ -93,6 +100,12 @@ def _build_parser() -> argparse.ArgumentParser:
         default="json",
         help="Output format (currently only json)",
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Optional file path to write metrics output",
+    )
     return parser
 
 
@@ -114,12 +127,22 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     merged = _merge_metrics(prom_metrics, chainlit_metrics)
 
+    missing = sorted(metric for metric in REQUIRED_METRICS if metric not in merged)
+    if missing:
+        print(f"Missing required metrics: {', '.join(missing)}", file=sys.stderr)
+        raise SystemExit(1)
+
     output = {
         "prometheus": prom_metrics,
         "chainlit": chainlit_metrics,
         "metrics": merged,
     }
-    print(json.dumps(output, indent=2, sort_keys=True))
+    formatted = json.dumps(output, indent=2, sort_keys=True)
+    print(formatted)
+
+    if args.output is not None:
+        args.output.write_text(f"{formatted}\n", encoding="utf-8")
+
     return 0
 
 
