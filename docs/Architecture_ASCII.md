@@ -1,6 +1,11 @@
 # Day8 Architecture ASCII Map
 
-Katamari `docs/Architecture_ASCII.md` の記法に倣い、Day8 の Collector / Analyzer / Reporter / Proposer / Governance 構成を ASCII で俯瞰するフォールバック資料です。Mermaid が利用できない環境や Birdseye 差分レビュー時に参照してください。
+Day8 の Collector / Analyzer / Reporter / Proposer / Governance 構成を素早く把握するための内部リファレンスです。Day8 チームが運用フローを確認する際に、テキストベースで全体像を共有できるよう ASCII 図で整理しています。
+
+### 参照の進め方
+1. まず本図で各コンポーネントの接続関係を把握する。
+2. 詳細仕様が必要になった場合は後述の設計ドキュメントや索引へ遷移し、該当するセクションを確認する。
+3. 差分レビュー時は Birdseye のリンクから対象コンポーネントを開き、本図と突き合わせて影響範囲を整理する。
 
 ```
 +----------------+        +----------------+        +----------------+        +----------------+        +--------------------+
