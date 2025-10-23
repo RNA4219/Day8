@@ -9,7 +9,7 @@
     "docs/adr/0006-evaluator-gates.md",
     "quality/guardrails/rules.yaml"
   ],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "docs/day8/quality/06_quality.md",
   "maintenance": {
     "refresh": "品質メトリクスやテスト導線を更新したら付録および Birdseye index.json を揃える。",

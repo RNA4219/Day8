@@ -6,7 +6,7 @@
     "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
     "workflow-cookbook/docs/birdseye/index.json"
   ],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "scripts/birdseye_refresh.py",
   "public_api": [
     "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"

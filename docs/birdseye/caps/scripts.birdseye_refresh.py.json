@@ -11,7 +11,7 @@
     "workflow-cookbook/RUNBOOK.md"
   ],
   "deps_out": [],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "scripts/birdseye_refresh.py",
   "maintenance": {
     "refresh": "codemap.update モジュールへの委譲部と CLI 引数 (`--docs-dir` / `--dry-run`) を変更時に合わせて更新。",

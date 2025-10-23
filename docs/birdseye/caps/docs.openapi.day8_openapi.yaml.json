@@ -9,7 +9,7 @@
     "docs/addenda/M1_Metrics_Healthz_ADR.md",
     "docs/day8/ops/04_ops.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "docs/openapi/day8_openapi.yaml",
   "maintenance": {
     "refresh": "ヘルスチェック/メトリクス仕様を更新したら OpenAPI と ADR/Release チェックリストを同時に同期する。",

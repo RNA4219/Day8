@@ -12,7 +12,7 @@
     "docs/adr/0007-proposal-priority-handshake.md",
     "docs/seeds/README.md"
   ],
-  "generated_at": "00002",
+  "generated_at": "00004",
   "id": "docs/TASKS.md",
   "maintenance": {
     "refresh": "Day8 ガバナンスのテンプレート更新や Guardrails 差分を反映したら index/caps/hot を同じコミットで再生成する。",
