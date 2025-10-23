@@ -5,7 +5,7 @@
 - Steward: Day8 Observability WG
 
 ## 目的
-Day8 の観測ログをガバナンス基準内で維持しつつ、Analyzer/Reflector の負荷とコストを抑えるためのトリム設計をまとめる。Katamari 版 Appendix D の章立て（対象→戦略→制御→運用）を踏襲し、Collector から Governance へのハンドオフで共有すべき圧縮シナリオと制御パラメータを Day8 向けに再定義した。
+Day8 の観測ログをガバナンス基準内で維持しつつ、Analyzer/Reflector の負荷とコストを抑えるためのトリム設計をまとめる。Day8 Observability Baseline（2025-10 時点）で定義した保持要件・SLO を前提とし、Appendix D の章立て（対象→戦略→制御→運用）を踏襲して Collector から Governance へのハンドオフで共有すべき圧縮シナリオと制御パラメータを整理した。
 
 ## D.1 対象スコープ
 - **Observability Streams** — `workflow-cookbook/logs/*.jsonl`, GitHub Actions の `workflow_run` 連携ログ、Analyzer の中間レポート。
