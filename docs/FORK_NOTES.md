@@ -7,7 +7,6 @@ Day8 リポジトリで維持するコンポーネント・依存関係・ライ
 - **Birdseye 拡張** — `docs/birdseye/index.json`・`docs/birdseye/caps/`・`docs/birdseye/hot.json` は Day8 固有の索引／ホットリストを含みます。更新フローは [docs/birdseye/README.md](birdseye/README.md) の「index → caps → hot」順を維持してください。
 - **workflow-cookbook サブツリー** — CI ログ・レポート・スクリプトは `workflow-cookbook/` をサブツリー取り込みして共有します。Collector 出力は `workflow-cookbook/logs/`、Reporter 出力は `workflow-cookbook/reports/` に揃え、[リポジトリ README](../README.md) に記載された参照順序を守ります。
 
-## Day8 追加依存関係
 - **Python 3.11+** — Birdseye 再生成ツール `scripts/birdseye_refresh.py` は標準ライブラリのみで動作しますが、実行には Python 3.11 以上が必須です。
 - **Lint & Test スイート** — Day8 では `mypy --strict`、`ruff`、`pytest`、`node --test` を常に通すことを [CONTRIBUTING.md](../CONTRIBUTING.md) で要求しています。追加モジュールを導入する場合は、CI で同じ順序のジョブを維持してください。
 - **GitHub Actions 反省フロー** — `test` → `reflection` → `pr_gate` の 3 ワークフローが Day8 導入手順の基本であり、`workflow-cookbook/scripts/analyze.py` を用いた Analyzer が必須です。[INSTALL.md](../INSTALL.md) を確認し、必要ファイルの同梱を忘れないでください。
