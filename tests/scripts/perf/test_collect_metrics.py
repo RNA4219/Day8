@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Dict, List
+from urllib.error import URLError
 
 import pytest
 
@@ -158,6 +159,46 @@ def test_main_writes_output_file_when_missing_metric(
     }
     assert payload == expected
     assert json.loads(output_path.read_text()) == expected
+
+
+def test_main_succeeds_when_prometheus_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    chainlit_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_processed_total": 2.0,
+        "day8_jobs_failed_total": 3.0,
+        "day8_healthz_request_total": 4.0,
+    }
+
+    def failing_urlopen(url: str, /, *args, **kwargs):  # type: ignore[no-untyped-def]
+        raise URLError("unreachable")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        failing_urlopen,
+    )
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        lambda path, metric_prefix="day8_": chainlit_metrics,
+    )
+
+    exit_code = collect_metrics_module.main(_prepare_args(tmp_path))
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload == {
+        "prometheus": {},
+        "chainlit": chainlit_metrics,
+        "metrics": chainlit_metrics,
+    }
+    assert "Failed to collect Prometheus metrics" in captured.err
 
 
 def test_main_writes_output_file_when_requested(

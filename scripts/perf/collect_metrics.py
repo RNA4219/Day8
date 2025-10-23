@@ -6,6 +6,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, Sequence, Tuple
+import urllib.error
 import urllib.request
 
 DEFAULT_PROM_URL = "http://localhost:8000/metrics"
@@ -20,8 +21,15 @@ REQUIRED_METRICS = (
 
 def collect_prometheus_metrics(url: str, metric_prefix: str = DEFAULT_METRIC_PREFIX) -> Dict[str, float]:
     """Fetch metrics from a Prometheus endpoint and filter by prefix."""
-    with urllib.request.urlopen(url) as response:  # type: ignore[no-untyped-call]
-        payload = response.read().decode("utf-8")
+    try:
+        with urllib.request.urlopen(url) as response:  # type: ignore[no-untyped-call]
+            payload = response.read().decode("utf-8")
+    except (urllib.error.URLError, OSError) as exc:
+        print(
+            f"Failed to collect Prometheus metrics from {url}: {exc}",
+            file=sys.stderr,
+        )
+        return {}
     results: Dict[str, float] = {}
     for line in payload.splitlines():
         if not line or line.startswith("#"):
