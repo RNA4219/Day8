@@ -8,7 +8,7 @@
 ## 手順
 1. **識別情報の設定**
    - `task_id` は日付ベース連番（例: `20250115-01`）。`work_branch` は作業ブランチ名、`priority` は `P1|P2|P3` を指定する。
-   - メタデータ（`repo`, `base_branch`, `langs`, `status`, `last_reviewed_at`, `next_review_due` など）はテンプレート順に記入し、Katamari 運用で求められるレビュー期限を必ず設定する。
+  - メタデータ（`repo`, `base_branch`, `langs`, `status`, `last_reviewed_at`, `next_review_due` など）はテンプレート順に記入し、Day8 ガバナンスが定めるレビュー・フォローアップ要件に沿った期限を必ず設定する。
 2. **本文セクションの記述**
    - Objective: タスク目的を一文で明示。
    - Scope: 対象領域と除外範囲を箇条書きで整理。
