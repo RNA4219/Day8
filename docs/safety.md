@@ -1,6 +1,6 @@
 # Safety ハブ（Day8）
 
-`workflow-cookbook/SAFETY.md` を一次ハブ、`docs/addenda/G_Security_Privacy.md` を補助付録として参照し、Day8 における安全配慮・倫理判断の動線をまとめる。自動化は検知とレポートに限定し、本番影響のある判断は人間責任者が必ず確認する。
+`workflow-cookbook/SAFETY.md` を一次ハブ、`docs/addenda/G_Security_Privacy.md` を補助付録として参照し、Day8 における安全配慮・倫理判断の動線をまとめる。自動化は検知とレポートに限定し、本番影響のある判断は人間責任者が必ず確認する。[^upstream]
 
 ## 1. ドキュメント体系
 Day8 Safety ハブは一次ハブから周辺資料へ「Safety → Security → Runbook → Privacy → Index」の順で辿る。
@@ -11,7 +11,7 @@ Day8 Safety ハブは一次ハブから周辺資料へ「Safety → Security →
 4. **付録**: [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) — キー管理・ログ衛生・通信保護の運用ノートを集約し、Runbook で定義した措置の詳細を補強する。
 5. **索引用**: [docs/ROADMAP_AND_SPECS.md](ROADMAP_AND_SPECS.md) / [docs/README.md](README.md) — Birdseye 更新と cross-doc 整合を確認するエントリポイントとして、上記資料の索引と改訂履歴を追跡する。
 
-[^upstream]: 旧 Katamari Safety ガイドライン由来の原則は Day8 手順へ移植済み。外部差分は `workflow-cookbook/HUB.codex.md` の注記で追跡する。
+[^upstream]: 上流で共有されていた原則は Day8 内部資料に統合済みで、本ページはその移行記録に沿って更新している。外部向けとの差分確認は `workflow-cookbook/HUB.codex.md` の注記で行う。
 
 ## 2. フェイルセーフ
 - 自動化は **観察→レポート→Issue 起票** に限定し、`src/**` / `infrastructure/**` / `secrets/**` の直接変更は禁止。
