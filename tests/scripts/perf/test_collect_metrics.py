@@ -388,6 +388,60 @@ def test_collect_prometheus_metrics_filters_day8_prefix(monkeypatch: pytest.Monk
     assert result == {"day8_app_boot_timestamp": pytest.approx(1.6988007e09)}
 
 
+def test_main_supports_custom_metric_prefix(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    payload = (
+        b"custom_app_boot_timestamp 1\n"
+        b"custom_jobs_processed_total 5\n"
+        b"custom_jobs_failed_total 2\n"
+        b"custom_healthz_request_total 3\n"
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    def fake_collect_chainlit(path: Path, metric_prefix: str = "day8_") -> Dict[str, float]:
+        assert metric_prefix == "custom_"
+        return {}
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        fake_collect_chainlit,
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://localhost:8000/metrics",
+        metric_prefix="custom_",
+    )
+    expected_prom_metrics = {
+        "custom_app_boot_timestamp": pytest.approx(1.0),
+        "custom_jobs_processed_total": pytest.approx(5.0),
+        "custom_jobs_failed_total": pytest.approx(2.0),
+        "custom_healthz_request_total": pytest.approx(3.0),
+    }
+    assert result == expected_prom_metrics
+
+    exit_code = collect_metrics_module.main(
+        _prepare_args(tmp_path, ["--metric-prefix", "custom_"])
+    )
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload_json = json.loads(captured.out)
+    assert payload_json == {
+        "prometheus": expected_prom_metrics,
+        "chainlit": {},
+        "metrics": expected_prom_metrics,
+    }
+    assert captured.err == ""
+
+
 def test_collect_prometheus_metrics_aggregates_labeled_series(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
