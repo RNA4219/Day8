@@ -3,12 +3,9 @@
     "in::themes/*.theme.json",
     "out::public/theme.json"
   ],
-  "deps_in": [
-    "README_PERSONAS_THEMES.md",
-    "themes/CATALOG.md"
-  ],
+  "deps_in": [],
   "deps_out": [],
-  "generated_at": "2025-12-21T00:00:00Z",
+  "generated_at": "00001",
   "id": "scripts/switch_theme.py",
   "maintenance": {
     "refresh": "テーマファイルを追加・改名したら CLI のコピー先と README の案内を更新し、Birdseye を再生成する。",

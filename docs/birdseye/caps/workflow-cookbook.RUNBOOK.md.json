@@ -38,7 +38,7 @@
     "workflow-cookbook/scripts/analyze.py",
     "workflow-cookbook/tools/codemap/README.md"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "workflow-cookbook/RUNBOOK.md",
   "maintenance": {
     "refresh": "Preparation/Execution/Verificationの各手順を更新した際は Birdseye index/caps と CHECKLISTS を同時更新。",

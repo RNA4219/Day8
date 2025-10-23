@@ -1,6 +1,6 @@
 # Day8 Upstream 運用ガイド
 
-Day8 リポジトリと Katamari ワークフロー資産を同期させるための Upstream 運用手順をまとめたガイドです。フォーク運用時に守るべきリモート定義、`git subtree` を用いた取り込み手順、週次の確認ポイントをここで統一します。Katamari 本家との差分を把握するときは、必ず先に [Day8 Fork Notes](FORK_NOTES.md) で Day8 固有の追加要素とライセンス同梱ルールを確認してから本ガイドに進んでください。
+Day8 リポジトリ内で workflow-cookbook 参照資産を同期するための Upstream 運用手順をまとめたガイドです。フォーク運用時に守るべきリモート定義、`git subtree` を用いた取り込み手順、週次の確認ポイントをここで統一します。Day8 固有の要件やライセンス同梱ルールを把握するときは、必ず先に [Day8 Fork Notes](FORK_NOTES.md) を確認してから本ガイドに進んでください。
 
 ## 1. Upstream 定義
 
@@ -8,13 +8,13 @@ Day8 リポジトリと Katamari ワークフロー資産を同期させるた�
 | --- | --- | --- | --- |
 | `upstream` | Day8 の正規リポジトリ | `git@github.com:openai/day8.git` | `main` ブランチが単一のソース・オブ・トゥルース。リードのみ実行権限。 |
 | `origin` | 個人またはチームのフォークリポジトリ | `git@github.com:<your-account>/day8.git` | フォーク先。PR 作成および検証用。`main` には直接 push しない。 |
-| `workflow-cookbook` | Katamari ワークフロー資産の参照リポジトリ | `git@github.com:openai/workflow-cookbook.git` | `workflow-cookbook/` ディレクトリを `git subtree` で取り込む。読み取り専用。 |
+| `workflow-cookbook` | Day8 が参照するワークフロー資産リポジトリ | `git@github.com:openai/workflow-cookbook.git` | `workflow-cookbook/` ディレクトリを `git subtree` で取り込む。読み取り専用。 |
 
 > 初回セットアップ: `git remote add upstream git@github.com:openai/day8.git` / `git remote add workflow-cookbook git@github.com:openai/workflow-cookbook.git`
 
 ## 2. `git subtree` による同期手順
 
-`workflow-cookbook/` 以下は Katamari 側の資産を Day8 に取り込むため、`git subtree` を用いた同期を必須とします。Squash 取り込みによりヒストリを簡潔に保ちます。
+`workflow-cookbook/` 以下は Day8 が参照するワークフロー資産のため、`git subtree` を用いた同期を必須とします。Squash 取り込みによりヒストリを簡潔に保ちます。
 
 1. **最新の参照を取得する**
    ```bash
@@ -30,7 +30,7 @@ Day8 リポジトリと Katamari ワークフロー資産を同期させるた�
    git subtree pull --prefix workflow-cookbook workflow-cookbook main --squash --rejoin
    ```
 4. **Day8 への反映** — 取り込んだ差分を Day8 側へ調整します。必要に応じて `docs/ROADMAP_AND_SPECS.md`・`docs/birdseye/index.json`・`docs/birdseye/caps/` を同期し、CI (mypy / ruff / pytest / node:test) をローカルで実行してから PR を作成します。
-5. **Katamari への逆同期（必要時）** — Day8 側で生じた修正を Katamari 基盤へ戻す際は `git subtree push --prefix workflow-cookbook workflow-cookbook <branch>` を利用し、Katamari 側でレビューを受けたうえでマージします。
+5. **参照リポジトリへのフィードバック（必要時）** — Day8 側で生じた修正を workflow-cookbook に提案する場合は、`git subtree push --prefix workflow-cookbook workflow-cookbook <branch>` でブランチを分岐し、別途 workflow-cookbook リポジトリへ PR を提出してレビューを受けます。
 
 > `--rejoin` を付与することで、サブツリー履歴の再結合が保証されます。エラーが発生した場合は `git subtree split` の結果と `workflow-cookbook` リモートの HEAD を照合し、再度 `--rejoin` を実行してください。
 
@@ -46,7 +46,7 @@ Day8 リポジトリと Katamari ワークフロー資産を同期させるた�
 
 ## 4. よくある課題と対処
 
-- **subtree 取り込みでコンフリクトが発生した** — `git stash push` でローカル差分を退避し、`git subtree pull` を再試行。解消できない場合は Katamari 側の変更を確認し、PR へノートとして残します。
+- **subtree 取り込みでコンフリクトが発生した** — `git stash push` でローカル差分を退避し、`git subtree pull` を再試行。解消できない場合は workflow-cookbook 側の変更履歴を確認し、PR へノートとして残します。
 - **Birdseye の `generated_at` が揃っていない** — `docs/birdseye/index.json` と `docs/birdseye/hot.json` を同じタイムスタンプへ更新する。`docs/birdseye/README.md` の「更新順序」を参照すること。
 - **週次ログの記録漏れ** — [UPSTREAM_WEEKLY_LOG.md](UPSTREAM_WEEKLY_LOG.md) に空行がある場合、翌週の冒頭で最新週の情報を補完し、レビューミーティングで共有する。
 

@@ -11,7 +11,7 @@
     "docs/ROADMAP_AND_SPECS.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "docs/day8_wbs.csv",
   "maintenance": {
     "refresh": "マイルストーンやスプリント計画を更新した際は docs/README.md / docs/ROADMAP_AND_SPECS.md と同じコミットで CSV と Birdseye を同期し、計画レビューで参照するリンクを検証する。",

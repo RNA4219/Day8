@@ -1,11 +1,9 @@
 {
   "deps_in": [
-    "docs/TASKS.md",
-    "docs/seeds/README.md",
-    "workflow-cookbook/TASK.codex.md"
+    "docs/seeds/README.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "docs/seeds/TASK.template-YYYY-MM-DD.md",
   "maintenance": {
     "refresh": "テンプレート構成や front matter の必須フィールドに変更が入った際は README と TASKS の要件に合わせて更新し、Birdseye の参照関係を確認する。",

@@ -9,7 +9,7 @@
     "docs/addenda/C_Persona_Schema.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "personas/README.md",
   "maintenance": {
     "refresh": "ペルソナ YAML を追加・更新したら Appendix C と同じコミットで index/caps/hot を再生成し、Task Seed テンプレートと整合させる。",

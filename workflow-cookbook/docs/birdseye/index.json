@@ -277,96 +277,96 @@
       "workflow-cookbook/docs/birdseye/index.json"
     ]
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "nodes": {
     "scripts/birdseye_refresh.py": {
       "caps": "workflow-cookbook/docs/birdseye/caps/scripts.birdseye_refresh.py.json",
-      "mtime": "2025-10-16T10:47:48Z",
+      "mtime": "00001",
       "role": "script"
     },
     "workflow-cookbook/BLUEPRINT.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/BLUEPRINT.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "requirements"
     },
     "workflow-cookbook/CHANGELOG.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/CHANGELOG.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "history"
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/CHECKLISTS.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/EVALUATION.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "quality"
     },
     "workflow-cookbook/GUARDRAILS.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/GUARDRAILS.md.json",
-      "mtime": "2025-10-14T04:25:52Z",
+      "mtime": "00001",
       "role": "policy"
     },
     "workflow-cookbook/HUB.codex.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/HUB.codex.md.json",
-      "mtime": "2025-10-14T13:23:56Z",
+      "mtime": "00001",
       "role": "navigation"
     },
     "workflow-cookbook/README.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/README.md.json",
-      "mtime": "2025-10-15T20:45:30Z",
+      "mtime": "00001",
       "role": "overview"
     },
     "workflow-cookbook/RUNBOOK.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/RUNBOOK.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "operations"
     },
     "workflow-cookbook/SECURITY.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/SECURITY.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "security"
     },
     "workflow-cookbook/TASK.codex.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/TASK.codex.md.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "template"
     },
     "workflow-cookbook/docs/IN-20250115-001.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.IN-20250115-001.md.json",
-      "mtime": "2025-01-15T04:12:00Z",
+      "mtime": "00001",
       "role": "incident"
     },
     "workflow-cookbook/docs/INCIDENT_TEMPLATE.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.INCIDENT_TEMPLATE.md.json",
-      "mtime": "2025-10-16T12:00:00Z",
+      "mtime": "00001",
       "role": "template"
     },
     "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.birdseye.caps.json",
-      "mtime": "2025-10-16T10:47:48Z",
+      "mtime": "00001",
       "role": "collection"
     },
     "workflow-cookbook/docs/birdseye/index.json": {
       "caps": "workflow-cookbook/docs/birdseye/caps/docs.birdseye.index.json.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "index"
     },
     "workflow-cookbook/governance/policy.yaml": {
       "caps": "workflow-cookbook/docs/birdseye/caps/governance.policy.yaml.json",
-      "mtime": "2025-10-14T00:00:00Z",
+      "mtime": "00001",
       "role": "governance"
     },
     "workflow-cookbook/governance/prioritization.yaml": {
       "caps": "workflow-cookbook/docs/birdseye/caps/governance.prioritization.yaml.json",
-      "mtime": "2025-10-16T12:30:00Z",
+      "mtime": "00001",
       "role": "governance"
     },
     "workflow-cookbook/tools/codemap/README.md": {
       "caps": "workflow-cookbook/docs/birdseye/caps/tools.codemap.README.md.json",
-      "mtime": "2025-10-16T10:47:48Z",
+      "mtime": "00001",
       "role": "guide"
     }
   }

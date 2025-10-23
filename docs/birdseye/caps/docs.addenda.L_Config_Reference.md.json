@@ -26,7 +26,7 @@
     "docs/adr/0004-provider-interface.md",
     "docs/adr/0005-reflection-manifest.md"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "docs/addenda/L_Config_Reference.md",
   "maintenance": {
     "refresh": "環境変数や設定ファイルが追加・変更されたら Appendix L を更新し、関連する ops/H アップデートと同時に Birdseye (index→caps→hot→generated_at) を再同期する。",
