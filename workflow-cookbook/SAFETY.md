@@ -8,7 +8,7 @@ next_review_due: 2025-11-21
 
 # Safety Policy & 審査基準
 
-Katamari 本家の安全審査ワークフローを Day8 に適用するための基準。Guardrails・RUNBOOK・docs/safety.md と整合し、Birdseye で追跡できる安全ゲートを維持する。
+Day8 の安全審査基準を統合し、Guardrails・RUNBOOK・docs/safety.md と整合する安全ゲートを維持する。
 
 ## 目的
 
