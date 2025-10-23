@@ -195,6 +195,41 @@ def test_main_writes_output_file_when_requested(
     assert json.loads(output_path.read_text()) == expected
 
 
+def test_main_creates_missing_output_directory(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_processed_total": 5.0,
+    }
+    chainlit_metrics: Dict[str, float] = {
+        "day8_jobs_failed_total": 2.0,
+        "day8_healthz_request_total": 3.0,
+    }
+
+    _configure_collectors(monkeypatch, collect_metrics_module, prom_metrics, chainlit_metrics)
+
+    output_path = tmp_path / "nested" / "metrics.json"
+
+    exit_code = collect_metrics_module.main(
+        _prepare_args(tmp_path, ["--output", str(output_path)])
+    )
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    expected = {
+        "prometheus": prom_metrics,
+        "chainlit": chainlit_metrics,
+        "metrics": {**prom_metrics, **chainlit_metrics},
+    }
+    assert payload == expected
+    assert json.loads(output_path.read_text()) == expected
+
+
 def test_collect_prometheus_metrics_filters_day8_prefix(monkeypatch: pytest.MonkeyPatch, collect_metrics_module) -> None:
     payload = b"""# HELP day8_app_boot_timestamp App boot time\n# TYPE day8_app_boot_timestamp gauge\nday8_app_boot_timestamp 1.6988007e+09\n# TYPE other_metric counter\nother_metric 5\n"""
 
