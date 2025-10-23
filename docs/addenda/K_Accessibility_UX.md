@@ -1,11 +1,12 @@
 # Appendix K: アクセシビリティ & UX（Day8 移植版）
 
-Katamari Appendix K の章立てを踏まえ、Day8 の CLI 出力・レポート・ドキュメントで必ず守るアクセシビリティ指針を再整理した。色覚多様性・スクリーンリーダー運用を前提に、観測やレビュー工程で参照すべき補助資料を集約する。
+Day8 の CLI 出力・レポート・ドキュメントで必ず守るアクセシビリティ指針を集約し、Day8 内部のレビューサイクルでの参照起点とする。色覚多様性・スクリーンリーダー運用を前提に、観測やレビュー工程で参照すべき補助資料を集約する。
 
 ## 0. ハブ & 参照順
 - **一次ハブ**: [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md)（全体 UX / アクセシビリティ要件）、[workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md)（UX 評価ゲート）。
 - **Day8 連携**: [docs/day8/quality/06_quality.md](../day8/quality/06_quality.md)（品質レビュー手順）、[docs/addenda/I_Test_Cases.md](I_Test_Cases.md)（観点チェックリスト）。
-- **更新順序**: Katamari Appendix K → 本付録 → 関連ガイド（品質 / テスト）→ Birdseye index.json / caps。
+- **更新起点**: 本付録を Day8 の正本とし、改訂時は Guardrails → 品質ガイド → テスト付録 → Birdseye index.json / caps の順で差分を伝播させる。
+- **語彙ルール**: 用語は [docs/addenda/A_Glossary.md](A_Glossary.md) を基準とし、Day8 固有の名称・略語は初出時に括弧で補足する。
 
 ## 1. CLI 出力フォーマット
 - **構造化**: セクション見出しは `==>` や全角【】ではなく `###` 相当のテキスト見出しを利用し、スクリーンリーダーが順序を把握しやすいようハイフンや番号で階層を示す。
@@ -21,7 +22,7 @@ Katamari Appendix K の章立てを踏まえ、Day8 の CLI 出力・レポー�
 
 ## 3. ドキュメント整備
 - **構造**: H1 から順序立てて見出しを配置し、スキップ見出し禁止。500 文字以上の節には箇条書きか小見出しを追加し、読み上げが息継ぎできる長さに抑える。
-- **用語**: 略語や専門用語は初回登場時に括弧書きで説明し、Katamari 由来の固有名詞も同様に記す。
+- **用語**: 略語や専門用語は初回登場時に括弧書きで説明し、Day8 固有または移行元由来の名称も同様に記す。
 - **テーブル**: `<table>` を使う際は `<caption>` と `scope` 属性を設定する。Markdown テーブルは左寄せ（`:--`）を基本とし、数値カラムのみ右寄せを許可する。
 - **リンク**: 「こちら」「ここ」ではなく参照先の内容を明示するリンクテキストを使い、連続するリンクは読点で区切る。
 
