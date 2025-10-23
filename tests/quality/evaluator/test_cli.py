@@ -99,6 +99,45 @@ def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.Monkey
     assert isinstance(metrics["generated_at"], str)
 
 
+def test_cli_generates_metrics_when_missing_in_bundle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle_path = tmp_path / "bundle"
+    bundle_path.mkdir()
+    metrics_path = bundle_path / "metrics.json"
+    inputs_path = bundle_path / "inputs.jsonl"
+    expected_path = bundle_path / "expected.jsonl"
+    rules_path = tmp_path / "rules.yaml"
+
+    inputs_path.write_text("{""id"": ""0"", ""output"": ""hello""}\n", encoding="utf-8")
+    expected_path.write_text("{""id"": ""0"", ""expected"": ""world""}\n", encoding="utf-8")
+    rules_path.write_text("version: 1\nrules: []\n", encoding="utf-8")
+
+    module = import_module("quality.evaluator.cli")
+
+    def _fake_guardrail(*_: Any, **__: Any) -> dict[str, Any]:
+        return {
+            "counts": {"minor": 0, "major": 0, "critical": 0},
+            "violations": [],
+            "max_severity": "none",
+        }
+
+    monkeypatch.setattr(module, "_evaluate_guardrails", _fake_guardrail)
+
+    assert not metrics_path.exists()
+
+    argv = [
+        "--ruleset",
+        str(rules_path),
+        str(bundle_path),
+    ]
+
+    exit_code = module.main(argv)
+
+    assert exit_code == 0
+    assert metrics_path.exists()
+
+
 def test_cli_treats_single_metric_threshold_as_pass(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
