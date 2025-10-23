@@ -1,6 +1,6 @@
 # Day8 Birdseye フォールバック手順
 
-Day8 では [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) に従い、Birdseye の index/caps/hot を用いた最小読込を必須としています。本ページは Katamari 版 `docs/BIRDSEYE.md` の構成を踏襲し、Guardrails の Birdseye セクションから参照した際に Day8 で必要となる確認手順を集約したフォールバックガイドです。`docs/birdseye/index.json` の `generated_at` が古い、対象ノードの Capsule が欠損している、`scripts/birdseye_refresh.py` が実行できないといった例外時に参照してください。
+Day8 では [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) に従い、Birdseye の index/caps/hot を用いた最小読込を必須としています。本ページは Guardrails の Birdseye セクションから参照した際に Day8 で必要となる確認手順を集約したフォールバックガイドです。`docs/birdseye/index.json` の `generated_at` が古い、対象ノードの Capsule が欠損している、`scripts/birdseye_refresh.py` が実行できないといった例外時に参照してください。
 
 ## 1. フォールバック適用条件
 - `docs/birdseye/index.json.generated_at` が最新コミットより古く、Guardrails が求めるインデックス整合性を満たせない。

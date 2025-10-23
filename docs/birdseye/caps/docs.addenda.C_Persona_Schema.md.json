@@ -33,7 +33,7 @@
     "orbit::ops-handoff"
   ],
   "summary": [
-    "core::Day8 の Collector/Analyzer/Reporter/Proposer/Governance ロールを Katamari 形式のスキーマで定義し、運用ログ連携を標準化する。",
+    "core::Day8 の Collector/Analyzer/Reporter/Proposer/Governance ロールを共通スキーマで定義し、運用ログ連携を標準化する。",
     "core::Task Seed 起票や評価指標策定時に参照する必須フィールドを整理し、Birdseye ノードの命名規則と同期させる。",
     "orbit::ハンドオフ条件とエスカレーション先を統合し、運用ログからの再試行判断を明確にする。"
   ],

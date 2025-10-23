@@ -26,6 +26,6 @@
     "Cache-Control 要件を更新し忘れると CDN キャッシュが有効化される"
   ],
   "role": "api-spec",
-  "summary": "Day8 `/healthz` `/metrics` の OpenAPI 契約。Katamari ADR に基づく監視エンドポイントの整合を確保する。",
+  "summary": "Day8 `/healthz` `/metrics` の OpenAPI 契約。Day8 ADR に基づく監視エンドポイントの整合を確保する。",
   "tests": []
 }

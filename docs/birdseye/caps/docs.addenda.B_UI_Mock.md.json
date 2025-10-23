@@ -20,7 +20,7 @@
   "summary": [
     "core::Day8 Analyzer CLI と日次レポートを ASCII で再現し、画面共有できないレビュー環境でも UI 骨子を把握できるようにした。",
     "core::Collector→Analyzer→Reporter の観測結果とメトリクスを横断して説明できるフォーマットを提供する。",
-    "orbit::Katamari Appendix B の体裁を踏襲し、Day8 のレポート運用に合わせたレイアウトを提示する。"
+    "orbit::Day8 のレポート運用に合わせたレイアウトを提示し、ASCII モックの体裁を統一する。"
   ],
   "tests": [
     "check::docs/day8/design/03_architecture.md の参照リンクと整合していること",

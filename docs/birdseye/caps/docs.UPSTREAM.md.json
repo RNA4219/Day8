@@ -17,10 +17,10 @@
   },
   "public_api": [],
   "risks": [
-    "Upstream と Day8 の差分が長期化し、Katamari との同期が破綻する",
+    "Upstream と Day8 の差分が長期化し、元リポジトリとの同期が破綻する",
     "Birdseye の参照グラフと文書リンクが不整合となり、索引から到達できなくなる"
   ],
   "role": "operations",
-  "summary": "Day8 と Katamari の Upstream 同期を統制するためのリモート定義・subtree 手順・週次チェックリスト。",
+  "summary": "Day8 が Upstream 同期を統制するためのリモート定義・subtree 手順・週次チェックリスト。",
   "tests": []
 }

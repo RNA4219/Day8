@@ -24,7 +24,7 @@
       "cadence": "workflow-cookbook 側 Birdseye 更新または Guardrails 差分検知時（目安: 1 スプリント以内）",
       "steps": [
         "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye を実行し、Day8 Birdseye とホットリストの generated_at を揃える。",
-        "Cookbook 側の新規ノード/エッジを確認し、必要なカプセルを Katamari 形式で追記・更新する。",
+        "Cookbook 側の新規ノード/エッジを確認し、必要なカプセルを Day8 Birdseye 形式で追記・更新する。",
         "README.md の Birdseye エッジが最新であることを確認し、差分をコミットに含める。"
       ],
       "triggers": [

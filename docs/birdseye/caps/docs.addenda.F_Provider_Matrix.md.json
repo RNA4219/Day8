@@ -23,7 +23,7 @@
   "summary": [
     "core::Day8 で利用する主要プロバイダーのモデル構成とユースケース、強み、リスクを整理したマトリクス。",
     "core::Reflection DSL の llm_model 変更やフォールバック設計時に参照するチェックリストと連携資料を収録。",
-    "orbit::Katamari Appendix F を Day8 ガードレールと運用ログ要件に合わせて再調整した。"
+    "orbit::Day8 ガードレールと運用ログ要件に合わせて再調整した。"
   ],
   "tests": [
     "check::docs/day8/spec/02_spec.md の llm_model 参照と整合すること",
