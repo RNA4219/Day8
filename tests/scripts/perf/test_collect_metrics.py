@@ -388,6 +388,32 @@ def test_collect_prometheus_metrics_filters_day8_prefix(monkeypatch: pytest.Monk
     assert result == {"day8_app_boot_timestamp": pytest.approx(1.6988007e09)}
 
 
+def test_collect_prometheus_metrics_aggregates_labeled_series(
+    monkeypatch: pytest.MonkeyPatch, collect_metrics_module
+) -> None:
+    payload = b"\n".join(
+        (
+            b"day8_jobs_processed_total{job=\"one\"} 3",
+            b"day8_jobs_processed_total{job=\"two\"} 4",
+            b"day8_jobs_failed_total{job=\"one\"} 1",
+            b"day8_jobs_failed_total 2",
+            b"day8_queue_latency_seconds[5m] 0.5",
+            b"day8_queue_latency_seconds[1h] 1.5",
+        )
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+    result = collect_metrics_module.collect_prometheus_metrics("http://localhost:8000/metrics")
+    assert result == {
+        "day8_jobs_processed_total": pytest.approx(7.0),
+        "day8_jobs_failed_total": pytest.approx(3.0),
+        "day8_queue_latency_seconds": pytest.approx(2.0),
+    }
+
+
 def test_collect_chainlit_metrics_supports_multiple_shapes(tmp_path: Path, collect_metrics_module) -> None:
     log_path = tmp_path / "chainlit.jsonl"
     lines = [

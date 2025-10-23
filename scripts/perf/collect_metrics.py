@@ -49,10 +49,17 @@ def collect_prometheus_metrics(
         metric, value = parts[0], parts[1]
         if not metric.startswith(metric_prefix):
             continue
+        name_end = len(metric)
+        for delimiter in ("{", "["):
+            position = metric.find(delimiter)
+            if position != -1:
+                name_end = min(name_end, position)
+        base_name = metric[:name_end]
         try:
-            results[metric] = float(value)
+            numeric_value = float(value)
         except ValueError:
             continue
+        results[base_name] = results.get(base_name, 0.0) + numeric_value
     return results
 
 
