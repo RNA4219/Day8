@@ -48,7 +48,14 @@ def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PRE
         try:
             record = json.loads(raw_line)
         except json.JSONDecodeError:
-            continue
+            start = raw_line.find("{")
+            end = raw_line.rfind("}")
+            if start == -1 or end == -1 or start >= end:
+                continue
+            try:
+                record = json.loads(raw_line[start : end + 1])
+            except json.JSONDecodeError:
+                continue
         for metric, value in _iter_metric_entries(record):
             if not metric.startswith(metric_prefix):
                 continue
