@@ -6,10 +6,10 @@ Day8 の Collector → Analyzer → Proposer パイプラインで観測され�
 
 | 指標 | 目標値 | 根拠 | サンプリング元 | 補足 |
 | --- | --- | --- | --- | --- |
-| `duration_p95` | ≤ 45 秒 | [docs/day8/spec/02_spec.md](../spec/02_spec.md) の「観測 → 反省 → 提案」往復 SLO | `workflow-cookbook/reports/today.md` の `latency.p95` | Collector/Analyzer/Proposer 全体の P95。|
-| `pass_rate` | ≥ 99% | 同上、失敗時は Error Budget を消費 | `workflow-cookbook/reports/today.md` の `summary.pass_rate` | `retry_count` を含めた最終成功率。|
-| `cold_start_p95` | ≤ 5 秒（ウォームアップ後） | Katamari 本家の初回応答 SLO を Day8 向けに縮小 | `workflow-cookbook/logs/test.jsonl` (`cold_start=true`) | Analyzer モデルロード完了後の P95。|
-| `error_budget_consumption` | 移動 7 日平均で < 40% | Propose-only 運用での改善余地確保 | `workflow-cookbook/reports/today.md` の `error_budget` | 40% 超で Appendix J へエスカレーション。|
+| `duration_p95` | ≤ 45 秒 | [docs/day8/spec/02_spec.md](../spec/02_spec.md) のチェーン全体 SLO | `workflow-cookbook/reports/today.md` の `latency.p95` | Collector→Analyzer→Proposer を通した P95。|
+| `pass_rate` | ≥ 99% | [docs/day8/spec/02_spec.md](../spec/02_spec.md) のチェーン全体 SLO | `workflow-cookbook/reports/today.md` の `summary.pass_rate` | `retry_count` 反映後の最終成功率。|
+| `cold_start_p95` | ≤ 5 秒（ウォームアップ後） | [docs/addenda/J_Runbook.md](../../addenda/J_Runbook.md) 「初回応答遅延」基準と [docs/addenda/H_Deploy_Guide.md](../../addenda/H_Deploy_Guide.md) のウォームアップ手順 | `workflow-cookbook/logs/test.jsonl` (`cold_start=true`) | `scripts/warmup.sh` 実行後の Analyzer 初回応答 P95。|
+| `error_budget_consumption` | 移動 7 日平均で < 40% | Propose-only 運用で改善バッファを確保する Day8 の運用判断 | `workflow-cookbook/reports/today.md` の `error_budget` | 40% 超は Appendix J へエスカレーション。|
 
 - いずれかが逸脱した場合は Appendix J の性能セクションへ記録し、Birdseye Capsule `docs/day8/perf/03_performance.md` の `maintenance.refresh` を更新する。
 - Error Budget の計算は pass_rate を起点に行い、`retry_count` の増加が要因なら Analyzer の再試行ポリシーを Appendix H と照合する。
