@@ -1,6 +1,6 @@
 # 要件（Requirements）
 
-Katamari `docs/Katamari_Requirements_v3_ja.md` の章立てを踏襲し、Day8 の反省パイプラインに適用した要件定義です。Collector / Analyzer / Reporter / Proposer / Governance の責務分離は [ADR 0001](../../adr/0001-collector-analyzer-reporter-pipeline.md)・[ADR 0003](../../adr/0003-propose-only-governance.md) を参照し、本書はその上位制約と受入判定軸を集約します。
+Day8 の反省パイプラインを日常運用に組み込むための要件を整理した文書です。Collector / Analyzer / Reporter / Proposer / Governance の責務分離は [ADR 0001](../../adr/0001-collector-analyzer-reporter-pipeline.md) と [ADR 0003](../../adr/0003-propose-only-governance.md) が定義する原則に従い、本書ではその原則を満たすための上位制約と受入判定軸を集約します。適用範囲は Day8 の反省フロー全体であり、関連ドキュメントとの整合を確保しながら実装とガバナンスの判断材料を提供します。
 
 ## 固定事項（Fixed）
 - **propose-only の厳守** — 自動化は Issue / Draft PR の提案に限定し、Git ツリーへの直接コミットは禁止する。逸脱時は [Day8 Release Checklist](../../Release_Checklist.md) と [Appendix J Runbook](../../addenda/J_Runbook.md) に従い是正する。
