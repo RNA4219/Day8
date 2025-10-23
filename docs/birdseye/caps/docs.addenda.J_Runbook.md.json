@@ -7,7 +7,7 @@
   "deps_out": [
     "docs/day8/perf/03_performance.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "docs/addenda/J_Runbook.md",
   "maintenance": {
     "refresh": "新しい代表事象や初動手順を追加したら、関連する Ops/Perf/Security ドキュメントと Birdseye エッジを同時更新する。",

@@ -15,7 +15,7 @@
   "deps_out": [
     "docs/adr/0007-proposal-priority-handshake.md"
   ],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "workflow-cookbook/TASK.codex.md",
   "maintenance": {
     "refresh": "テンプレのゲート条件が変わったら関連チェックリスト/Runbookへ反映。",

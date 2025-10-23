@@ -8,7 +8,7 @@
     "workflow-cookbook/governance/prioritization.yaml"
   ],
   "deps_out": [],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "docs/adr/0007-proposal-priority-handshake.md",
   "maintenance": {
     "refresh": "Priority Score の重みやテンプレートを更新したら Task Seed/TASK.codex/ガバナンスゲートと本 ADR を同時に改訂する。",

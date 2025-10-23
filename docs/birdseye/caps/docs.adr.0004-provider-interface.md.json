@@ -8,7 +8,7 @@
     "docs/day8/spec/02_spec.md"
   ],
   "deps_out": [],
-  "generated_at": "00001",
+  "generated_at": "00004",
   "id": "docs/adr/0004-provider-interface.md",
   "maintenance": {
     "refresh": "Provider を追加・更新したら Appendix F/L と本 ADR を同時に更新し、Birdseye を再生成する。",
