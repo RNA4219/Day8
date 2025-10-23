@@ -23,17 +23,14 @@ def collect_prometheus_metrics(
     url: str,
     metric_prefix: str = DEFAULT_METRIC_PREFIX,
     *,
-    timeout: float | None = None,
+    timeout: float = 5.0,
 ) -> Dict[str, float]:
     """Fetch metrics from a Prometheus endpoint and filter by prefix."""
     try:
-        if timeout is None:
-            response_cm = urllib.request.urlopen(url)  # type: ignore[no-untyped-call]
-        else:
-            response_cm = urllib.request.urlopen(  # type: ignore[no-untyped-call]
-                url,
-                timeout=timeout,
-            )
+        response_cm = urllib.request.urlopen(  # type: ignore[no-untyped-call]
+            url,
+            timeout=timeout,
+        )
         with response_cm as response:
             payload = response.read().decode("utf-8")
     except (urllib.error.URLError, OSError) as exc:

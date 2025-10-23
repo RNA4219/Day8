@@ -76,6 +76,32 @@ def _prepare_args(tmp_path: Path, extra_args: List[str] | None = None) -> List[s
     return args
 
 
+def test_collect_prometheus_metrics_passes_timeout(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    captured: Dict[str, float | str] = {}
+
+    def fake_urlopen(url: str, *, timeout: float):
+        captured["url"] = url
+        captured["timeout"] = timeout
+        return _DummyResponse(b"day8_jobs_processed_total 7\n")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        fake_urlopen,
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics",
+        timeout=3.0,
+    )
+
+    assert captured == {"url": "http://example.test/metrics", "timeout": 3.0}
+    assert result == {"day8_jobs_processed_total": 7.0}
+
+
 def test_main_succeeds_with_required_metrics(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -354,7 +380,7 @@ def test_main_creates_missing_output_directory(
 def test_collect_prometheus_metrics_filters_day8_prefix(monkeypatch: pytest.MonkeyPatch, collect_metrics_module) -> None:
     payload = b"""# HELP day8_app_boot_timestamp App boot time\n# TYPE day8_app_boot_timestamp gauge\nday8_app_boot_timestamp 1.6988007e+09\n# TYPE other_metric counter\nother_metric 5\n"""
 
-    def fake_urlopen(url: str):  # type: ignore[no-untyped-def]
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
         return _DummyResponse(payload)
 
     monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
