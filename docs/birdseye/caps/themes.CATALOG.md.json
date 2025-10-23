@@ -11,7 +11,7 @@
     "README_PERSONAS_THEMES.md"
   ],
   "deps_out": [],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "themes/CATALOG.md",
   "maintenance": {
     "refresh": "テーマを追加・削除したら配色表と Appendix 参照を更新し、README_PERSONAS_THEMES.md と同時に Birdseye を再同期する。",

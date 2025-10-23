@@ -321,10 +321,6 @@
       "docs/seeds/README.md"
     ],
     [
-      "docs/seeds/README.md",
-      "docs/seeds/TASK.template-YYYY-MM-DD.md"
-    ],
-    [
       "docs/UPSTREAM.md",
       "docs/FORK_NOTES.md"
     ],
@@ -377,10 +373,6 @@
       "quality/guardrails/rules.yaml"
     ],
     [
-      "docs/day8/quality/06_quality.md",
-      "quality/guardrails/rules.yaml"
-    ],
-    [
       "docs/addenda/F_Provider_Matrix.md",
       "docs/adr/0004-provider-interface.md"
     ],
@@ -391,6 +383,14 @@
     [
       "docs/addenda/H_Deploy_Guide.md",
       "docs/addenda/L_Config_Reference.md"
+    ],
+    [
+      "docs/addenda/H_Deploy_Guide.md",
+      "docs/day8/perf/03_performance.md"
+    ],
+    [
+      "docs/addenda/J_Runbook.md",
+      "docs/day8/perf/03_performance.md"
     ],
     [
       "docs/addenda/L_Config_Reference.md",
@@ -431,6 +431,10 @@
     [
       "docs/adr/README.md",
       "docs/adr/0007-proposal-priority-handshake.md"
+    ],
+    [
+      "docs/day8/README.md",
+      "docs/day8/perf/03_performance.md"
     ],
     [
       "docs/day8/design/03_architecture.md",
@@ -490,15 +494,15 @@
     ],
     [
       "docs/day8/perf/03_performance.md",
+      "docs/birdseye/index.json"
+    ],
+    [
+      "docs/day8/perf/03_performance.md",
       "docs/day8/quality/06_quality.md"
     ],
     [
       "docs/day8/perf/03_performance.md",
       "docs/day8/spec/02_spec.md"
-    ],
-    [
-      "docs/day8/perf/03_performance.md",
-      "docs/birdseye/index.json"
     ],
     [
       "docs/day8/perf/03_performance.md",
@@ -523,6 +527,10 @@
     [
       "docs/day8/quality/06_quality.md",
       "docs/adr/0006-evaluator-gates.md"
+    ],
+    [
+      "docs/day8/quality/06_quality.md",
+      "quality/guardrails/rules.yaml"
     ],
     [
       "docs/day8/spec/02_spec.md",
@@ -607,6 +615,10 @@
     [
       "docs/safety.md",
       "workflow-cookbook/SAFETY.md"
+    ],
+    [
+      "docs/seeds/README.md",
+      "docs/seeds/TASK.template-YYYY-MM-DD.md"
     ],
     [
       "workflow-cookbook/BLUEPRINT.md",
@@ -795,401 +807,389 @@
     [
       "workflow-cookbook/scripts/analyze.py",
       "docs/adr/0005-reflection-manifest.md"
-    ],
-    [
-      "docs/day8/README.md",
-      "docs/day8/perf/03_performance.md"
-    ],
-    [
-      "docs/addenda/H_Deploy_Guide.md",
-      "docs/day8/perf/03_performance.md"
-    ],
-    [
-      "docs/addenda/J_Runbook.md",
-      "docs/day8/perf/03_performance.md"
     ]
   ],
-  "generated_at": "2025-03-09T00:00:00Z",
+  "generated_at": "00001",
   "nodes": {
     "CHANGELOG.md": {
       "caps": "docs/birdseye/caps/CHANGELOG.md.json",
-      "mtime": "2025-11-21T09:30:00Z",
+      "mtime": "00001",
       "role": "changelog"
     },
     "Dockerfile": {
       "caps": "docs/birdseye/caps/Dockerfile.json",
-      "mtime": "2025-03-07T00:00:00Z",
+      "mtime": "00001",
       "role": "build"
     },
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "2025-12-01T00:00:00Z",
+      "mtime": "00001",
       "role": "setup"
     },
     "Makefile": {
       "caps": "docs/birdseye/caps/Makefile.json",
-      "mtime": "2025-02-28T12:00:00Z",
+      "mtime": "00001",
       "role": "build"
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "2025-02-28T12:00:00Z",
+      "mtime": "00001",
       "role": "overview"
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
-      "mtime": "2025-12-21T00:00:00Z",
+      "mtime": "00001",
       "role": "guide"
     },
     "config/env.example": {
       "caps": "docs/birdseye/caps/config.env.example.json",
-      "mtime": "2025-11-10T09:00:00Z",
+      "mtime": "00001",
       "role": "configuration"
     },
     "config/model_registry.json": {
       "caps": "docs/birdseye/caps/config.model_registry.json",
-      "mtime": "2025-11-10T09:00:00Z",
+      "mtime": "00001",
       "role": "provider"
     },
     "docs/Architecture_ASCII.md": {
       "caps": "docs/birdseye/caps/docs.Architecture_ASCII.md.json",
-      "mtime": "2025-10-25T12:00:00Z",
+      "mtime": "00001",
       "role": "architecture"
     },
     "docs/BIRDSEYE.md": {
       "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
-      "mtime": "2025-10-20T18:08:52Z",
+      "mtime": "00001",
       "role": "guide"
     },
     "docs/FORK_NOTES.md": {
       "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
-      "mtime": "2025-11-20T09:30:00Z",
+      "mtime": "00001",
       "role": "guide"
     },
     "docs/README.md": {
       "caps": "docs/birdseye/caps/docs.README.md.json",
-      "mtime": "2025-11-10T09:00:00Z",
+      "mtime": "00001",
       "role": "index"
     },
     "docs/ROADMAP_AND_SPECS.md": {
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "mtime": "2025-10-21T19:48:39Z",
+      "mtime": "00001",
       "role": "roadmap"
     },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
-      "mtime": "2025-12-20T12:00:00Z",
+      "mtime": "00001",
       "role": "checklist"
     },
     "docs/Security_Review_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Security_Review_Checklist.md.json",
-      "mtime": "2025-12-15T09:00:00Z",
+      "mtime": "00001",
       "role": "security-checklist"
     },
     "docs/TASKS.md": {
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "00001",
       "role": "tasks"
     },
     "docs/UPSTREAM.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
-      "mtime": "2025-02-15T10:00:00Z",
+      "mtime": "00001",
       "role": "operations"
     },
     "docs/UPSTREAM_WEEKLY_LOG.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
-      "mtime": "2025-02-15T10:00:00Z",
+      "mtime": "00001",
       "role": "log"
     },
     "docs/addenda/A_Glossary.md": {
       "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
-      "mtime": "2025-10-21T00:00:00Z",
+      "mtime": "00001",
       "role": "glossary"
     },
     "docs/addenda/B_UI_Mock.md": {
       "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
-      "mtime": "2025-10-21T00:00:00Z",
+      "mtime": "00001",
       "role": "design"
     },
     "docs/addenda/C_Persona_Schema.md": {
       "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
-      "mtime": "2025-11-08T09:00:00Z",
+      "mtime": "00001",
       "role": "persona"
     },
     "docs/addenda/F_Provider_Matrix.md": {
       "caps": "docs/birdseye/caps/docs.addenda.F_Provider_Matrix.md.json",
-      "mtime": "2025-10-26T00:00:00Z",
+      "mtime": "00001",
       "role": "provider"
     },
     "docs/addenda/G_Security_Privacy.md": {
       "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
-      "mtime": "2025-10-22T09:00:00Z",
+      "mtime": "00001",
       "role": "security"
     },
     "docs/addenda/H_Deploy_Guide.md": {
       "caps": "docs/birdseye/caps/docs.addenda.H_Deploy_Guide.md.json",
-      "mtime": "2025-12-01T00:00:00Z",
+      "mtime": "00001",
       "role": "guide"
     },
     "docs/addenda/I_Test_Cases.md": {
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
-      "mtime": "2025-02-21T00:00:00Z",
+      "mtime": "00001",
       "role": "quality"
     },
     "docs/addenda/J_Runbook.md": {
       "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
-      "mtime": "2025-02-22T00:00:00Z",
+      "mtime": "00001",
       "role": "operations"
     },
     "docs/addenda/K_Accessibility_UX.md": {
       "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
-      "mtime": "2025-02-24T09:00:00Z",
+      "mtime": "00001",
       "role": "ux"
     },
     "docs/addenda/L_Config_Reference.md": {
       "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
-      "mtime": "2025-11-10T09:00:00Z",
+      "mtime": "00001",
       "role": "configuration"
     },
     "docs/addenda/M1_Metrics_Healthz_ADR.md": {
       "caps": "docs/birdseye/caps/docs.addenda.M1_Metrics_Healthz_ADR.md.json",
-      "mtime": "2025-12-20T12:00:00Z",
+      "mtime": "00001",
       "role": "operations"
     },
     "docs/addenda/M_Versioning_Release.md": {
       "caps": "docs/birdseye/caps/docs.addenda.M_Versioning_Release.md.json",
-      "mtime": "2025-02-24T12:00:00Z",
+      "mtime": "00001",
       "role": "release"
     },
     "docs/adr/0000-template.md": {
       "caps": "docs/birdseye/caps/docs.adr.0000-template.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "adr-template"
     },
     "docs/adr/0001-collector-analyzer-reporter-pipeline.md": {
       "caps": "docs/birdseye/caps/docs.adr.0001-collector-analyzer-reporter-pipeline.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/0002-jsonl-event-contract.md": {
       "caps": "docs/birdseye/caps/docs.adr.0002-jsonl-event-contract.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/0003-propose-only-governance.md": {
       "caps": "docs/birdseye/caps/docs.adr.0003-propose-only-governance.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/0004-provider-interface.md": {
       "caps": "docs/birdseye/caps/docs.adr.0004-provider-interface.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/0005-reflection-manifest.md": {
       "caps": "docs/birdseye/caps/docs.adr.0005-reflection-manifest.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/0006-evaluator-gates.md": {
       "caps": "docs/birdseye/caps/docs.adr.0006-evaluator-gates.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/0007-proposal-priority-handshake.md": {
       "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
-      "mtime": "2025-11-06T12:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/adr/README.md": {
       "caps": "docs/birdseye/caps/docs.adr.README.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "adr"
     },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "00001",
       "role": "overview"
     },
     "docs/day8/design/03_architecture.md": {
       "caps": "docs/birdseye/caps/docs.day8.design.03_architecture.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "architecture"
     },
     "docs/day8/ops/04_ops.md": {
       "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
-      "mtime": "2025-11-10T09:00:00Z",
+      "mtime": "00001",
       "role": "operations"
+    },
+    "docs/day8/perf/03_performance.md": {
+      "caps": "docs/birdseye/caps/docs.day8.perf.03_performance.md.json",
+      "mtime": "00001",
+      "role": "performance"
     },
     "docs/day8/quality/06_quality.md": {
       "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
-      "mtime": "2025-02-24T09:00:00Z",
+      "mtime": "00001",
       "role": "quality"
     },
     "docs/day8/spec/01_requirements.md": {
       "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
-      "mtime": "2025-11-06T09:00:00Z",
+      "mtime": "00001",
       "role": "requirements"
     },
     "docs/day8/spec/02_spec.md": {
       "caps": "docs/birdseye/caps/docs.day8.spec.02_spec.md.json",
-      "mtime": "2025-11-06T09:00:00Z",
+      "mtime": "00001",
       "role": "spec"
     },
     "docs/day8_wbs.csv": {
       "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
-      "mtime": "2025-11-07T09:00:00Z",
+      "mtime": "00001",
       "role": "planning"
     },
     "docs/openapi/day8_openapi.yaml": {
       "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
-      "mtime": "2025-10-21T19:48:39Z",
+      "mtime": "00001",
       "role": "api-spec"
     },
     "docs/safety.md": {
       "caps": "docs/birdseye/caps/docs.safety.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "00001",
       "role": "safety"
     },
     "docs/seeds/README.md": {
       "caps": "docs/birdseye/caps/docs.seeds.README.md.json",
-      "mtime": "2025-01-15T00:00:00Z",
+      "mtime": "00001",
       "role": "seeds"
     },
     "docs/seeds/TASK.template-YYYY-MM-DD.md": {
       "caps": "docs/birdseye/caps/docs.seeds.TASK.template-YYYY-MM-DD.md.json",
-      "mtime": "2025-02-20T12:00:00Z",
+      "mtime": "00001",
       "role": "seeds"
     },
     "personas/README.md": {
       "caps": "docs/birdseye/caps/personas.README.md.json",
-      "mtime": "2025-11-08T09:00:00Z",
+      "mtime": "00001",
       "role": "persona"
     },
     "quality/guardrails/rules.yaml": {
       "caps": "docs/birdseye/caps/quality.guardrails.rules.yaml.json",
-      "mtime": "2025-11-05T00:00:00Z",
+      "mtime": "00001",
       "role": "guardrail"
     },
     "scripts/": {
       "caps": "docs/birdseye/caps/scripts.DIR.json",
-      "mtime": "2025-12-21T00:00:00Z",
+      "mtime": "00001",
       "role": "automation"
     },
     "scripts/birdseye_refresh.py": {
       "caps": "docs/birdseye/caps/scripts.birdseye_refresh.py.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "automation"
     },
     "scripts/warmup.sh": {
       "caps": "docs/birdseye/caps/scripts.warmup.sh.json",
-      "mtime": "2025-10-22T09:15:00Z",
+      "mtime": "00001",
       "role": "automation"
     },
     "themes/CATALOG.md": {
       "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
-      "mtime": "2025-11-12T09:30:00Z",
+      "mtime": "00001",
       "role": "design"
     },
     "tools/": {
       "caps": "docs/birdseye/caps/tools.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "automation"
     },
     "workflow-cookbook/BLUEPRINT.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.BLUEPRINT.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "requirements"
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.CHECKLISTS.md.json",
-      "mtime": "2025-10-21T12:00:00Z",
+      "mtime": "00001",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.EVALUATION.md.json",
-      "mtime": "2025-02-20T11:29:30Z",
+      "mtime": "00001",
       "role": "quality"
     },
     "workflow-cookbook/GUARDRAILS.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
-      "mtime": "2025-11-05T09:00:00Z",
+      "mtime": "00001",
       "role": "guardrail"
     },
     "workflow-cookbook/HUB.codex.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.HUB.codex.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "orchestration"
     },
     "workflow-cookbook/RUNBOOK.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "operations"
     },
     "workflow-cookbook/SAFETY.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
-      "mtime": "2025-10-21T10:00:00Z",
+      "mtime": "00001",
       "role": "safety"
     },
     "workflow-cookbook/SECURITY.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "guardrail"
     },
     "workflow-cookbook/TASK.codex.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.TASK.codex.md.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "tasks"
     },
     "workflow-cookbook/docs/IN-20250115-001.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.IN-20250115-001.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "incident"
     },
     "workflow-cookbook/docs/birdseye/index.json": {
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
-      "mtime": "2025-10-20T10:30:00Z",
+      "mtime": "00001",
       "role": "visualization"
     },
     "workflow-cookbook/logs/test.jsonl": {
       "caps": "docs/birdseye/caps/workflow-cookbook.logs.test.jsonl.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "log"
     },
     "workflow-cookbook/reports/issue_suggestions.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.reports.issue_suggestions.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "report"
     },
     "workflow-cookbook/reports/today.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.reports.today.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "report"
     },
     "workflow-cookbook/scripts/": {
       "caps": "docs/birdseye/caps/workflow-cookbook.scripts.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "automation"
     },
     "workflow-cookbook/scripts/analyze.py": {
       "caps": "docs/birdseye/caps/workflow-cookbook.scripts.analyze.py.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "analytics"
     },
     "workflow-cookbook/tools/": {
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
-      "mtime": "2025-01-17T00:00:00Z",
+      "mtime": "00001",
       "role": "automation"
     },
     "workflow-cookbook/tools/codemap/README.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.README.md.json",
-      "mtime": "2025-02-16T00:00:00Z",
+      "mtime": "00001",
       "role": "guide"
-    },
-    "docs/day8/perf/03_performance.md": {
-      "caps": "docs/birdseye/caps/docs.day8.perf.03_performance.md.json",
-      "mtime": "2025-03-09T00:00:00Z",
-      "role": "performance"
     }
   }
 }

@@ -16,7 +16,7 @@
     "docs/day8/spec/02_spec.md",
     "personas/README.md"
   ],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "docs/addenda/C_Persona_Schema.md",
   "maintenance": {
     "refresh": "ロール構成や Task Seed テンプレートを更新した際は Appendix C と spec/quality の整合を確認し、index/caps の generated_at を同期。",

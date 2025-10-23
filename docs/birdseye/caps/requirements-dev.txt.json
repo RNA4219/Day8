@@ -1,7 +1,7 @@
 {
   "deps_in": [],
   "deps_out": [],
-  "generated_at": "2025-10-21T23:38:07Z",
+  "generated_at": "00001",
   "id": "requirements-dev.txt",
   "maintenance": {
     "refresh": "依存追加・バージョン固定を変更したら該当ドキュメントと同じコミットで更新する。",

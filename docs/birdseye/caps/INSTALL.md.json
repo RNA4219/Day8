@@ -5,7 +5,7 @@
   "deps_out": [
     "Makefile"
   ],
-  "generated_at": "2025-11-05T00:00:00Z",
+  "generated_at": "00001",
   "id": "INSTALL.md",
   "maintenance": {
     "refresh": "インストール手順を更新したら Birdseye の対象ノードを同じコミットで再収集する。",
