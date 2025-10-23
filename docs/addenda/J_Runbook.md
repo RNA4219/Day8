@@ -1,6 +1,6 @@
 # Day8 運用ランブック付録（Appendix J）
 
-Katamari 付録 J をベースに、Day8 の代表的な運用事象と一次切り分けフローを整理したランブック。Day8 の Guardrails を満たす最小限の対応ステップのみを掲載し、詳細な再発防止策は `workflow-cookbook/docs/IN-*.md` や `workflow-cookbook/CHECKLISTS.md` を参照する。
+Day8 の本番および検証環境で収集したインシデントログをもとに、代表的な運用事象と一次切り分けフローを整理したランブック。Day8 の Guardrails を満たす最小限の対応ステップのみを掲載し、詳細な再発防止策は `workflow-cookbook/docs/IN-*.md` や `workflow-cookbook/CHECKLISTS.md` を参照する。
 
 ## 想定シグナルと初動
 
