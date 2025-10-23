@@ -7,8 +7,22 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+EXPECTED_HELP_LINES = [
+    "printf 'fmt   Format code with ruff format.\\n'",
+    "printf 'lint  Run Ruff lint checks.\\n'",
+    "printf 'type  Run mypy strict type checks.\\n'",
+    "printf 'test  Run pytest suites.\\n'",
+    "printf 'check Run lint, type, and test targets.\\n'",
+]
 
-def _run_make_target(target: str) -> str:
+EXPECTED_CHECK_LINES = [
+    "ruff check .",
+    "mypy --strict workflow-cookbook",
+    "pytest -q tests workflow-cookbook/tests",
+]
+
+
+def _run_make_target(target: str) -> list[str]:
     completed = subprocess.run(
         ["make", "-n", target],
         check=True,
@@ -16,21 +30,14 @@ def _run_make_target(target: str) -> str:
         capture_output=True,
         text=True,
     )
-    return completed.stdout
+    return completed.stdout.splitlines()
 
 
-def test_make_help_lists_primary_targets() -> None:
+def test_make_help_outputs_expected_lines() -> None:
     output = _run_make_target("help")
-    for target in ("fmt", "lint", "type", "test", "check"):
-        assert target in output, f"missing {target!r} in help output"
+    assert output == EXPECTED_HELP_LINES
 
 
 def test_make_check_runs_expected_commands() -> None:
     output = _run_make_target("check")
-    expected_commands = [
-        "ruff check .",
-        "mypy --strict workflow-cookbook",
-        "pytest -q tests workflow-cookbook/tests",
-    ]
-    for command in expected_commands:
-        assert command in output.splitlines()
+    assert output == EXPECTED_CHECK_LINES
