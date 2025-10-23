@@ -51,3 +51,65 @@ def test_warmup_runs_healthcheck_then_warmup(monkeypatch: pytest.MonkeyPatch, wa
         ("health", ("https://api.day8.example/healthz", 1.5)),
         ("warmup", ("https://api.day8.example/warmup", b"{}", 1.5)),
     ]
+
+
+def test_send_warmup_request_sets_json_header(monkeypatch: pytest.MonkeyPatch, warmup_module) -> None:
+    call_order: List[Tuple[str, Tuple[object, ...]]] = []
+    class DummyRequest:
+        def __init__(self, url: str, data: bytes | None, method: str) -> None:
+            self.url = url
+            self.data = data
+            self.method = method
+            self.headers: dict[str, str] = {}
+
+        def add_header(self, key: str, value: str) -> None:
+            self.headers[key] = value
+            call_order.append(("add_header", (key, value)))
+
+    last_request: DummyRequest | None = None
+
+    def fake_request(url: str, data: bytes | None = None, method: str | None = None):
+        nonlocal last_request
+        if method is None:
+            raise AssertionError("method is required")
+        req = DummyRequest(url, data, method)
+        last_request = req
+        call_order.append(("Request", (url, data, method)))
+        return req
+
+    class DummyResponse:
+        def __enter__(self):
+            call_order.append(("enter", ()))
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            call_order.append(("exit", (exc_type, exc, tb)))
+            return False
+
+        def read(self) -> None:
+            call_order.append(("read", ()))
+
+    def fake_urlopen(req: DummyRequest, timeout: float):
+        call_order.append(("urlopen", (req, timeout)))
+        return DummyResponse()
+
+    monkeypatch.setattr(warmup_module.request, "Request", fake_request)
+    monkeypatch.setattr(warmup_module.request, "urlopen", fake_urlopen)
+
+    warmup_module.send_warmup_request(
+        "https://api.day8.example/warmup",
+        payload=b"{}",
+        timeout=2.0,
+    )
+
+    assert last_request is not None
+    assert call_order == [
+        ("Request", ("https://api.day8.example/warmup", b"{}", "POST")),
+        ("add_header", ("Content-Type", "application/json")),
+        ("urlopen", (last_request, 2.0)),
+        ("enter", ()),
+        ("read", ()),
+        ("exit", (None, None, None)),
+    ]
+
+    assert last_request.headers == {"Content-Type": "application/json"}
