@@ -36,7 +36,7 @@ next_review_due: 2025-11-14
 - Reviewer 承認後に `type:*` / `semver:*` ラベル・Priority Score・テスト結果が揃っていることを再確認し、merge queue へ登録する。
 - タグ付け・リリースノートの作成は [docs/addenda/M_Versioning_Release.md](../docs/addenda/M_Versioning_Release.md) の手順に従って propose-only で実施する。
 - release ブランチが `main` と一致していることを検証し、Birdseye `hot.json` の重点参照対象に変更があれば更新する。
-- リリース結果を `UPSTREAM_WEEKLY_LOG.md` に追記し、Katamari 側の `workflow-cookbook/CHANGELOG.md` と整合させる。
+- リリース結果を `docs/UPSTREAM_WEEKLY_LOG.md` に追記し、Day8 内の `workflow-cookbook/CHANGELOG.md` を含む関連ドキュメントと整合させる。
 
 ## Hygiene
 
