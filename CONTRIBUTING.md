@@ -1,6 +1,6 @@
-# Katamari コントリビューションガイド（Day8）
+# Day8 コントリビューションガイド
 
-Day8 では Katamari ワークフローをベースに、人間と AI が propose-only で安全に改善提案を回します。まずは索引となる
+Day8 では Day8 標準ワークフローを基準に、人間と AI が propose-only で安全に改善提案を回します。まずは索引となる
 [`docs/ROADMAP_AND_SPECS.md`](docs/ROADMAP_AND_SPECS.md) と [Day8 Birdseye](docs/birdseye/README.md) を通読し、最新の運用ログや
 SLO は [`docs/UPSTREAM.md`](docs/UPSTREAM.md) / [`docs/UPSTREAM_WEEKLY_LOG.md`](docs/UPSTREAM_WEEKLY_LOG.md) で確認してから着手
 してください。
