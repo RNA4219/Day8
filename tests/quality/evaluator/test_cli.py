@@ -39,6 +39,39 @@ def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "rouge_score", SimpleNamespace())
 
 
+def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+
+    inputs_path.write_text(
+        "\n".join(
+            [
+                "{\"id\": \"0\", \"output\": 0}",
+                "{\"id\": \"1\", \"output\": false, \"response\": \"should-not-fallback\"}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    expected_path.write_text(
+        "\n".join(
+            [
+                "{\"id\": \"0\", \"expected\": 0}",
+                "{\"id\": \"1\", \"expected\": false, \"reference\": \"should-not-fallback\"}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    outputs, references = module._collect_pairs(inputs_path, expected_path)
+
+    assert outputs == ["0", "False"]
+    assert references == ["0", "False"]
+
+
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     metrics_path = tmp_path / "metrics.json"
     inputs_path = tmp_path / "inputs.jsonl"
