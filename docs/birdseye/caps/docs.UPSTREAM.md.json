@@ -7,7 +7,7 @@
     "docs/FORK_NOTES.md",
     "docs/UPSTREAM_WEEKLY_LOG.md"
   ],
-  "generated_at": "00003",
+  "generated_at": "00004",
   "id": "docs/UPSTREAM.md",
   "maintenance": {
     "refresh": "subtree 取り込み後にチェックリストと週次ログの記述を必ず最新化する。",
@@ -17,10 +17,10 @@
   },
   "public_api": [],
   "risks": [
-    "Upstream と Day8 の差分が長期化し、元リポジトリとの同期が破綻する",
+    "フォーク元との差分が長期化し、リモート同期が破綻する",
     "Birdseye の参照グラフと文書リンクが不整合となり、索引から到達できなくなる"
   ],
   "role": "operations",
-  "summary": "Day8 が Upstream 同期を統制するためのリモート定義・subtree 手順・週次チェックリスト。",
+  "summary": "Day8 がフォーク元との同期を統制するためのリモート定義・subtree 手順・週次チェックリスト。",
   "tests": []
 }
