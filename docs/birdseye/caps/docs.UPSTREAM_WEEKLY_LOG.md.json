@@ -5,7 +5,7 @@
   "deps_out": [
     "docs/FORK_NOTES.md"
   ],
-  "generated_at": "00003",
+  "generated_at": "00004",
   "id": "docs/UPSTREAM_WEEKLY_LOG.md",
   "maintenance": {
     "refresh": "週次レビュー後に最新週の行を追記し、Day8 起点の同期手順で未完了の追加アクションが残っていないか確認する。",
@@ -15,10 +15,10 @@
   },
   "public_api": [],
   "risks": [
-    "週次ログが欠落すると Upstream 同期のトレーサビリティが失われる",
+    "週次ログが欠落するとフォーク元との同期トレーサビリティが失われる",
     "Birdseye のリンクが古い場合に索引から最新ログへ辿れなくなる"
   ],
   "role": "log",
-  "summary": "Day8 を起点とした upstream 同期履歴を ISO 週次で記録するテンプレート。",
+  "summary": "Day8 を起点としたフォーク同期履歴を ISO 週次で記録するテンプレート。",
   "tests": []
 }

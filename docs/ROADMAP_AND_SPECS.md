@@ -20,7 +20,7 @@
 
 ### Guardrails 文書概要
 
-- [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md): 変更要求を Day8 内の観測イベントへ対応付け、初動で必要な資料一覧を洗い出すときに使う。参考: 旧参考資料に残る対応付け手順。
+- [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md): 変更要求を Day8 内の観測イベントへ対応付け、初動で必要な資料一覧を洗い出すときに使う。Day8 要求集約 ([docs/day8/spec/01_requirements.md](day8/spec/01_requirements.md)) と併せて参照し、観測イベントとユースケースを突き合わせる。
 - [workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md): HUB で得た課題を制約条件に落とし込み、設計判断やレビュー方針を確定したいタイミングで参照する。
 - [workflow-cookbook/BLUEPRINT.md](../workflow-cookbook/BLUEPRINT.md): Collector→Analyzer→Reporter→Proposer の流れと SLO/フェイルセーフを定義し、仕様・要件・運用の整合を取る。
 - [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md): BLUEPRINT に沿って運用手順を更新し、リリースや運用変更の作業前に参照する。
@@ -46,7 +46,7 @@
 | 運用・品質 | リリース手順と品質ゲート | [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) / [docs/addenda/H_Deploy_Guide.md](addenda/H_Deploy_Guide.md) | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | 承認フローと計測指標を同期 |
 | セキュリティ | 脅威モデリングと権限設計 | [docs/day8/security/05_security.md](day8/security/05_security.md) / [docs/addenda/G_Security_Privacy.md](addenda/G_Security_Privacy.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) | Appendix G で Secrets/ログ/通信の運用ノートを同期し、例外申請は SECURITY.md の承認フローに従う |
 | 安全性レビュー | 倫理・安全配慮の基準 | [docs/safety.md](safety.md) | [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | Appendix G・SECURITY からのハンドオフを受け、フェイルセーフと Hot 更新手順を適用 |
-| ガバナンス | 優先度・承認ルール | [governance/policy.yaml](../governance/policy.yaml) | [workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) / [workflow-cookbook/governance/prioritization.yaml](../workflow-cookbook/governance/prioritization.yaml) | Day8 ガバナンスの意思決定履歴を記録し、優先度判定を同期。参考: 旧参考資料の意思決定テンプレート |
+| ガバナンス | 優先度・承認ルール | [governance/policy.yaml](../governance/policy.yaml) | [workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) / [workflow-cookbook/governance/prioritization.yaml](../workflow-cookbook/governance/prioritization.yaml) | Day8 ガバナンスの意思決定履歴を記録し、優先度判定を同期。[docs/ROADMAP_AND_SPECS.md](ROADMAP_AND_SPECS.md) と照合してロードマップ反映状況を確認 |
 
 ## 2. 実装モジュールと対応仕様
 
@@ -56,11 +56,11 @@
 | オペレーション & QA | `docs/day8/ops/` / `docs/day8/quality/` | [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) / [docs/addenda/M1_Metrics_Healthz_ADR.md](addenda/M1_Metrics_Healthz_ADR.md) / [docs/openapi/day8_openapi.yaml](openapi/day8_openapi.yaml) | [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) / [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md) | CI・運用承認の判断基準を同期し、`/healthz` レスポンス形式と MetricsRegistry 移行タイムラインを OpenAPI で検証 |
 | セキュリティ & レジリエンス | `docs/day8/security/` / `docs/birdseye/` / `docs/safety.md` | [docs/day8/security/05_security.md](day8/security/05_security.md) / [docs/safety.md](safety.md) | [workflow-cookbook/SECURITY.md](../workflow-cookbook/SECURITY.md) / [workflow-cookbook/SAFETY.md](../workflow-cookbook/SAFETY.md) | 監査ログと例外手続きの窓口を共有 |
 | 自動化・CI パイプライン | `tools/` / `scripts/` | [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) / [docs/day8/examples/10_examples.md](day8/examples/10_examples.md) | [workflow-cookbook/scripts/run_ci_tests.py](../workflow-cookbook/scripts/run_ci_tests.py) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md) | mypy/ruff/pytest/node:test のゲート維持 |
-| ガバナンス・優先度管理 | `governance/` / `docs/ROADMAP_AND_SPECS.md` | [governance/policy.yaml](../governance/policy.yaml) / 本ページ | [workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) / [workflow-cookbook/governance/prioritization.yaml](../workflow-cookbook/governance/prioritization.yaml) / [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | Day8 承認フローを同期し、優先度調整ノートを更新。参考: 旧参考資料の承認フロー |
+| ガバナンス・優先度管理 | `governance/` / `docs/ROADMAP_AND_SPECS.md` | [governance/policy.yaml](../governance/policy.yaml) / 本ページ | [workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) / [workflow-cookbook/governance/prioritization.yaml](../workflow-cookbook/governance/prioritization.yaml) / [workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md) | Day8 承認フローを同期し、優先度調整ノートを更新。ガバナンス差分は本ページと [docs/day8_wbs.csv](day8_wbs.csv) を併用して管理 |
 
 ## 3. ロードマップ
 
-1. <a id="roadmap-step1"></a>**索引・基準整備** — Guardrails フローでの差分承認（[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) 更新) 直後、同一 PR のレビュー完了時点で差分検知を行い、本ページと [docs/day8/spec](day8/spec/) を照合する。Day8 内部の索引（[workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md)）との差異を毎スプリントで解消し、ガバナンス更新（[workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml)）と併せて Birdseye 更新のハンドオフを確認する。入口手順はルート [README](../README.md) の LLM-BOOTSTRAP に従い、`docs/ROADMAP_AND_SPECS.md` → `docs/birdseye/index.json` → `docs/birdseye/caps/` → `docs/birdseye/hot.json` の順で参照する。差分は [docs/birdseye/index.json](birdseye/index.json) にも反映する。Guardrails を更新したら、Step1 の一部として Birdseye 反映 4 ステップを再実行し、索引と可視化の整合を確保する。運用手順は [docs/birdseye/README.md](birdseye/README.md) に従い、必ず「index → caps → hot」の順で更新し `generated_at` を同期させる。参考: 旧参考資料で整理した索引同期手順。
+1. <a id="roadmap-step1"></a>**索引・基準整備** — Guardrails フローでの差分承認（[workflow-cookbook/GUARDRAILS.md](../workflow-cookbook/GUARDRAILS.md) 更新) 直後、同一 PR のレビュー完了時点で差分検知を行い、本ページと [docs/day8/spec](day8/spec/) を照合する。Day8 内部の索引（[workflow-cookbook/HUB.codex.md](../workflow-cookbook/HUB.codex.md)）との差異を毎スプリントで解消し、ガバナンス更新（[workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml)）と併せて Birdseye 更新のハンドオフを確認する。入口手順はルート [README](../README.md) の LLM-BOOTSTRAP に従い、`docs/ROADMAP_AND_SPECS.md` → `docs/birdseye/index.json` → `docs/birdseye/caps/` → `docs/birdseye/hot.json` の順で参照する。差分は [docs/birdseye/index.json](birdseye/index.json) にも反映する。Guardrails を更新したら、Step1 の一部として Birdseye 反映 4 ステップを再実行し、索引と可視化の整合を確保する。運用手順は [docs/birdseye/README.md](birdseye/README.md) に従い、必ず「index → caps → hot」の順で更新し `generated_at` を同期させる。
 2. **自動化ゲートの維持** — `tools/` / `scripts/` の CI エントリポイントを見直し、[workflow-cookbook/scripts/run_ci_tests.py](../workflow-cookbook/scripts/run_ci_tests.py) で実行される mypy / ruff / pytest / node:test の整合を保証。チェックリスト更新時は [docs/day8/quality/06_quality.md](day8/quality/06_quality.md) を同時改訂する。
 3. **実装・検証のアップデート** — [docs/day8/design/03_architecture.md](day8/design/03_architecture.md) に基づき実装やテストの差分をまとめ、[docs/day8/examples/10_examples.md](day8/examples/10_examples.md)・[docs/day8/guides/07_contributing.md](day8/guides/07_contributing.md) を更新。Day8 固有の履歴はルート [CHANGELOG.md](../CHANGELOG.md) へ追記し、上流側のトレースは [workflow-cookbook/CHANGELOG.md](../workflow-cookbook/CHANGELOG.md) と突き合わせる。
 4. **リリース・承認フロー** — フェーズ完了ごとに [docs/day8/ops/04_ops.md](day8/ops/04_ops.md) と [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) を突き合わせ、[workflow-cookbook/governance/policy.yaml](../workflow-cookbook/governance/policy.yaml) の承認記録を更新。`/healthz` と MetricsRegistry の移行計画は [docs/addenda/M1_Metrics_Healthz_ADR.md](addenda/M1_Metrics_Healthz_ADR.md) と [docs/openapi/day8_openapi.yaml](openapi/day8_openapi.yaml) を参照し、リリース判定前にヘルスチェック・メトリクスを検証する。例外は [docs/safety.md](safety.md) の安全審査に連携。
@@ -81,12 +81,12 @@
 
 ## 4. 参照クイックリンク
 
-- [Day8 Guardrails サマリ](../workflow-cookbook/GUARDRAILS.md) — 制約とレビュー基準を Day8 の実装方針へ即時反映。参考: 旧参考資料に残る命名規約の補足
+- [Day8 Guardrails サマリ](../workflow-cookbook/GUARDRAILS.md) — 制約とレビュー基準を Day8 の実装方針へ即時反映。[docs/day8/design/03_architecture.md](day8/design/03_architecture.md) の責務境界と併せて確認する。
 - [Day8 要求・仕様インデックス](day8/spec/01_requirements.md) — `01_requirements.md` と `02_spec.md` を対で確認し、HUB で抽出した差分を反映する。
 - [Day8 アーキテクチャ指針](day8/design/03_architecture.md) — Collector/Analyzer/Reporter/Proposer の責務境界を確定し、運用設計へ橋渡しする。参考: [Day8 Architecture ASCII Map](Architecture_ASCII.md)
 - [Day8 Ops & Quality ハンドブック](day8/ops/04_ops.md) — 運用承認とリリース手順の基準点。参考: [workflow-cookbook/RUNBOOK.md](../workflow-cookbook/RUNBOOK.md) / [workflow-cookbook/CHECKLISTS.md](../workflow-cookbook/CHECKLISTS.md)
 - [Day8 Quality ゲート定義](day8/quality/06_quality.md) — 計測軸とレビューゲートの同期。参考: [workflow-cookbook/EVALUATION.md](../workflow-cookbook/EVALUATION.md)
-- [Day8 Release Checklist](Release_Checklist.md) — ops/quality 文書と同期したリリース判定の必須項目。参考: 旧参考資料に掲載されたフロー比較表
+- [Day8 Release Checklist](Release_Checklist.md) — ops/quality 文書と同期したリリース判定の必須項目。[docs/day8/ops/04_ops.md](day8/ops/04_ops.md) / [docs/addenda/M_Versioning_Release.md](addenda/M_Versioning_Release.md) と突き合わせて更新する。
 - [Day8 Observability OpenAPI](openapi/day8_openapi.yaml) — `/healthz` と MetricsRegistry の整合確認に利用。
 - [Day8 セキュリティ運用基準](day8/security/05_security.md) — 権限設計と脅威対策の定義。参考: [セキュリティ & プライバシー付録（Appendix G）](addenda/G_Security_Privacy.md)
 - [安全性レビュー基準](safety.md) — フェイルセーフとホット更新時の安全確認ラインを整理。
@@ -100,8 +100,8 @@
   2. **Capsule 更新** — `docs/birdseye/caps/` 配下の対象 Capsule を差分内容へ反映し、役割・保守手順を同期させる。
   3. **hot.json 更新** — [docs/birdseye/hot.json](birdseye/hot.json) の `reason` を最新フローへ揃え、重点参照ポイントを再評価する。
   4. **generated_at 揃え** — `index.json` / `hot.json` 双方の `generated_at` を同一値へ更新し、Birdseye 再生成の履歴を同期する。
-- [Day8 Upstream 運用ガイド](UPSTREAM.md)
-- [Day8 Upstream 週次ログ テンプレート](UPSTREAM_WEEKLY_LOG.md)
+- [フォーク同期運用ガイド](UPSTREAM.md)
+- [フォーク同期 週次ログ テンプレート](UPSTREAM_WEEKLY_LOG.md)
 
 ## ライセンス
 
