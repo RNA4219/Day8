@@ -49,13 +49,14 @@ def _configure_collectors(
     module,
     prom_metrics: Dict[str, float],
     chainlit_metrics: Dict[str, float],
+    expected_prefix: str = "day8_",
 ) -> None:
     def fake_collect_prometheus(url: str, metric_prefix: str = "day8_") -> Dict[str, float]:
-        assert metric_prefix == "day8_"
+        assert metric_prefix == expected_prefix
         return prom_metrics
 
     def fake_collect_chainlit(path: Path, metric_prefix: str = "day8_") -> Dict[str, float]:
-        assert metric_prefix == "day8_"
+        assert metric_prefix == expected_prefix
         return chainlit_metrics
 
     monkeypatch.setattr(module, "collect_prometheus_metrics", fake_collect_prometheus)
@@ -439,6 +440,45 @@ def test_main_supports_custom_metric_prefix(
         "chainlit": {},
         "metrics": expected_prom_metrics,
     }
+    assert captured.err == ""
+
+
+def test_main_supports_custom_metric_prefix_with_collectors(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {
+        "custom_app_boot_timestamp": 1.0,
+        "custom_jobs_processed_total": 5.0,
+    }
+    chainlit_metrics: Dict[str, float] = {
+        "custom_jobs_failed_total": 2.0,
+        "custom_healthz_request_total": 3.0,
+    }
+
+    _configure_collectors(
+        monkeypatch,
+        collect_metrics_module,
+        prom_metrics,
+        chainlit_metrics,
+        expected_prefix="custom_",
+    )
+
+    exit_code = collect_metrics_module.main(
+        _prepare_args(tmp_path, ["--metric-prefix", "custom_"])
+    )
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload_json = json.loads(captured.out)
+    expected = {
+        "prometheus": prom_metrics,
+        "chainlit": chainlit_metrics,
+        "metrics": {**prom_metrics, **chainlit_metrics},
+    }
+    assert payload_json == expected
     assert captured.err == ""
 
 

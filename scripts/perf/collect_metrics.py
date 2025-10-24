@@ -11,12 +11,16 @@ import urllib.request
 
 DEFAULT_PROM_URL = "http://localhost:8000/metrics"
 DEFAULT_METRIC_PREFIX = "day8_"
-REQUIRED_METRIC_SUFFIXES = (
+REQUIRED_METRIC_SUFFIXES: list[str] = [
     "app_boot_timestamp",
     "jobs_processed_total",
     "jobs_failed_total",
     "healthz_request_total",
-)
+]
+
+
+def _required_metric_names(metric_prefix: str) -> list[str]:
+    return [f"{metric_prefix}{suffix}" for suffix in REQUIRED_METRIC_SUFFIXES]
 
 
 def collect_prometheus_metrics(
@@ -166,20 +170,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    required_metrics = {
-        f"{args.metric_prefix}{suffix}" for suffix in REQUIRED_METRIC_SUFFIXES
-    }
-    found_required: set[str] = set()
-
     prom_metrics = collect_prometheus_metrics(args.prom_url, metric_prefix=args.metric_prefix)
-    found_required.update(metric for metric in prom_metrics if metric in required_metrics)
     chainlit_metrics: Dict[str, float] = {}
     if args.chainlit_log is not None:
         chainlit_metrics = collect_chainlit_metrics(args.chainlit_log, metric_prefix=args.metric_prefix)
-        found_required.update(metric for metric in chainlit_metrics if metric in required_metrics)
 
     merged = _merge_metrics(prom_metrics, chainlit_metrics)
-    missing = sorted(required_metrics.difference(found_required))
+    required_metric_names = _required_metric_names(args.metric_prefix)
+    missing = [name for name in required_metric_names if name not in merged]
 
     output = {
         "prometheus": prom_metrics,
