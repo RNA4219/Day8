@@ -580,3 +580,77 @@ def test_collect_chainlit_metrics_extracts_embedded_json(tmp_path: Path, collect
         "day8_jobs_processed_total": pytest.approx(3.0),
         "day8_jobs_failed_total": pytest.approx(1.0),
     }
+
+
+def test_main_reports_missing_metric_when_prometheus_returns_nan(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    payload = (
+        b"day8_app_boot_timestamp NaN\n"
+        b"day8_jobs_processed_total 5\n"
+        b"day8_jobs_failed_total 2\n"
+        b"day8_healthz_request_total 3\n"
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        lambda path, metric_prefix="day8_": {},
+    )
+
+    with pytest.raises(SystemExit) as exc_info:
+        collect_metrics_module.main(_prepare_args(tmp_path))
+
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert "Skipping non-finite value for Prometheus metric day8_app_boot_timestamp" in captured.err
+    assert "Missing required metrics" in captured.err
+
+    payload_json = json.loads(captured.out)
+    assert "day8_app_boot_timestamp" not in payload_json["metrics"]
+    assert json.loads(captured.out) == payload_json
+
+
+def test_main_reports_missing_metric_when_chainlit_logs_nan(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_failed_total": 2.0,
+        "day8_healthz_request_total": 3.0,
+    }
+
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_prometheus_metrics",
+        lambda url, metric_prefix="day8_": prom_metrics,
+    )
+
+    args = _prepare_args(tmp_path)
+    log_path = Path(args[args.index("--chainlit-log") + 1])
+    log_path.write_text(
+        json.dumps({"metric": "day8_jobs_processed_total", "value": "NaN"}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(SystemExit) as exc_info:
+        collect_metrics_module.main(args)
+
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert "Skipping non-finite value for Chainlit metric day8_jobs_processed_total" in captured.err
+    assert "Missing required metrics" in captured.err
+
+    payload_json = json.loads(captured.out)
+    assert "day8_jobs_processed_total" not in payload_json["metrics"]
+    assert json.loads(captured.out) == payload_json
