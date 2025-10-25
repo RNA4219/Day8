@@ -44,6 +44,8 @@ def collect_prometheus_metrics(
             file=sys.stderr,
         )
         return {}
+    additive_suffixes = ("_total", "_sum", "_count")
+    timestamp_suffixes = ("_timestamp",)
     results: Dict[str, float] = {}
     for line in payload.splitlines():
         if not line or line.startswith("#"):
@@ -68,10 +70,12 @@ def collect_prometheus_metrics(
         previous_value = results.get(normalized_metric)
         if previous_value is None:
             results[normalized_metric] = numeric_value
-        elif normalized_metric.endswith("_timestamp"):
+        elif normalized_metric.endswith(timestamp_suffixes):
             results[normalized_metric] = max(previous_value, numeric_value)
-        else:
+        elif normalized_metric.endswith(additive_suffixes):
             results[normalized_metric] = previous_value + numeric_value
+        else:
+            results[normalized_metric] = numeric_value
     return results
 
 
