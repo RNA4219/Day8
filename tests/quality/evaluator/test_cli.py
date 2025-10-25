@@ -74,6 +74,43 @@ def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
     assert references == ["0", "False", ""]
 
 
+def test_collect_pairs_skips_missing_identifiers(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+
+    inputs_path.write_text(
+        "\n".join(
+            [
+                "{\"id\": \"keep\", \"output\": \"kept\"}",
+                "{\"output\": \"missing-id\"}",
+                "{\"id\": null, \"output\": \"null-id\"}",
+                "{\"id\": \"\", \"output\": \"empty-id\"}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    expected_path.write_text(
+        "\n".join(
+            [
+                "{\"id\": \"keep\", \"expected\": \"expected\"}",
+                "{\"expected\": \"missing-id\"}",
+                "{\"id\": null, \"expected\": \"null-id\"}",
+                "{\"id\": \"\", \"expected\": \"empty-id\"}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    outputs, references = module._collect_pairs(inputs_path, expected_path)
+
+    assert outputs == ["kept"]
+    assert references == ["expected"]
+
+
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     metrics_path = tmp_path / "metrics.json"
     inputs_path = tmp_path / "inputs.jsonl"
