@@ -50,12 +50,11 @@ def collect_prometheus_metrics(
         parts = line.split()
         if len(parts) < 2:
             continue
-        metric, value = parts[0], parts[1]
-        normalized_metric = _normalize_prometheus_metric_name(metric)
+        normalized_metric = _normalize_prometheus_metric_name(parts[0])
         if not normalized_metric.startswith(metric_prefix):
             continue
         try:
-            numeric_value = float(value)
+            numeric_value = float(parts[1])
         except ValueError:
             continue
         results[normalized_metric] = results.get(normalized_metric, 0.0) + numeric_value
