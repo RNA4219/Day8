@@ -114,7 +114,7 @@ def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PRE
                     file=sys.stderr,
                 )
                 continue
-            results[metric] = results.get(metric, 0.0) + numeric
+            results[metric] = numeric
     return results
 
 

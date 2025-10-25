@@ -566,6 +566,20 @@ def test_collect_chainlit_metrics_supports_multiple_shapes(tmp_path: Path, colle
     }
 
 
+def test_collect_chainlit_metrics_keeps_latest_value(tmp_path: Path, collect_metrics_module) -> None:
+    log_path = tmp_path / "chainlit.jsonl"
+    entries = [
+        {"metric": "day8_jobs_processed_total", "value": 3},
+        {"metric": "day8_jobs_processed_total", "value": 4},
+        {"metric": "day8_jobs_processed_total", "value": 5},
+    ]
+    log_path.write_text("\n".join(json.dumps(entry) for entry in entries), encoding="utf-8")
+
+    result = collect_metrics_module.collect_chainlit_metrics(log_path)
+
+    assert result == {"day8_jobs_processed_total": pytest.approx(5.0)}
+
+
 def test_collect_chainlit_metrics_extracts_embedded_json(tmp_path: Path, collect_metrics_module) -> None:
     log_path = tmp_path / "chainlit.jsonl"
     log_path.write_text(
