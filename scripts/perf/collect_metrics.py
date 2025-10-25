@@ -65,7 +65,13 @@ def collect_prometheus_metrics(
                 file=sys.stderr,
             )
             continue
-        results[normalized_metric] = numeric_value
+        previous_value = results.get(normalized_metric)
+        if previous_value is None:
+            results[normalized_metric] = numeric_value
+        elif normalized_metric.endswith("_timestamp"):
+            results[normalized_metric] = max(previous_value, numeric_value)
+        else:
+            results[normalized_metric] = previous_value + numeric_value
     return results
 
 

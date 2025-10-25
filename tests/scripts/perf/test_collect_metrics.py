@@ -403,7 +403,7 @@ def test_collect_prometheus_metrics_strips_labels(monkeypatch: pytest.MonkeyPatc
     result = collect_metrics_module.collect_prometheus_metrics("http://localhost:8000/metrics")
 
     assert result == {
-        "day8_jobs_processed_total": pytest.approx(2.0),
+        "day8_jobs_processed_total": pytest.approx(3.0),
         "day8_jobs_failed_total": pytest.approx(3.0),
     }
 
@@ -501,7 +501,7 @@ def test_main_supports_custom_metric_prefix_with_collectors(
     assert captured.err == ""
 
 
-def test_collect_prometheus_metrics_uses_latest_labeled_series(
+def test_collect_prometheus_metrics_aggregates_labeled_series(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -512,7 +512,8 @@ def test_collect_prometheus_metrics_uses_latest_labeled_series(
         b"day8_jobs_processed_total{job=\"scheduler\"} 4\n"
         b"day8_jobs_failed_total{job=\"worker\"} 1\n"
         b"day8_healthz_request_total{endpoint=\"/healthz\"} 2\n"
-        b"day8_app_boot_timestamp 1\n"
+        b"day8_app_boot_timestamp{job=\"worker\"} 1\n"
+        b"day8_app_boot_timestamp{job=\"scheduler\"} 5\n"
         b"other_metric 5\n"
     )
 
@@ -528,10 +529,10 @@ def test_collect_prometheus_metrics_uses_latest_labeled_series(
 
     metrics = collect_metrics_module.collect_prometheus_metrics("http://localhost:8000/metrics")
     assert metrics == {
-        "day8_jobs_processed_total": pytest.approx(4.0),
+        "day8_jobs_processed_total": pytest.approx(7.0),
         "day8_jobs_failed_total": pytest.approx(1.0),
         "day8_healthz_request_total": pytest.approx(2.0),
-        "day8_app_boot_timestamp": pytest.approx(1.0),
+        "day8_app_boot_timestamp": pytest.approx(5.0),
     }
 
     exit_code = collect_metrics_module.main(_prepare_args(tmp_path))
@@ -543,6 +544,54 @@ def test_collect_prometheus_metrics_uses_latest_labeled_series(
         "prometheus": metrics,
         "chainlit": {},
         "metrics": metrics,
+    }
+    assert captured.err == ""
+
+
+def test_main_aggregates_timestamp_with_max(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    payload = (
+        b"day8_jobs_processed_total{job=\"worker\"} 3\n"
+        b"day8_jobs_processed_total{job=\"scheduler\"} 4\n"
+        b"day8_app_boot_timestamp{job=\"worker\"} 1\n"
+        b"day8_app_boot_timestamp{job=\"scheduler\"} 5\n"
+        b"day8_jobs_failed_total 2\n"
+        b"day8_healthz_request_total 3\n"
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        lambda path, metric_prefix="day8_": {},
+    )
+
+    exit_code = collect_metrics_module.main(_prepare_args(tmp_path))
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload_json = json.loads(captured.out)
+    assert payload_json == {
+        "prometheus": {
+            "day8_jobs_processed_total": pytest.approx(7.0),
+            "day8_app_boot_timestamp": pytest.approx(5.0),
+            "day8_jobs_failed_total": pytest.approx(2.0),
+            "day8_healthz_request_total": pytest.approx(3.0),
+        },
+        "chainlit": {},
+        "metrics": {
+            "day8_jobs_processed_total": pytest.approx(7.0),
+            "day8_app_boot_timestamp": pytest.approx(5.0),
+            "day8_jobs_failed_total": pytest.approx(2.0),
+            "day8_healthz_request_total": pytest.approx(3.0),
+        },
     }
     assert captured.err == ""
 
