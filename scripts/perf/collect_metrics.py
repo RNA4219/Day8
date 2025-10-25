@@ -180,7 +180,8 @@ def _build_parser() -> argparse.ArgumentParser:
 def _merge_metrics(*sources: Mapping[str, float]) -> Dict[str, float]:
     merged: Dict[str, float] = {}
     for source in sources:
-        merged.update(source)
+        for key, value in source.items():
+            merged.setdefault(key, value)
     return merged
 
 

@@ -132,6 +132,41 @@ def test_main_succeeds_with_required_metrics(
     }
 
 
+def test_main_prefers_prometheus_metric_values_on_conflict(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_processed_total": 5.0,
+    }
+    chainlit_metrics: Dict[str, float] = {
+        "day8_jobs_processed_total": 99.0,
+        "day8_jobs_failed_total": 2.0,
+        "day8_healthz_request_total": 3.0,
+    }
+
+    _configure_collectors(monkeypatch, collect_metrics_module, prom_metrics, chainlit_metrics)
+
+    exit_code = collect_metrics_module.main(_prepare_args(tmp_path))
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+
+    assert payload["prometheus"] == prom_metrics
+    assert payload["chainlit"] == chainlit_metrics
+    expected_metrics = {
+        "day8_app_boot_timestamp": pytest.approx(1.0),
+        "day8_jobs_processed_total": pytest.approx(5.0),
+        "day8_jobs_failed_total": pytest.approx(2.0),
+        "day8_healthz_request_total": pytest.approx(3.0),
+    }
+    assert payload["metrics"] == expected_metrics
+
+
 def test_main_fails_when_required_metric_missing(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
