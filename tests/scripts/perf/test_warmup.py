@@ -1,11 +1,10 @@
 """Tests for scripts.perf.warmup."""
 from __future__ import annotations
 
-from pathlib import Path
-from typing import List, Tuple
-
 import importlib.util
 import sys
+from pathlib import Path
+from typing import List, Tuple
 
 import pytest
 
