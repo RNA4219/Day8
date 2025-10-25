@@ -403,7 +403,7 @@ def test_collect_prometheus_metrics_strips_labels(monkeypatch: pytest.MonkeyPatc
     result = collect_metrics_module.collect_prometheus_metrics("http://localhost:8000/metrics")
 
     assert result == {
-        "day8_jobs_processed_total": pytest.approx(3.0),
+        "day8_jobs_processed_total": pytest.approx(2.0),
         "day8_jobs_failed_total": pytest.approx(3.0),
     }
 
@@ -501,7 +501,7 @@ def test_main_supports_custom_metric_prefix_with_collectors(
     assert captured.err == ""
 
 
-def test_collect_prometheus_metrics_aggregates_labeled_series(
+def test_collect_prometheus_metrics_uses_latest_labeled_series(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -528,7 +528,7 @@ def test_collect_prometheus_metrics_aggregates_labeled_series(
 
     metrics = collect_metrics_module.collect_prometheus_metrics("http://localhost:8000/metrics")
     assert metrics == {
-        "day8_jobs_processed_total": pytest.approx(7.0),
+        "day8_jobs_processed_total": pytest.approx(4.0),
         "day8_jobs_failed_total": pytest.approx(1.0),
         "day8_healthz_request_total": pytest.approx(2.0),
         "day8_app_boot_timestamp": pytest.approx(1.0),
@@ -578,6 +578,22 @@ def test_collect_chainlit_metrics_keeps_latest_value(tmp_path: Path, collect_met
     result = collect_metrics_module.collect_chainlit_metrics(log_path)
 
     assert result == {"day8_jobs_processed_total": pytest.approx(5.0)}
+
+
+def test_collect_chainlit_metrics_keeps_latest_value_from_metrics_map(
+    tmp_path: Path, collect_metrics_module
+) -> None:
+    log_path = tmp_path / "chainlit.jsonl"
+    entries = [
+        {"metrics": {"day8_jobs_failed_total": 1}},
+        {"metrics": {"day8_jobs_failed_total": 2}},
+        {"metrics": {"day8_jobs_failed_total": 3}},
+    ]
+    log_path.write_text("\n".join(json.dumps(entry) for entry in entries), encoding="utf-8")
+
+    result = collect_metrics_module.collect_chainlit_metrics(log_path)
+
+    assert result == {"day8_jobs_failed_total": pytest.approx(3.0)}
 
 
 def test_collect_chainlit_metrics_extracts_embedded_json(tmp_path: Path, collect_metrics_module) -> None:

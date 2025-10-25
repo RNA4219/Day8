@@ -65,7 +65,7 @@ def collect_prometheus_metrics(
                 file=sys.stderr,
             )
             continue
-        results[normalized_metric] = results.get(normalized_metric, 0.0) + numeric_value
+        results[normalized_metric] = numeric_value
     return results
 
 
