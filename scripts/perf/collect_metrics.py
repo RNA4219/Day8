@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, Sequence, Tuple
@@ -57,6 +58,13 @@ def collect_prometheus_metrics(
             numeric_value = float(parts[1])
         except ValueError:
             continue
+        if not math.isfinite(numeric_value):
+            print(
+                "Skipping non-finite value for Prometheus metric"
+                f" {normalized_metric}: {parts[1]}",
+                file=sys.stderr,
+            )
+            continue
         results[normalized_metric] = results.get(normalized_metric, 0.0) + numeric_value
     return results
 
@@ -98,6 +106,13 @@ def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PRE
             try:
                 numeric = float(value)
             except (TypeError, ValueError):
+                continue
+            if not math.isfinite(numeric):
+                print(
+                    "Skipping non-finite value for Chainlit metric"
+                    f" {metric}: {value}",
+                    file=sys.stderr,
+                )
                 continue
             results[metric] = results.get(metric, 0.0) + numeric
     return results
