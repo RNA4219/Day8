@@ -389,6 +389,25 @@ def test_collect_prometheus_metrics_filters_day8_prefix(monkeypatch: pytest.Monk
     assert result == {"day8_app_boot_timestamp": pytest.approx(1.6988007e09)}
 
 
+def test_collect_prometheus_metrics_strips_labels(monkeypatch: pytest.MonkeyPatch, collect_metrics_module) -> None:
+    payload = (
+        b"day8_jobs_processed_total{instance=\"api\"} 1\n"
+        b"day8_jobs_processed_total{instance=\"worker\"} 2\n"
+        b"day8_jobs_failed_total 3\n"
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+    result = collect_metrics_module.collect_prometheus_metrics("http://localhost:8000/metrics")
+
+    assert result == {
+        "day8_jobs_processed_total": pytest.approx(3.0),
+        "day8_jobs_failed_total": pytest.approx(3.0),
+    }
+
+
 def test_main_supports_custom_metric_prefix(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
