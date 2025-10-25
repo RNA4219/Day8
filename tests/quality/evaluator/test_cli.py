@@ -50,6 +50,7 @@ def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
             [
                 "{\"id\": \"0\", \"output\": 0}",
                 "{\"id\": \"1\", \"output\": false, \"response\": \"should-not-fallback\"}",
+                "{\"id\": \"2\", \"output\": \"\"}",
             ]
         )
         + "\n",
@@ -60,6 +61,7 @@ def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
             [
                 "{\"id\": \"0\", \"expected\": 0}",
                 "{\"id\": \"1\", \"expected\": false, \"reference\": \"should-not-fallback\"}",
+                "{\"id\": \"2\", \"expected\": \"\"}",
             ]
         )
         + "\n",
@@ -68,8 +70,8 @@ def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
 
     outputs, references = module._collect_pairs(inputs_path, expected_path)
 
-    assert outputs == ["0", "False"]
-    assert references == ["0", "False"]
+    assert outputs == ["0", "False", ""]
+    assert references == ["0", "False", ""]
 
 
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

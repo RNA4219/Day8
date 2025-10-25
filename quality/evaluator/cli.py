@@ -61,27 +61,27 @@ def _parse_loose_mapping(text: str) -> dict[str, Any]:
     return parsed
 
 
-def _lookup_text(record: dict[str, Any], keys: Sequence[str]) -> str:
-    for key in keys:
-        if key in record:
-            value = record[key]
-            if value is not None:
-                return str(value)
-    return ""
-
-
 def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
-    expected_map = {}
+    def _select_text(record: dict[str, Any], candidates: Sequence[str]) -> str:
+        for candidate in candidates:
+            if candidate in record:
+                value = record[candidate]
+                if value is not None:
+                    return str(value)
+        return ""
+
+    expected_map: dict[str, str] = {}
     for item in _load_records(expected):
         key = str(item.get("id"))
-        expected_map[key] = _lookup_text(item, ("expected", "reference"))
+        expected_map[key] = _select_text(item, ("expected", "reference"))
+
     outputs: list[str] = []
     references: list[str] = []
     for record in _load_records(inputs):
         key = str(record.get("id"))
         if key not in expected_map:
             continue
-        outputs.append(_lookup_text(record, ("output", "response")))
+        outputs.append(_select_text(record, ("output", "response")))
         references.append(expected_map[key])
     return outputs, references
 
