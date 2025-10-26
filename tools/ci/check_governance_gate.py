@@ -15,6 +15,10 @@ _SAMPLE_FLAG = "--use-sample-pr-body"
 _SAMPLE_RELATIVE_PATH = Path("workflow-cookbook") / "tools" / "ci" / "fixtures" / "sample_pr_body.md"
 _LEGACY_SCRIPT_RELATIVE_PATH = Path("workflow-cookbook") / "tools" / "ci" / "check_governance_gate.py"
 _PR_EVENT_NAMES = {"pull_request", "pull_request_target"}
+_PR_EVENT_ENVIRONMENT_VARIABLES: tuple[str, ...] = (
+    "GITHUB_EVENT_PATH",
+    "GITHUB_EVENT_NAME",
+)
 
 
 _legacy_module: ModuleType | None = None
@@ -140,8 +144,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not sample_path.is_file():
             raise FileNotFoundError(sample_path)
         os.environ.setdefault("PR_BODY", _load_sample_body(sample_path))
-        os.environ.pop("GITHUB_EVENT_PATH", None)
-        os.environ.pop("GITHUB_EVENT_NAME", None)
+        for variable in _PR_EVENT_ENVIRONMENT_VARIABLES:
+            os.environ.pop(variable, None)
 
     legacy = _load_legacy_module()
     _synchronize_proxy_attributes(legacy)
