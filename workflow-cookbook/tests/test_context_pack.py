@@ -1,13 +1,57 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
 from pathlib import Path
+from types import ModuleType
 
 
 def _write_json(path: Path, payload: dict[str, object]) -> None:
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def _load_pack_module() -> ModuleType:
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("workflow_context_pack", root / "tools" / "context" / "pack.py")
+    if spec is None or spec.loader is None:
+        raise RuntimeError("Failed to load context pack module")
+    if "ppr" not in sys.modules:
+        stub = ModuleType("ppr")
+        def _personalize_scores(*args, **kwargs):
+            return {}
+
+        stub.personalize_scores = _personalize_scores  # type: ignore[attr-defined]
+        sys.modules["ppr"] = stub
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_base_signals_role_scores() -> None:
+    pack = _load_pack_module()
+    cfg = pack._load_config(Path(__file__).resolve().parents[1] / "tools" / "context" / "config.yaml")
+    profile = {"keywords": set(), "role": "impl"}
+
+    node_common = {
+        "path": "docs/runbook.md",
+        "heading": "Runbook",
+        "mtime": "",
+    }
+
+    matching = {"id": "node-1", "role": "impl", **node_common}
+    mismatch = {"id": "node-2", "role": "ops", **node_common}
+    missing = {"id": "node-3", **node_common}
+
+    match_signals = pack._base_signals(matching, profile, set(), {"node-1": 0.0}, cfg)
+    mismatch_signals = pack._base_signals(mismatch, profile, set(), {"node-2": 0.0}, cfg)
+    missing_signals = pack._base_signals(missing, profile, set(), {"node-3": 0.0}, cfg)
+
+    assert match_signals["role"] == 0.6
+    assert mismatch_signals["role"] == 0.2
+    assert missing_signals["role"] == 0.4
 
 
 def test_pack_generates_ppr_scores(tmp_path: Path) -> None:
