@@ -143,7 +143,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         sample_path = repo_root / _SAMPLE_RELATIVE_PATH
         if not sample_path.is_file():
             raise FileNotFoundError(sample_path)
-        os.environ.setdefault("PR_BODY", _load_sample_body(sample_path))
+        os.environ["PR_BODY"] = _load_sample_body(sample_path)
         for variable in _PR_EVENT_ENVIRONMENT_VARIABLES:
             os.environ.pop(variable, None)
 
