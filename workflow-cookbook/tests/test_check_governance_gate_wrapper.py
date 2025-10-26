@@ -23,6 +23,27 @@ def test_wrapper_uses_sample_body_by_default() -> None:
     assert result.returncode == 0, result.stderr
 
 
+def test_wrapper_ignores_pr_event_when_using_sample() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    script = repo_root / "tools" / "ci" / "check_governance_gate.py"
+
+    env = os.environ.copy()
+    env.update({"GITHUB_EVENT_NAME": "pull_request"})
+    env.pop("GITHUB_EVENT_PATH", None)
+
+    result = subprocess.run(
+        [sys.executable, str(script), "--use-sample-pr-body"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Skipping governance gate" not in result.stderr
+
+
 def test_wrapper_overrides_non_pr_event(tmp_path: Path) -> None:
     repo_root = Path(__file__).resolve().parents[2]
     script = repo_root / "tools" / "ci" / "check_governance_gate.py"

@@ -141,6 +141,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise FileNotFoundError(sample_path)
         os.environ.setdefault("PR_BODY", _load_sample_body(sample_path))
         os.environ.pop("GITHUB_EVENT_PATH", None)
+        os.environ.pop("GITHUB_EVENT_NAME", None)
 
     legacy = _load_legacy_module()
     _synchronize_proxy_attributes(legacy)
