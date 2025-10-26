@@ -43,6 +43,33 @@ def test_wrapper_overrides_existing_pr_body_with_sample() -> None:
     assert result.stderr.strip() == ""
 
 
+def test_wrapper_replaces_preset_pr_body_contents() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    sample_path = repo_root / "workflow-cookbook" / "tools" / "ci" / "fixtures" / "sample_pr_body.md"
+    sample_body = sample_path.read_text(encoding="utf-8")
+
+    python_code = (
+        "import os, sys\n"
+        "from tools.ci import check_governance_gate as module\n"
+        "os.environ['PR_BODY'] = 'bad body'\n"
+        "exit_code = module.main(['--use-sample-pr-body'])\n"
+        "sys.stdout.write(os.environ['PR_BODY'])\n"
+        "sys.exit(exit_code)\n"
+    )
+
+    result = subprocess.run(
+        [sys.executable, "-c", python_code],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=os.environ.copy(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == sample_body
+
+
 def test_wrapper_ignores_pr_event_when_using_sample() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     script = repo_root / "tools" / "ci" / "check_governance_gate.py"
