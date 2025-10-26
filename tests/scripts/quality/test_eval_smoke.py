@@ -253,8 +253,8 @@ def test_eval_smoke_pipeline_with_real_modules(
         )
     except subprocess.TimeoutExpired as exc:  # pragma: no cover - diagnostic path
         pytest.fail(f"eval_smoke.sh hung waiting for stdin: {exc}")
-
-    assert completed.returncode == 0
+    else:
+        assert completed.returncode == 0
     assert metrics_path.exists()
     metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     assert "semantic" in metrics
