@@ -161,7 +161,7 @@ def _base_signals(
     hub = hub_scores.get(str(node.get("id", "")), 0.0)
     if intent_role and node_role == intent_role:
         role = 0.6
-    elif intent_role and node_role and node_role != intent_role:
+    elif intent_role and node_role:
         role = 0.2
     else:
         role = 0.4
