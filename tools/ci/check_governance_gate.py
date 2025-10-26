@@ -138,7 +138,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     filtered_args, use_sample_flag = _prepare_arguments(argv)
 
-    should_apply_sample = argv is not None and _should_use_sample(use_sample_flag)
+    should_apply_sample = _should_use_sample(use_sample_flag)
     if should_apply_sample:
         sample_path = repo_root / _SAMPLE_RELATIVE_PATH
         if not sample_path.is_file():

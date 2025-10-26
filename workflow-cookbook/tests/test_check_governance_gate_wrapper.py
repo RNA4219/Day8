@@ -23,6 +23,31 @@ def test_wrapper_uses_sample_body_by_default() -> None:
     assert result.returncode == 0, result.stderr
 
 
+def test_wrapper_module_main_none_uses_sample_without_warning() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    env = os.environ.copy()
+    env.pop("GITHUB_EVENT_NAME", None)
+    env.pop("GITHUB_EVENT_PATH", None)
+    env.pop("PR_BODY", None)
+
+    python_code = (
+        "import tools.ci.check_governance_gate as m, sys\n"
+        "sys.exit(m.main(None))\n"
+    )
+
+    result = subprocess.run(
+        [sys.executable, "-c", python_code],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "PR body data is unavailable" not in result.stderr
+
+
 def test_wrapper_overrides_existing_pr_body_with_sample() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     script = repo_root / "tools" / "ci" / "check_governance_gate.py"
