@@ -23,6 +23,26 @@ def test_wrapper_uses_sample_body_by_default() -> None:
     assert result.returncode == 0, result.stderr
 
 
+def test_wrapper_overrides_existing_pr_body_with_sample() -> None:
+    repo_root = Path(__file__).resolve().parents[2]
+    script = repo_root / "tools" / "ci" / "check_governance_gate.py"
+
+    env = os.environ.copy()
+    env.update({"PR_BODY": "bad body"})
+
+    result = subprocess.run(
+        [sys.executable, str(script), "--use-sample-pr-body"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stderr.strip() == ""
+
+
 def test_wrapper_ignores_pr_event_when_using_sample() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     script = repo_root / "tools" / "ci" / "check_governance_gate.py"
