@@ -192,6 +192,36 @@ def test_main_fails_when_required_metric_missing(
     }
 
 
+@pytest.mark.parametrize(
+    "prom_metrics, chainlit_metrics, expected",
+    [
+        (
+            {"day8_jobs_processed_total": 5.0},
+            {"day8_jobs_processed_total": 8.0, "day8_jobs_failed_total": 2.0},
+            {"day8_jobs_processed_total": 5.0, "day8_jobs_failed_total": 2.0},
+        ),
+        (
+            {"day8_jobs_processed_total": 5.0},
+            {"day8_healthz_request_total": 3.0},
+            {"day8_jobs_processed_total": 5.0, "day8_healthz_request_total": 3.0},
+        ),
+        (
+            {},
+            {"day8_jobs_processed_total": 1.0},
+            {"day8_jobs_processed_total": 1.0},
+        ),
+    ],
+)
+def test_merge_metrics_prefers_first_source_values(
+    collect_metrics_module,
+    prom_metrics: Dict[str, float],
+    chainlit_metrics: Dict[str, float],
+    expected: Dict[str, float],
+) -> None:
+    merged = collect_metrics_module._merge_metrics(prom_metrics, chainlit_metrics)
+    assert merged == expected
+
+
 def test_main_writes_output_file_when_missing_metric(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

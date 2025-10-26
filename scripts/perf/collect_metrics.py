@@ -181,7 +181,9 @@ def _merge_metrics(*sources: Mapping[str, float]) -> Dict[str, float]:
     merged: Dict[str, float] = {}
     for source in sources:
         for key, value in source.items():
-            merged.setdefault(key, value)
+            if key in merged:
+                continue
+            merged[key] = value
     return merged
 
 
