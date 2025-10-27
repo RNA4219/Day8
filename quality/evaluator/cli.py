@@ -19,6 +19,42 @@ _BERT_F1_THRESHOLD = 0.85
 _ROUGE_L_THRESHOLD = 0.70
 
 
+def _normalize_yaml_scalar(value: str) -> str:
+    text = value.strip()
+    if not text:
+        return ""
+
+    normalized: list[str] = []
+    in_single = False
+    in_double = False
+    escape = False
+    for char in text:
+        if escape:
+            normalized.append(char)
+            escape = False
+            continue
+        if char == "\\" and not in_single:
+            escape = True
+            normalized.append(char)
+            continue
+        if char == "'" and not in_double:
+            in_single = not in_single
+            normalized.append(char)
+            continue
+        if char == '"' and not in_single:
+            in_double = not in_double
+            normalized.append(char)
+            continue
+        if char == "#" and not in_single and not in_double:
+            break
+        normalized.append(char)
+
+    result = "".join(normalized).rstrip()
+    if len(result) >= 2 and result[0] == result[-1] and result[0] in {'"', "'"}:
+        result = result[1:-1]
+    return result
+
+
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate Day8 quality metrics")
     parser.add_argument("bundle", nargs="?", help="入力・期待値・出力が置かれたディレクトリ")
@@ -221,7 +257,10 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         if stripped.startswith("- id:"):
             if current:
                 rules.append(current)
-            current = {"id": stripped.split(":", 1)[1].strip(), "match": {"any": []}}
+            current = {
+                "id": _normalize_yaml_scalar(stripped.split(":", 1)[1]),
+                "match": {"any": []},
+            }
             gathering_contains = False
             idx += 1
             continue
@@ -229,15 +268,16 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             idx += 1
             continue
         if stripped.startswith("description:"):
-            current["description"] = stripped.split(":", 1)[1].strip()
+            current["description"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
         elif stripped.startswith("severity:"):
-            current["severity"] = stripped.split(":", 1)[1].strip()
+            current["severity"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
         elif stripped.startswith("any:"):
             gathering_contains = True
             idx += 1
             continue
         elif stripped.startswith("- contains:") and gathering_contains:
-            payload = stripped.split(":", 1)[1].strip()
+            value_part = stripped.split(":", 1)[1]
+            payload = value_part.strip()
             indent_level = len(raw) - len(raw.lstrip(" "))
             if payload and payload[0] in {"|", ">"}:
                 indicator = payload[0]
@@ -272,8 +312,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 match = current.setdefault("match", {})
                 match.setdefault("any", []).append({"contains": value})
                 continue
-            if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
-                payload = payload[1:-1]
+            payload = _normalize_yaml_scalar(value_part)
             match = current.setdefault("match", {})
             match.setdefault("any", []).append({"contains": payload})
             idx += 1

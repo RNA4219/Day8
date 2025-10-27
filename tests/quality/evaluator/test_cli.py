@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import builtins
 from importlib import import_module
 from pathlib import Path
 from types import SimpleNamespace
@@ -263,6 +264,46 @@ rules:
     rule = parsed["rules"][0]
 
     assert module._matches_rule(rule, "prefix alpha\nbeta suffix")
+
+
+def test_load_ruleset_fallback_strips_inline_comments(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _reject_yaml(name: str, *args: Any, **kwargs: Any):
+        if name == "yaml":
+            raise ModuleNotFoundError("No module named 'yaml'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _reject_yaml)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: rule-critical  # inline id comment
+    severity: critical  # inline severity comment
+    description: "Trigger when error"  # inline description comment
+    any:
+      - contains: error
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    loaded = module._load_ruleset(rules_path)
+
+    rule = loaded["rules"][0]
+    assert rule["id"] == "rule-critical"
+    assert rule["severity"] == "critical"
+    assert rule["description"] == "Trigger when error"
+
+    guardrail = module._evaluate_guardrails(rules_path, ["fatal error detected"])
+    assert guardrail["counts"]["critical"] == 1
+    assert guardrail["max_severity"] == "critical"
 
 
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
