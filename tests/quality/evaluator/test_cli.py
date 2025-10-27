@@ -198,6 +198,54 @@ def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) 
     assert references == ["stay's, calm"]
 
 
+def test_evaluate_guardrails_counts_quoted_severity(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _mocked_import(name: str, *args: Any, **kwargs: Any):  # type: ignore[override]
+        if name == "yaml":
+            raise ModuleNotFoundError
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _mocked_import)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+rules:
+  - id: "critical-rule"
+    description: 'Critical guardrail'
+    severity: "critical"
+    match:
+      any:
+        - contains: "blocking"
+  - id: 'major-rule'
+    description: "Major guardrail"
+    severity: 'major'
+    match:
+      any:
+        - contains: 'warning'
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    result = module._evaluate_guardrails(
+        rules_path,
+        [
+            "blocking issue detected",
+            "warning should also be caught",
+        ],
+    )
+
+    assert result["counts"]["critical"] == 1
+    assert result["counts"]["major"] == 1
+    assert any(violation["severity"] == "critical" for violation in result["violations"])
+    assert any(violation["severity"] == "major" for violation in result["violations"])
+
+
 def test_parse_rules_yaml_strips_wrapping_quotes() -> None:
     module = import_module("quality.evaluator.cli")
 

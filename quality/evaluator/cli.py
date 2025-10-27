@@ -55,6 +55,13 @@ def _normalize_yaml_scalar(value: str) -> str:
     return result
 
 
+def _normalize_rule_metadata(value: str) -> str:
+    normalized = value.strip()
+    if len(normalized) >= 2 and normalized[0] == normalized[-1] and normalized[0] in {'"', "'"}:
+        normalized = normalized[1:-1]
+    return normalized.strip()
+
+
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate Day8 quality metrics")
     parser.add_argument("bundle", nargs="?", help="入力・期待値・出力が置かれたディレクトリ")
@@ -258,7 +265,9 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             if current:
                 rules.append(current)
             current = {
-                "id": _normalize_yaml_scalar(stripped.split(":", 1)[1]),
+                "id": _normalize_rule_metadata(
+                    _normalize_yaml_scalar(stripped.split(":", 1)[1])
+                ),
                 "match": {"any": []},
             }
             gathering_contains = False
@@ -268,9 +277,13 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             idx += 1
             continue
         if stripped.startswith("description:"):
-            current["description"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
+            current["description"] = _normalize_rule_metadata(
+                _normalize_yaml_scalar(stripped.split(":", 1)[1])
+            )
         elif stripped.startswith("severity:"):
-            current["severity"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
+            current["severity"] = _normalize_rule_metadata(
+                _normalize_yaml_scalar(stripped.split(":", 1)[1])
+            )
         elif stripped.startswith("any:"):
             gathering_contains = True
             idx += 1
