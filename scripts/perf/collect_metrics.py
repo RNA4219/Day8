@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, Sequence, Tuple
@@ -18,6 +19,9 @@ REQUIRED_METRIC_SUFFIXES: list[str] = [
     "jobs_failed_total",
     "healthz_request_total",
 ]
+_ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
+_TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
+_LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"([^\"]*)\"")
 
 
 def _required_metric_names(metric_prefix: str) -> list[str]:
@@ -44,8 +48,6 @@ def collect_prometheus_metrics(
             file=sys.stderr,
         )
         return {}
-    additive_suffixes = ("_total", "_sum", "_count")
-    timestamp_suffixes = ("_timestamp",)
     results: Dict[str, float] = {}
     for line in payload.splitlines():
         if not line or line.startswith("#"):
@@ -72,9 +74,9 @@ def collect_prometheus_metrics(
         previous_value = results.get(normalized_metric)
         if previous_value is None:
             results[normalized_metric] = numeric_value
-        elif normalized_metric.endswith(timestamp_suffixes):
+        elif normalized_metric.endswith(_TIMESTAMP_SUFFIXES):
             results[normalized_metric] = max(previous_value, numeric_value)
-        elif normalized_metric.endswith(additive_suffixes):
+        elif normalized_metric.endswith(_ADDITIVE_SUFFIXES):
             results[normalized_metric] = previous_value + numeric_value
         else:
             results[normalized_metric] = numeric_value
@@ -84,18 +86,33 @@ def collect_prometheus_metrics(
 def _normalize_prometheus_metric_name(
     metric: str, *, preserve_label_for_bucket: bool = False
 ) -> str:
-    if preserve_label_for_bucket and "_bucket" in metric:
-        bucket_index = metric.find("_bucket")
-        label_start = metric.find("{", bucket_index)
-        if label_start != -1:
-            label_end = metric.find("}", label_start)
-            if label_end != -1:
-                return metric[: label_end + 1]
+    label_start = metric.find("{")
+    label_end = metric.find("}", label_start) if label_start != -1 else -1
+    labels = metric[label_start : label_end + 1] if label_start != -1 and label_end != -1 else ""
+
+    base = metric
     for delimiter in ("{", "[", "("):
         index = metric.find(delimiter)
         if index != -1:
-            return metric[:index]
-    return metric
+            base = metric[:index]
+            break
+
+    if preserve_label_for_bucket and base.endswith("_bucket") and labels:
+        return f"{base}{labels}"
+
+    if not labels:
+        return base
+
+    if base.endswith(_ADDITIVE_SUFFIXES) or base.endswith(_TIMESTAMP_SUFFIXES):
+        return base
+
+    parsed_labels = _LABEL_PATTERN.findall(labels)
+    if not parsed_labels:
+        return base
+    formatted_labels = ",".join(
+        f'{key}="{value}"' for key, value in sorted(parsed_labels)
+    )
+    return f"{base}{{{formatted_labels}}}"
 
 
 def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PREFIX) -> Dict[str, float]:
