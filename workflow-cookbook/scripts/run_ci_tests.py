@@ -185,7 +185,8 @@ def main() -> int:
     else:
         failures = run_python()
     write_output(failures)
-    return 1 if failures else 0
+    result: int = 1 if failures else 0
+    return result
 
 
 if __name__ == "__main__":
