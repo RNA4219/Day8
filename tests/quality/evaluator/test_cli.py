@@ -244,6 +244,26 @@ rules:
     assert module._matches_rule(rule, "prefix folded text suffix")
 
 
+def test_parse_rules_yaml_ignores_inline_comments_for_unquoted_contains() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-commented
+    severity: minor
+    any:
+      - contains: TODO # ensure inline comment is ignored
+"""
+    )
+
+    rule = parsed["rules"][0]
+
+    assert module._matches_rule(rule, "TODO: handle inline comment")
+    assert not module._matches_rule(rule, "NOTE: should not match")
+
+
 def test_matches_rule_supports_multiline_block_scalars() -> None:
     module = import_module("quality.evaluator.cli")
 

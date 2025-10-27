@@ -274,6 +274,10 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 continue
             if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
                 payload = payload[1:-1]
+            else:
+                comment_index = payload.find("#")
+                if comment_index != -1:
+                    payload = payload[:comment_index].rstrip()
             match = current.setdefault("match", {})
             match.setdefault("any", []).append({"contains": payload})
             idx += 1
