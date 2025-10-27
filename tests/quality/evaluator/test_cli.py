@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import json
 import sys
 from importlib import import_module
@@ -242,6 +243,47 @@ rules:
 
     assert module._matches_rule(rule, "prefix multi\nline suffix")
     assert module._matches_rule(rule, "prefix folded text suffix")
+
+
+def test_evaluate_guardrails_without_yaml_handles_quoted_fields(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    monkeypatch.delitem(sys.modules, "yaml", raising=False)
+
+    original_import = builtins.__import__
+
+    def _fake_import(name: str, globals: Any | None = None, locals: Any | None = None, fromlist: tuple[str, ...] = (), level: int = 0):
+        if name == "yaml":
+            raise ModuleNotFoundError
+        return original_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", _fake_import)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: "'rule-quoted'"
+    description: '"Needs review"'
+    severity: "'critical'"
+    any:
+      - contains: failure
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = module._evaluate_guardrails(rules_path, ["hard failure"])
+
+    assert result["counts"] == {"minor": 0, "major": 0, "critical": 1}
+    assert result["max_severity"] == "critical"
+    violation = result["violations"][0]
+    assert violation["severity"] == "critical"
+    assert violation["id"] == "rule-quoted"
+    assert violation["message"] == "Needs review"
 
 
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

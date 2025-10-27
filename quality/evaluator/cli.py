@@ -19,6 +19,13 @@ _BERT_F1_THRESHOLD = 0.85
 _ROUGE_L_THRESHOLD = 0.70
 
 
+def _strip_wrapping_quotes(value: str) -> str:
+    result = value.strip()
+    while len(result) >= 2 and result[0] == result[-1] and result[0] in {'"', "'"}:
+        result = result[1:-1].strip()
+    return result
+
+
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate Day8 quality metrics")
     parser.add_argument("bundle", nargs="?", help="入力・期待値・出力が置かれたディレクトリ")
@@ -221,7 +228,8 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         if stripped.startswith("- id:"):
             if current:
                 rules.append(current)
-            current = {"id": stripped.split(":", 1)[1].strip(), "match": {"any": []}}
+            identifier = _strip_wrapping_quotes(stripped.split(":", 1)[1].strip())
+            current = {"id": identifier, "match": {"any": []}}
             gathering_contains = False
             idx += 1
             continue
@@ -229,9 +237,11 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             idx += 1
             continue
         if stripped.startswith("description:"):
-            current["description"] = stripped.split(":", 1)[1].strip()
+            description = _strip_wrapping_quotes(stripped.split(":", 1)[1].strip())
+            current["description"] = description
         elif stripped.startswith("severity:"):
-            current["severity"] = stripped.split(":", 1)[1].strip()
+            severity = _strip_wrapping_quotes(stripped.split(":", 1)[1].strip())
+            current["severity"] = severity
         elif stripped.startswith("any:"):
             gathering_contains = True
             idx += 1
