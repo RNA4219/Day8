@@ -19,6 +19,12 @@ _BERT_F1_THRESHOLD = 0.85
 _ROUGE_L_THRESHOLD = 0.70
 
 
+def _normalize_rule_scalar(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        return value[1:-1]
+    return value
+
+
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate Day8 quality metrics")
     parser.add_argument("bundle", nargs="?", help="入力・期待値・出力が置かれたディレクトリ")
@@ -217,21 +223,24 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         if stripped.startswith("- id:"):
             if current:
                 rules.append(current)
-            current = {"id": stripped.split(":", 1)[1].strip(), "match": {"any": []}}
+            identifier = _normalize_rule_scalar(stripped.split(":", 1)[1].strip())
+            current = {"id": identifier, "match": {"any": []}}
             gathering_contains = False
             continue
         if current is None:
             continue
         if stripped.startswith("description:"):
-            current["description"] = stripped.split(":", 1)[1].strip()
+            current["description"] = _normalize_rule_scalar(
+                stripped.split(":", 1)[1].strip()
+            )
         elif stripped.startswith("severity:"):
-            current["severity"] = stripped.split(":", 1)[1].strip()
+            current["severity"] = _normalize_rule_scalar(
+                stripped.split(":", 1)[1].strip()
+            )
         elif stripped.startswith("any:"):
             gathering_contains = True
         elif stripped.startswith("- contains:") and gathering_contains:
-            payload = stripped.split(":", 1)[1].strip()
-            if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
-                payload = payload[1:-1]
+            payload = _normalize_rule_scalar(stripped.split(":", 1)[1].strip())
             match = current.setdefault("match", {})
             match.setdefault("any", []).append({"contains": payload})
         elif not raw.startswith("  "):

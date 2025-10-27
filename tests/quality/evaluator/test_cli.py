@@ -205,7 +205,8 @@ def test_parse_rules_yaml_strips_wrapping_quotes() -> None:
 version: 1
 rules:
   - id: rule-contains
-    severity: minor
+    description: 'quoted description'
+    severity: "critical"
     any:
       - contains: "TODO"
       - contains: 'FIXME'
@@ -214,9 +215,47 @@ rules:
 
     rule = parsed["rules"][0]
 
+    assert rule["id"] == "rule-contains"
+    assert rule["description"] == "quoted description"
+    assert rule["severity"] == "critical"
     assert module._matches_rule(rule, "TODO: double quoted")
     assert module._matches_rule(rule, "FIXME: single quoted")
     assert not module._matches_rule(rule, "NOTE: no match")
+
+
+def test_evaluate_guardrails_counts_quoted_severity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: 'rule-critical'
+    description: "needs attention"
+    severity: 'critical'
+    any:
+      - contains: 'breach'
+"""
+    ,
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(
+        module,
+        "_load_ruleset",
+        lambda path: module._parse_rules_yaml(path.read_text(encoding="utf-8")),
+    )
+
+    result = module._evaluate_guardrails(rules_path, ["Potential breach detected"])
+
+    assert result["counts"]["critical"] == 1
+    assert result["violations"] == [
+        {"id": "rule-critical", "severity": "critical", "message": "needs attention"}
+    ]
+    assert result["max_severity"] == "critical"
 
 
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
