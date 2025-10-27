@@ -143,6 +143,21 @@ def test_collect_pairs_skips_missing_identifiers(tmp_path: Path) -> None:
     assert references == ["expected"]
 
 
+def test_collect_pairs_preserves_comma_separated_strings(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+
+    inputs_path.write_text("{'id': '1', 'output': 'alpha, beta'}\n", encoding="utf-8")
+    expected_path.write_text("{'id': '1', 'expected': 'gamma, delta'}\n", encoding="utf-8")
+
+    outputs, references = module._collect_pairs(inputs_path, expected_path)
+
+    assert outputs == ["alpha, beta"]
+    assert references == ["gamma, delta"]
+
+
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     metrics_path = tmp_path / "metrics.json"
     inputs_path = tmp_path / "inputs.jsonl"
