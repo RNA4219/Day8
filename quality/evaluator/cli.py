@@ -239,13 +239,14 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         elif stripped.startswith("- contains:") and gathering_contains:
             payload = stripped.split(":", 1)[1].strip()
             indent_level = len(raw) - len(raw.lstrip(" "))
-            if payload.startswith("|") or payload.startswith(">"):
+            if payload and payload[0] in {"|", ">"}:
+                indicator = payload[0]
                 idx += 1
                 block_lines: list[tuple[str, int | None]] = []
                 while idx < len(lines):
                     candidate_raw = lines[idx]
-                    candidate_stripped = candidate_raw.strip()
                     candidate_indent = len(candidate_raw) - len(candidate_raw.lstrip(" "))
+                    candidate_stripped = candidate_raw.strip()
                     if candidate_stripped == "":
                         block_lines.append(("", None))
                         idx += 1
@@ -254,19 +255,20 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                         break
                     block_lines.append((candidate_raw, candidate_indent))
                     idx += 1
-                contents: list[str] = []
+                normalized: list[str] = []
                 if block_lines:
                     indents = [indent for _, indent in block_lines if indent is not None]
                     trim_indent = min(indents) if indents else indent_level + 1
                     for line, indent in block_lines:
                         if indent is None:
-                            contents.append("")
-                        else:
-                            start = trim_indent if len(line) >= trim_indent else len(line)
-                            contents.append(line[start:])
-                value = "\n".join(contents) if payload.startswith("|") else " ".join(
-                    segment for segment in (part.strip() for part in contents) if segment
-                )
+                            normalized.append("")
+                            continue
+                        start = trim_indent if len(line) >= trim_indent else len(line)
+                        normalized.append(line[start:])
+                if indicator == "|":
+                    value = "\n".join(normalized)
+                else:
+                    value = " ".join(segment for segment in (part.strip() for part in normalized) if segment)
                 match = current.setdefault("match", {})
                 match.setdefault("any", []).append({"contains": value})
                 continue
