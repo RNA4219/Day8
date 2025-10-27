@@ -24,6 +24,10 @@ _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
 _LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"([^\"]*)\"")
 
 
+def _sanitize_label_value_for_suffix(value: str) -> str:
+    return re.sub(r"[^0-9A-Za-z_.-]", "_", value)
+
+
 def _required_metric_names(metric_prefix: str) -> list[str]:
     return [f"{metric_prefix}{suffix}" for suffix in REQUIRED_METRIC_SUFFIXES]
 
@@ -103,12 +107,31 @@ def _normalize_prometheus_metric_name(
     if not labels:
         return base
 
-    if base.endswith(_ADDITIVE_SUFFIXES) or base.endswith(_TIMESTAMP_SUFFIXES):
-        return base
-
     parsed_labels = _LABEL_PATTERN.findall(labels)
     if not parsed_labels:
         return base
+
+    if base.endswith(_ADDITIVE_SUFFIXES) or base.endswith(_TIMESTAMP_SUFFIXES):
+        return base
+
+    if base.endswith("_seconds"):
+        quantile_value: str | None = None
+        remaining_labels: list[tuple[str, str]] = []
+        for key, value in parsed_labels:
+            if key == "quantile" and quantile_value is None:
+                quantile_value = value
+            else:
+                remaining_labels.append((key, value))
+        if quantile_value is not None:
+            suffix_value = _sanitize_label_value_for_suffix(quantile_value)
+            suffix = f"_quantile_{suffix_value}"
+            if remaining_labels:
+                formatted_remaining = ",".join(
+                    f'{key}="{value}"' for key, value in sorted(remaining_labels)
+                )
+                return f"{base}{suffix}{{{formatted_remaining}}}"
+            return f"{base}{suffix}"
+
     formatted_labels = ",".join(
         f'{key}="{value}"' for key, value in sorted(parsed_labels)
     )
