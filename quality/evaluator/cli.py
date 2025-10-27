@@ -70,7 +70,7 @@ def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
                     return str(value)
         return ""
 
-    expected_map: dict[str, str] = {}
+    expected_map: dict[str, tuple[str, bool]] = {}
     for item in _load_records(expected):
         raw_id = item.get("id")
         if raw_id is None:
@@ -78,7 +78,7 @@ def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
         if isinstance(raw_id, str) and raw_id == "":
             continue
         key = str(raw_id)
-        expected_map[key] = _select_text(item, ("expected", "reference"))
+        expected_map[key] = (_select_text(item, ("expected", "reference")), False)
 
     outputs: list[str] = []
     references: list[str] = []
@@ -91,8 +91,15 @@ def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
         key = str(raw_id)
         if key not in expected_map:
             continue
+        reference, _ = expected_map[key]
         outputs.append(_select_text(record, ("output", "response")))
-        references.append(expected_map[key])
+        references.append(reference)
+        expected_map[key] = (reference, True)
+    for reference, matched in expected_map.values():
+        if matched:
+            continue
+        outputs.append("")
+        references.append(reference)
     return outputs, references
 
 
