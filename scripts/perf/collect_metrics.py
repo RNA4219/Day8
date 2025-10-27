@@ -21,7 +21,7 @@ REQUIRED_METRIC_SUFFIXES: list[str] = [
 ]
 _ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
 _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
-_LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"([^\"]*)\"")
+_LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"((?:\\.|[^\"])*)\"")
 
 
 def _sanitize_label_value_for_suffix(value: str) -> str:

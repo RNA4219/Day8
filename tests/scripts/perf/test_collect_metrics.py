@@ -473,6 +473,36 @@ def test_collect_prometheus_metrics_strips_labels(monkeypatch: pytest.MonkeyPatc
     }
 
 
+def test_collect_prometheus_metrics_preserves_escaped_labels(
+    monkeypatch: pytest.MonkeyPatch, collect_metrics_module
+) -> None:
+    payload = (
+        b'day8_request_inflight{path="\\"/api\\"",bucket="p\\n"} 1\n'
+        b'day8_request_inflight{bucket="p\\n",path="\\"/api\\""} 2\n'
+        b'day8_request_duration_seconds_bucket{path="\\"/api\\"",le="0.5",bucket="p\\n"} 3\n'
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        fake_urlopen,
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://localhost:8000/metrics"
+    )
+
+    assert result[
+        'day8_request_inflight{bucket="p\\n",path="\\"/api\\""}'
+    ] == pytest.approx(2.0)
+    assert result[
+        'day8_request_duration_seconds_bucket{path="\\"/api\\"",le="0.5",bucket="p\\n"}'
+    ] == pytest.approx(3.0)
+
+
 def test_main_supports_custom_metric_prefix(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
