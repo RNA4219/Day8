@@ -74,6 +74,38 @@ def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
     assert references == ["0", "False", ""]
 
 
+def test_collect_pairs_appends_missing_outputs(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+
+    inputs_path.write_text(
+        "\n".join(
+            [
+                "{\"id\": \"present\", \"output\": \"actual\"}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    expected_path.write_text(
+        "\n".join(
+            [
+                "{\"id\": \"present\", \"expected\": \"expected\"}",
+                "{\"id\": \"missing\", \"expected\": \"fallback\"}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    outputs, references = module._collect_pairs(inputs_path, expected_path)
+
+    assert outputs == ["actual", ""]
+    assert references == ["expected", "fallback"]
+
+
 def test_collect_pairs_skips_missing_identifiers(tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
 
