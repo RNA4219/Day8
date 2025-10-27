@@ -312,7 +312,16 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 match = current.setdefault("match", {})
                 match.setdefault("any", []).append({"contains": value})
                 continue
-            payload = _normalize_yaml_scalar(value_part)
+            # コメント除去とクオート除去を事前処理しつつ、正規化関数に委譲
+            if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
+                payload = payload[1:-1]
+            else:
+                comment_index = payload.find("#")
+                if comment_index != -1:
+                    payload = payload[:comment_index].rstrip()
+
+            payload = _normalize_yaml_scalar(payload)
+
             match = current.setdefault("match", {})
             match.setdefault("any", []).append({"contains": payload})
             idx += 1
