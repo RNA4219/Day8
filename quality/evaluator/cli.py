@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -49,15 +50,132 @@ def _load_records(path: Path) -> list[dict[str, Any]]:
 
 
 def _parse_loose_mapping(text: str) -> dict[str, Any]:
-    body = text.strip().strip("{} ")
-    if not body:
+    candidate = text.strip()
+    if not candidate:
         return {}
+    if not (candidate.startswith("{") and candidate.endswith("}")):
+        candidate = "{" + candidate.strip().strip("{}") + "}"
+
+    def _literal_eval_mapping(payload: str) -> dict[str, Any] | None:
+        try:
+            parsed = ast.literal_eval(payload)
+        except (SyntaxError, ValueError):
+            return None
+        if not isinstance(parsed, dict):
+            return None
+        return {str(key): value for key, value in parsed.items()}
+
+    literal_result = _literal_eval_mapping(candidate)
+    if literal_result is not None:
+        return literal_result
+
+    body = candidate[1:-1]
+
+    def _split_top_level(source: str) -> list[str]:
+        parts: list[str] = []
+        current: list[str] = []
+        quote: str | None = None
+        escape = False
+        depth = 0
+        for char in source:
+            if escape:
+                current.append(char)
+                escape = False
+                continue
+            if quote:
+                current.append(char)
+                if char == "\\":
+                    escape = True
+                elif char == quote:
+                    quote = None
+                continue
+            if char in {'"', "'"}:
+                quote = char
+                current.append(char)
+                continue
+            if char in "{[":
+                depth += 1
+                current.append(char)
+                continue
+            if char in "}]" and depth > 0:
+                depth -= 1
+                current.append(char)
+                continue
+            if char == "," and depth == 0:
+                fragment = "".join(current).strip()
+                if fragment:
+                    parts.append(fragment)
+                current = []
+                continue
+            current.append(char)
+        fragment = "".join(current).strip()
+        if fragment:
+            parts.append(fragment)
+        return parts
+
+    def _split_fragment(fragment: str) -> tuple[str, str] | None:
+        quote: str | None = None
+        escape = False
+        depth = 0
+        for index, char in enumerate(fragment):
+            if escape:
+                escape = False
+                continue
+            if quote:
+                if char == "\\":
+                    escape = True
+                elif char == quote:
+                    quote = None
+                continue
+            if char in {'"', "'"}:
+                quote = char
+                continue
+            if char in "{[":
+                depth += 1
+                continue
+            if char in "}]" and depth > 0:
+                depth -= 1
+                continue
+            if char == ":" and depth == 0:
+                return fragment[:index], fragment[index + 1 :]
+        return None
+
+    def _normalize_token(token: str) -> str:
+        stripped = token.strip()
+        if stripped and stripped[0] in {'"', "'"} and stripped[-1] == stripped[0]:
+            try:
+                return str(ast.literal_eval(stripped))
+            except (SyntaxError, ValueError):
+                return stripped[1:-1]
+        return stripped
+
+    def _parse_value(raw: str) -> Any:
+        stripped = raw.strip()
+        if not stripped:
+            return ""
+        lowered = stripped.lower()
+        if lowered in {"true", "false", "null"}:
+            return {"true": True, "false": False, "null": None}[lowered]
+        if stripped[0] in {'"', "'"} and stripped[-1] == stripped[0]:
+            try:
+                return ast.literal_eval(stripped)
+            except (SyntaxError, ValueError):
+                return stripped[1:-1]
+        try:
+            return ast.literal_eval(stripped)
+        except (SyntaxError, ValueError):
+            return stripped
+
     parsed: dict[str, Any] = {}
-    for fragment in body.split(","):
-        if ":" not in fragment:
+    for fragment in _split_top_level(body):
+        split = _split_fragment(fragment)
+        if split is None:
             continue
-        key, value = fragment.split(":", 1)
-        parsed[key.strip().strip('"\'')] = value.strip().strip('"\'')
+        raw_key, raw_value = split
+        key = _normalize_token(raw_key)
+        if not key:
+            continue
+        parsed[str(key)] = _parse_value(raw_value)
     return parsed
 
 
