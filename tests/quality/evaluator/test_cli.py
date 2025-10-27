@@ -198,6 +198,41 @@ def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) 
     assert references == ["stay's, calm"]
 
 
+def test_parse_rules_yaml_strips_unquoted_comments(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _missing_yaml(name: str, *args: Any, **kwargs: Any):
+        if name == "yaml":
+            raise ModuleNotFoundError
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _missing_yaml)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        "\n".join(
+            [
+                "rules:",
+                "  - id: comment-rule",
+                "    severity: minor",
+                "    match:",
+                "      any:",
+                "        - contains: TODO  # allow",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    loaded = module._load_ruleset(rules_path)
+    (rule,) = loaded.get("rules", [])
+
+    assert module._matches_rule(rule, "TODO needs attention")
+    assert not module._matches_rule(rule, "all good")
+
+
 def test_parse_rules_yaml_strips_wrapping_quotes() -> None:
     module = import_module("quality.evaluator.cli")
 

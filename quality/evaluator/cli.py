@@ -313,9 +313,8 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 match.setdefault("any", []).append({"contains": value})
                 continue
             # コメント除去とクオート除去を事前処理しつつ、正規化関数に委譲
-            if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
-                payload = payload[1:-1]
-            else:
+            is_quoted = len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}
+            if not is_quoted:
                 comment_index = payload.find("#")
                 if comment_index != -1:
                     payload = payload[:comment_index].rstrip()
