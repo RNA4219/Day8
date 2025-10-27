@@ -130,7 +130,9 @@ def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
         key = str(raw_id)
         if key not in expected_map:
             continue
-        reference, _ = expected_map[key]
+        reference, matched = expected_map[key]
+        if matched:
+            continue
         outputs.append(_select_text(record, ("output", "response")))
         references.append(reference)
         expected_map[key] = (reference, True)
