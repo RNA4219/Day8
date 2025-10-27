@@ -53,7 +53,9 @@ def collect_prometheus_metrics(
         parts = line.split()
         if len(parts) < 2:
             continue
-        normalized_metric = _normalize_prometheus_metric_name(parts[0])
+        normalized_metric = _normalize_prometheus_metric_name(
+            parts[0], preserve_label_for_bucket=True
+        )
         if not normalized_metric.startswith(metric_prefix):
             continue
         try:
@@ -79,7 +81,16 @@ def collect_prometheus_metrics(
     return results
 
 
-def _normalize_prometheus_metric_name(metric: str) -> str:
+def _normalize_prometheus_metric_name(
+    metric: str, *, preserve_label_for_bucket: bool = False
+) -> str:
+    if preserve_label_for_bucket and "_bucket" in metric:
+        bucket_index = metric.find("_bucket")
+        label_start = metric.find("{", bucket_index)
+        if label_start != -1:
+            label_end = metric.find("}", label_start)
+            if label_end != -1:
+                return metric[: label_end + 1]
     for delimiter in ("{", "[", "("):
         index = metric.find(delimiter)
         if index != -1:
