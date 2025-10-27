@@ -717,6 +717,63 @@ def test_main_aggregates_timestamp_with_max(
     assert captured.err == ""
 
 
+def test_collect_prometheus_metrics_preserves_histogram_buckets(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    payload = (
+        b"day8_latency_seconds_bucket{le=\"0.5\"} 3\n"
+        b"day8_latency_seconds_bucket{le=\"1.0\"} 7\n"
+        b"day8_latency_seconds_bucket{le=\"+Inf\"} 9\n"
+        b"day8_latency_seconds_count 9\n"
+        b"day8_latency_seconds_sum 12\n"
+        b"day8_jobs_processed_total 5\n"
+        b"day8_jobs_failed_total 2\n"
+        b"day8_healthz_request_total 3\n"
+        b"day8_app_boot_timestamp 1\n"
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        lambda path, metric_prefix="day8_": {},
+    )
+
+    metrics = collect_metrics_module.collect_prometheus_metrics(
+        "http://localhost:8000/metrics"
+    )
+    expected_prom_metrics = {
+        'day8_latency_seconds_bucket{le="0.5"}': pytest.approx(3.0),
+        'day8_latency_seconds_bucket{le="1.0"}': pytest.approx(7.0),
+        'day8_latency_seconds_bucket{le="+Inf"}': pytest.approx(9.0),
+        "day8_latency_seconds_count": pytest.approx(9.0),
+        "day8_latency_seconds_sum": pytest.approx(12.0),
+        "day8_jobs_processed_total": pytest.approx(5.0),
+        "day8_jobs_failed_total": pytest.approx(2.0),
+        "day8_healthz_request_total": pytest.approx(3.0),
+        "day8_app_boot_timestamp": pytest.approx(1.0),
+    }
+    assert metrics == expected_prom_metrics
+
+    exit_code = collect_metrics_module.main(_prepare_args(tmp_path))
+    assert exit_code == 0
+
+    captured = capsys.readouterr()
+    payload_json = json.loads(captured.out)
+    assert payload_json == {
+        "prometheus": metrics,
+        "chainlit": {},
+        "metrics": metrics,
+    }
+    assert captured.err == ""
+
+
 def test_collect_chainlit_metrics_supports_multiple_shapes(tmp_path: Path, collect_metrics_module) -> None:
     log_path = tmp_path / "chainlit.jsonl"
     lines = [
