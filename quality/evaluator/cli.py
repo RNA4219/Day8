@@ -5,9 +5,14 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Sequence
+
+_UNQUOTED_KEY_PATTERN = re.compile(r'([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)(\s*:)')
+_JSON_LITERAL_PATTERN = re.compile(r'(:\s*)(true|false|null)(?=\s*(?:[,}]))', re.IGNORECASE)
+_BARE_WORD_PATTERN = re.compile(r'(:\s*)([A-Za-z_][A-Za-z0-9_-]*)(?=\s*(?:[,}]))')
 
 _SEVERITY_PRIORITY = {"critical": 3, "major": 2, "minor": 1}
 _BERT_F1_THRESHOLD = 0.85
@@ -53,8 +58,10 @@ def _parse_loose_mapping(text: str) -> dict[str, Any]:
     candidate = text.strip()
     if not candidate:
         return {}
+
     if not (candidate.startswith("{") and candidate.endswith("}")):
-        candidate = "{" + candidate.strip().strip("{}") + "}"
+        core = candidate.strip().strip("{}")
+        candidate = "{" + core + "}"
 
     def _literal_eval_mapping(payload: str) -> dict[str, Any] | None:
         try:
@@ -65,118 +72,32 @@ def _parse_loose_mapping(text: str) -> dict[str, Any]:
             return None
         return {str(key): value for key, value in parsed.items()}
 
-    literal_result = _literal_eval_mapping(candidate)
-    if literal_result is not None:
-        return literal_result
+    attempts: list[str] = [candidate]
 
-    body = candidate[1:-1]
+    sanitized = _UNQUOTED_KEY_PATTERN.sub(
+        lambda match: f"{match.group(1)}'{match.group(2)}'{match.group(3)}",
+        candidate,
+    )
+    sanitized = _JSON_LITERAL_PATTERN.sub(
+        lambda match: match.group(1)
+        + {"true": "True", "false": "False", "null": "None"}[match.group(2).lower()],
+        sanitized,
+    )
+    sanitized = _BARE_WORD_PATTERN.sub(
+        lambda match: match.group(0)
+        if match.group(2).lower() in {"true", "false", "none"}
+        else f"{match.group(1)}'{match.group(2)}'",
+        sanitized,
+    )
+    if sanitized not in attempts:
+        attempts.append(sanitized)
 
-    def _split_top_level(source: str) -> list[str]:
-        parts: list[str] = []
-        current: list[str] = []
-        quote: str | None = None
-        escape = False
-        depth = 0
-        for char in source:
-            if escape:
-                current.append(char)
-                escape = False
-                continue
-            if quote:
-                current.append(char)
-                if char == "\\":
-                    escape = True
-                elif char == quote:
-                    quote = None
-                continue
-            if char in {'"', "'"}:
-                quote = char
-                current.append(char)
-                continue
-            if char in "{[":
-                depth += 1
-                current.append(char)
-                continue
-            if char in "}]" and depth > 0:
-                depth -= 1
-                current.append(char)
-                continue
-            if char == "," and depth == 0:
-                fragment = "".join(current).strip()
-                if fragment:
-                    parts.append(fragment)
-                current = []
-                continue
-            current.append(char)
-        fragment = "".join(current).strip()
-        if fragment:
-            parts.append(fragment)
-        return parts
+    for payload in attempts:
+        literal = _literal_eval_mapping(payload)
+        if literal is not None:
+            return literal
 
-    def _split_fragment(fragment: str) -> tuple[str, str] | None:
-        quote: str | None = None
-        escape = False
-        depth = 0
-        for index, char in enumerate(fragment):
-            if escape:
-                escape = False
-                continue
-            if quote:
-                if char == "\\":
-                    escape = True
-                elif char == quote:
-                    quote = None
-                continue
-            if char in {'"', "'"}:
-                quote = char
-                continue
-            if char in "{[":
-                depth += 1
-                continue
-            if char in "}]" and depth > 0:
-                depth -= 1
-                continue
-            if char == ":" and depth == 0:
-                return fragment[:index], fragment[index + 1 :]
-        return None
-
-    def _normalize_token(token: str) -> str:
-        stripped = token.strip()
-        if stripped and stripped[0] in {'"', "'"} and stripped[-1] == stripped[0]:
-            try:
-                return str(ast.literal_eval(stripped))
-            except (SyntaxError, ValueError):
-                return stripped[1:-1]
-        return stripped
-
-    def _parse_value(raw: str) -> Any:
-        stripped = raw.strip()
-        if not stripped:
-            return ""
-        lowered = stripped.lower()
-        if lowered in {"true", "false", "null"}:
-            return {"true": True, "false": False, "null": None}[lowered]
-        if stripped[0] in {'"', "'"} and stripped[-1] == stripped[0]:
-            try:
-                return ast.literal_eval(stripped)
-            except (SyntaxError, ValueError):
-                return stripped[1:-1]
-        try:
-            return ast.literal_eval(stripped)
-        except (SyntaxError, ValueError):
-            return stripped
-
-    parsed: dict[str, Any] = {}
-    for fragment in _split_top_level(body):
-        split = _split_fragment(fragment)
-        if split is None:
-            continue
-        raw_key, raw_value = split
-        key = _normalize_token(raw_key)
-        if not key:
-            continue
-        parsed[str(key)] = _parse_value(raw_value)
-    return parsed
+    return {}
 
 
 def _collect_pairs(inputs: Path, expected: Path) -> tuple[list[str], list[str]]:
