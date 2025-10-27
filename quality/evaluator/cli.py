@@ -210,17 +210,23 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
     rules: list[dict[str, Any]] = []
     current: dict[str, Any] | None = None
     gathering_contains = False
-    for raw in text.splitlines():
+    lines = text.splitlines()
+    idx = 0
+    while idx < len(lines):
+        raw = lines[idx]
         stripped = raw.strip()
         if not stripped or stripped.startswith("#") or stripped in {"rules", "rules:"}:
+            idx += 1
             continue
         if stripped.startswith("- id:"):
             if current:
                 rules.append(current)
             current = {"id": stripped.split(":", 1)[1].strip(), "match": {"any": []}}
             gathering_contains = False
+            idx += 1
             continue
         if current is None:
+            idx += 1
             continue
         if stripped.startswith("description:"):
             current["description"] = stripped.split(":", 1)[1].strip()
@@ -228,14 +234,51 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             current["severity"] = stripped.split(":", 1)[1].strip()
         elif stripped.startswith("any:"):
             gathering_contains = True
+            idx += 1
+            continue
         elif stripped.startswith("- contains:") and gathering_contains:
             payload = stripped.split(":", 1)[1].strip()
+            indent_level = len(raw) - len(raw.lstrip(" "))
+            if payload.startswith("|") or payload.startswith(">"):
+                idx += 1
+                block_lines: list[tuple[str, int | None]] = []
+                while idx < len(lines):
+                    candidate_raw = lines[idx]
+                    candidate_stripped = candidate_raw.strip()
+                    candidate_indent = len(candidate_raw) - len(candidate_raw.lstrip(" "))
+                    if candidate_stripped == "":
+                        block_lines.append(("", None))
+                        idx += 1
+                        continue
+                    if candidate_indent <= indent_level:
+                        break
+                    block_lines.append((candidate_raw, candidate_indent))
+                    idx += 1
+                contents: list[str] = []
+                if block_lines:
+                    indents = [indent for _, indent in block_lines if indent is not None]
+                    trim_indent = min(indents) if indents else indent_level + 1
+                    for line, indent in block_lines:
+                        if indent is None:
+                            contents.append("")
+                        else:
+                            start = trim_indent if len(line) >= trim_indent else len(line)
+                            contents.append(line[start:])
+                value = "\n".join(contents) if payload.startswith("|") else " ".join(
+                    segment for segment in (part.strip() for part in contents) if segment
+                )
+                match = current.setdefault("match", {})
+                match.setdefault("any", []).append({"contains": value})
+                continue
             if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
                 payload = payload[1:-1]
             match = current.setdefault("match", {})
             match.setdefault("any", []).append({"contains": payload})
+            idx += 1
+            continue
         elif not raw.startswith("  "):
             gathering_contains = False
+        idx += 1
     if current:
         rules.append(current)
     return {"rules": rules}
