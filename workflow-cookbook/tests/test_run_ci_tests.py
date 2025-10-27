@@ -70,5 +70,6 @@ def test_main_returns_exit_code_based_on_failures(
 
     exit_code = run_ci_tests.main()
 
+    assert type(exit_code) is int  # noqa: E721
     assert exit_code == expected_exit
     assert recorded["had_failures"] is had_failures
