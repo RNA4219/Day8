@@ -228,6 +228,8 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             gathering_contains = True
         elif stripped.startswith("- contains:") and gathering_contains:
             payload = stripped.split(":", 1)[1].strip()
+            if len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}:
+                payload = payload[1:-1]
             match = current.setdefault("match", {})
             match.setdefault("any", []).append({"contains": payload})
         elif not raw.startswith("  "):
