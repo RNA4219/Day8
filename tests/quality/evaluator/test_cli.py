@@ -173,6 +173,28 @@ def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) 
     assert references == ["stay's, calm"]
 
 
+def test_parse_rules_yaml_strips_wrapping_quotes() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-contains
+    severity: minor
+    any:
+      - contains: "TODO"
+      - contains: 'FIXME'
+"""
+    )
+
+    rule = parsed["rules"][0]
+
+    assert module._matches_rule(rule, "TODO: double quoted")
+    assert module._matches_rule(rule, "FIXME: single quoted")
+    assert not module._matches_rule(rule, "NOTE: no match")
+
+
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     metrics_path = tmp_path / "metrics.json"
     inputs_path = tmp_path / "inputs.jsonl"
