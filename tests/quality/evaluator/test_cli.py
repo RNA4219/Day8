@@ -255,6 +255,27 @@ rules:
     assert not module._matches_rule(rule, "NOTE: no match")
 
 
+def test_parse_rules_yaml_unescapes_double_quoted_scalars() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-newline
+    severity: minor
+    any:
+      - contains: "line\\nnext"
+"""
+    )
+
+    rule = parsed["rules"][0]
+
+    assert module._matches_rule(rule, "line\nnext")
+    assert module._matches_rule(rule, "prefix line\nnext suffix")
+    assert not module._matches_rule(rule, "line\\nnext")
+
+
 def test_parse_rules_yaml_handles_block_scalars() -> None:
     module = import_module("quality.evaluator.cli")
 

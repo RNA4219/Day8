@@ -19,6 +19,65 @@ _BERT_F1_THRESHOLD = 0.85
 _ROUGE_L_THRESHOLD = 0.70
 
 
+def _unescape_yaml_double_quoted(value: str) -> str:
+    escape_map = {
+        "0": "\0",
+        "a": "\a",
+        "b": "\b",
+        "t": "\t",
+        "n": "\n",
+        "v": "\v",
+        "f": "\f",
+        "r": "\r",
+        "e": "\x1b",
+        '"': '"',
+        "\\": "\\",
+        "/": "/",
+        "N": "\u0085",
+        "_": "\u00a0",
+        "L": "\u2028",
+        "P": "\u2029",
+    }
+
+    result: list[str] = []
+    i = 0
+    length = len(value)
+    while i < length:
+        char = value[i]
+        if char != "\\":
+            result.append(char)
+            i += 1
+            continue
+
+        i += 1
+        if i >= length:
+            result.append("\\")
+            break
+
+        escape_code = value[i]
+        i += 1
+
+        if escape_code in {"x", "u", "U"}:
+            widths = {"x": 2, "u": 4, "U": 8}
+            width = widths[escape_code]
+            hex_digits = value[i : i + width]
+            if len(hex_digits) == width and all(c in "0123456789abcdefABCDEF" for c in hex_digits):
+                result.append(chr(int(hex_digits, 16)))
+                i += width
+                continue
+            result.append("\\" + escape_code)
+            continue
+
+        replacement = escape_map.get(escape_code)
+        if replacement is not None:
+            result.append(replacement)
+            continue
+
+        result.append(escape_code)
+
+    return "".join(result)
+
+
 def _normalize_yaml_scalar(value: str) -> str:
     text = value.strip()
     if not text:
@@ -51,7 +110,11 @@ def _normalize_yaml_scalar(value: str) -> str:
 
     result = "".join(normalized).rstrip()
     if len(result) >= 2 and result[0] == result[-1] and result[0] in {'"', "'"}:
-        result = result[1:-1]
+        quote = result[0]
+        core = result[1:-1]
+        if quote == '"':
+            core = _unescape_yaml_double_quoted(core)
+        result = core
     return result
 
 
