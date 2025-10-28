@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.utils.compile import assert_modules_compile
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -227,6 +229,13 @@ def test_eval_smoke_pipeline_invokes_stubs(
 def test_eval_smoke_pipeline_with_real_modules(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    assert_modules_compile(
+        (
+            PROJECT_ROOT / "quality" / "evaluator" / "cli.py",
+            PROJECT_ROOT / "quality" / "pipeline" / "normalize.py",
+        )
+    )
+
     pytest.importorskip("bs4")
     pytest.importorskip("quality.pipeline.normalize")
     pytest.importorskip("quality.evaluator.cli")
