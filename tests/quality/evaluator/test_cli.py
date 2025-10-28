@@ -397,6 +397,41 @@ rules:
     assert guardrail["max_severity"] == "critical"
 
 
+def test_load_ruleset_fallback_preserves_single_quote_pairs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _reject_yaml(name: str, *args: Any, **kwargs: Any):
+        if name == "yaml":
+            raise ModuleNotFoundError("No module named 'yaml'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _reject_yaml)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: rule-critical
+    severity: critical
+    description: "Trigger when 'It's bad' appears"
+    any:
+      - contains: 'It''s bad'
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    guardrail = module._evaluate_guardrails(rules_path, ["This is bad. It's bad indeed."])
+
+    assert guardrail["counts"]["critical"] == 1
+    assert guardrail["violations"][0]["message"] == "Trigger when 'It's bad' appears"
+    assert guardrail["max_severity"] == "critical"
+
+
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     metrics_path = tmp_path / "metrics.json"
     inputs_path = tmp_path / "inputs.jsonl"
