@@ -111,14 +111,12 @@ def _normalize_yaml_scalar(value: str) -> str:
     result = "".join(normalized).rstrip()
     if len(result) >= 2 and result[0] == result[-1] and result[0] in {'"', "'"}:
         quote = result[0]
-if len(result) >= 2 and result[0] == result[-1] and result[0] in {'"', "'"}:
-    quote = result[0]
-    core = result[1:-1]
-    if quote == "'":
-        core = core.replace("''", "'")
-    elif quote == '"':
-        core = _unescape_yaml_double_quoted(core)
-    result = core
+        core = result[1:-1]
+        if quote == "'":
+            core = core.replace("''", "'")
+        else:
+            core = _unescape_yaml_double_quoted(core)
+        return core
 
     return result
 
