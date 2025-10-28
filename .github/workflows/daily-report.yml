@@ -51,7 +51,7 @@ jobs:
                                         'RNA4219/workflow-cookbook',
                                         'RNA4219/Day8',
                                         'RNA4219/imgponic',
-                                        'RNA4219/katamari',
+                                        # 除外: アーカイブ済みのため RNA4219/katamari
                                         'RNA4219/taskest'
                                      ) `
                                      -CommitToRepo:$true
