@@ -23,6 +23,9 @@ _ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
 _BUCKET_SUFFIXES: Tuple[str, ...] = ("_bucket",)
 _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
 _LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"((?:\\.|[^\"\\])*)\"")
+_METRIC_LINE_PATTERN = re.compile(
+    r"^(?P<metric>[^\s\{]+(?:\{(?:\\.|[^\\}])*\})?)\s+(?P<value>\S+)(?:\s+(?P<timestamp>\S+))?\s*$"
+)
 _ENVIRONMENT_LABEL_KEYS: frozenset[str] = frozenset(
     {
         "instance",
@@ -44,6 +47,10 @@ def _sanitize_label_value_for_suffix(value: str) -> str:
 
 def _required_metric_names(metric_prefix: str) -> list[str]:
     return [f"{metric_prefix}{suffix}" for suffix in REQUIRED_METRIC_SUFFIXES]
+
+
+def _filter_environment_labels(labels: Iterable[tuple[str, str]]) -> list[tuple[str, str]]:
+    return [(key, value) for key, value in labels if key not in _ENVIRONMENT_LABEL_KEYS]
 
 
 def collect_prometheus_metrics(
@@ -70,22 +77,24 @@ def collect_prometheus_metrics(
     for line in payload.splitlines():
         if not line or line.startswith("#"):
             continue
-        parts = line.split()
-        if len(parts) < 2:
+        match = _METRIC_LINE_PATTERN.match(line)
+        if not match:
             continue
+        metric_name = match.group("metric")
+        value_text = match.group("value")
         normalized_metric = _normalize_prometheus_metric_name(
-            parts[0], preserve_label_for_bucket=True
+            metric_name, preserve_label_for_bucket=True
         )
         if not normalized_metric.startswith(metric_prefix):
             continue
         try:
-            numeric_value = float(parts[1])
+            numeric_value = float(value_text)
         except ValueError:
             continue
         if not math.isfinite(numeric_value):
             print(
                 "Skipping non-finite value for Prometheus metric"
-                f" {normalized_metric}: {parts[1]}",
+                f" {normalized_metric}: {value_text}",
                 file=sys.stderr,
             )
             continue
