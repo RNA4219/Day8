@@ -103,6 +103,28 @@ def test_collect_prometheus_metrics_passes_timeout(
     assert result == {"day8_jobs_processed_total": 7.0}
 
 
+def test_collect_prometheus_metrics_supports_labels_with_spaces(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = (
+        'day8_jobs_processed_total{job="batch worker",instance="a"} 5\n'
+        'day8_jobs_processed_total{job="batch worker",instance="b"} 7\n'
+    ).encode("utf-8")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        lambda url, timeout=5.0: _DummyResponse(payload),
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics"
+    )
+
+    assert result == {"day8_jobs_processed_total": 12.0}
+
+
 def test_collect_prometheus_metrics_merges_bucket_metrics_with_env_labels(
     monkeypatch: pytest.MonkeyPatch,
     collect_metrics_module,
