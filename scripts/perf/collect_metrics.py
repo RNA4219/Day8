@@ -101,13 +101,19 @@ def _normalize_prometheus_metric_name(
             base = metric[:index]
             break
 
+    parsed_labels = _LABEL_PATTERN.findall(labels) if labels else []
+
     if preserve_label_for_bucket and base.endswith("_bucket") and labels:
+        if parsed_labels:
+            formatted_bucket_labels = ",".join(
+                f'{key}="{value}"' for key, value in sorted(parsed_labels)
+            )
+            return f"{base}{{{formatted_bucket_labels}}}"
         return f"{base}{labels}"
 
     if not labels:
         return base
 
-    parsed_labels = _LABEL_PATTERN.findall(labels)
     if not parsed_labels:
         return base
 
