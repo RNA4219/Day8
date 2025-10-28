@@ -77,7 +77,7 @@ foreach ($row in ($rows | Sort-Object Commits -Descending)) {
   $md += "| $($row.Repo) | $($row.Commits) | $($row.Files) | $($row.Additions) | $($row.Deletions) | $($row.Net) |"
 }
 $md += ''
-$md += '> 除外: node_modules/dist/build/.next/coverage/*.min.*/*.map/*.lock/*.svg/__snapshots__'
+$md += '> 除外（Day8標準フィルタ）: node_modules/dist/build/.next/coverage/*.min.*/*.map/*.lock/*.svg/__snapshots__'
 $md -join "`n" | Set-Content -Encoding UTF8 $mdPath
 if ($CommitToRepo) {
   Set-Location $PSScriptRoot
