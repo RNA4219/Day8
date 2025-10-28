@@ -550,6 +550,32 @@ def test_collect_prometheus_metrics_aggregates_bucket_series_from_multiple_pods(
     }
 
 
+def test_collect_prometheus_metrics_sums_duplicate_bucket_samples(
+    monkeypatch: pytest.MonkeyPatch, collect_metrics_module
+) -> None:
+    payload = (
+        b'day8_request_duration_seconds_bucket{le="0.5",path="/healthz"} 1\n'
+        b'day8_request_duration_seconds_bucket{path="/healthz",le="0.5"} 2\n'
+        b'day8_request_duration_seconds_bucket{le="1.0",path="/healthz"} 3\n'
+        b'day8_request_duration_seconds_bucket{path="/healthz",le="1.0"} 4\n'
+        b'day8_request_duration_seconds_bucket{path="/healthz",le="1.0"} 8\n'
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://localhost:8000/metrics"
+    )
+
+    assert result == {
+        'day8_request_duration_seconds_bucket{le="0.5",path="/healthz"}': pytest.approx(3.0),
+        'day8_request_duration_seconds_bucket{le="1.0",path="/healthz"}': pytest.approx(15.0),
+    }
+
+
 def test_main_supports_custom_metric_prefix(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
