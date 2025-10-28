@@ -298,6 +298,28 @@ rules:
     assert not module._matches_rule(rule, "line\\nnext")
 
 
+def test_parse_rules_yaml_folded_block_preserves_blank_lines() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-folded
+    severity: minor
+    any:
+      - contains: >-
+          alpha
+
+          beta
+"""
+    )
+
+    rule = parsed["rules"][0]
+
+    assert module._matches_rule(rule, "alpha\n\nbeta")
+
+
 def test_parse_rules_yaml_unescapes_escaped_quote_and_newline() -> None:
     module = import_module("quality.evaluator.cli")
 
