@@ -18,10 +18,11 @@ def send_warmup_request(
     url: str,
     payload: bytes | None = None,
     timeout: float = DEFAULT_TIMEOUT,
+    method: str | None = None,
 ) -> None:
     """Send a warmup request, defaulting to GET when no payload is provided."""
-    method = "POST" if payload is not None else "GET"
-    req = request.Request(url, data=payload, method=method)
+    resolved_method = method or ("POST" if payload is not None else "GET")
+    req = request.Request(url, data=payload, method=resolved_method)
     if payload is not None:
         req.add_header("Content-Type", "application/json")
     with request.urlopen(req, timeout=timeout) as response:  # type: ignore[arg-type]
@@ -33,8 +34,9 @@ def warmup(
     warmup_url: str,
     *,
     payload: bytes | None = None,
+    method: str | None = None,
     timeout: float = DEFAULT_TIMEOUT,
 ) -> None:
     """Run the warmup flow: healthcheck first, then warmup request."""
     perform_health_check(healthcheck_url, timeout=timeout)
-    send_warmup_request(warmup_url, payload=payload, timeout=timeout)
+    send_warmup_request(warmup_url, payload=payload, timeout=timeout, method=method)

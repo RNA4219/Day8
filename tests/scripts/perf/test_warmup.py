@@ -33,8 +33,14 @@ def test_warmup_runs_healthcheck_then_warmup(monkeypatch: pytest.MonkeyPatch, wa
     def fake_health(url: str, timeout: float = 5.0) -> None:
         call_order.append(("health", (url, timeout)))
 
-    def fake_warmup(url: str, payload: bytes | None = None, timeout: float = 5.0) -> None:
-        call_order.append(("warmup", (url, payload, timeout)))
+    def fake_warmup(
+        url: str,
+        payload: bytes | None = None,
+        *,
+        timeout: float = 5.0,
+        method: str | None = None,
+    ) -> None:
+        call_order.append(("warmup", (url, payload, timeout, method)))
 
     monkeypatch.setattr(warmup_module, "perform_health_check", fake_health)
     monkeypatch.setattr(warmup_module, "send_warmup_request", fake_warmup)
@@ -48,7 +54,7 @@ def test_warmup_runs_healthcheck_then_warmup(monkeypatch: pytest.MonkeyPatch, wa
 
     assert call_order == [
         ("health", ("https://api.day8.example/healthz", 1.5)),
-        ("warmup", ("https://api.day8.example/warmup", b"{}", 1.5)),
+        ("warmup", ("https://api.day8.example/warmup", b"{}", 1.5, None)),
     ]
 
 
@@ -112,3 +118,76 @@ def test_send_warmup_request_sets_json_header(monkeypatch: pytest.MonkeyPatch, w
     ]
 
     assert last_request.headers == {"Content-Type": "application/json"}
+
+
+def test_send_warmup_request_uses_explicit_method_without_payload(
+    monkeypatch: pytest.MonkeyPatch, warmup_module
+) -> None:
+    captured_method: list[str] = []
+
+    class DummyRequest:
+        def __init__(self, url: str, data: bytes | None, method: str) -> None:
+            captured_method.append(method)
+
+    def fake_request(url: str, data: bytes | None = None, method: str | None = None):
+        if method is None:
+            raise AssertionError("method is required")
+        return DummyRequest(url, data, method)
+
+    class DummyResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def read(self) -> None:  # pragma: no cover - no behaviour under test
+            pass
+
+    def fake_urlopen(req, timeout: float):
+        return DummyResponse()
+
+    monkeypatch.setattr(warmup_module.request, "Request", fake_request)
+    monkeypatch.setattr(warmup_module.request, "urlopen", fake_urlopen)
+
+    warmup_module.send_warmup_request(
+        "https://api.day8.example/warmup",
+        payload=None,
+        timeout=1.0,
+        method="POST",
+    )
+
+    assert captured_method == ["POST"]
+
+
+def test_warmup_forwards_method_to_send_warmup_request(
+    monkeypatch: pytest.MonkeyPatch, warmup_module
+) -> None:
+    recorded_calls: list[tuple[str, tuple[object, ...]]] = []
+
+    def fake_health(url: str, timeout: float = 5.0) -> None:
+        recorded_calls.append(("health", (url, timeout)))
+
+    def fake_send(
+        url: str,
+        payload: bytes | None = None,
+        *,
+        timeout: float = 5.0,
+        method: str | None = None,
+    ) -> None:
+        recorded_calls.append(("warmup", (url, payload, timeout, method)))
+
+    monkeypatch.setattr(warmup_module, "perform_health_check", fake_health)
+    monkeypatch.setattr(warmup_module, "send_warmup_request", fake_send)
+
+    warmup_module.warmup(
+        "https://api.day8.example/healthz",
+        "https://api.day8.example/warmup",
+        timeout=2.5,
+        method="PATCH",
+    )
+
+    assert recorded_calls == [
+        ("health", ("https://api.day8.example/healthz", 2.5)),
+        ("warmup", ("https://api.day8.example/warmup", None, 2.5, "PATCH")),
+    ]
