@@ -198,6 +198,21 @@ def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) 
     assert references == ["stay's, calm"]
 
 
+def test_normalize_yaml_scalar_decodes_single_quote_escape() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    assert module._normalize_yaml_scalar("'It''s'") == "It's"
+
+
+def test_matches_rule_handles_single_quote_escape() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    normalized = module._normalize_yaml_scalar("'It''s'")
+    rule = {"match": {"any": [{"contains": normalized}]}}
+
+    assert module._matches_rule(rule, "Well, It's fine.")
+
+
 def test_parse_rules_yaml_strips_unquoted_comments(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
 

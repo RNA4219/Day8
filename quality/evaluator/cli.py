@@ -51,7 +51,10 @@ def _normalize_yaml_scalar(value: str) -> str:
 
     result = "".join(normalized).rstrip()
     if len(result) >= 2 and result[0] == result[-1] and result[0] in {'"', "'"}:
+        quote = result[0]
         result = result[1:-1]
+        if quote == "'":
+            result = result.replace("''", "'")
     return result
 
 
