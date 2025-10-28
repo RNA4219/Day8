@@ -291,6 +291,32 @@ rules:
     assert not module._matches_rule(rule, "line\\nnext")
 
 
+def test_parse_rules_yaml_unescapes_escaped_quote_and_newline() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-escaped
+    severity: minor
+    any:
+      - contains: "\"error\""
+      - contains: "line\\nnext"
+"""
+    )
+
+    rule = parsed["rules"][0]
+    contains_values = [node["contains"] for node in rule["match"]["any"]]
+
+    assert '"error"' in contains_values
+    assert "line\nnext" in contains_values
+    assert module._matches_rule(rule, 'Encountered "error" in log')
+    assert module._matches_rule(rule, "line\nnext appeared")
+    assert not module._matches_rule(rule, 'Encountered \\\"error\\\" in log')
+    assert not module._matches_rule(rule, "line\\nnext literal")
+
+
 def test_parse_rules_yaml_handles_block_scalars() -> None:
     module = import_module("quality.evaluator.cli")
 

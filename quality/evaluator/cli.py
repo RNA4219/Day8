@@ -114,9 +114,9 @@ def _normalize_yaml_scalar(value: str) -> str:
         core = result[1:-1]
         if quote == "'":
             core = core.replace("''", "'")
-        elif quote == '"':
+        else:
             core = _unescape_yaml_double_quoted(core)
-        result = core
+        return core
 
     return result
 
