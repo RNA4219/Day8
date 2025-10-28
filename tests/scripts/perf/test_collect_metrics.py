@@ -788,6 +788,32 @@ def test_collect_prometheus_metrics_preserves_quantile_labels(
     assert captured.err == ""
 
 
+def test_collect_prometheus_metrics_aggregates_quantiles_with_environment_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = (
+        b'day8_latency_seconds{quantile="0.5",instance="api",job="worker"} 1.5\n'
+        b'day8_latency_seconds{instance="worker",quantile="0.5",job="scheduler"} 2.0\n'
+        b'day8_latency_seconds{job="worker",quantile="0.9",instance="api"} 3.5\n'
+        b'day8_latency_seconds{quantile="0.9",job="scheduler",instance="worker"} 4.0\n'
+    )
+
+    def fake_urlopen(url: str, *, timeout: float = 5.0):  # type: ignore[no-untyped-def]
+        return _DummyResponse(payload)
+
+    monkeypatch.setattr(collect_metrics_module.urllib.request, "urlopen", fake_urlopen)
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://localhost:8000/metrics"
+    )
+
+    assert result == {
+        "day8_latency_seconds_quantile_0.5": pytest.approx(2.0),
+        "day8_latency_seconds_quantile_0.9": pytest.approx(4.0),
+    }
+
+
 def test_main_preserves_quantile_metric_keys(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

@@ -152,6 +152,7 @@ def _normalize_prometheus_metric_name(
                 quantile_value = value
             else:
                 remaining_labels.append((key, value))
+        remaining_labels = _filter_environment_labels(remaining_labels)
         if quantile_value is not None:
             suffix_value = _sanitize_label_value_for_suffix(quantile_value)
             suffix = f"_quantile_{suffix_value}"
