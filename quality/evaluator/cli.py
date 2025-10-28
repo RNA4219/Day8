@@ -372,19 +372,24 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 if indicator == "|":
                     value = "\n".join(normalized)
                 else:
-                    folded_segments: list[str] = []
+                    folded_lines: list[str] = []
+                    current_parts: list[str] = []
+                    pending_blank_lines = 0
                     for part in normalized:
-                        segment = part.rstrip()
-                        if not segment:
+                        stripped_part = part.strip()
+                        if not stripped_part:
+                            if current_parts:
+                                folded_lines.append(" ".join(current_parts))
+                                current_parts = []
+                            pending_blank_lines += 1
                             continue
-                        if not folded_segments:
-                            folded_segments.append(segment)
-                            continue
-                        if segment.startswith((" ", "\t")):
-                            folded_segments.append(segment)
-                        else:
-                            folded_segments.append(" " + segment)
-                    value = "".join(folded_segments)
+                        if pending_blank_lines:
+                            folded_lines.extend([""] * pending_blank_lines)
+                            pending_blank_lines = 0
+                        current_parts.append(stripped_part)
+                    if current_parts:
+                        folded_lines.append(" ".join(current_parts))
+                    value = "\n".join(folded_lines)
                 match = current.setdefault("match", {})
                 match.setdefault("any", []).append({"contains": value})
                 continue
