@@ -43,6 +43,7 @@ jobs:
           Set-Location $env:GITHUB_WORKSPACE
           .\scripts\daily-report.ps1 -Root $env:ROOT_DIR `
                                      -ReposFull @(
+                                        # アーカイブ済みリポジトリ名は Day8 ポリシーに従いコメントから除外済み
                                         'RNA4219/portfolio',
                                         'RNA4219/planting-planner',
                                         'RNA4219/llm-generic-bot',
