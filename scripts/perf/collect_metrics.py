@@ -23,6 +23,19 @@ _ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
 _BUCKET_SUFFIXES: Tuple[str, ...] = ("_bucket",)
 _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
 _LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"((?:\\.|[^\"\\])*)\"")
+_ENVIRONMENT_LABEL_KEYS: frozenset[str] = frozenset(
+    {
+        "instance",
+        "job",
+        "pod",
+        "pod_name",
+        "container",
+        "node",
+        "namespace",
+        "service",
+        "endpoint",
+    }
+)
 
 
 def _sanitize_label_value_for_suffix(value: str) -> str:
@@ -109,11 +122,18 @@ def _normalize_prometheus_metric_name(
 
     if preserve_label_for_bucket and base.endswith("_bucket") and labels:
         if parsed_labels:
+            filtered_labels = [
+                (key, value)
+                for key, value in parsed_labels
+                if key not in _ENVIRONMENT_LABEL_KEYS
+            ]
+            if not filtered_labels:
+                return base
             formatted_bucket_labels = ",".join(
-                f'{key}="{value}"' for key, value in sorted(parsed_labels)
+                f'{key}="{value}"' for key, value in sorted(filtered_labels)
             )
             return f"{base}{{{formatted_bucket_labels}}}"
-        return f"{base}{labels}"
+        return base
 
     if not labels:
         return base

@@ -103,6 +103,35 @@ def test_collect_prometheus_metrics_passes_timeout(
     assert result == {"day8_jobs_processed_total": 7.0}
 
 
+def test_collect_prometheus_metrics_merges_bucket_metrics_with_env_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = "\n".join(
+        [
+            'day8_latency_bucket{le="0.5",path="/",instance="a"} 1',
+            'day8_latency_bucket{le="0.5",path="/",instance="b"} 2',
+            'day8_latency_bucket{le="1",path="/",instance="a"} 3',
+            'day8_latency_bucket{le="1",path="/",instance="b"} 4',
+        ]
+    ).encode("utf-8")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        lambda url, timeout=5.0: _DummyResponse(payload),
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics"
+    )
+
+    assert result == {
+        'day8_latency_bucket{le="0.5",path="/"}': 3.0,
+        'day8_latency_bucket{le="1",path="/"}': 7.0,
+    }
+
+
 def test_main_succeeds_with_required_metrics(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
