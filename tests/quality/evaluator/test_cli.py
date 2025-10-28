@@ -371,6 +371,30 @@ rules:
     assert module._matches_rule(rule, "prefix folded text suffix")
 
 
+def test_parse_rules_yaml_preserves_leading_spaces_in_folded_block() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-folded-indent
+    severity: minor
+    any:
+      - contains: >-
+          prefix
+            bullet
+          suffix
+"""
+    )
+
+    rule = parsed["rules"][0]
+    (contains_node,) = rule["match"]["any"]
+
+    assert contains_node["contains"] == "prefix  bullet suffix"
+    assert module._matches_rule(rule, "prefix  bullet suffix is present")
+
+
 def test_parse_rules_yaml_ignores_inline_comments_for_unquoted_contains() -> None:
     module = import_module("quality.evaluator.cli")
 
