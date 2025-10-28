@@ -19,7 +19,8 @@ REQUIRED_METRIC_SUFFIXES: list[str] = [
     "jobs_failed_total",
     "healthz_request_total",
 ]
-_ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count", "_bucket")
+_ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
+_BUCKET_SUFFIXES: Tuple[str, ...] = ("_bucket",)
 _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
 _LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"((?:\\.|[^\"\\])*)\"")
 
@@ -81,7 +82,9 @@ def collect_prometheus_metrics(
             results[normalized_metric] = numeric_value
         elif metric_base.endswith(_TIMESTAMP_SUFFIXES):
             results[normalized_metric] = max(previous_value, numeric_value)
-        elif metric_base.endswith(_ADDITIVE_SUFFIXES):
+        elif metric_base.endswith(_ADDITIVE_SUFFIXES) or metric_base.endswith(
+            _BUCKET_SUFFIXES
+        ):
             results[normalized_metric] = previous_value + numeric_value
         else:
             results[normalized_metric] = numeric_value
