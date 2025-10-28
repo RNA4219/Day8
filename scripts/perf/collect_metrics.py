@@ -23,6 +23,13 @@ _ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
 _BUCKET_SUFFIXES: Tuple[str, ...] = ("_bucket",)
 _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
 _LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"((?:\\.|[^\"\\])*)\"")
+_ENVIRONMENT_LABEL_KEYS: Tuple[str, ...] = ("instance", "job")
+
+
+def _filter_environment_labels(
+    labels: Iterable[tuple[str, str]]
+) -> list[tuple[str, str]]:
+    return [(key, value) for key, value in labels if key not in _ENVIRONMENT_LABEL_KEYS]
 
 
 def _sanitize_label_value_for_suffix(value: str) -> str:
@@ -109,10 +116,13 @@ def _normalize_prometheus_metric_name(
 
     if preserve_label_for_bucket and base.endswith("_bucket") and labels:
         if parsed_labels:
-            formatted_bucket_labels = ",".join(
-                f'{key}="{value}"' for key, value in sorted(parsed_labels)
-            )
-            return f"{base}{{{formatted_bucket_labels}}}"
+            filtered_labels = _filter_environment_labels(parsed_labels)
+            if filtered_labels:
+                formatted_bucket_labels = ",".join(
+                    f'{key}="{value}"' for key, value in sorted(filtered_labels)
+                )
+                return f"{base}{{{formatted_bucket_labels}}}"
+            return base
         return f"{base}{labels}"
 
     if not labels:
@@ -132,6 +142,7 @@ def _normalize_prometheus_metric_name(
                 quantile_value = value
             else:
                 remaining_labels.append((key, value))
+        remaining_labels = _filter_environment_labels(remaining_labels)
         if quantile_value is not None:
             suffix_value = _sanitize_label_value_for_suffix(quantile_value)
             suffix = f"_quantile_{suffix_value}"
