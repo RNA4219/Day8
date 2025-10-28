@@ -33,6 +33,13 @@ class _FakeRouge:
         return {"rouge1": 0.78, "rougeL": 0.72}
 
 
+def test_normalize_yaml_scalar_preserves_expected_unescaping() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    assert module._normalize_yaml_scalar("'It''s'") == "It's"
+    assert module._normalize_yaml_scalar('"Line\\nTwo"') == "Line\nTwo"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
