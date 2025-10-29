@@ -169,16 +169,16 @@ def collect_prometheus_metrics(
         metric_base = normalized_metric.split("{", 1)[0]
         if previous_value is None:
             results[normalized_metric] = numeric_value
-        elif metric_base.endswith(_TIMESTAMP_SUFFIXES):
+            continue
+
+        if "_quantile_" in metric_base:
             results[normalized_metric] = max(previous_value, numeric_value)
-        elif "_quantile_" in metric_base:
+        elif metric_base.endswith(_TIMESTAMP_SUFFIXES):
             results[normalized_metric] = max(previous_value, numeric_value)
         elif metric_base.endswith(_ADDITIVE_SUFFIXES) or metric_base.endswith(
             _BUCKET_SUFFIXES
         ):
             results[normalized_metric] = previous_value + numeric_value
-        elif "_quantile_" in metric_base:
-            results[normalized_metric] = max(previous_value, numeric_value)
         else:
             results[normalized_metric] = numeric_value
     return results
