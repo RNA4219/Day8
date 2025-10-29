@@ -177,6 +177,8 @@ def collect_prometheus_metrics(
             _BUCKET_SUFFIXES
         ):
             results[normalized_metric] = previous_value + numeric_value
+        elif "_quantile_" in metric_base:
+            results[normalized_metric] = max(previous_value, numeric_value)
         else:
             results[normalized_metric] = numeric_value
     return results
