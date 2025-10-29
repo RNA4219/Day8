@@ -217,16 +217,13 @@ def _normalize_prometheus_metric_name(
     if not parsed_labels:
         return base
 
-    if base.endswith(_ADDITIVE_SUFFIXES) or base.endswith(_TIMESTAMP_SUFFIXES):
-        return base
-
     quantile_value: str | None = None
     remaining_labels: list[tuple[str, str]] = []
     for key, value in parsed_labels:
         if key == "quantile" and quantile_value is None:
             quantile_value = value
-        else:
-            remaining_labels.append((key, value))
+            continue
+        remaining_labels.append((key, value))
 
     filtered_labels = _filter_environment_labels(remaining_labels)
 
@@ -234,6 +231,8 @@ def _normalize_prometheus_metric_name(
     if quantile_value is not None:
         suffix_value = _sanitize_label_value_for_suffix(quantile_value)
         normalized_base = f"{base}_quantile_{suffix_value}"
+    elif base.endswith(_ADDITIVE_SUFFIXES) or base.endswith(_TIMESTAMP_SUFFIXES):
+        return base
 
     if not filtered_labels:
         return normalized_base

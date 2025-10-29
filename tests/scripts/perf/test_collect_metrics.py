@@ -205,6 +205,35 @@ def test_collect_prometheus_metrics_merges_quantile_metrics_with_env_labels(
     }
 
 
+def test_collect_prometheus_metrics_merges_quantile_metrics_across_units_and_instances(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = "\n".join(
+        [
+            'day8_latency_milliseconds{quantile="0.5",instance="a"} 180',
+            'day8_latency_milliseconds{quantile="0.5",instance="b"} 220',
+            'day8_latency_milliseconds{quantile="0.95",instance="a"} 350',
+            'day8_latency_milliseconds{quantile="0.95",instance="b"} 300',
+        ]
+    ).encode("utf-8")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        lambda url, timeout=5.0: _DummyResponse(payload),
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics"
+    )
+
+    assert result == {
+        "day8_latency_milliseconds_quantile_0.5": 220.0,
+        "day8_latency_milliseconds_quantile_0.95": 350.0,
+    }
+
+
 def test_collect_prometheus_metrics_keeps_highest_quantile_value(
     monkeypatch: pytest.MonkeyPatch,
     collect_metrics_module,
