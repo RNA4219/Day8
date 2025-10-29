@@ -171,6 +171,8 @@ def collect_prometheus_metrics(
             results[normalized_metric] = numeric_value
         elif metric_base.endswith(_TIMESTAMP_SUFFIXES):
             results[normalized_metric] = max(previous_value, numeric_value)
+        elif "_quantile_" in metric_base:
+            results[normalized_metric] = max(previous_value, numeric_value)
         elif metric_base.endswith(_ADDITIVE_SUFFIXES) or metric_base.endswith(
             _BUCKET_SUFFIXES
         ):
@@ -198,11 +200,7 @@ def _normalize_prometheus_metric_name(
 
     if preserve_label_for_bucket and base.endswith("_bucket") and labels:
         if parsed_labels:
-            filtered_labels = [
-                (key, value)
-                for key, value in parsed_labels
-                if key not in _ENVIRONMENT_LABEL_KEYS
-            ]
+            filtered_labels = _filter_environment_labels(parsed_labels)
             if not filtered_labels:
                 return base
             formatted_bucket_labels = ",".join(
@@ -220,29 +218,28 @@ def _normalize_prometheus_metric_name(
     if base.endswith(_ADDITIVE_SUFFIXES) or base.endswith(_TIMESTAMP_SUFFIXES):
         return base
 
-    if base.endswith("_seconds"):
-        quantile_value: str | None = None
-        remaining_labels: list[tuple[str, str]] = []
-        for key, value in parsed_labels:
-            if key == "quantile" and quantile_value is None:
-                quantile_value = value
-            else:
-                remaining_labels.append((key, value))
-        remaining_labels = _filter_environment_labels(remaining_labels)
-        if quantile_value is not None:
-            suffix_value = _sanitize_label_value_for_suffix(quantile_value)
-            suffix = f"_quantile_{suffix_value}"
-            if remaining_labels:
-                formatted_remaining = ",".join(
-                    f'{key}="{value}"' for key, value in sorted(remaining_labels)
-                )
-                return f"{base}{suffix}{{{formatted_remaining}}}"
-            return f"{base}{suffix}"
+    quantile_value: str | None = None
+    remaining_labels: list[tuple[str, str]] = []
+    for key, value in parsed_labels:
+        if key == "quantile" and quantile_value is None:
+            quantile_value = value
+        else:
+            remaining_labels.append((key, value))
+
+    filtered_labels = _filter_environment_labels(remaining_labels)
+
+    normalized_base = base
+    if quantile_value is not None:
+        suffix_value = _sanitize_label_value_for_suffix(quantile_value)
+        normalized_base = f"{base}_quantile_{suffix_value}"
+
+    if not filtered_labels:
+        return normalized_base
 
     formatted_labels = ",".join(
-        f'{key}="{value}"' for key, value in sorted(parsed_labels)
+        f'{key}="{value}"' for key, value in sorted(filtered_labels)
     )
-    return f"{base}{{{formatted_labels}}}"
+    return f"{normalized_base}{{{formatted_labels}}}"
 
 
 def collect_chainlit_metrics(path: Path, metric_prefix: str = DEFAULT_METRIC_PREFIX) -> Dict[str, float]:
