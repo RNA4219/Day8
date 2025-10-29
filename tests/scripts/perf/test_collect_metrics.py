@@ -154,6 +154,35 @@ def test_collect_prometheus_metrics_merges_bucket_metrics_with_env_labels(
     }
 
 
+def test_collect_prometheus_metrics_merges_quantile_metrics_with_env_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = "\n".join(
+        [
+            'day8_latency_seconds{quantile="0.5",instance="a"} 0.2',
+            'day8_latency_seconds{quantile="0.5",instance="b"} 0.4',
+            'day8_latency_seconds{quantile="0.9",instance="a"} 0.6',
+            'day8_latency_seconds{quantile="0.9",instance="b"} 0.8',
+        ]
+    ).encode("utf-8")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        lambda url, timeout=5.0: _DummyResponse(payload),
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics"
+    )
+
+    assert result == {
+        "day8_latency_seconds_quantile_0.5": 0.4,
+        "day8_latency_seconds_quantile_0.9": 0.8,
+    }
+
+
 def test_main_succeeds_with_required_metrics(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
