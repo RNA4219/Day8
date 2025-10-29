@@ -28,7 +28,7 @@ def personalize_scores(
 
     seed = [max(float(base_scores.get(str(node["id"]), 0.0)), 0.0) for node in indexed_nodes]
     total = sum(seed)
-    if total == 0.0:
+    if total <= 0.0:
         seed = [1.0 / size] * size
     else:
         seed = [value / total for value in seed]
