@@ -23,9 +23,6 @@ _ADDITIVE_SUFFIXES: Tuple[str, ...] = ("_total", "_sum", "_count")
 _BUCKET_SUFFIXES: Tuple[str, ...] = ("_bucket",)
 _TIMESTAMP_SUFFIXES: Tuple[str, ...] = ("_timestamp",)
 _LABEL_PATTERN = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)=\"((?:\\.|[^\"\\])*)\"")
-_METRIC_LINE_PATTERN = re.compile(
-    r"^(?P<metric>[^\s\{]+(?:\{(?:\\.|[^\\}])*\})?)\s+(?P<value>\S+)(?:\s+(?P<timestamp>\S+))?\s*$"
-)
 _ENVIRONMENT_LABEL_KEYS: frozenset[str] = frozenset(
     {
         "instance",
@@ -53,6 +50,74 @@ def _filter_environment_labels(labels: Iterable[tuple[str, str]]) -> list[tuple[
     return [(key, value) for key, value in labels if key not in _ENVIRONMENT_LABEL_KEYS]
 
 
+def _is_unescaped_quote(text: str, index: int) -> bool:
+    if text[index] != "\"":
+        return False
+    backslash_count = 0
+    cursor = index - 1
+    while cursor >= 0 and text[cursor] == "\\":
+        backslash_count += 1
+        cursor -= 1
+    return backslash_count % 2 == 0
+
+
+def _split_prometheus_sample(line: str) -> tuple[str, str, str | None] | None:
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return None
+    cursor = len(stripped) - 1
+
+    def extract_token(text: str, index: int) -> tuple[str, int] | None:
+        cursor_inner = index
+        in_quotes = False
+        while cursor_inner >= 0 and text[cursor_inner].isspace():
+            cursor_inner -= 1
+        if cursor_inner < 0:
+            return None
+        end_pos = cursor_inner
+        while cursor_inner >= 0:
+            char = text[cursor_inner]
+            if char == "\"" and _is_unescaped_quote(text, cursor_inner):
+                in_quotes = not in_quotes
+                cursor_inner -= 1
+                continue
+            if not in_quotes and char.isspace():
+                break
+            cursor_inner -= 1
+        start_pos = cursor_inner + 1
+        token = text[start_pos : end_pos + 1]
+        return token, cursor_inner
+
+    first_token = extract_token(stripped, cursor)
+    if first_token is None:
+        return None
+    last_token, cursor = first_token
+    metric_and_value = stripped[: cursor + 1]
+    second_token = extract_token(metric_and_value, len(metric_and_value) - 1)
+    if second_token is None:
+        metric_part = metric_and_value.strip()
+        if not metric_part:
+            return None
+        value_text = last_token
+        timestamp_text = None
+    else:
+        value_candidate, cursor = second_token
+        metric_part_text = metric_and_value[: cursor + 1].strip()
+        if not metric_part_text:
+            metric_part = metric_and_value.strip()
+            if not metric_part:
+                return None
+            value_text = last_token
+            timestamp_text = None
+        else:
+            metric_part = metric_part_text
+            value_text = value_candidate
+            timestamp_text = last_token
+    if not metric_part or not value_text:
+        return None
+    return metric_part, value_text, timestamp_text
+
+
 def collect_prometheus_metrics(
     url: str,
     metric_prefix: str = DEFAULT_METRIC_PREFIX,
@@ -75,13 +140,10 @@ def collect_prometheus_metrics(
         return {}
     results: Dict[str, float] = {}
     for line in payload.splitlines():
-        if not line or line.startswith("#"):
+        parsed_line = _split_prometheus_sample(line)
+        if parsed_line is None:
             continue
-        match = _METRIC_LINE_PATTERN.match(line)
-        if not match:
-            continue
-        metric_name = match.group("metric")
-        value_text = match.group("value")
+        metric_name, value_text, _timestamp_text = parsed_line
         normalized_metric = _normalize_prometheus_metric_name(
             metric_name, preserve_label_for_bucket=True
         )
