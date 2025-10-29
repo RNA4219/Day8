@@ -229,6 +229,30 @@ def test_collect_prometheus_metrics_keeps_highest_quantile_value(
     assert result == {"day8_latency_seconds_quantile_0.5": 0.6}
 
 
+def test_collect_prometheus_metrics_keeps_highest_quantile_value_with_additional_labels(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = "\n".join(
+        [
+            'day8_latency_seconds{quantile="0.5",status="ok",instance="a"} 0.9',
+            'day8_latency_seconds{quantile="0.5",status="ok",instance="b"} 0.3',
+        ]
+    ).encode("utf-8")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        lambda url, timeout=5.0: _DummyResponse(payload),
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics"
+    )
+
+    assert result == {'day8_latency_seconds_quantile_0.5{status="ok"}': 0.9}
+
+
 def test_main_succeeds_with_required_metrics(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
