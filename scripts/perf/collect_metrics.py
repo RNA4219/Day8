@@ -50,7 +50,12 @@ def _required_metric_names(metric_prefix: str) -> list[str]:
 
 
 def _filter_environment_labels(labels: Iterable[tuple[str, str]]) -> list[tuple[str, str]]:
-    return [(key, value) for key, value in labels if key not in _ENVIRONMENT_LABEL_KEYS]
+    filtered_labels: list[tuple[str, str]] = []
+    for key, value in labels:
+        if key in _ENVIRONMENT_LABEL_KEYS:
+            continue
+        filtered_labels.append((key, value))
+    return filtered_labels
 
 
 def collect_prometheus_metrics(
