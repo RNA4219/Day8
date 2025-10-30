@@ -82,6 +82,43 @@ def test_parse_rules_yaml_folded_block_scalar_preserves_indentation() -> None:
     assert description == "Summary:\n  - detail\n"
 
 
+def test_load_ruleset_fallback_preserves_folded_block_with_indented_lines(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _reject_yaml(name: str, *args: Any, **kwargs: Any):
+        if name == "yaml":
+            raise ModuleNotFoundError("No module named 'yaml'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _reject_yaml)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        "\n".join(
+            [
+                "version: 1",
+                "rules:",
+                "  - id: folded",
+                "    severity: minor",
+                "    description: >",
+                "      Summary:",
+                "        - detail",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    loaded = module._load_ruleset(rules_path)
+    (rule,) = loaded["rules"]
+
+    assert rule["description"] == "Summary:\n  - detail\n"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
