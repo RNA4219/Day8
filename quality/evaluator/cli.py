@@ -323,7 +323,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 rules.append(current)
             current = {
                 "id": _normalize_yaml_scalar(stripped.split(":", 1)[1]),
-                "match": {"any": []},
+                "match": {},
             }
             gathering_contains = None
             idx += 1
@@ -336,10 +336,14 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         elif stripped.startswith("severity:"):
             current["severity"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
         elif stripped.startswith("any:"):
+            match = current.setdefault("match", {})
+            match.setdefault("any", [])
             gathering_contains = "any"
             idx += 1
             continue
         elif stripped.startswith("all:"):
+            match = current.setdefault("match", {})
+            match.setdefault("all", [])
             gathering_contains = "all"
             idx += 1
             continue
@@ -422,18 +426,46 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
 
 
 def _matches_rule(rule: dict[str, Any], text: str) -> bool:
-    match = rule.get("match", {})
-    any_nodes = match.get("any", [])
-    all_nodes = match.get("all", [])
+    match_section = rule.get("match", {})
+    any_nodes: Sequence[Any] | None = None
+    all_nodes: Sequence[Any] | None = None
 
-    any_matched = any(
-        isinstance(node, dict) and node.get("contains") and node["contains"] in text
-        for node in any_nodes
-    )
-    all_matched = bool(all_nodes) and all(
-        isinstance(node, dict) and node.get("contains") and node["contains"] in text
-        for node in all_nodes
-    )
+    if isinstance(match_section, dict):
+        any_nodes = match_section.get("any")
+        all_nodes = match_section.get("all")
+    else:
+        normalized = str(match_section).strip().lower()
+        if normalized == "any":
+            any_nodes = rule.get("any")
+        elif normalized == "all":
+            all_nodes = rule.get("all")
+
+    if any_nodes is None:
+        fallback_any = rule.get("any")
+        if isinstance(fallback_any, list):
+            any_nodes = fallback_any
+    if all_nodes is None:
+        fallback_all = rule.get("all")
+        if isinstance(fallback_all, list):
+            all_nodes = fallback_all
+
+    def _extract_contains(nodes: Sequence[Any] | None) -> list[str]:
+        values: list[str] = []
+        if not nodes:
+            return values
+        for node in nodes:
+            if not isinstance(node, dict):
+                continue
+            candidate = node.get("contains")
+            if isinstance(candidate, str):
+                values.append(candidate)
+        return values
+
+    any_values = _extract_contains(any_nodes)
+    all_values = _extract_contains(all_nodes)
+
+    any_matched = any(value in text for value in any_values)
+    all_matched = bool(all_values) and all(value in text for value in all_values)
 
     return any_matched or all_matched
 

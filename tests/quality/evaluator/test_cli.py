@@ -511,6 +511,68 @@ rules:
     assert guardrail["max_severity"] == "critical"
 
 
+def test_evaluate_guardrails_detects_all_match_with_mocked_yaml(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    def _fake_safe_load(text: str) -> dict[str, Any]:
+        assert "match: all" in text
+        assert text.count("- contains:") >= 2
+        return {
+            "version": 1,
+            "rules": [
+                {
+                    "id": "rule-match-all",
+                    "severity": "major",
+                    "match": "all",
+                    "all": [
+                        {"contains": "alpha"},
+                        {"contains": "beta"},
+                    ],
+                }
+            ],
+        }
+
+    monkeypatch.setitem(sys.modules, "yaml", SimpleNamespace(safe_load=_fake_safe_load))
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        "\n".join(
+            [
+                "version: 1",
+                "rules:",
+                "  - id: rule-match-all",
+                "    severity: major",
+                "    match: all",
+                "    all:",
+                "      - contains: alpha",
+                "      - contains: beta",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    loaded = module._load_ruleset(rules_path)
+    (rule,) = loaded["rules"]
+
+    assert module._matches_rule(rule, "alpha and beta are both here")
+    assert not module._matches_rule(rule, "alpha appears without partner")
+    assert not module._matches_rule(rule, "beta appears without partner")
+
+    guardrail = module._evaluate_guardrails(
+        rules_path,
+        ["alpha only", "beta only", "the sequence alpha then beta"],
+    )
+
+    assert guardrail["counts"]["major"] == 1
+    assert guardrail["max_severity"] == "major"
+    assert [violation["id"] for violation in guardrail["violations"]] == [
+        "rule-match-all"
+    ]
+
+
 def test_load_ruleset_fallback_supports_match_all(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
