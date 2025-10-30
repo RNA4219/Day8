@@ -1,7 +1,7 @@
 {
   "deps_in": [],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "scripts/warmup.sh",
   "maintenance": {
     "refresh": "API エンドポイントや環境変数を更新した際は config/env.example と合わせて反映し、ヘルスチェック→ウォームアップの順序を崩さない。",

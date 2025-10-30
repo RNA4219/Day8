@@ -6,7 +6,7 @@
   "deps_out": [
     "workflow-cookbook/SAFETY.md"
   ],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "docs/safety.md",
   "maintenance": {
     "refresh": "安全ポリシーや参照順が変わったら Birdseye の参照先を Safety→Security→Runbook→Privacy→Index の順で更新し、関連ガードレール文書と workflow-cookbook/SAFETY.md を整合させる。",

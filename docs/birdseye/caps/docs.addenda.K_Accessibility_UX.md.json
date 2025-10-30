@@ -11,7 +11,7 @@
     "docs/README.md"
   ],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "docs/addenda/K_Accessibility_UX.md",
   "maintenance": {
     "refresh": "Appendix K を更新したら Guardrails → 06_quality.md → I_Test_Cases.md → Birdseye index/caps の順で差分と generated_at を同期する。",

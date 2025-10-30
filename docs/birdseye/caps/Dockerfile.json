@@ -4,7 +4,7 @@
     "docs/addenda/H_Deploy_Guide.md"
   ],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "Dockerfile",
   "maintenance": {
     "refresh": "pytest 既定コマンドや依存解決手順が変わったら Appendix H と Release Checklist と併せて更新し、Docker build/run の検証結果を記録する。",

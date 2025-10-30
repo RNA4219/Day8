@@ -5,7 +5,7 @@
     "docs/Release_Checklist.md"
   ],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "Makefile",
   "maintenance": {
     "refresh": "Makefile を更新したら docs/birdseye/index.json とカプセルを同一コミットで再生成する。",

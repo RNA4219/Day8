@@ -38,7 +38,7 @@
     "workflow-cookbook/scripts/analyze.py",
     "workflow-cookbook/tools/codemap/README.md"
   ],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "workflow-cookbook/RUNBOOK.md",
   "maintenance": {
     "refresh": "Preparation/Execution/Verificationの各手順を更新した際は Birdseye index/caps と CHECKLISTS を同時更新。",
@@ -54,11 +54,11 @@
     "orbit::incident-response"
   ],
   "summary": [
-    "core::Day8ワークフローのPurpose/Roles/Guardrailsを明文化し役割と参照元を即座に把握可能にする。",
-    "core::Preparation→Execution→Verificationの順で環境構築・Birdseye再生成・ログ検証の具体コマンドを提示。",
-    "orbit::CHECKLISTS/インシデント記録/Observability資料との同期ポイントを列挙し運用判断を支援。"
+    "core::Guardrail項目セクションでAI提案の人手検証・Secrets管理・Birdseye/TASKS同期・Task Seed記録の必須手順を明示。",
+    "core::Preparation→Verificationの各段にTask Seed追記とdocs/addenda/J_Runbook.md参照を組み込み、運用判断ログの残し方を標準化。",
+    "orbit::最小フローでDevelopment/Review/Opsごとのチェックリストとインシデントログ更新手順を整理。"
   ],
   "tests": [
-    "check::Preparation/Execution/Verification手順が CHECKLISTS と birdseye_refresh/analyze スクリプトに追従しているか確認"
+    "check::Guardrail項目と最小フローがCHECKLISTS・TASK_SEED・docs/addenda/J_Runbook.mdと整合するか確認"
   ]
 }
