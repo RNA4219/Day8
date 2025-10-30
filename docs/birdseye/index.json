@@ -809,386 +809,386 @@
       "docs/adr/0005-reflection-manifest.md"
     ]
   ],
-  "generated_at": "00004",
+  "generated_at": "00005",
   "nodes": {
     "CHANGELOG.md": {
       "caps": "docs/birdseye/caps/CHANGELOG.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "changelog"
     },
     "Dockerfile": {
       "caps": "docs/birdseye/caps/Dockerfile.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "build"
     },
     "INSTALL.md": {
       "caps": "docs/birdseye/caps/INSTALL.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "setup"
     },
     "Makefile": {
       "caps": "docs/birdseye/caps/Makefile.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "build"
     },
     "README.md": {
       "caps": "docs/birdseye/caps/README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "overview"
     },
     "README_PERSONAS_THEMES.md": {
       "caps": "docs/birdseye/caps/README_PERSONAS_THEMES.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guide"
     },
     "config/env.example": {
       "caps": "docs/birdseye/caps/config.env.example.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "configuration"
     },
     "config/model_registry.json": {
       "caps": "docs/birdseye/caps/config.model_registry.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "provider"
     },
     "docs/Architecture_ASCII.md": {
       "caps": "docs/birdseye/caps/docs.Architecture_ASCII.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "architecture"
     },
     "docs/BIRDSEYE.md": {
       "caps": "docs/birdseye/caps/docs.BIRDSEYE.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guide"
     },
     "docs/FORK_NOTES.md": {
       "caps": "docs/birdseye/caps/docs.FORK_NOTES.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guide"
     },
     "docs/README.md": {
       "caps": "docs/birdseye/caps/docs.README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "index"
     },
     "docs/ROADMAP_AND_SPECS.md": {
       "caps": "docs/birdseye/caps/docs.ROADMAP_AND_SPECS.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "roadmap"
     },
     "docs/Release_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Release_Checklist.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "checklist"
     },
     "docs/Security_Review_Checklist.md": {
       "caps": "docs/birdseye/caps/docs.Security_Review_Checklist.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "security-checklist"
     },
     "docs/TASKS.md": {
       "caps": "docs/birdseye/caps/docs.TASKS.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "tasks"
     },
     "docs/UPSTREAM.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "operations"
     },
     "docs/UPSTREAM_WEEKLY_LOG.md": {
       "caps": "docs/birdseye/caps/docs.UPSTREAM_WEEKLY_LOG.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "log"
     },
     "docs/addenda/A_Glossary.md": {
       "caps": "docs/birdseye/caps/docs.addenda.A_Glossary.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "glossary"
     },
     "docs/addenda/B_UI_Mock.md": {
       "caps": "docs/birdseye/caps/docs.addenda.B_UI_Mock.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "design"
     },
     "docs/addenda/C_Persona_Schema.md": {
       "caps": "docs/birdseye/caps/docs.addenda.C_Persona_Schema.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "persona"
     },
     "docs/addenda/F_Provider_Matrix.md": {
       "caps": "docs/birdseye/caps/docs.addenda.F_Provider_Matrix.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "provider"
     },
     "docs/addenda/G_Security_Privacy.md": {
       "caps": "docs/birdseye/caps/docs.addenda.G_Security_Privacy.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "security"
     },
     "docs/addenda/H_Deploy_Guide.md": {
       "caps": "docs/birdseye/caps/docs.addenda.H_Deploy_Guide.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guide"
     },
     "docs/addenda/I_Test_Cases.md": {
       "caps": "docs/birdseye/caps/docs.addenda.I_Test_Cases.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "quality"
     },
     "docs/addenda/J_Runbook.md": {
       "caps": "docs/birdseye/caps/docs.addenda.J_Runbook.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "operations"
     },
     "docs/addenda/K_Accessibility_UX.md": {
       "caps": "docs/birdseye/caps/docs.addenda.K_Accessibility_UX.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "ux"
     },
     "docs/addenda/L_Config_Reference.md": {
       "caps": "docs/birdseye/caps/docs.addenda.L_Config_Reference.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "configuration"
     },
     "docs/addenda/M1_Metrics_Healthz_ADR.md": {
       "caps": "docs/birdseye/caps/docs.addenda.M1_Metrics_Healthz_ADR.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "operations"
     },
     "docs/addenda/M_Versioning_Release.md": {
       "caps": "docs/birdseye/caps/docs.addenda.M_Versioning_Release.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "release"
     },
     "docs/adr/0000-template.md": {
       "caps": "docs/birdseye/caps/docs.adr.0000-template.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr-template"
     },
     "docs/adr/0001-collector-analyzer-reporter-pipeline.md": {
       "caps": "docs/birdseye/caps/docs.adr.0001-collector-analyzer-reporter-pipeline.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/0002-jsonl-event-contract.md": {
       "caps": "docs/birdseye/caps/docs.adr.0002-jsonl-event-contract.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/0003-propose-only-governance.md": {
       "caps": "docs/birdseye/caps/docs.adr.0003-propose-only-governance.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/0004-provider-interface.md": {
       "caps": "docs/birdseye/caps/docs.adr.0004-provider-interface.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/0005-reflection-manifest.md": {
       "caps": "docs/birdseye/caps/docs.adr.0005-reflection-manifest.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/0006-evaluator-gates.md": {
       "caps": "docs/birdseye/caps/docs.adr.0006-evaluator-gates.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/0007-proposal-priority-handshake.md": {
       "caps": "docs/birdseye/caps/docs.adr.0007-proposal-priority-handshake.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/adr/README.md": {
       "caps": "docs/birdseye/caps/docs.adr.README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "adr"
     },
     "docs/day8/README.md": {
       "caps": "docs/birdseye/caps/docs.day8.README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "overview"
     },
     "docs/day8/design/03_architecture.md": {
       "caps": "docs/birdseye/caps/docs.day8.design.03_architecture.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "architecture"
     },
     "docs/day8/ops/04_ops.md": {
       "caps": "docs/birdseye/caps/docs.day8.ops.04_ops.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "operations"
     },
     "docs/day8/perf/03_performance.md": {
       "caps": "docs/birdseye/caps/docs.day8.perf.03_performance.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "performance"
     },
     "docs/day8/quality/06_quality.md": {
       "caps": "docs/birdseye/caps/docs.day8.quality.06_quality.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "quality"
     },
     "docs/day8/spec/01_requirements.md": {
       "caps": "docs/birdseye/caps/docs.day8.spec.01_requirements.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "requirements"
     },
     "docs/day8/spec/02_spec.md": {
       "caps": "docs/birdseye/caps/docs.day8.spec.02_spec.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "spec"
     },
     "docs/day8_wbs.csv": {
       "caps": "docs/birdseye/caps/docs.day8_wbs.csv.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "planning"
     },
     "docs/openapi/day8_openapi.yaml": {
       "caps": "docs/birdseye/caps/docs.openapi.day8_openapi.yaml.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "api-spec"
     },
     "docs/safety.md": {
       "caps": "docs/birdseye/caps/docs.safety.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "safety"
     },
     "docs/seeds/README.md": {
       "caps": "docs/birdseye/caps/docs.seeds.README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "seeds"
     },
     "docs/seeds/TASK.template-YYYY-MM-DD.md": {
       "caps": "docs/birdseye/caps/docs.seeds.TASK.template-YYYY-MM-DD.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "seeds"
     },
     "personas/README.md": {
       "caps": "docs/birdseye/caps/personas.README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "persona"
     },
     "quality/guardrails/rules.yaml": {
       "caps": "docs/birdseye/caps/quality.guardrails.rules.yaml.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guardrail"
     },
     "scripts/": {
       "caps": "docs/birdseye/caps/scripts.DIR.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "automation"
     },
     "scripts/birdseye_refresh.py": {
       "caps": "docs/birdseye/caps/scripts.birdseye_refresh.py.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "automation"
     },
     "scripts/warmup.sh": {
       "caps": "docs/birdseye/caps/scripts.warmup.sh.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "automation"
     },
     "themes/CATALOG.md": {
       "caps": "docs/birdseye/caps/themes.CATALOG.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "design"
     },
     "tools/": {
       "caps": "docs/birdseye/caps/tools.DIR.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "automation"
     },
     "workflow-cookbook/BLUEPRINT.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.BLUEPRINT.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "requirements"
     },
     "workflow-cookbook/CHECKLISTS.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.CHECKLISTS.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "checklist"
     },
     "workflow-cookbook/EVALUATION.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.EVALUATION.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "quality"
     },
     "workflow-cookbook/GUARDRAILS.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.GUARDRAILS.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guardrail"
     },
     "workflow-cookbook/HUB.codex.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.HUB.codex.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "orchestration"
     },
     "workflow-cookbook/RUNBOOK.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.RUNBOOK.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "operations"
     },
     "workflow-cookbook/SAFETY.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.SAFETY.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "safety"
     },
     "workflow-cookbook/SECURITY.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.SECURITY.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guardrail"
     },
     "workflow-cookbook/TASK.codex.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.TASK.codex.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "tasks"
     },
     "workflow-cookbook/docs/IN-20250115-001.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.IN-20250115-001.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "incident"
     },
     "workflow-cookbook/docs/birdseye/index.json": {
       "caps": "docs/birdseye/caps/workflow-cookbook.docs.birdseye.index.json.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "visualization"
     },
     "workflow-cookbook/logs/test.jsonl": {
       "caps": "docs/birdseye/caps/workflow-cookbook.logs.test.jsonl.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "log"
     },
     "workflow-cookbook/reports/issue_suggestions.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.reports.issue_suggestions.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "report"
     },
     "workflow-cookbook/reports/today.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.reports.today.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "report"
     },
     "workflow-cookbook/scripts/": {
       "caps": "docs/birdseye/caps/workflow-cookbook.scripts.DIR.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "automation"
     },
     "workflow-cookbook/scripts/analyze.py": {
       "caps": "docs/birdseye/caps/workflow-cookbook.scripts.analyze.py.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "analytics"
     },
     "workflow-cookbook/tools/": {
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.DIR.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "automation"
     },
     "workflow-cookbook/tools/codemap/README.md": {
       "caps": "docs/birdseye/caps/workflow-cookbook.tools.codemap.README.md.json",
-      "mtime": "00003",
+      "mtime": "00005",
       "role": "guide"
     }
   }

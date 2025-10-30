@@ -4,7 +4,7 @@
     "workflow-cookbook/SECURITY.md"
   ],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "workflow-cookbook/tools/",
   "maintenance": {
     "refresh": "CI や birdseye_refresh スクリプトの仕様を変えた際は README/GUARDRAILS と併せて Birdseye を再生成する。",

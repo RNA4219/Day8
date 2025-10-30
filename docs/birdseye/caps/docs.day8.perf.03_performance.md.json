@@ -15,7 +15,7 @@
     "workflow-cookbook/scripts/analyze.py",
     "workflow-cookbook/scripts/run_ci_tests.py"
   ],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "docs/day8/perf/03_performance.md",
   "maintenance": {
     "refresh": "SLO 判定・ウォームアップ結果を Appendix H/J と同期し、Birdseye tests セクションへ参照済みレポートを追記する。",

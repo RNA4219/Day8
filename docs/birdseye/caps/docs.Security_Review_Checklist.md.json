@@ -18,7 +18,7 @@
     "docs/safety.md",
     "workflow-cookbook/SECURITY.md"
   ],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "docs/Security_Review_Checklist.md",
   "maintenance": {
     "refresh": "Secrets/CORS/Rate limit/OAuth/依存性スキャンの審査項目が更新されたら本チェックリストを修正し、05_security.md と Appendix G の対応を揃えて Birdseye index/hot/caps の generated_at を同期。",
