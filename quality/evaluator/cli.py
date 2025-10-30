@@ -369,6 +369,16 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
 
         return value, cursor
 
+    def _maybe_consume_block_scalar(
+        start_idx: int, line: str, value_part: str
+    ) -> tuple[str | None, int]:
+        payload = value_part.strip()
+        if payload and payload[0] in {"|", ">"}:
+            indent_level = len(line) - len(line.lstrip(" "))
+            value, cursor = _consume_block_scalar(start_idx + 1, indent_level, payload[0])
+            return value, cursor
+        return None, start_idx
+
     while idx < len(lines):
         raw = lines[idx]
         stripped = raw.strip()
@@ -390,11 +400,10 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             continue
         if stripped.startswith("description:"):
             value_part = stripped.split(":", 1)[1]
-            payload = value_part.strip()
-            if payload and payload[0] in {"|", ">"}:
-                indent_level = len(raw) - len(raw.lstrip(" "))
-                value, idx = _consume_block_scalar(idx + 1, indent_level, payload[0])
-                current["description"] = value
+            block_value, new_idx = _maybe_consume_block_scalar(idx, raw, value_part)
+            if block_value is not None:
+                current["description"] = block_value
+                idx = new_idx
                 continue
             current["description"] = _normalize_yaml_scalar(value_part)
         elif stripped.startswith("severity:"):

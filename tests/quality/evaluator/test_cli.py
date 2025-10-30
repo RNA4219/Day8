@@ -298,6 +298,36 @@ rules:
     assert not module._matches_rule(rule, "line\\nnext")
 
 
+def test_parse_rules_yaml_extracts_block_description_texts() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-literal-description
+    severity: minor
+    description: |
+      literal
+      body
+    any:
+      - contains: literal
+  - id: rule-folded-description
+    severity: major
+    description: >
+      folded
+      body
+    any:
+      - contains: folded body
+"""
+    )
+
+    first_rule, second_rule = parsed["rules"]
+
+    assert first_rule["description"] == "literal\nbody"
+    assert second_rule["description"] == "folded body"
+
+
 def test_parse_rules_yaml_folded_block_preserves_blank_lines() -> None:
     module = import_module("quality.evaluator.cli")
 
