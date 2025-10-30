@@ -65,6 +65,23 @@ def test_parse_rules_yaml_block_scalar_chomp_indicators() -> None:
     assert descriptions["keep"] == "keep\n\n"
 
 
+def test_parse_rules_yaml_folded_block_scalar_preserves_indentation() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    payload = (
+        "rules:\n"
+        "  - id: folded\n"
+        "    description: >\n"
+        "      Summary:\n"
+        "        - detail\n"
+    )
+
+    parsed = module._parse_rules_yaml(payload)
+    description = parsed["rules"][0]["description"]
+
+    assert description == "Summary:\n  - detail\n"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
@@ -446,8 +463,8 @@ rules:
     rule = parsed["rules"][0]
     (contains_node,) = rule["match"]["any"]
 
-    assert contains_node["contains"] == "prefix   bullet suffix"
-    assert module._matches_rule(rule, "prefix   bullet suffix is present")
+    assert contains_node["contains"] == "prefix\n  bullet\nsuffix"
+    assert module._matches_rule(rule, "prefix\n  bullet\nsuffix is present")
 
 
 def test_parse_rules_yaml_ignores_inline_comments_for_unquoted_contains() -> None:
@@ -521,8 +538,8 @@ rules:
 
     any_rule, all_rule = parsed["rules"]
 
-    assert any_rule["description"] == "Leading line\n\n  indented continuation"
-    assert all_rule["description"] == "Another leading line\n\n  indented continuation"
+    assert any_rule["description"] == "Leading line\n\n  indented continuation\n"
+    assert all_rule["description"] == "Another leading line\n\n  indented continuation\n"
 
 
 def test_load_ruleset_fallback_strips_inline_comments(
