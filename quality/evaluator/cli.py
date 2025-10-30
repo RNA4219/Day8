@@ -309,7 +309,7 @@ def _load_ruleset(path: Path) -> dict[str, Any]:
 def _parse_rules_yaml(text: str) -> dict[str, Any]:
     rules: list[dict[str, Any]] = []
     current: dict[str, Any] | None = None
-    gathering_contains = False
+    gathering_contains: str | None = None
     lines = text.splitlines()
     idx = 0
     while idx < len(lines):
@@ -325,7 +325,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 "id": _normalize_yaml_scalar(stripped.split(":", 1)[1]),
                 "match": {"any": []},
             }
-            gathering_contains = False
+            gathering_contains = None
             idx += 1
             continue
         if current is None:
@@ -336,7 +336,11 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         elif stripped.startswith("severity:"):
             current["severity"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
         elif stripped.startswith("any:"):
-            gathering_contains = True
+            gathering_contains = "any"
+            idx += 1
+            continue
+        elif stripped.startswith("all:"):
+            gathering_contains = "all"
             idx += 1
             continue
         elif stripped.startswith("- contains:") and gathering_contains:
@@ -383,6 +387,9 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                                 current_parts = []
                             pending_blank_lines += 1
                             continue
+                        leading_spaces = len(part) - len(part.lstrip(" "))
+                        if leading_spaces > 0:
+                            stripped_part = (" " * (leading_spaces - 1)) + stripped_part
                         if pending_blank_lines:
                             folded_lines.extend([""] * pending_blank_lines)
                             pending_blank_lines = 0
@@ -391,7 +398,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                         folded_lines.append(" ".join(current_parts))
                     value = "\n".join(folded_lines)
                 match = current.setdefault("match", {})
-                match.setdefault("any", []).append({"contains": value})
+                match.setdefault(gathering_contains, []).append({"contains": value})
                 continue
             # コメント除去とクオート除去を事前処理しつつ、正規化関数に委譲
             is_quoted = len(payload) >= 2 and payload[0] == payload[-1] and payload[0] in {'"', "'"}
@@ -403,11 +410,11 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             payload = _normalize_yaml_scalar(payload)
 
             match = current.setdefault("match", {})
-            match.setdefault("any", []).append({"contains": payload})
+            match.setdefault(gathering_contains, []).append({"contains": payload})
             idx += 1
             continue
         elif not raw.startswith("  "):
-            gathering_contains = False
+            gathering_contains = None
         idx += 1
     if current:
         rules.append(current)
@@ -415,11 +422,20 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
 
 
 def _matches_rule(rule: dict[str, Any], text: str) -> bool:
-    any_nodes = rule.get("match", {}).get("any", [])
-    return any(
+    match = rule.get("match", {})
+    any_nodes = match.get("any", [])
+    all_nodes = match.get("all", [])
+
+    any_matched = any(
         isinstance(node, dict) and node.get("contains") and node["contains"] in text
         for node in any_nodes
     )
+    all_matched = bool(all_nodes) and all(
+        isinstance(node, dict) and node.get("contains") and node["contains"] in text
+        for node in all_nodes
+    )
+
+    return any_matched or all_matched
 
 
 def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str, Any]:
