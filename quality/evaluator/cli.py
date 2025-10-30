@@ -316,6 +316,22 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
     def _consume_block_scalar(
         start_idx: int, indent_level: int, indicator: str
     ) -> tuple[str, int]:
+        indicator_token: list[str] = []
+        for char in indicator:
+            if char in {" ", "\t", "#"}:
+                break
+            indicator_token.append(char)
+        if not indicator_token:
+            indicator_token.append(indicator[0])
+
+        style = indicator_token[0]
+        chomp = "clip"
+        for char in indicator_token[1:]:
+            if char == "+":
+                chomp = "keep"
+            elif char == "-":
+                chomp = "strip"
+
         block_lines: list[tuple[str, int | None]] = []
         cursor = start_idx
         while cursor < len(lines):
@@ -342,8 +358,8 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 start = trim_indent if len(line) >= trim_indent else len(line)
                 normalized.append(line[start:])
 
-        if indicator == "|":
-            value = "\n".join(normalized)
+        if style == "|":
+            value = "".join(f"{line}\n" for line in normalized)
         else:
             folded_lines: list[str] = []
             current_parts: list[str] = []
@@ -367,6 +383,16 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 folded_lines.append(" ".join(current_parts))
             value = "\n".join(folded_lines)
 
+        has_any_lines = bool(block_lines)
+        if chomp == "strip":
+            value = value.rstrip("\n")
+        elif chomp == "clip":
+            if has_any_lines:
+                value = value.rstrip("\n") + "\n"
+        elif chomp == "keep":
+            if has_any_lines and not value.endswith("\n"):
+                value = value + "\n"
+
         return value, cursor
 
     def _maybe_consume_block_scalar(
@@ -375,7 +401,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
         payload = value_part.strip()
         if payload and payload[0] in {"|", ">"}:
             indent_level = len(line) - len(line.lstrip(" "))
-            value, cursor = _consume_block_scalar(start_idx + 1, indent_level, payload[0])
+            value, cursor = _consume_block_scalar(start_idx + 1, indent_level, payload)
             return value, cursor
         return None, start_idx
 
@@ -411,7 +437,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             payload = value_part.strip()
             if payload and payload[0] in {"|", ">"}:
                 indent_level = len(raw) - len(raw.lstrip(" "))
-                value, idx = _consume_block_scalar(idx + 1, indent_level, payload[0])
+                value, idx = _consume_block_scalar(idx + 1, indent_level, payload)
                 current["severity"] = value
                 continue
             current["severity"] = _normalize_yaml_scalar(value_part)
@@ -432,7 +458,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             payload = value_part.strip()
             indent_level = len(raw) - len(raw.lstrip(" "))
             if payload and payload[0] in {"|", ">"}:
-                value, idx = _consume_block_scalar(idx + 1, indent_level, payload[0])
+                value, idx = _consume_block_scalar(idx + 1, indent_level, payload)
                 match = current.setdefault("match", {})
                 match.setdefault(gathering_contains, []).append({"contains": value})
                 continue
@@ -496,8 +522,19 @@ def _matches_rule(rule: dict[str, Any], text: str) -> bool:
     any_values = _extract_contains(any_nodes)
     all_values = _extract_contains(all_nodes)
 
-    any_matched = any(value in text for value in any_values)
-    all_matched = bool(all_values) and all(value in text for value in all_values)
+    def _contains_value(candidate: str) -> bool:
+        if not candidate:
+            return False
+        if candidate in text:
+            return True
+        if candidate.endswith("\n"):
+            trimmed = candidate.rstrip("\n")
+            if trimmed and trimmed in text:
+                return True
+        return False
+
+    any_matched = any(_contains_value(value) for value in any_values)
+    all_matched = bool(all_values) and all(_contains_value(value) for value in all_values)
 
     return any_matched or all_matched
 
@@ -510,7 +547,7 @@ def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str
     loaded = _load_ruleset(ruleset_path)
     violations: list[dict[str, Any]] = []
     for rule in loaded.get("rules", []):
-        severity = str(rule.get("severity", "")).lower()
+        severity = str(rule.get("severity", "")).strip().lower()
         if severity not in counts:
             continue
         if any(_matches_rule(rule, output) for output in outputs):

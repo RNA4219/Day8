@@ -40,6 +40,31 @@ def test_normalize_yaml_scalar_preserves_expected_unescaping() -> None:
     assert module._normalize_yaml_scalar('"Line\\nTwo"') == "Line\nTwo"
 
 
+def test_parse_rules_yaml_block_scalar_chomp_indicators() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    payload = (
+        "rules:\n"
+        "  - id: clip\n"
+        "    description: |\n"
+        "      clip\n"
+        "  - id: strip\n"
+        "    description: |-\n"
+        "      strip\n"
+        "  - id: keep\n"
+        "    description: |+\n"
+        "      keep\n"
+        "      \n"
+    )
+
+    parsed = module._parse_rules_yaml(payload)
+    descriptions = {rule["id"]: rule.get("description") for rule in parsed["rules"]}
+
+    assert descriptions["clip"] == "clip\n"
+    assert descriptions["strip"] == "strip"
+    assert descriptions["keep"] == "keep\n\n"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
@@ -324,8 +349,8 @@ rules:
 
     first_rule, second_rule = parsed["rules"]
 
-    assert first_rule["description"] == "literal\nbody"
-    assert second_rule["description"] == "folded body"
+    assert first_rule["description"] == "literal\nbody\n"
+    assert second_rule["description"] == "folded body\n"
 
 
 def test_parse_rules_yaml_folded_block_preserves_blank_lines() -> None:
@@ -583,9 +608,9 @@ rules:
 
     first_rule, second_rule = loaded["rules"]
 
-    assert first_rule["description"] == "multi\nline"
-    assert first_rule["severity"] == "minor"
-    assert second_rule["description"] == "folded text"
+    assert first_rule["description"] == "multi\nline\n"
+    assert first_rule["severity"] == "minor\n"
+    assert second_rule["description"] == "folded text\n"
     assert second_rule["severity"] == "critical"
 
 
