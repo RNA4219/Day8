@@ -347,24 +347,26 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             block_lines.append((candidate_raw, candidate_indent))
             cursor += 1
 
-        normalized: list[str] = []
+        normalized: list[tuple[str, bool]] = []
         if block_lines:
             indents = [indent for _, indent in block_lines if indent is not None]
             trim_indent = min(indents) if indents else indent_level + 1
             for line, indent in block_lines:
                 if indent is None:
-                    normalized.append("")
+                    normalized.append(("", False))
                     continue
                 start = trim_indent if len(line) >= trim_indent else len(line)
-                normalized.append(line[start:])
+                text = line[start:]
+                relative_indent = max(indent - trim_indent, 0)
+                normalized.append((text, relative_indent > 0))
 
         if style == "|":
-            value = "".join(f"{line}\n" for line in normalized)
+            value = "".join(f"{text}\n" for text, _ in normalized)
         else:
             folded_lines: list[str] = []
             current_parts: list[str] = []
             pending_blank_lines = 0
-            for part in normalized:
+            for part, is_deeper_indent in normalized:
                 stripped_part = part.strip()
                 if not stripped_part:
                     if current_parts:
@@ -372,8 +374,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                         current_parts = []
                     pending_blank_lines += 1
                     continue
-                leading_spaces = len(part) - len(part.lstrip(" "))
-                if leading_spaces > 0:
+                if is_deeper_indent:
                     if current_parts:
                         folded_lines.append(" ".join(current_parts))
                         current_parts = []
