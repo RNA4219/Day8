@@ -51,8 +51,14 @@ def _configure_collectors(
     chainlit_metrics: Dict[str, float],
     expected_prefix: str = "day8_",
 ) -> None:
-    def fake_collect_prometheus(url: str, metric_prefix: str = "day8_") -> Dict[str, float]:
+    def fake_collect_prometheus(
+        url: str,
+        metric_prefix: str = "day8_",
+        *,
+        timeout: float = 5.0,
+    ) -> Dict[str, float]:
         assert metric_prefix == expected_prefix
+        assert timeout == 5.0
         return prom_metrics
 
     def fake_collect_chainlit(path: Path, metric_prefix: str = "day8_") -> Dict[str, float]:
@@ -407,6 +413,57 @@ def test_main_prefers_prometheus_metrics_over_chainlit_when_conflicting(
             "day8_jobs_failed_total": 2.0,
             "day8_healthz_request_total": 3.0,
         },
+    }
+
+
+def test_main_passes_prom_timeout(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_processed_total": 5.0,
+        "day8_jobs_failed_total": 2.0,
+        "day8_healthz_request_total": 3.0,
+    }
+    chainlit_metrics: Dict[str, float] = {}
+    captured_timeout: Dict[str, float] = {}
+
+    def fake_collect_prometheus(
+        url: str,
+        metric_prefix: str = "day8_",
+        *,
+        timeout: float = 5.0,
+    ) -> Dict[str, float]:
+        captured_timeout["value"] = timeout
+        return prom_metrics
+
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_prometheus_metrics",
+        fake_collect_prometheus,
+    )
+    monkeypatch.setattr(
+        collect_metrics_module,
+        "collect_chainlit_metrics",
+        lambda path, metric_prefix="day8_": chainlit_metrics,
+    )
+
+    exit_code = collect_metrics_module.main(
+        _prepare_args(tmp_path, ["--prom-timeout", "2.5"])
+    )
+    assert exit_code == 0
+
+    assert captured_timeout == {"value": 2.5}
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload == {
+        "prometheus": prom_metrics,
+        "chainlit": chainlit_metrics,
+        "metrics": prom_metrics,
     }
 
 
@@ -1366,7 +1423,7 @@ def test_main_reports_missing_metric_when_chainlit_logs_nan(
     monkeypatch.setattr(
         collect_metrics_module,
         "collect_prometheus_metrics",
-        lambda url, metric_prefix="day8_": prom_metrics,
+        lambda url, metric_prefix="day8_", *, timeout=5.0: prom_metrics,
     )
 
     args = _prepare_args(tmp_path)

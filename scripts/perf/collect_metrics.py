@@ -327,6 +327,12 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Metric name prefix to filter (default: day8_)",
     )
     parser.add_argument(
+        "--prom-timeout",
+        type=float,
+        default=5.0,
+        help="Prometheus metrics request timeout in seconds",
+    )
+    parser.add_argument(
         "--output-format",
         choices=("json",),
         default="json",
@@ -355,7 +361,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    prom_metrics = collect_prometheus_metrics(args.prom_url, metric_prefix=args.metric_prefix)
+    prom_metrics = collect_prometheus_metrics(
+        args.prom_url,
+        metric_prefix=args.metric_prefix,
+        timeout=args.prom_timeout,
+    )
     chainlit_metrics: Dict[str, float] = {}
     if args.chainlit_log is not None:
         chainlit_metrics = collect_chainlit_metrics(args.chainlit_log, metric_prefix=args.metric_prefix)
