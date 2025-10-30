@@ -5,7 +5,7 @@
   ],
   "deps_in": [],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "scripts/switch_theme.py",
   "maintenance": {
     "refresh": "テーマファイルを追加・改名したら CLI のコピー先と README の案内を更新し、Birdseye を再生成する。",

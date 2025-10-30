@@ -8,7 +8,7 @@
     "workflow-cookbook/scripts/analyze.py"
   ],
   "deps_out": [],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "docs/adr/0005-reflection-manifest.md",
   "maintenance": {
     "refresh": "Manifest を更新したら Appendix L・Release Checklist・Birdseye の generated_at を揃える。",

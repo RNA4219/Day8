@@ -22,7 +22,7 @@
   "deps_out": [
     "workflow-cookbook/TASK.codex.md"
   ],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "workflow-cookbook/CHECKLISTS.md",
   "maintenance": {
     "refresh": "チェック項目変更時は Runbook / Task Seed と Day8 docs/Release_Checklist.md を同一コミットで更新。",
@@ -38,13 +38,12 @@
     "orbit::release-gates"
   ],
   "summary": [
-    "core::日次/リリース/衛生チェック項目を網羅。",
-    "core::リリースゲートに LICENSE/NOTICE 同梱・CI 完走・Docker スモーク確認を追加。",
-    "orbit::Priority Scoreや受け入れエビデンス確認をRunbook/Evaluation/Guardrailsと連携。",
-    "orbit::Birdseye更新タスクの完了条件を明示。",
-    "orbit::Release Checklist と Birdseye リフレッシュ手順を同期済み。"
+    "core::Development/Pull Request/Release/Ops/Hygiene の5フェーズへ再編し責務を分離。",
+    "core::lint・型検査・テストの先行実行と Task Seed 更新・人手検証・Security Review 連携を義務化。",
+    "orbit::Release Checklist・Runbook・Security Checklist など Day8 ドキュメントへのリンクを明示。",
+    "orbit::Ops で初動 Runbook 突合とインシデント記録フローを強化し、ログ保全を追加。"
   ],
   "tests": [
-    "check::Daily/Release/Hygieneリストが最新運用と一致するか確認"
+    "check::各フェーズのチェック項目が docs/Release_Checklist.md・J_Runbook・EVALUATION と整合しているか検証"
   ]
 }

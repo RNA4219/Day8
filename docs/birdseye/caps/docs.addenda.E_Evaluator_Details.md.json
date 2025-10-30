@@ -13,7 +13,7 @@
     "docs/adr/0006-evaluator-gates.md",
     "quality/guardrails/rules.yaml"
   ],
-  "generated_at": "00003",
+  "generated_at": "00005",
   "id": "docs/addenda/E_Evaluator_Details.md",
   "maintenance": {
     "refresh": "BERTScore/ROUGE/ルール判定の閾値やルールセットを更新したら Appendix E・06_quality.md・Birdseye index/hot/caps の generated_at を同期。",
