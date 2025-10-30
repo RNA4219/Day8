@@ -421,8 +421,8 @@ rules:
     rule = parsed["rules"][0]
     (contains_node,) = rule["match"]["any"]
 
-    assert contains_node["contains"] == "prefix  bullet suffix"
-    assert module._matches_rule(rule, "prefix  bullet suffix is present")
+    assert contains_node["contains"] == "prefix   bullet suffix"
+    assert module._matches_rule(rule, "prefix   bullet suffix is present")
 
 
 def test_parse_rules_yaml_ignores_inline_comments_for_unquoted_contains() -> None:
@@ -464,6 +464,40 @@ rules:
     rule = parsed["rules"][0]
 
     assert module._matches_rule(rule, "prefix alpha\nbeta suffix")
+
+
+def test_parse_rules_yaml_preserves_indented_folded_description_with_any_match() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    parsed = module._parse_rules_yaml(
+        """
+version: 1
+rules:
+  - id: rule-any
+    severity: minor
+    description: >
+      Leading line
+
+        indented continuation
+    match:
+      any:
+        - contains: any-token
+  - id: rule-all
+    severity: minor
+    description: >
+      Another leading line
+
+        indented continuation
+    match:
+      all:
+        - contains: all-token
+"""
+    )
+
+    any_rule, all_rule = parsed["rules"]
+
+    assert any_rule["description"] == "Leading line\n\n  indented continuation"
+    assert all_rule["description"] == "Another leading line\n\n  indented continuation"
 
 
 def test_load_ruleset_fallback_strips_inline_comments(
