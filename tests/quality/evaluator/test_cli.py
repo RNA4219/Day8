@@ -65,6 +65,30 @@ def test_parse_rules_yaml_block_scalar_chomp_indicators() -> None:
     assert descriptions["keep"] == "keep\n\n"
 
 
+def test_parse_rules_yaml_block_scalar_literal_blank_only() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    payload = (
+        "rules:\n"
+        "  - id: clip\n"
+        "    description: |\n"
+        "      \n"
+        "  - id: strip\n"
+        "    description: |-\n"
+        "      \n"
+        "  - id: keep\n"
+        "    description: |+\n"
+        "      \n"
+    )
+
+    parsed = module._parse_rules_yaml(payload)
+    descriptions = {rule["id"]: rule.get("description") for rule in parsed["rules"]}
+
+    assert descriptions["clip"] == ""
+    assert descriptions["strip"] == ""
+    assert descriptions["keep"] == "\n"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))

@@ -359,7 +359,27 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 normalized.append(line[start:])
 
         if style == "|":
-            value = "".join(f"{line}\n" for line in normalized)
+            trailing_blank_lines = 0
+            for line in reversed(normalized):
+                if line == "":
+                    trailing_blank_lines += 1
+                else:
+                    break
+
+            def _join_with_trailing_newline(lines: list[str]) -> str:
+                if not lines:
+                    return ""
+                return "\n".join(lines) + "\n"
+
+            if chomp == "keep":
+                value = _join_with_trailing_newline(normalized)
+            else:
+                cutoff = len(normalized) - trailing_blank_lines if trailing_blank_lines else len(normalized)
+                kept_lines = normalized[:cutoff]
+                if chomp == "strip":
+                    value = "\n".join(kept_lines)
+                else:
+                    value = _join_with_trailing_newline(kept_lines)
         else:
             folded_lines: list[str] = []
             current_parts: list[str] = []
@@ -383,15 +403,17 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                 folded_lines.append(" ".join(current_parts))
             value = "\n".join(folded_lines)
 
-        has_any_lines = bool(block_lines)
-        if chomp == "strip":
-            value = value.rstrip("\n")
-        elif chomp == "clip":
-            if has_any_lines:
-                value = value.rstrip("\n") + "\n"
-        elif chomp == "keep":
-            if has_any_lines and not value.endswith("\n"):
-                value = value + "\n"
+            has_any_lines = bool(block_lines)
+            if chomp == "strip":
+                value = value.rstrip("\n")
+            elif chomp == "clip":
+                if has_any_lines:
+                    value = value.rstrip("\n")
+                    if folded_lines and folded_lines[-1] and not folded_lines[-1].startswith(" "):
+                        value = value + "\n"
+            elif chomp == "keep":
+                if has_any_lines and not value.endswith("\n"):
+                    value = value + "\n"
 
         return value, cursor
 
