@@ -176,6 +176,38 @@ def test_collect_prometheus_metrics_merges_bucket_metrics_with_env_labels(
     }
 
 
+def test_collect_prometheus_metrics_merges_bucket_and_total_metrics_across_pods(
+    monkeypatch: pytest.MonkeyPatch,
+    collect_metrics_module,
+) -> None:
+    payload = "\n".join(
+        [
+            'day8_request_duration_seconds_bucket{le="0.5",path="/",pod_ip="10.0.0.1"} 1',
+            'day8_request_duration_seconds_bucket{le="0.5",path="/",pod_ip="10.0.0.2"} 2',
+            'day8_request_duration_seconds_bucket{le="1",path="/",pod_uid="pod-a",container_id="abc"} 3',
+            'day8_request_duration_seconds_bucket{le="1",path="/",pod_uid="pod-b",container_id="def"} 4',
+            'day8_requests_total{pod_ip="10.0.0.1",pod_uid="pod-a"} 5',
+            'day8_requests_total{pod_ip="10.0.0.2",pod_uid="pod-b"} 7',
+        ]
+    ).encode("utf-8")
+
+    monkeypatch.setattr(
+        collect_metrics_module.urllib.request,
+        "urlopen",
+        lambda url, timeout=5.0: _DummyResponse(payload),
+    )
+
+    result = collect_metrics_module.collect_prometheus_metrics(
+        "http://example.test/metrics"
+    )
+
+    assert result == {
+        'day8_request_duration_seconds_bucket{le="0.5",path="/"}': 3.0,
+        'day8_request_duration_seconds_bucket{le="1",path="/"}': 7.0,
+        "day8_requests_total": 12.0,
+    }
+
+
 def test_collect_prometheus_metrics_merges_quantile_metrics_with_env_labels(
     monkeypatch: pytest.MonkeyPatch,
     collect_metrics_module,
