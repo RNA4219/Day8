@@ -312,6 +312,63 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
     gathering_contains: str | None = None
     lines = text.splitlines()
     idx = 0
+
+    def _consume_block_scalar(
+        start_idx: int, indent_level: int, indicator: str
+    ) -> tuple[str, int]:
+        block_lines: list[tuple[str, int | None]] = []
+        cursor = start_idx
+        while cursor < len(lines):
+            candidate_raw = lines[cursor]
+            candidate_indent = len(candidate_raw) - len(candidate_raw.lstrip(" "))
+            candidate_stripped = candidate_raw.strip()
+            if candidate_stripped == "":
+                block_lines.append(("", None))
+                cursor += 1
+                continue
+            if candidate_indent <= indent_level:
+                break
+            block_lines.append((candidate_raw, candidate_indent))
+            cursor += 1
+
+        normalized: list[str] = []
+        if block_lines:
+            indents = [indent for _, indent in block_lines if indent is not None]
+            trim_indent = min(indents) if indents else indent_level + 1
+            for line, indent in block_lines:
+                if indent is None:
+                    normalized.append("")
+                    continue
+                start = trim_indent if len(line) >= trim_indent else len(line)
+                normalized.append(line[start:])
+
+        if indicator == "|":
+            value = "\n".join(normalized)
+        else:
+            folded_lines: list[str] = []
+            current_parts: list[str] = []
+            pending_blank_lines = 0
+            for part in normalized:
+                stripped_part = part.strip()
+                if not stripped_part:
+                    if current_parts:
+                        folded_lines.append(" ".join(current_parts))
+                        current_parts = []
+                    pending_blank_lines += 1
+                    continue
+                leading_spaces = len(part) - len(part.lstrip(" "))
+                if leading_spaces > 0:
+                    stripped_part = (" " * (leading_spaces - 1)) + stripped_part
+                if pending_blank_lines:
+                    folded_lines.extend([""] * pending_blank_lines)
+                    pending_blank_lines = 0
+                current_parts.append(stripped_part)
+            if current_parts:
+                folded_lines.append(" ".join(current_parts))
+            value = "\n".join(folded_lines)
+
+        return value, cursor
+
     while idx < len(lines):
         raw = lines[idx]
         stripped = raw.strip()
@@ -332,9 +389,23 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             idx += 1
             continue
         if stripped.startswith("description:"):
-            current["description"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
+            value_part = stripped.split(":", 1)[1]
+            payload = value_part.strip()
+            if payload and payload[0] in {"|", ">"}:
+                indent_level = len(raw) - len(raw.lstrip(" "))
+                value, idx = _consume_block_scalar(idx + 1, indent_level, payload[0])
+                current["description"] = value
+                continue
+            current["description"] = _normalize_yaml_scalar(value_part)
         elif stripped.startswith("severity:"):
-            current["severity"] = _normalize_yaml_scalar(stripped.split(":", 1)[1])
+            value_part = stripped.split(":", 1)[1]
+            payload = value_part.strip()
+            if payload and payload[0] in {"|", ">"}:
+                indent_level = len(raw) - len(raw.lstrip(" "))
+                value, idx = _consume_block_scalar(idx + 1, indent_level, payload[0])
+                current["severity"] = value
+                continue
+            current["severity"] = _normalize_yaml_scalar(value_part)
         elif stripped.startswith("any:"):
             match = current.setdefault("match", {})
             match.setdefault("any", [])
@@ -352,55 +423,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             payload = value_part.strip()
             indent_level = len(raw) - len(raw.lstrip(" "))
             if payload and payload[0] in {"|", ">"}:
-                indicator = payload[0]
-                idx += 1
-                block_lines: list[tuple[str, int | None]] = []
-                while idx < len(lines):
-                    candidate_raw = lines[idx]
-                    candidate_indent = len(candidate_raw) - len(candidate_raw.lstrip(" "))
-                    candidate_stripped = candidate_raw.strip()
-                    if candidate_stripped == "":
-                        block_lines.append(("", None))
-                        idx += 1
-                        continue
-                    if candidate_indent <= indent_level:
-                        break
-                    block_lines.append((candidate_raw, candidate_indent))
-                    idx += 1
-                normalized: list[str] = []
-                if block_lines:
-                    indents = [indent for _, indent in block_lines if indent is not None]
-                    trim_indent = min(indents) if indents else indent_level + 1
-                    for line, indent in block_lines:
-                        if indent is None:
-                            normalized.append("")
-                            continue
-                        start = trim_indent if len(line) >= trim_indent else len(line)
-                        normalized.append(line[start:])
-                if indicator == "|":
-                    value = "\n".join(normalized)
-                else:
-                    folded_lines: list[str] = []
-                    current_parts: list[str] = []
-                    pending_blank_lines = 0
-                    for part in normalized:
-                        stripped_part = part.strip()
-                        if not stripped_part:
-                            if current_parts:
-                                folded_lines.append(" ".join(current_parts))
-                                current_parts = []
-                            pending_blank_lines += 1
-                            continue
-                        leading_spaces = len(part) - len(part.lstrip(" "))
-                        if leading_spaces > 0:
-                            stripped_part = (" " * (leading_spaces - 1)) + stripped_part
-                        if pending_blank_lines:
-                            folded_lines.extend([""] * pending_blank_lines)
-                            pending_blank_lines = 0
-                        current_parts.append(stripped_part)
-                    if current_parts:
-                        folded_lines.append(" ".join(current_parts))
-                    value = "\n".join(folded_lines)
+                value, idx = _consume_block_scalar(idx + 1, indent_level, payload[0])
                 match = current.setdefault("match", {})
                 match.setdefault(gathering_contains, []).append({"contains": value})
                 continue

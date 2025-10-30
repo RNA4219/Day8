@@ -511,6 +511,54 @@ rules:
     assert guardrail["max_severity"] == "critical"
 
 
+def test_load_ruleset_fallback_handles_block_description(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _reject_yaml(name: str, *args: Any, **kwargs: Any):
+        if name == "yaml":
+            raise ModuleNotFoundError("No module named 'yaml'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _reject_yaml)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: rule-block-literal
+    severity: >
+      minor
+    description: |
+      multi
+      line
+    any:
+      - contains: error
+  - id: rule-block-folded
+    severity: critical
+    description: >
+      folded
+      text
+    any:
+      - contains: failure
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    loaded = module._load_ruleset(rules_path)
+
+    first_rule, second_rule = loaded["rules"]
+
+    assert first_rule["description"] == "multi\nline"
+    assert first_rule["severity"] == "minor"
+    assert second_rule["description"] == "folded text"
+    assert second_rule["severity"] == "critical"
+
+
 def test_evaluate_guardrails_detects_all_match_with_mocked_yaml(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
