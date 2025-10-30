@@ -374,7 +374,7 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
                     continue
                 leading_spaces = len(part) - len(part.lstrip(" "))
                 if leading_spaces > 0:
-                    stripped_part = (" " * (leading_spaces - 1)) + stripped_part
+                    stripped_part = (" " * leading_spaces) + stripped_part
                 if pending_blank_lines:
                     folded_lines.extend([""] * pending_blank_lines)
                     pending_blank_lines = 0
