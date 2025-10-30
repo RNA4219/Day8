@@ -511,6 +511,51 @@ rules:
     assert guardrail["max_severity"] == "critical"
 
 
+def test_load_ruleset_fallback_supports_match_all(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    original_import = builtins.__import__
+
+    def _reject_yaml(name: str, *args: Any, **kwargs: Any):
+        if name == "yaml":
+            raise ModuleNotFoundError("No module named 'yaml'")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _reject_yaml)
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: rule-major
+    severity: major
+    description: "Trigger when both fatal and error appear"
+    match:
+      all:
+        - contains: fatal
+        - contains: error
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    loaded = module._load_ruleset(rules_path)
+    rule = loaded["rules"][0]
+
+    assert module._matches_rule(rule, "fatal error detected")
+    assert not module._matches_rule(rule, "fatal issue detected")
+
+    guardrail = module._evaluate_guardrails(
+        rules_path,
+        ["fatal error detected", "fatal issue detected"],
+    )
+
+    assert guardrail["counts"]["major"] == 1
+    assert guardrail["max_severity"] == "major"
+
+
 def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     metrics_path = tmp_path / "metrics.json"
     inputs_path = tmp_path / "inputs.jsonl"
