@@ -50,6 +50,7 @@ def _configure_collectors(
     prom_metrics: Dict[str, float],
     chainlit_metrics: Dict[str, float],
     expected_prefix: str = "day8_",
+    expected_timeout: float = 5.0,
 ) -> None:
     def fake_collect_prometheus(
         url: str,
@@ -58,7 +59,7 @@ def _configure_collectors(
         timeout: float = 5.0,
     ) -> Dict[str, float]:
         assert metric_prefix == expected_prefix
-        assert timeout == 5.0
+        assert timeout == expected_timeout
         return prom_metrics
 
     def fake_collect_chainlit(path: Path, metric_prefix: str = "day8_") -> Dict[str, float]:
@@ -490,6 +491,34 @@ def test_main_fails_when_required_metric_missing(
         "chainlit": chainlit_metrics,
         "metrics": {**prom_metrics, **chainlit_metrics},
     }
+
+
+def test_main_passes_cli_prom_timeout_to_prometheus_collector(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    collect_metrics_module,
+) -> None:
+    prom_metrics: Dict[str, float] = {
+        "day8_app_boot_timestamp": 1.0,
+        "day8_jobs_processed_total": 5.0,
+        "day8_jobs_failed_total": 2.0,
+        "day8_healthz_request_total": 3.0,
+    }
+    chainlit_metrics: Dict[str, float] = {}
+
+    _configure_collectors(
+        monkeypatch,
+        collect_metrics_module,
+        prom_metrics,
+        chainlit_metrics,
+        expected_timeout=7.5,
+    )
+
+    exit_code = collect_metrics_module.main(
+        _prepare_args(tmp_path, ["--prom-timeout", "7.5"])
+    )
+
+    assert exit_code == 0
 
 
 @pytest.mark.parametrize(
