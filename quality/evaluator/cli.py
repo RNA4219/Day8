@@ -389,6 +389,11 @@ def _parse_rules_yaml(text: str) -> dict[str, Any]:
             if current_parts:
                 folded_lines.append(" ".join(current_parts))
             value = "\n".join(folded_lines)
+            if pending_blank_lines:
+                extra_newlines = pending_blank_lines
+                if value and not value.endswith("\n"):
+                    extra_newlines += 1
+                value += "\n" * extra_newlines
 
         has_any_lines = bool(block_lines)
         if chomp == "strip":

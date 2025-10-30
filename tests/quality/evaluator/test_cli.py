@@ -82,6 +82,24 @@ def test_parse_rules_yaml_folded_block_scalar_preserves_indentation() -> None:
     assert description == "Summary:\n  - detail\n"
 
 
+def test_parse_rules_yaml_folded_block_scalar_keep_preserves_trailing_blank_lines() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    payload = (
+        "rules:\n"
+        "  - id: folded-keep\n"
+        "    description: >+\n"
+        "      Summary\n"
+        "      \n"
+        "      \n"
+    )
+
+    parsed = module._parse_rules_yaml(payload)
+    description = parsed["rules"][0]["description"]
+
+    assert description == "Summary\n\n\n"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
