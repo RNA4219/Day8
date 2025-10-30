@@ -31,6 +31,7 @@ _ENVIRONMENT_LABEL_KEYS: frozenset[str] = frozenset(
         "pod_name",
         "pod_ip",
         "pod_uid",
+        "pod_host_ip",
         "container",
         "container_id",
         "container_name",
@@ -40,6 +41,7 @@ _ENVIRONMENT_LABEL_KEYS: frozenset[str] = frozenset(
         "endpoint",
     }
 )
+_ENVIRONMENT_LABEL_PREFIXES: Tuple[str, ...] = ("pod_", "container_")
 
 
 def _sanitize_label_value_for_suffix(value: str) -> str:
@@ -54,6 +56,8 @@ def _filter_environment_labels(labels: Iterable[tuple[str, str]]) -> list[tuple[
     filtered_labels: list[tuple[str, str]] = []
     for key, value in labels:
         if key in _ENVIRONMENT_LABEL_KEYS:
+            continue
+        if any(key.startswith(prefix) for prefix in _ENVIRONMENT_LABEL_PREFIXES):
             continue
         filtered_labels.append((key, value))
     return filtered_labels
