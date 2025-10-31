@@ -25,6 +25,20 @@ Day8 品質 WG が運用する自動評価ライン（Evaluation Line; E-Line）
 | critical | `content.critical.secret_exposure` | 秘密鍵や資格情報 (`-----BEGIN PRIVATE KEY-----`, `AWS_SECRET_ACCESS_KEY`, `AKIA` など) の露出を検出 | 秘密は Vault 等に隔離し、公開前にレッドアクト・自動スキャンを実施する |
 | critical | `content.critical.pii_exposure` | SSN/マイナンバーなど個人情報漏洩を検出 | 個人識別子はマスクまたはダミーデータへ置換し、テンプレートで PII 排除を確認する |
 
+Guardrails ルールは `when.metadata` を利用してメタ情報に基づく分岐を記述できる。例：
+
+```yaml
+- id: content.major.report-mandatory-section
+  severity: major
+  when:
+    metadata:
+      task_type: report
+  match:
+    any:
+      - contains: "テンプレート未充足"
+```
+`task_type` が `report` のケースのみ該当し、他タスクの評価には影響しない。
+
 ## セットアップ
 - Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece・Janome・tokenizers・BeautifulSoup（bs4）を含む評価専用依存を導入する。
 - CI は `requirements-eval.txt` をインストールしないため、ローカル検証や品質 WG のバッチ計測時のみ追加セットアップが必要になる。
@@ -37,7 +51,14 @@ Day8 品質 WG が運用する自動評価ライン（Evaluation Line; E-Line）
 ## 入力と前処理
 1. **正解テキスト** — `workflow-cookbook/EVALUATION.md` に準拠した YAML ケースから取得。`prompt`, `expected`, `metadata` を含め、正解側はマスク済み個人情報であることを確認する。
 2. **モデル生成テキスト** — Day8 Analyzer の推論ログから取得。HTML や Markdown を含む場合でも、`quality/pipeline/normalize.py` の正規化処理を通してから評価器に渡す。
-3. **メタ情報** — タスク種別、リージョン、モデル ID を含める。ルール判定では `task_type` が `report` / `proposal` の場合に追加チェック（禁止語句、根拠リンク数）を有効化する。
+3. **メタ情報** — タスク種別、リージョン、モデル ID を含める。評価バンドル（`inputs.jsonl` / `expected.jsonl`）には `metadata` フィールドを必須とし、少なくとも `task_type` を設定する。ルール判定では `task_type` が `report` / `proposal` の場合に追加チェック（禁止語句、根拠リンク数）を有効化する。以下は最小構成例：
+
+   ```jsonl
+   {"id": "case-001", "output": "...", "metadata": {"task_type": "report", "region": "JP"}}
+   {"id": "case-001", "expected": "...", "metadata": {"task_type": "report"}}
+   ```
+
+   `metadata` は入力・期待値の両方からマージされ、Guardrails の `when.metadata` 条件で参照できる。
 
 ## 出力整形
 - **BERTScore / ROUGE**: 小数第4位で四捨五入し、`metrics.json` の `semantic`・`surface` セクションへ格納する。評価ログには `threshold_met` のブール値を追加する。

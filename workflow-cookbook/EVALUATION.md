@@ -29,6 +29,28 @@ Day8 の品質ゲートを統制する評価フレーム。Guardrails／Runbook�
    - `workflow-cookbook/CHECKLISTS.md` の Release/Hygiene を全て満たしたエビデンスを PR に添付し、lint/type/test の完走ログを提示する。
    - 受け入れ基準に未達がある場合はフォローアップ Task Seed を登録し、Birdseye index/caps/hot を同一コミットで再生成する。
 
+## 評価バンドル形式
+
+- `inputs.jsonl` / `expected.jsonl` の各レコードには `id`, `output`/`expected`, `metadata` を必須とする。`metadata` には少なくとも `task_type` を含め、リージョンやモデル ID など追加属性を拡張可能とする。
+- 評価器は `metadata` を両ファイルからマージし Guardrails 判定へ渡す。`when.metadata` を用いることでタスク種別ごとのルール切り替えが可能になる。
+
+```jsonl
+{"id": "case-001", "output": "...", "metadata": {"task_type": "report", "region": "JP"}}
+{"id": "case-001", "expected": "...", "metadata": {"task_type": "report"}}
+```
+
+```yaml
+# Guardrails ルール例
+- id: content.major.report-mandatory-section
+  severity: major
+  when:
+    metadata:
+      task_type: report
+  match:
+    any:
+      - contains: "テンプレート未充足"
+```
+
 ## 受け入れ基準
 
 ### 必須
