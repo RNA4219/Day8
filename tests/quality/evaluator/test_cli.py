@@ -6,8 +6,9 @@ import json
 import sys
 import builtins
 from importlib import import_module
+from importlib.util import spec_from_loader
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from typing import Any, Callable, Iterable, Sequence
 
 import pytest
@@ -196,17 +197,33 @@ def test_load_ruleset_fallback_preserves_folded_block_with_indented_lines(
 
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
-    monkeypatch.setitem(
-        sys.modules,
-        "rouge_score",
-        SimpleNamespace(rouge_scorer=SimpleNamespace(RougeScorer=_FakeRougeScorer)),
-    )
-    tokenizers_module = SimpleNamespace(SentencePieceTokenizer=_FakeSentencePieceTokenizer)
+    bert_score_module = ModuleType("bert_score")
+    bert_score_module.BERTScorer = _FakeBERTScorer
+    bert_score_module.__spec__ = spec_from_loader("bert_score", loader=None)
+    monkeypatch.setitem(sys.modules, "bert_score", bert_score_module)
+
+    rouge_scorer_module = ModuleType("rouge_score.rouge_scorer")
+    rouge_scorer_module.RougeScorer = _FakeRougeScorer
+    rouge_scorer_module.__spec__ = spec_from_loader("rouge_score.rouge_scorer", loader=None)
+    rouge_score_module = ModuleType("rouge_score")
+    rouge_score_module.rouge_scorer = rouge_scorer_module
+    rouge_score_module.__spec__ = spec_from_loader("rouge_score", loader=None)
+    monkeypatch.setitem(sys.modules, "rouge_score", rouge_score_module)
+    monkeypatch.setitem(sys.modules, "rouge_score.rouge_scorer", rouge_scorer_module)
+
+    tokenizers_module = ModuleType("tokenizers")
+    tokenizers_module.SentencePieceTokenizer = _FakeSentencePieceTokenizer
+    tokenizers_module.__spec__ = spec_from_loader("tokenizers", loader=None)
     monkeypatch.setitem(sys.modules, "tokenizers", tokenizers_module)
-    janome_module = SimpleNamespace(tokenizer=SimpleNamespace(Tokenizer=lambda: _FakeJanomeTokenizer()))
+
+    janome_tokenizer_module = ModuleType("janome.tokenizer")
+    janome_tokenizer_module.Tokenizer = lambda: _FakeJanomeTokenizer()
+    janome_tokenizer_module.__spec__ = spec_from_loader("janome.tokenizer", loader=None)
+    janome_module = ModuleType("janome")
+    janome_module.tokenizer = janome_tokenizer_module
+    janome_module.__spec__ = spec_from_loader("janome", loader=None)
     monkeypatch.setitem(sys.modules, "janome", janome_module)
-    monkeypatch.setitem(sys.modules, "janome.tokenizer", janome_module.tokenizer)
+    monkeypatch.setitem(sys.modules, "janome.tokenizer", janome_tokenizer_module)
 
 
 def _make_items(
@@ -1198,6 +1215,50 @@ def test_cli_outputs_expected_metrics(tmp_path: Path, monkeypatch: pytest.Monkey
     assert isinstance(metrics["generated_at"], str)
 
 
+def test_cli_honors_generated_at_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    metrics_path = tmp_path / "metrics.json"
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+    rules_path = tmp_path / "rules.yaml"
+
+    inputs_path.write_text("{\"id\": \"0\", \"output\": \"hello\"}\n", encoding="utf-8")
+    expected_path.write_text("{\"id\": \"0\", \"expected\": \"world\"}\n", encoding="utf-8")
+    rules_path.write_text("version: 1\nrules: []\n", encoding="utf-8")
+
+    module = import_module("quality.evaluator.cli")
+
+    def _fake_guardrail(*_: Any, **__: Any) -> dict[str, Any]:
+        return {
+            "counts": {"minor": 0, "major": 0, "critical": 0},
+            "violations": [],
+            "max_severity": "none",
+        }
+
+    monkeypatch.setattr(module, "_evaluate_guardrails", _fake_guardrail)
+
+    generated_at = "01234"
+
+    argv = [
+        "quality-evaluator",
+        "--ruleset",
+        str(rules_path),
+        "--inputs",
+        str(inputs_path),
+        "--expected",
+        str(expected_path),
+        "--output",
+        str(metrics_path),
+        "--generated-at",
+        generated_at,
+    ]
+
+    exit_code = module.main(argv)
+
+    assert exit_code == 0
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+    assert metrics["generated_at"] == generated_at
+
+
 def test_cli_generates_metrics_when_missing_in_bundle(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1262,7 +1323,7 @@ def test_cli_treats_single_metric_threshold_as_pass(
     monkeypatch.setattr(
         module,
         "_evaluate_surface",
-        lambda *_, **__: {"rouge1": 0.6, "rougeL": 0.6},
+        lambda *_args, **_kwargs: {"rouge1": 0.6, "rougeL": 0.6},
     )
 
     argv = [
