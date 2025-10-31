@@ -209,6 +209,32 @@ def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "janome.tokenizer", janome_module.tokenizer)
 
 
+def _make_items(
+    module: Any,
+    outputs: Sequence[str],
+    *,
+    references: Sequence[str] | None = None,
+    metadata: Sequence[dict[str, Any]] | None = None,
+) -> list[Any]:
+    references = list(references) if references is not None else [""] * len(outputs)
+    metadata_list = list(metadata) if metadata is not None else [{} for _ in outputs]
+
+    assert len(references) == len(outputs)
+    assert len(metadata_list) == len(outputs)
+
+    return [
+        module.EvaluationItem(output=output, reference=reference, metadata=dict(meta))
+        for output, reference, meta in zip(outputs, references, metadata_list)
+    ]
+
+
+def _matches_output(module: Any, rule: dict[str, Any], text: str) -> bool:
+    return module._matches_rule(
+        rule,
+        module.EvaluationItem(output=text, reference="", metadata={}),
+    )
+
+
 def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
 
@@ -238,10 +264,10 @@ def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    outputs, references = module._collect_pairs(inputs_path, expected_path)
+    items = module._collect_pairs(inputs_path, expected_path)
 
-    assert outputs == ["0", "False", ""]
-    assert references == ["0", "False", ""]
+    assert [item.output for item in items] == ["0", "False", ""]
+    assert [item.reference for item in items] == ["0", "False", ""]
 
 
 def test_collect_pairs_appends_missing_outputs(tmp_path: Path) -> None:
@@ -270,10 +296,10 @@ def test_collect_pairs_appends_missing_outputs(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    outputs, references = module._collect_pairs(inputs_path, expected_path)
+    items = module._collect_pairs(inputs_path, expected_path)
 
-    assert outputs == ["actual", ""]
-    assert references == ["expected", "fallback"]
+    assert [item.output for item in items] == ["actual", ""]
+    assert [item.reference for item in items] == ["expected", "fallback"]
 
 
 def test_collect_pairs_skips_missing_identifiers(tmp_path: Path) -> None:
@@ -306,11 +332,10 @@ def test_collect_pairs_skips_missing_identifiers(tmp_path: Path) -> None:
         + "\n",
         encoding="utf-8",
     )
+    items = module._collect_pairs(inputs_path, expected_path)
 
-    outputs, references = module._collect_pairs(inputs_path, expected_path)
-
-    assert outputs == ["kept"]
-    assert references == ["expected"]
+    assert [item.output for item in items] == ["kept"]
+    assert [item.reference for item in items] == ["expected"]
 
 
 def test_collect_pairs_preserves_comma_separated_strings(tmp_path: Path) -> None:
@@ -322,11 +347,10 @@ def test_collect_pairs_preserves_comma_separated_strings(tmp_path: Path) -> None
     inputs_path.write_text("{'id': '1', 'output': 'alpha, beta'}\n", encoding="utf-8")
     expected_path.write_text("{'id': '1', 'expected': 'gamma, delta'}\n", encoding="utf-8")
 
-    outputs, references = module._collect_pairs(inputs_path, expected_path)
+    items = module._collect_pairs(inputs_path, expected_path)
 
-    assert outputs == ["alpha, beta"]
-    assert references == ["gamma, delta"]
-
+    assert [item.output for item in items] == ["alpha, beta"]
+    assert [item.reference for item in items] == ["gamma, delta"]
 
 def test_collect_pairs_skips_duplicate_identifiers(tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
@@ -346,11 +370,10 @@ def test_collect_pairs_skips_duplicate_identifiers(tmp_path: Path) -> None:
     )
     expected_path.write_text("{\"id\": \"dup\", \"expected\": \"ref\"}\n", encoding="utf-8")
 
-    outputs, references = module._collect_pairs(inputs_path, expected_path)
+    items = module._collect_pairs(inputs_path, expected_path)
 
-    assert outputs == ["first"]
-    assert references == ["ref"]
-
+    assert [item.output for item in items] == ["first"]
+    assert [item.reference for item in items] == ["ref"]
 
 def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
@@ -361,10 +384,32 @@ def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) 
     inputs_path.write_text("{'id': '1', 'output': 'he\\'s, coming'}\n", encoding="utf-8")
     expected_path.write_text("{'id': '1', 'expected': 'stay\\'s, calm'}\n", encoding="utf-8")
 
-    outputs, references = module._collect_pairs(inputs_path, expected_path)
+    items = module._collect_pairs(inputs_path, expected_path)
 
-    assert outputs == ["he's, coming"]
-    assert references == ["stay's, calm"]
+    assert [item.output for item in items] == ["he's, coming"]
+    assert [item.reference for item in items] == ["stay's, calm"]
+
+
+def test_collect_pairs_merges_metadata_from_inputs_and_expected(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    inputs_path = tmp_path / "inputs.jsonl"
+    expected_path = tmp_path / "expected.jsonl"
+
+    inputs_path.write_text(
+        '{"id": "meta", "output": "answer", "metadata": {"task_type": "report"}, "language": "ja"}\n',
+        encoding="utf-8",
+    )
+    expected_path.write_text(
+        '{"id": "meta", "expected": "reference", "metadata": {"domain": "finance"}}\n',
+        encoding="utf-8",
+    )
+
+    (item,) = module._collect_pairs(inputs_path, expected_path)
+
+    assert item.output == "answer"
+    assert item.reference == "reference"
+    assert item.metadata == {"task_type": "report", "language": "ja", "domain": "finance"}
 
 
 def test_evaluate_semantic_forwards_configuration() -> None:
@@ -425,7 +470,7 @@ def test_matches_rule_handles_single_quote_escape() -> None:
     normalized = module._normalize_yaml_scalar("'It''s'")
     rule = {"match": {"any": [{"contains": normalized}]}}
 
-    assert module._matches_rule(rule, "Well, It's fine.")
+    assert _matches_output(module, rule, "Well, It's fine.")
 
 
 def test_parse_rules_yaml_strips_unquoted_comments(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -459,8 +504,8 @@ def test_parse_rules_yaml_strips_unquoted_comments(monkeypatch: pytest.MonkeyPat
     loaded = module._load_ruleset(rules_path)
     (rule,) = loaded.get("rules", [])
 
-    assert module._matches_rule(rule, "TODO needs attention")
-    assert not module._matches_rule(rule, "all good")
+    assert _matches_output(module, rule, "TODO needs attention")
+    assert not _matches_output(module, rule, "all good")
 
 
 def test_parse_rules_yaml_strips_wrapping_quotes() -> None:
@@ -480,9 +525,9 @@ rules:
 
     rule = parsed["rules"][0]
 
-    assert module._matches_rule(rule, "TODO: double quoted")
-    assert module._matches_rule(rule, "FIXME: single quoted")
-    assert not module._matches_rule(rule, "NOTE: no match")
+    assert _matches_output(module, rule, "TODO: double quoted")
+    assert _matches_output(module, rule, "FIXME: single quoted")
+    assert not _matches_output(module, rule, "NOTE: no match")
 
 
 def test_parse_rules_yaml_unescapes_double_quoted_scalars() -> None:
@@ -501,9 +546,9 @@ rules:
 
     rule = parsed["rules"][0]
 
-    assert module._matches_rule(rule, "line\nnext")
-    assert module._matches_rule(rule, "prefix line\nnext suffix")
-    assert not module._matches_rule(rule, "line\\nnext")
+    assert _matches_output(module, rule, "line\nnext")
+    assert _matches_output(module, rule, "prefix line\nnext suffix")
+    assert not _matches_output(module, rule, "line\\nnext")
 
 
 def test_parse_rules_yaml_extracts_block_description_texts() -> None:
@@ -555,7 +600,7 @@ rules:
 
     rule = parsed["rules"][0]
 
-    assert module._matches_rule(rule, "alpha\n\nbeta")
+    assert _matches_output(module, rule, "alpha\n\nbeta")
 
 
 def test_parse_rules_yaml_unescapes_escaped_quote_and_newline() -> None:
@@ -578,10 +623,10 @@ rules:
 
     assert '"error"' in contains_values
     assert "line\nnext" in contains_values
-    assert module._matches_rule(rule, 'Encountered "error" in log')
-    assert module._matches_rule(rule, "line\nnext appeared")
-    assert not module._matches_rule(rule, 'Encountered \\\"error\\\" in log')
-    assert not module._matches_rule(rule, "line\\nnext literal")
+    assert _matches_output(module, rule, 'Encountered "error" in log')
+    assert _matches_output(module, rule, "line\nnext appeared")
+    assert not _matches_output(module, rule, 'Encountered \\\"error\\\" in log')
+    assert not _matches_output(module, rule, "line\\nnext literal")
 
 
 def test_parse_rules_yaml_handles_block_scalars() -> None:
@@ -605,8 +650,8 @@ rules:
 
     rule = parsed["rules"][0]
 
-    assert module._matches_rule(rule, "prefix multi\nline suffix")
-    assert module._matches_rule(rule, "prefix folded text suffix")
+    assert _matches_output(module, rule, "prefix multi\nline suffix")
+    assert _matches_output(module, rule, "prefix folded text suffix")
 
 
 def test_parse_rules_yaml_preserves_leading_spaces_in_folded_block() -> None:
@@ -630,7 +675,7 @@ rules:
     (contains_node,) = rule["match"]["any"]
 
     assert contains_node["contains"] == "prefix\n  bullet\nsuffix"
-    assert module._matches_rule(rule, "prefix\n  bullet\nsuffix is present")
+    assert _matches_output(module, rule, "prefix\n  bullet\nsuffix is present")
 
 
 def test_parse_rules_yaml_ignores_inline_comments_for_unquoted_contains() -> None:
@@ -649,8 +694,8 @@ rules:
 
     rule = parsed["rules"][0]
 
-    assert module._matches_rule(rule, "TODO: handle inline comment")
-    assert not module._matches_rule(rule, "NOTE: should not match")
+    assert _matches_output(module, rule, "TODO: handle inline comment")
+    assert not _matches_output(module, rule, "NOTE: should not match")
 
 
 def test_matches_rule_detects_priority_and_template_flags() -> None:
@@ -666,9 +711,9 @@ def test_matches_rule_detects_priority_and_template_flags() -> None:
         },
     }
 
-    assert module._matches_rule(rule, "Priority Score 未記載 を検出")
-    assert module._matches_rule(rule, "Day8 テンプレート未充足 の報告")
-    assert not module._matches_rule(rule, "正常レポート")
+    assert _matches_output(module, rule, "Priority Score 未記載 を検出")
+    assert _matches_output(module, rule, "Day8 テンプレート未充足 の報告")
+    assert not _matches_output(module, rule, "正常レポート")
 
 
 def test_matches_rule_supports_multiline_block_scalars() -> None:
@@ -689,7 +734,7 @@ rules:
 
     rule = parsed["rules"][0]
 
-    assert module._matches_rule(rule, "prefix alpha\nbeta suffix")
+    assert _matches_output(module, rule, "prefix alpha\nbeta suffix")
 
 
 def test_parse_rules_yaml_preserves_indented_folded_description_with_any_match() -> None:
@@ -761,7 +806,7 @@ rules:
     assert rule["severity"] == "critical"
     assert rule["description"] == "Trigger when error"
 
-    guardrail = module._evaluate_guardrails(rules_path, ["fatal error detected"])
+    guardrail = module._evaluate_guardrails(rules_path, _make_items(module, ["fatal error detected"]))
     assert guardrail["counts"]["critical"] == 1
     assert guardrail["max_severity"] == "critical"
 
@@ -794,7 +839,10 @@ rules:
         encoding="utf-8",
     )
 
-    guardrail = module._evaluate_guardrails(rules_path, ["This is bad. It's bad indeed."])
+    guardrail = module._evaluate_guardrails(
+        rules_path,
+        _make_items(module, ["This is bad. It's bad indeed."]),
+    )
 
     assert guardrail["counts"]["critical"] == 1
     assert guardrail["violations"][0]["message"] == "Trigger when 'It's bad' appears"
@@ -895,13 +943,26 @@ def test_evaluate_guardrails_detects_all_match_with_mocked_yaml(
     loaded = module._load_ruleset(rules_path)
     (rule,) = loaded["rules"]
 
-    assert module._matches_rule(rule, "alpha and beta are both here")
-    assert not module._matches_rule(rule, "alpha appears without partner")
-    assert not module._matches_rule(rule, "beta appears without partner")
+    assert module._matches_rule(
+        rule,
+        module.EvaluationItem(output="alpha and beta are both here", reference="", metadata={}),
+    )
+    assert not module._matches_rule(
+        rule,
+        module.EvaluationItem(
+            output="alpha appears without partner",
+            reference="",
+            metadata={},
+        ),
+    )
+    assert not module._matches_rule(
+        rule,
+        module.EvaluationItem(output="beta appears without partner", reference="", metadata={}),
+    )
 
     guardrail = module._evaluate_guardrails(
         rules_path,
-        ["alpha only", "beta only", "the sequence alpha then beta"],
+        _make_items(module, ["alpha only", "beta only", "the sequence alpha then beta"]),
     )
 
     assert guardrail["counts"]["major"] == 1
@@ -909,6 +970,48 @@ def test_evaluate_guardrails_detects_all_match_with_mocked_yaml(
     assert [violation["id"] for violation in guardrail["violations"]] == [
         "rule-match-all"
     ]
+
+
+def test_evaluate_guardrails_applies_metadata_condition(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: rule-metadata
+    severity: major
+    when:
+      metadata:
+        task_type: report
+    match:
+      any:
+        - contains: report
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    matching_items = _make_items(
+        module,
+        ["report detected"],
+        metadata=[{"task_type": "report"}],
+    )
+    mismatched_items = _make_items(
+        module,
+        ["report detected"],
+        metadata=[{"task_type": "summary"}],
+    )
+    missing_metadata_items = _make_items(module, ["report detected"])
+
+    matched = module._evaluate_guardrails(rules_path, matching_items)
+    mismatched = module._evaluate_guardrails(rules_path, mismatched_items)
+    missing = module._evaluate_guardrails(rules_path, missing_metadata_items)
+
+    assert matched["counts"]["major"] == 1
+    assert matched["violations"][0]["id"] == "rule-metadata"
+    assert mismatched["counts"]["major"] == 0
+    assert missing["counts"]["major"] == 0
 
 
 def test_evaluate_guardrails_counts_by_severity(tmp_path: Path) -> None:
@@ -961,7 +1064,7 @@ rules:
         "顧客 SSN: 123-45-6789 を含む",
     ]
 
-    guardrail = module._evaluate_guardrails(rules_path, outputs)
+    guardrail = module._evaluate_guardrails(rules_path, _make_items(module, outputs))
 
     assert guardrail["counts"]["minor"] == 2
     assert guardrail["counts"]["major"] == 2
@@ -973,7 +1076,10 @@ rules:
         "critical",
     }
 
-    cleared = module._evaluate_guardrails(rules_path, ["テンプレートを満たしたレポート"])
+    cleared = module._evaluate_guardrails(
+        rules_path,
+        _make_items(module, ["テンプレートを満たしたレポート"]),
+    )
 
     assert cleared["counts"]["minor"] == 0
     assert cleared["counts"]["major"] == 0
@@ -1014,12 +1120,18 @@ rules:
     loaded = module._load_ruleset(rules_path)
     rule = loaded["rules"][0]
 
-    assert module._matches_rule(rule, "fatal error detected")
-    assert not module._matches_rule(rule, "fatal issue detected")
+    assert module._matches_rule(
+        rule,
+        module.EvaluationItem(output="fatal error detected", reference="", metadata={}),
+    )
+    assert not module._matches_rule(
+        rule,
+        module.EvaluationItem(output="fatal issue detected", reference="", metadata={}),
+    )
 
     guardrail = module._evaluate_guardrails(
         rules_path,
-        ["fatal error detected", "fatal issue detected"],
+        _make_items(module, ["fatal error detected", "fatal issue detected"]),
     )
 
     assert guardrail["counts"]["major"] == 1
@@ -1150,7 +1262,7 @@ def test_cli_treats_single_metric_threshold_as_pass(
     monkeypatch.setattr(
         module,
         "_evaluate_surface",
-        lambda *_: {"rouge1": 0.6, "rougeL": 0.6},
+        lambda *_, **__: {"rouge1": 0.6, "rougeL": 0.6},
     )
 
     argv = [
