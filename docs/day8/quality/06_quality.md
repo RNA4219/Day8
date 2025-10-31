@@ -18,6 +18,17 @@
 2. 推論ログを `quality/pipeline/normalize.py` で前処理したうえで、[付録E: 評価器構成](../../addenda/E_Evaluator_Details.md) に従い BERTScore・ROUGE・ルール判定を実行する。
 3. 生成された `metrics.json` をレビューし、`overall_pass`/`needs_review` を評価ログへ記録する。ルール違反が `critical` の場合は即時にガバナンスへエスカレーションする。
 
+### Guardrails ルールセット
+- **minor**
+  - `content.minor.priority_score_missing`: Priority Score の欠如を検出。再発防止として `Priority Score: <number> / <justification>` を PR/レポート双方で記入する。
+  - `content.minor.template_incomplete`: Day8 テンプレート未充足を検出。再発防止として `docs/TASKS.md` のセクションを全て埋める。
+- **major**
+  - `content.major.followup_missing`: フォローアップ未記載を検出。再発防止として Follow-ups に未完了タスクを列挙する。
+  - `content.major.summary_missing`: 要約欠落を検出。再発防止として成果サマリを冒頭 3 行で整理する。
+- **critical**
+  - `content.critical.secret_exposure`: 秘密鍵や資格情報の露出を検出。再発防止として秘密を Vault 管理・レッドアクトする。
+  - `content.critical.pii_exposure`: SSN/マイナンバーなど個人情報漏洩を検出。再発防止として PII をマスクまたはダミー化する。
+
 ### チェックリスト
 - [ ] Appendix E の BERTScore / ROUGE 設定と実行結果の閾値が一致しているか
 - [ ] `quality/guardrails/rules.yaml` と評価ログの違反コードが同期しているか

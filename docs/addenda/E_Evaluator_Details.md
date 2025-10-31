@@ -14,6 +14,17 @@ Day8 品質 WG が運用する自動評価ライン（Evaluation Line; E-Line）
 | ROUGE 評価器 | 要約タスクの文字列一致度を測定 | `rougeL`, `rouge1`（SentencePiece + Janome による語彙正規化） | 正解テキスト、モデル生成テキスト | ROUGE-1/L スコア、閾値 `>=0.70` で合格判定補助 |
 | ルール判定エンジン | Guardrails 由来の制約チェック | `ruleset=quality/guardrails/rules.yaml`、`mode=blocking` | モデル生成テキスト、メタ情報（タスク種別、ユーザー指示） | 違反コード（`minor`, `major`, `critical`）、自動失格判定 |
 
+### Guardrails ルール詳細
+
+| 重大度 | ルール ID | チェック内容 | 再発防止のポイント |
+| --- | --- | --- | --- |
+| minor | `content.minor.priority_score_missing` | `Priority Score 未記載` など優先度テンプレートの欠如を検出 | PR/レポートへ `Priority Score: <number> / <justification>` を必ず記入し、優先度テンプレートを整備する |
+| minor | `content.minor.template_incomplete` | Day8 テンプレート未充足（背景/手順/検証ログ/フォローアップ欠落）の記述を検出 | `docs/TASKS.md` と Task Seed テンプレートの全セクションを埋めたうえで提出する |
+| major | `content.major.followup_missing` | フォローアップ未記載の警告を検出 | Task Seed/PR の Follow-ups に未完了タスクを列挙し、レビューログと同期する |
+| major | `content.major.summary_missing` | 要約欠落・サマリー未記載を検出 | Day8 レポート冒頭に成果サマリを 3 行以内で記入し、更新をレビュー記録へ反映する |
+| critical | `content.critical.secret_exposure` | 秘密鍵や資格情報 (`-----BEGIN PRIVATE KEY-----`, `AWS_SECRET_ACCESS_KEY`, `AKIA` など) の露出を検出 | 秘密は Vault 等に隔離し、公開前にレッドアクト・自動スキャンを実施する |
+| critical | `content.critical.pii_exposure` | SSN/マイナンバーなど個人情報漏洩を検出 | 個人識別子はマスクまたはダミーデータへ置換し、テンプレートで PII 排除を確認する |
+
 ## セットアップ
 - Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece・Janome・tokenizers・BeautifulSoup（bs4）を含む評価専用依存を導入する。
 - CI は `requirements-eval.txt` をインストールしないため、ローカル検証や品質 WG のバッチ計測時のみ追加セットアップが必要になる。

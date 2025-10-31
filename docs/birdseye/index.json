@@ -1073,7 +1073,7 @@
     },
     "quality/guardrails/rules.yaml": {
       "caps": "docs/birdseye/caps/quality.guardrails.rules.yaml.json",
-      "mtime": "00005",
+      "mtime": "00006",
       "role": "guardrail"
     },
     "scripts/": {
