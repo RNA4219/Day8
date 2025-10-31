@@ -4,19 +4,26 @@ from __future__ import annotations
 
 import argparse
 import ast
+import importlib
+import importlib.util
 import json
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from functools import lru_cache
+from typing import Any, Callable, Iterable, Sequence
 
 _UNQUOTED_KEY_PATTERN = re.compile(r'([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)(\s*:)')
 _JSON_LITERAL_PATTERN = re.compile(r'(:\s*)(true|false|null)(?=\s*(?:[,}]))', re.IGNORECASE)
 _BARE_WORD_PATTERN = re.compile(r'(:\s*)([A-Za-z_][A-Za-z0-9_-]*)(?=\s*(?:[,}]))')
 
 _SEVERITY_PRIORITY = {"critical": 3, "major": 2, "minor": 1}
+_BERT_MODEL_DEFAULT = "bert-base-multilingual-cased"
+_BERT_BATCH_SIZE_DEFAULT = 16
 _BERT_F1_THRESHOLD = 0.85
 _ROUGE_L_THRESHOLD = 0.70
+_SENTENCEPIECE_ENV_VAR = "DAY8_SENTENCEPIECE_MODEL"
 
 
 def _unescape_yaml_double_quoted(value: str) -> str:
@@ -126,6 +133,21 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--inputs", help="モデル出力 JSONL のパス")
     parser.add_argument("--expected", help="期待値 JSONL のパス")
     parser.add_argument("--output", help="メトリクス JSON の出力先")
+    parser.add_argument(
+        "--bert-model",
+        default=_BERT_MODEL_DEFAULT,
+        help="BERTScore のモデルタイプ (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--bert-batch-size",
+        type=int,
+        default=_BERT_BATCH_SIZE_DEFAULT,
+        help="BERTScore 計算時のバッチサイズ",
+    )
+    parser.add_argument(
+        "--sentencepiece-model",
+        help="ROUGE 計算に使用する SentencePiece モデルのパス",
+    )
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
@@ -249,12 +271,133 @@ def _mean(values: Iterable[float]) -> float:
     return sum(numbers) / len(numbers) if numbers else 0.0
 
 
-def _evaluate_semantic(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float]:
+def _detect_torch_device() -> str:
+    spec = importlib.util.find_spec("torch")
+    if spec is None:
+        return "cpu"
+    torch = importlib.import_module("torch")
+    cuda = getattr(torch, "cuda", None)
+    if cuda is not None and callable(getattr(cuda, "is_available", None)):
+        return "cuda" if cuda.is_available() else "cpu"
+    return "cpu"
+
+
+def _select_sentencepiece_candidate(raw: str, bundle: Path | None) -> Path:
+    candidate = Path(raw)
+    if not candidate.is_absolute() and bundle is not None:
+        bundled = bundle / raw
+        if bundled.exists():
+            return bundled
+    return candidate
+
+
+def _resolve_sentencepiece_model_path(
+    raw: str | None, bundle: Path | None
+) -> Path | None:
+    if raw:
+        return _select_sentencepiece_candidate(raw, bundle)
+    env_value = os.environ.get(_SENTENCEPIECE_ENV_VAR)
+    if env_value:
+        return _select_sentencepiece_candidate(env_value, bundle)
+    default_path = Path(__file__).with_name("sentencepiece.model")
+    if default_path.exists():
+        return default_path
+    return None
+
+
+@lru_cache(maxsize=1)
+def _get_janome_tokenizer() -> Any | None:
+    spec = importlib.util.find_spec("janome.tokenizer")
+    if spec is None:
+        return None
+    module = importlib.import_module("janome.tokenizer")
+    return module.Tokenizer()
+
+
+def _stem_japanese_segments(segments: Iterable[str]) -> list[str]:
+    tokenizer = _get_janome_tokenizer()
+    normalized: list[str] = []
+    for segment in segments:
+        cleaned = segment.replace("▁", " ").strip()
+        if not cleaned:
+            continue
+        if tokenizer is None:
+            normalized.append(cleaned.lower())
+            continue
+        tokens = list(tokenizer.tokenize(cleaned))
+        if not tokens:
+            normalized.append(cleaned.lower())
+            continue
+        for token in tokens:
+            base_form = getattr(token, "base_form", "")
+            surface = getattr(token, "surface", "")
+            chosen = base_form if base_form and base_form != "*" else surface
+            stripped = str(chosen).strip()
+            if stripped:
+                normalized.append(stripped.lower())
+    return normalized
+
+
+def _sentencepiece_tokenizer(sp_tokenizer: Any) -> Callable[[str], list[str]]:
+    def _tokenize(text: str) -> list[str]:
+        encoded = sp_tokenizer.encode(text)
+        if isinstance(encoded, (list, tuple)):
+            tokens = [str(token) for token in encoded]
+        else:
+            tokens_attr = getattr(encoded, "tokens", None)
+            if tokens_attr is not None:
+                tokens = [str(token) for token in tokens_attr]
+            else:
+                tokens = [str(encoded)]
+        return _stem_japanese_segments(tokens)
+
+    return _tokenize
+
+
+def _fallback_surface_tokenizer() -> Callable[[str], list[str]]:
+    def _tokenize(text: str) -> list[str]:
+        stripped = text.strip()
+        if not stripped:
+            return []
+        segments = stripped.split()
+        if not segments:
+            segments = [stripped]
+        return _stem_japanese_segments(segments)
+
+    return _tokenize
+
+
+def _build_surface_tokenizer(sentencepiece_model: Path | None) -> Callable[[str], list[str]]:
+    if sentencepiece_model and sentencepiece_model.exists():
+        spec = importlib.util.find_spec("tokenizers")
+        if spec is not None:
+            module = importlib.import_module("tokenizers")
+            sentencepiece_cls = getattr(module, "SentencePieceTokenizer", None)
+            if sentencepiece_cls is not None:
+                sp_tokenizer = sentencepiece_cls(str(sentencepiece_model))
+                return _sentencepiece_tokenizer(sp_tokenizer)
+    return _fallback_surface_tokenizer()
+
+
+def _evaluate_semantic(
+    outputs: Sequence[str],
+    references: Sequence[str],
+    *,
+    model_type: str,
+    batch_size: int,
+    device: str | None = None,
+) -> dict[str, float]:
     if not outputs or not references:
         return {"precision": 0.0, "recall": 0.0, "f1": 0.0}
     from bert_score import BERTScorer
 
-    scorer = BERTScorer(lang="en", rescale_with_baseline=True)
+    resolved_device = device or _detect_torch_device()
+    scorer = BERTScorer(
+        model_type=model_type,
+        batch_size=batch_size,
+        device=resolved_device,
+        rescale_with_baseline=True,
+    )
     precisions, recalls, f1s = scorer.score(outputs, references)
     return {
         "precision": round(_mean(precisions), 4),
@@ -263,16 +406,27 @@ def _evaluate_semantic(outputs: Sequence[str], references: Sequence[str]) -> dic
     }
 
 
-def _evaluate_surface(outputs: Sequence[str], references: Sequence[str]) -> dict[str, float]:
+def _evaluate_surface(
+    outputs: Sequence[str],
+    references: Sequence[str],
+    *,
+    sentencepiece_model: Path | None,
+) -> dict[str, float]:
     if not outputs or not references:
         return {"rouge1": 0.0, "rougeL": 0.0}
-    import evaluate
+    from rouge_score.rouge_scorer import RougeScorer
 
-    rouge = evaluate.load("rouge")
-    result = rouge.compute(predictions=list(outputs), references=list(references), use_stemmer=True)
+    tokenizer = _build_surface_tokenizer(sentencepiece_model)
+    scorer = RougeScorer(["rouge1", "rougeL"], use_stemmer=False, tokenizer=tokenizer)
+    rouge1_scores: list[float] = []
+    rougeL_scores: list[float] = []
+    for output, reference in zip(outputs, references):
+        result = scorer.score(reference, output)
+        rouge1_scores.append(float(result["rouge1"].fmeasure))
+        rougeL_scores.append(float(result["rougeL"].fmeasure))
     return {
-        "rouge1": round(float(result.get("rouge1", 0.0)), 4),
-        "rougeL": round(float(result.get("rougeL", 0.0)), 4),
+        "rouge1": round(_mean(rouge1_scores), 4),
+        "rougeL": round(_mean(rougeL_scores), 4),
     }
 
 
@@ -608,8 +762,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("inputs, expected, output を指定してください")
 
     outputs, references = _collect_pairs(inputs_path, expected_path)
-    bert_score = _evaluate_semantic(outputs, references)
-    surface_metrics = _evaluate_surface(outputs, references)
+    bert_score = _evaluate_semantic(
+        outputs,
+        references,
+        model_type=args.bert_model,
+        batch_size=args.bert_batch_size,
+    )
+    sentencepiece_model = _resolve_sentencepiece_model_path(
+        args.sentencepiece_model,
+        bundle,
+    )
+    surface_metrics = _evaluate_surface(
+        outputs,
+        references,
+        sentencepiece_model=sentencepiece_model,
+    )
     bert_score_with_threshold, surface_with_threshold = _apply_thresholds(bert_score, surface_metrics)
     violations = _apply_violation_threshold(
         _evaluate_guardrails(Path(args.ruleset), outputs)
