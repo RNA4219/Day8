@@ -11,12 +11,16 @@ Day8 品質 WG が運用する自動評価ライン（Evaluation Line; E-Line）
 | コンポーネント | 役割 | 主要設定 | 入力 | 出力 |
 | --- | --- | --- | --- | --- |
 | BERTScore 評価器 | モデル出力と参照回答の意味的近さを計測 | `bert-base-multilingual-cased`、`rescale_with_baseline=true`、`batch_size=16` | 正解テキスト、モデル生成テキスト | Precision/Recall/F1（0〜1）、閾値 `>=0.85` で合格判定補助 |
-| ROUGE 評価器 | 要約タスクの文字列一致度を測定 | `rougeL`, `rouge1`（トークン化: SentencePiece）、`stemmer=ja_jumanpp` | 正解テキスト、モデル生成テキスト | ROUGE-1/L スコア、閾値 `>=0.70` で合格判定補助 |
+| ROUGE 評価器 | 要約タスクの文字列一致度を測定 | `rougeL`, `rouge1`（SentencePiece + Janome による語彙正規化） | 正解テキスト、モデル生成テキスト | ROUGE-1/L スコア、閾値 `>=0.70` で合格判定補助 |
 | ルール判定エンジン | Guardrails 由来の制約チェック | `ruleset=quality/guardrails/rules.yaml`、`mode=blocking` | モデル生成テキスト、メタ情報（タスク種別、ユーザー指示） | 違反コード（`minor`, `major`, `critical`）、自動失格判定 |
 
 ## セットアップ
-- Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece・BeautifulSoup（bs4）を含む評価専用依存を導入する。
+- Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece・Janome・tokenizers・BeautifulSoup（bs4）を含む評価専用依存を導入する。
 - CI は `requirements-eval.txt` をインストールしないため、ローカル検証や品質 WG のバッチ計測時のみ追加セットアップが必要になる。
+
+## CLI パラメータ
+- `--bert-model` / `--bert-batch-size`: Appendix E 既定値（`bert-base-multilingual-cased`, `16`）を踏襲。GPU 台数に応じて上書き可能。
+- `--sentencepiece-model`: SentencePiece `.model` パス。未指定時は `DAY8_SENTENCEPIECE_MODEL` 環境変数、もしくはリポジトリ同梱モデルを探索する。トークン化後は Janome で基本形へ正規化し、Juman++ stemmer と同等の表層一致性を確保する。
 
 ## 入力と前処理
 1. **正解テキスト** — `workflow-cookbook/EVALUATION.md` に準拠した YAML ケースから取得。`prompt`, `expected`, `metadata` を含め、正解側はマスク済み個人情報であることを確認する。

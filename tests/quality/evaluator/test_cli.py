@@ -8,13 +8,16 @@ import builtins
 from importlib import import_module
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Iterable, Sequence
+from typing import Any, Callable, Iterable, Sequence
 
 import pytest
 
 
 class _FakeBERTScorer:
-    def __init__(self, *_: Any, **__: Any) -> None:
+    last_kwargs: dict[str, Any] = {}
+
+    def __init__(self, *_: Any, **kwargs: Any) -> None:
+        type(self).last_kwargs = dict(kwargs)
         self.precisions = [0.91]
         self.recalls = [0.83]
         self.f1s = [0.87]
@@ -23,14 +26,65 @@ class _FakeBERTScorer:
         assert list(candidates)
         assert list(references)
         return self.precisions, self.recalls, self.f1s
+class _FakeRougeScore:
+    def __init__(self, fmeasure: float) -> None:
+        self.fmeasure = fmeasure
 
 
-class _FakeRouge:
-    def compute(self, *, predictions: Sequence[str], references: Sequence[str], use_stemmer: bool = True) -> dict[str, float]:
-        assert use_stemmer
-        assert list(predictions)
-        assert list(references)
-        return {"rouge1": 0.78, "rougeL": 0.72}
+class _FakeRougeScorer:
+    last_tokenizer: Callable[[str], list[str]] | None = None
+    last_prediction_tokens: list[str] = []
+    last_reference_tokens: list[str] = []
+
+    def __init__(self, rouge_types: Sequence[str], *, use_stemmer: bool, tokenizer: Callable[[str], list[str]] | None) -> None:
+        assert list(rouge_types) == ["rouge1", "rougeL"]
+        assert use_stemmer is False
+        type(self).last_tokenizer = tokenizer
+        self._tokenizer = tokenizer or (lambda text: text.split())
+
+    def score(self, reference: str, prediction: str) -> dict[str, _FakeRougeScore]:
+        assert reference
+        assert prediction
+        tokens_prediction = self._tokenizer(prediction)
+        tokens_reference = self._tokenizer(reference)
+        type(self).last_prediction_tokens = list(tokens_prediction)
+        type(self).last_reference_tokens = list(tokens_reference)
+        return {
+            "rouge1": _FakeRougeScore(0.78),
+            "rougeL": _FakeRougeScore(0.72),
+        }
+
+
+class _FakeSentencePieceEncoding:
+    def __init__(self, tokens: Sequence[str]) -> None:
+        self.tokens = list(tokens)
+
+
+class _FakeSentencePieceTokenizer:
+    last_model: Path | None = None
+
+    def __init__(self, model_path: str) -> None:
+        type(self).last_model = Path(model_path)
+
+    def encode(self, text: str) -> _FakeSentencePieceEncoding:
+        normalized = text.replace(" ", "")
+        if not normalized:
+            return _FakeSentencePieceEncoding(["▁"])
+        tokens = [f"▁{normalized}"]
+        return _FakeSentencePieceEncoding(tokens)
+
+
+class _FakeJanomeToken:
+    def __init__(self, surface: str) -> None:
+        self.surface = surface
+        self.base_form = surface.lower() if surface else "*"
+
+
+class _FakeJanomeTokenizer:
+    def tokenize(self, text: str) -> Iterable[_FakeJanomeToken]:
+        if not text:
+            return []
+        return [_FakeJanomeToken(text)]
 
 
 def test_normalize_yaml_scalar_preserves_expected_unescaping() -> None:
@@ -38,6 +92,27 @@ def test_normalize_yaml_scalar_preserves_expected_unescaping() -> None:
 
     assert module._normalize_yaml_scalar("'It''s'") == "It's"
     assert module._normalize_yaml_scalar('"Line\\nTwo"') == "Line\nTwo"
+
+
+def test_parse_args_supports_model_configuration() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    args = module._parse_args(
+        [
+            "--ruleset",
+            "rules.yaml",
+            "--bert-model",
+            "custom-model",
+            "--bert-batch-size",
+            "8",
+            "--sentencepiece-model",
+            "sp.model",
+        ]
+    )
+
+    assert args.bert_model == "custom-model"
+    assert args.bert_batch_size == 8
+    assert args.sentencepiece_model == "sp.model"
 
 
 def test_parse_rules_yaml_block_scalar_chomp_indicators() -> None:
@@ -122,8 +197,16 @@ def test_load_ruleset_fallback_preserves_folded_block_with_indented_lines(
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "bert_score", SimpleNamespace(BERTScorer=_FakeBERTScorer))
-    monkeypatch.setitem(sys.modules, "evaluate", SimpleNamespace(load=lambda name: _FakeRouge()))
-    monkeypatch.setitem(sys.modules, "rouge_score", SimpleNamespace())
+    monkeypatch.setitem(
+        sys.modules,
+        "rouge_score",
+        SimpleNamespace(rouge_scorer=SimpleNamespace(RougeScorer=_FakeRougeScorer)),
+    )
+    tokenizers_module = SimpleNamespace(SentencePieceTokenizer=_FakeSentencePieceTokenizer)
+    monkeypatch.setitem(sys.modules, "tokenizers", tokenizers_module)
+    janome_module = SimpleNamespace(tokenizer=SimpleNamespace(Tokenizer=lambda: _FakeJanomeTokenizer()))
+    monkeypatch.setitem(sys.modules, "janome", janome_module)
+    monkeypatch.setitem(sys.modules, "janome.tokenizer", janome_module.tokenizer)
 
 
 def test_collect_pairs_preserves_zero_like_values(tmp_path: Path) -> None:
@@ -282,6 +365,52 @@ def test_collect_pairs_preserves_single_quote_and_comma_strings(tmp_path: Path) 
 
     assert outputs == ["he's, coming"]
     assert references == ["stay's, calm"]
+
+
+def test_evaluate_semantic_forwards_configuration() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    metrics = module._evaluate_semantic(
+        ["out"],
+        ["ref"],
+        model_type="custom-bert",
+        batch_size=4,
+        device="meta-device",
+    )
+
+    assert metrics == {"precision": 0.91, "recall": 0.83, "f1": 0.87}
+    assert _FakeBERTScorer.last_kwargs["model_type"] == "custom-bert"
+    assert _FakeBERTScorer.last_kwargs["batch_size"] == 4
+    assert _FakeBERTScorer.last_kwargs["device"] == "meta-device"
+    assert _FakeBERTScorer.last_kwargs["rescale_with_baseline"] is True
+
+
+def test_evaluate_surface_uses_sentencepiece_tokenizer(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    model_path = tmp_path / "sp.model"
+    model_path.write_text("stub", encoding="utf-8")
+
+    metrics = module._evaluate_surface(["こんにちは"], ["世界"], sentencepiece_model=model_path)
+
+    assert metrics == {"rouge1": 0.78, "rougeL": 0.72}
+    assert _FakeSentencePieceTokenizer.last_model == model_path
+    tokenizer = _FakeRougeScorer.last_tokenizer
+    assert tokenizer is not None
+    assert tokenizer("MixedCase") == ["mixedcase"]
+
+
+def test_evaluate_surface_without_sentencepiece_model_uses_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    monkeypatch.delitem(sys.modules, "tokenizers", raising=False)
+
+    metrics = module._evaluate_surface(["Hello"], ["World"], sentencepiece_model=None)
+
+    assert metrics == {"rouge1": 0.78, "rougeL": 0.72}
+    tokenizer = _FakeRougeScorer.last_tokenizer
+    assert tokenizer is not None
+    assert tokenizer("UpperCase") == ["uppercase"]
 
 
 def test_normalize_yaml_scalar_decodes_single_quote_escape() -> None:

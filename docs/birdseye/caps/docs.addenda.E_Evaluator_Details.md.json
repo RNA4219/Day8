@@ -16,7 +16,7 @@
   "generated_at": "00005",
   "id": "docs/addenda/E_Evaluator_Details.md",
   "maintenance": {
-    "refresh": "BERTScore/ROUGE/ルール判定の閾値やルールセットを更新したら Appendix E・06_quality.md・Birdseye index/hot/caps の generated_at を同期。",
+    "refresh": "BERTScore/ROUGE/ルール判定の閾値や SentencePiece モデル・環境変数を更新したら Appendix E・06_quality.md・Birdseye index/hot/caps の generated_at を同期。",
     "tooling": [
       "python scripts/birdseye_refresh.py --docs-dir docs/birdseye --docs-dir workflow-cookbook/docs/birdseye"
     ]
@@ -31,7 +31,7 @@
   ],
   "summary": [
     "core::Day8 Appendix E を評価ライン向けに再構成し、BERTScore/ROUGE/ルール判定の入力・出力・閾値運用を統合した。",
-    "core::評価パイプラインで利用する正規化処理とルールセットの同期手順を明文化し、評価専用 requirements の導入手順を記載した。",
+    "core::評価パイプラインで利用する SentencePiece + Janome 正規化と CLI パラメータの同期手順を明文化し、評価専用 requirements の導入手順を記載した。",
     "orbit::Birdseye と Guardrails の差分チェックに必要な generated_at 管理のハンドオフを定義した。"
   ],
   "tests": [
