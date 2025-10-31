@@ -524,6 +524,24 @@ rules:
     assert not module._matches_rule(rule, "NOTE: should not match")
 
 
+def test_matches_rule_detects_priority_and_template_flags() -> None:
+    module = import_module("quality.evaluator.cli")
+
+    rule = {
+        "id": "content.minor.priority_and_template",
+        "match": {
+            "any": [
+                {"contains": "Priority Score 未記載"},
+                {"contains": "テンプレート未充足"},
+            ]
+        },
+    }
+
+    assert module._matches_rule(rule, "Priority Score 未記載 を検出")
+    assert module._matches_rule(rule, "Day8 テンプレート未充足 の報告")
+    assert not module._matches_rule(rule, "正常レポート")
+
+
 def test_matches_rule_supports_multiline_block_scalars() -> None:
     module = import_module("quality.evaluator.cli")
 
@@ -762,6 +780,76 @@ def test_evaluate_guardrails_detects_all_match_with_mocked_yaml(
     assert [violation["id"] for violation in guardrail["violations"]] == [
         "rule-match-all"
     ]
+
+
+def test_evaluate_guardrails_counts_by_severity(tmp_path: Path) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    rules_path = tmp_path / "rules.yaml"
+    rules_path.write_text(
+        """
+version: 1
+rules:
+  - id: content.minor.priority-score-missing
+    severity: minor
+    match:
+      any:
+        - contains: Priority Score 未記載
+  - id: content.minor.template-incomplete
+    severity: minor
+    match:
+      any:
+        - contains: テンプレート未充足
+  - id: content.major.follow-up-missing
+    severity: major
+    match:
+      any:
+        - contains: フォローアップ未記載
+  - id: content.major.summary-missing
+    severity: major
+    match:
+      any:
+        - contains: 要約欠落
+  - id: content.critical.secret-leak
+    severity: critical
+    match:
+      any:
+        - contains: -----BEGIN PRIVATE KEY-----
+  - id: content.critical.pii-leak
+    severity: critical
+    match:
+      any:
+        - contains: SSN:
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    outputs = [
+        "Priority Score 未記載 の指摘",
+        "Day8 テンプレート未充足 の差分",
+        "フォローアップ未記載 と 要約欠落 を検出",
+        "-----BEGIN PRIVATE KEY----- placeholder",
+        "顧客 SSN: 123-45-6789 を含む",
+    ]
+
+    guardrail = module._evaluate_guardrails(rules_path, outputs)
+
+    assert guardrail["counts"]["minor"] == 2
+    assert guardrail["counts"]["major"] == 2
+    assert guardrail["counts"]["critical"] == 2
+    assert guardrail["max_severity"] == "critical"
+    assert {violation["severity"] for violation in guardrail["violations"]} == {
+        "minor",
+        "major",
+        "critical",
+    }
+
+    cleared = module._evaluate_guardrails(rules_path, ["テンプレートを満たしたレポート"])
+
+    assert cleared["counts"]["minor"] == 0
+    assert cleared["counts"]["major"] == 0
+    assert cleared["counts"]["critical"] == 0
+    assert cleared["max_severity"] == "none"
 
 
 def test_load_ruleset_fallback_supports_match_all(

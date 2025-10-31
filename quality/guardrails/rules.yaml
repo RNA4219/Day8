@@ -4,21 +4,57 @@ metadata:
   description: Day8 評価ライン向け Guardrails ルールセットの最小構成。
   owner: quality-wg
 rules:
-  - id: content.minor.placeholder
-    description: 軽微なトーン逸脱を検出するプレースホルダー。
+  - id: content.minor.priority_score_missing
+    description: |
+      Priority Score 欠如を検出します。再発防止: PR 本文とレポート両方で `Priority Score: <number> / <justification>` を必ず記載し、Day8 ガバナンスの優先度テンプレートと整合させてください。
     severity: minor
     match:
       any:
-        - contains: TODO
-  - id: content.major.placeholder
-    description: 重大度 major の逸脱を検出するプレースホルダー。
+        - contains: Priority Score 未記載
+        - contains: Priority Score missing
+        - contains: Priority Score 欠如
+  - id: content.minor.template_incomplete
+    description: |
+      Day8 テンプレート未充足（背景/手順/検証ログ/フォローアップの欠落）を検出します。再発防止: `docs/TASKS.md` とテンプレートの項目順を守り、抜けたセクションがあれば補完してから提出してください。
+    severity: minor
+    match:
+      any:
+        - contains: テンプレート未充足
+        - contains: テンプレート未完了
+        - contains: template incomplete
+  - id: content.major.followup_missing
+    description: |
+      フォローアップ未記載を検出します。再発防止: Task Seed と PR チェックリストで未完了作業を列挙し、`Follow-ups` セクションへ転記してください。
     severity: major
     match:
       any:
-        - contains: FIXME
-  - id: content.critical.placeholder
-    description: 重大な逸脱を検出するプレースホルダー。
+        - contains: フォローアップ未記載
+        - contains: Follow-up missing
+        - contains: follow-up required but missing
+  - id: content.major.summary_missing
+    description: |
+      要約欠落を検出します。再発防止: 成果サマリは Day8 レポート雛形の冒頭に配置し、主要な改善点・結果・次アクションを 3 行以内で明記してください。
+    severity: major
+    match:
+      any:
+        - contains: 要約欠落
+        - contains: Summary missing
+        - contains: サマリー未記載
+  - id: content.critical.secret_exposure
+    description: |
+      秘密情報の露出（鍵や資格情報）を検出します。再発防止: 秘密値は Secret Manager や Vault で管理し、出力前にレッドアクト処理を必ず行ってください。
     severity: critical
     match:
       any:
-        - contains: SECRET
+        - contains: -----BEGIN PRIVATE KEY-----
+        - contains: AWS_SECRET_ACCESS_KEY
+        - contains: AKIA
+  - id: content.critical.pii_exposure
+    description: |
+      個人情報の漏洩（PII）を検出します。再発防止: テンプレートに沿って個人識別子はマスクし、必要に応じてダミーデータへ置換してください。
+    severity: critical
+    match:
+      any:
+        - contains: SSN:
+        - contains: Social Security Number
+        - contains: マイナンバー
