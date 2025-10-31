@@ -66,6 +66,7 @@ printf '%s\n' '{"id": "smoke", "expected": "normalized"}' >"${EXPECTED_PATH}"
 DEFAULT_METRICS_PATH="${PROJECT_ROOT}/scripts/quality/metrics.json"
 METRICS_PATH="${EVAL_SMOKE_METRICS_PATH:-${DEFAULT_METRICS_PATH}}"
 OUTPUT_SPECIFIED=0
+GENERATED_AT_SPECIFIED=0
 
 for ((index = 0; index < ${#FORWARDED_ARGS[@]}; index++)); do
   arg="${FORWARDED_ARGS[${index}]}"
@@ -80,11 +81,30 @@ for ((index = 0; index < ${#FORWARDED_ARGS[@]}; index++)); do
     OUTPUT_SPECIFIED=1
     METRICS_PATH="${arg#--output=}"
     break
+  elif [[ "${arg}" == "--generated-at" ]]; then
+    GENERATED_AT_SPECIFIED=1
+    break
+  elif [[ "${arg}" == --generated-at=* ]]; then
+    GENERATED_AT_SPECIFIED=1
+    break
   fi
 done
 
 if [[ "${OUTPUT_SPECIFIED}" == 0 ]]; then
   FORWARDED_ARGS+=(--output "${METRICS_PATH}")
+fi
+
+if [[ "${GENERATED_AT_SPECIFIED}" == 0 ]]; then
+  BIRDSEYE_INDEX="${PROJECT_ROOT}/docs/birdseye/index.json"
+  BIRDSEYE_GENERATED_AT=""
+  if command -v jq >/dev/null 2>&1 && [[ -f "${BIRDSEYE_INDEX}" ]]; then
+    BIRDSEYE_GENERATED_AT="$(jq -r '.generated_at // empty' "${BIRDSEYE_INDEX}" 2>/dev/null || true)"
+  fi
+  GENERATED_AT_VALUE="${EVAL_SMOKE_REVISION:-${BIRDSEYE_GENERATED_AT}}"
+  if [[ -z "${GENERATED_AT_VALUE}" ]]; then
+    GENERATED_AT_VALUE="$(date -u +"%Y-%m-%dT%H:%M:%S%:z")"
+  fi
+  FORWARDED_ARGS+=(--generated-at "${GENERATED_AT_VALUE}")
 fi
 
 if [[ -n "${METRICS_PATH}" ]]; then

@@ -148,6 +148,10 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--sentencepiece-model",
         help="ROUGE 計算に使用する SentencePiece モデルのパス",
     )
+    parser.add_argument(
+        "--generated-at",
+        help="metrics.json の generated_at へ記録するリビジョンやタイムスタンプ",
+    )
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
@@ -731,7 +735,11 @@ def _evaluate_guardrails(ruleset_path: Path, outputs: Sequence[str]) -> dict[str
 
 
 def _summarize_results(
-    bert_score: dict[str, Any], surface_metrics: dict[str, Any], violations: dict[str, Any]
+    bert_score: dict[str, Any],
+    surface_metrics: dict[str, Any],
+    violations: dict[str, Any],
+    *,
+    generated_at: str | None = None,
 ) -> dict[str, Any]:
     bert_pass = bool(bert_score.get("threshold_met"))
     rouge_pass = bool(surface_metrics.get("threshold_met"))
@@ -747,7 +755,7 @@ def _summarize_results(
     return {
         "overall_pass": overall_pass,
         "needs_review": needs_review,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": generated_at or datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -781,7 +789,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     violations = _apply_violation_threshold(
         _evaluate_guardrails(Path(args.ruleset), outputs)
     )
-    summary = _summarize_results(bert_score_with_threshold, surface_with_threshold, violations)
+    generated_at = args.generated_at or datetime.now(timezone.utc).isoformat()
+    summary = _summarize_results(
+        bert_score_with_threshold,
+        surface_with_threshold,
+        violations,
+        generated_at=generated_at,
+    )
 
     metrics = {
         "semantic": {"bert_score": bert_score_with_threshold},

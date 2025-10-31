@@ -17,6 +17,7 @@
 1. ケース定義を [`workflow-cookbook/EVALUATION.md`](../../../workflow-cookbook/EVALUATION.md) と同期し、入力 YAML の `prompt`/`expected`/`metadata` を整備する。
 2. 推論ログを `quality/pipeline/normalize.py` で前処理したうえで、[付録E: 評価器構成](../../addenda/E_Evaluator_Details.md) に従い BERTScore・ROUGE・ルール判定を実行する。
 3. 生成された `metrics.json` をレビューし、`overall_pass`/`needs_review` を評価ログへ記録する。ルール違反が `critical` の場合は即時にガバナンスへエスカレーションする。
+   - Birdseye など既存レポートのリビジョン番号を引き継ぐ場合は、`python -m quality.evaluator.cli --generated-at <revision>` を指定し、`docs/birdseye/index.json` の `generated_at` などと揃える。
 
 ### Guardrails ルールセット
 - **minor**
