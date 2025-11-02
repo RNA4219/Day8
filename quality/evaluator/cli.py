@@ -431,6 +431,30 @@ def _fallback_surface_tokenizer() -> Callable[[str], list[str]]:
 def _build_surface_tokenizer(sentencepiece_model: Path | None) -> Callable[[str], list[str]]:
     if sentencepiece_model and sentencepiece_model.exists():
         try:
+            sp_spec = importlib.util.find_spec("sentencepiece")
+        except ValueError:
+            sp_spec = None
+        sp_module: Any | None = None
+        if sp_spec is not None:
+            sp_module = importlib.import_module("sentencepiece")
+        else:
+            sp_module = sys.modules.get("sentencepiece")
+        if sp_module is not None:
+            sp_cls = getattr(sp_module, "SentencePieceProcessor", None)
+            if sp_cls is not None:
+                try:
+                    try:
+                        sp_tokenizer = sp_cls(model_file=str(sentencepiece_model))
+                    except TypeError:
+                        sp_tokenizer = sp_cls()
+                        load = getattr(sp_tokenizer, "load", None)
+                        if not callable(load):
+                            raise TypeError("SentencePieceProcessor missing load method")
+                        load(str(sentencepiece_model))
+                    return _sentencepiece_tokenizer(sp_tokenizer)
+                except Exception:
+                    pass
+        try:
             spec = importlib.util.find_spec("tokenizers")
         except ValueError:
             spec = None
@@ -440,10 +464,14 @@ def _build_surface_tokenizer(sentencepiece_model: Path | None) -> Callable[[str]
         else:
             module = sys.modules.get("tokenizers")
         if module is not None:
-            sentencepiece_cls = getattr(module, "SentencePieceTokenizer", None)
-            if sentencepiece_cls is not None:
-                sp_tokenizer = sentencepiece_cls(str(sentencepiece_model))
-                return _sentencepiece_tokenizer(sp_tokenizer)
+            tokenizer_cls = getattr(module, "Tokenizer", None)
+            from_file = getattr(tokenizer_cls, "from_file", None) if tokenizer_cls is not None else None
+            if callable(from_file):
+                try:
+                    sp_tokenizer = from_file(str(sentencepiece_model))
+                    return _sentencepiece_tokenizer(sp_tokenizer)
+                except Exception:
+                    pass
     return _fallback_surface_tokenizer()
 def _evaluate_semantic(
     outputs: Sequence[str],
