@@ -37,11 +37,14 @@ cd "${PROJECT_ROOT}"
 
 WORK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/eval-smoke.XXXXXX")"
 TEMP_INPUT_CREATED=0
+PRESERVE_BUNDLE="${EVAL_SMOKE_PRESERVE_BUNDLE:-0}"
 
 cleanup() {
-  rm -rf "${WORK_DIR}"
-  if [[ "${TEMP_INPUT_CREATED}" == "1" ]]; then
-    rm -f "${INPUT_PATH}"
+  if [[ "${PRESERVE_BUNDLE}" != "1" ]]; then
+    rm -rf "${WORK_DIR}"
+    if [[ "${TEMP_INPUT_CREATED}" == "1" ]]; then
+      rm -f "${INPUT_PATH}"
+    fi
   fi
 }
 
@@ -89,8 +92,12 @@ def main() -> None:
         "metadata": metadata,
     }
 
-    inputs_path.write_text(json.dumps(inputs_record) + "\n", encoding="utf-8")
-    expected_path.write_text(json.dumps(expected_record) + "\n", encoding="utf-8")
+    inputs_path.write_text(
+        json.dumps(inputs_record, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    expected_path.write_text(
+        json.dumps(expected_record, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
