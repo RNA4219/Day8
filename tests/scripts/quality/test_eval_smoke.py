@@ -201,6 +201,7 @@ def test_eval_smoke_pipeline_invokes_stubs(
     metrics_path = tmp_path / "metrics.json"
     monkeypatch.setenv("EVAL_SMOKE_RECORD_PATH", str(record_path))
     monkeypatch.setenv("EVAL_SMOKE_METRICS_PATH", str(metrics_path))
+    monkeypatch.setenv("EVAL_SMOKE_PRESERVE_BUNDLE", "1")
 
     script_path = PROJECT_ROOT / "scripts" / "quality" / "eval_smoke.sh"
     assert script_path.exists(), "eval_smoke.sh must exist for the smoke test"
@@ -237,6 +238,26 @@ def test_eval_smoke_pipeline_invokes_stubs(
     expected_payload = json.loads(expected_payload_line.split("=", 1)[1])
     assert inputs_payload == [{"id": "smoke", "output": normalized_text}]
     assert expected_payload == [{"id": "smoke", "expected": normalized_text}]
+
+    inputs_path = Path(inputs_line.split("=", 1)[1])
+    expected_path = Path(expected_line.split("=", 1)[1])
+    assert inputs_path.exists()
+    assert expected_path.exists()
+
+    inputs_records = [
+        json.loads(line)
+        for line in inputs_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    expected_records = [
+        json.loads(line)
+        for line in expected_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert inputs_records == [{"id": "smoke", "output": normalized_text}]
+    assert expected_records == [{"id": "smoke", "expected": normalized_text}]
+
+    shutil.rmtree(inputs_path.parent, ignore_errors=True)
     assert "bert_score" in lines
     assert "rouge" in lines
 
