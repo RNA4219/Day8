@@ -400,16 +400,31 @@ def _stem_japanese_segments(segments: Iterable[str]) -> list[str]:
 
 
 def _sentencepiece_tokenizer(sp_tokenizer: Any) -> Callable[[str], list[str]]:
+    def _coerce_tokens(raw_tokens: Any) -> list[str]:
+        if isinstance(raw_tokens, (list, tuple)):
+            return [str(token) for token in raw_tokens]
+        tokens_attr = getattr(raw_tokens, "tokens", None)
+        if tokens_attr is not None:
+            return [str(token) for token in tokens_attr]
+        return [str(raw_tokens)]
+
     def _tokenize(text: str) -> list[str]:
-        encoded = sp_tokenizer.encode(text)
-        if isinstance(encoded, (list, tuple)):
-            tokens = [str(token) for token in encoded]
+        encode_fn = getattr(sp_tokenizer, "encode", None)
+        encode_as_pieces_fn = getattr(sp_tokenizer, "encode_as_pieces", None)
+        tokens_source: Any
+        if callable(encode_fn):
+            try:
+                tokens_source = encode_fn(text, out_type=str)
+            except TypeError:
+                if callable(encode_as_pieces_fn):
+                    tokens_source = encode_as_pieces_fn(text)
+                else:
+                    tokens_source = encode_fn(text)
+        elif callable(encode_as_pieces_fn):
+            tokens_source = encode_as_pieces_fn(text)
         else:
-            tokens_attr = getattr(encoded, "tokens", None)
-            if tokens_attr is not None:
-                tokens = [str(token) for token in tokens_attr]
-            else:
-                tokens = [str(encoded)]
+            tokens_source = [text]
+        tokens = _coerce_tokens(tokens_source)
         return _stem_japanese_segments(tokens)
 
     return _tokenize
