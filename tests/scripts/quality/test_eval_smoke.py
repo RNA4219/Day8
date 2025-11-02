@@ -235,8 +235,20 @@ def test_eval_smoke_pipeline_invokes_stubs(
     )
     inputs_payload = json.loads(inputs_payload_line.split("=", 1)[1])
     expected_payload = json.loads(expected_payload_line.split("=", 1)[1])
-    assert inputs_payload == [{"id": "smoke", "output": normalized_text}]
-    assert expected_payload == [{"id": "smoke", "expected": normalized_text}]
+    assert inputs_payload == [
+        {
+            "id": "smoke",
+            "metadata": {"task_type": "smoke"},
+            "output": normalized_text,
+        }
+    ]
+    assert expected_payload == [
+        {
+            "id": "smoke",
+            "expected": normalized_text,
+            "metadata": {"task_type": "smoke"},
+        }
+    ]
     assert "bert_score" in lines
     assert "rouge" in lines
 
