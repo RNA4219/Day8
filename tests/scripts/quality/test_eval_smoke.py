@@ -16,8 +16,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 STUB_NORMALIZE_SOURCE = """from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
+from uuid import uuid4
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -26,13 +28,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output")
     args = parser.parse_args(argv)
 
+    unique_text = f"normalized-output-{uuid4()}\\n\\nend-of-output"
+
     record_path = Path(os.environ["EVAL_SMOKE_RECORD_PATH"])
     record_path.parent.mkdir(parents=True, exist_ok=True)
     with record_path.open("a", encoding="utf-8") as stream:
         stream.write("normalize\\n")
+        stream.write("normalized_text=" + json.dumps(unique_text) + "\\n")
 
     if args.output:
-        Path(args.output).write_text("normalized", encoding="utf-8")
+        Path(args.output).write_text(unique_text, encoding="utf-8")
     return 0
 
 
@@ -56,6 +61,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--inputs")
     parser.add_argument("--expected")
     parser.add_argument("--output")
+    parser.add_argument("--generated-at")
     parser.add_argument("extras", nargs="*")
     return parser.parse_args(list(argv) if argv is not None else None)
 
@@ -89,6 +95,10 @@ def main(argv: Iterable[str] | None = None) -> int:
         stream.write("severities=" + ",".join(severities) + "\\n")
         stream.write(f"inputs={args.inputs}\\n")
         stream.write(f"expected={args.expected}\\n")
+        inputs_payload = [json.loads(line) for line in Path(args.inputs).read_text(encoding="utf-8").splitlines() if line.strip()]
+        expected_payload = [json.loads(line) for line in Path(args.expected).read_text(encoding="utf-8").splitlines() if line.strip()]
+        stream.write("inputs_payload=" + json.dumps(inputs_payload) + "\\n")
+        stream.write("expected_payload=" + json.dumps(expected_payload) + "\\n")
         stream.write("bert_score\\n")
         stream.write("rouge\\n")
 
@@ -208,12 +218,25 @@ def test_eval_smoke_pipeline_invokes_stubs(
     assert record_path.exists()
     lines = record_path.read_text(encoding="utf-8").splitlines()
     assert lines[0] == "normalize"
+    normalized_line = next(line for line in lines if line.startswith("normalized_text="))
+    normalized_text = json.loads(normalized_line.split("=", 1)[1])
+    assert "\n\n" in normalized_text
     severity_line = next(line for line in lines if line.startswith("severities="))
-    assert severity_line == "severities=minor,major,critical"
+    severities = severity_line.split("=", 1)[1].split(",")
+    deduped_severities = tuple(dict.fromkeys(severities))
+    assert deduped_severities == ("minor", "major", "critical")
     inputs_line = next(line for line in lines if line.startswith("inputs="))
     expected_line = next(line for line in lines if line.startswith("expected="))
     assert inputs_line.endswith("inputs.jsonl")
     assert expected_line.endswith("expected.jsonl")
+    inputs_payload_line = next(line for line in lines if line.startswith("inputs_payload="))
+    expected_payload_line = next(
+        line for line in lines if line.startswith("expected_payload=")
+    )
+    inputs_payload = json.loads(inputs_payload_line.split("=", 1)[1])
+    expected_payload = json.loads(expected_payload_line.split("=", 1)[1])
+    assert inputs_payload == [{"id": "smoke", "output": normalized_text}]
+    assert expected_payload == [{"id": "smoke", "expected": normalized_text}]
     assert "bert_score" in lines
     assert "rouge" in lines
 
