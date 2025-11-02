@@ -56,33 +56,37 @@ class _FakeRougeScorer:
         }
 
 
-class _FakeSentencePieceEncoding:
-    def __init__(self, tokens: Sequence[str]) -> None:
-        self.tokens = list(tokens)
+class _FakeSentencePieceProcessor:
+    last_loaded: Path | None = None
+    last_encoded: list[str] = []
 
+    def __init__(self, *, model_file: str | None = None) -> None:
+        if model_file:
+            type(self).last_loaded = Path(model_file)
 
-class _FakeSentencePieceTokenizer:
-    last_model: Path | None = None
+    def load(self, model_path: str) -> bool:
+        type(self).last_loaded = Path(model_path)
+        return True
 
-    def __init__(self, model_path: str) -> None:
-        type(self).last_model = Path(model_path)
-
-    def encode(self, text: str) -> _FakeSentencePieceEncoding:
+    def encode(self, text: str) -> list[str]:
+        type(self).last_encoded.append(text)
         normalized = text.replace(" ", "")
         if not normalized:
-            return _FakeSentencePieceEncoding(["▁"])
-        tokens = [f"▁{normalized}"]
-        return _FakeSentencePieceEncoding(tokens)
+            return ["▁"]
+        return [f"▁{normalized}"]
 
 
 class _FakeJanomeToken:
     def __init__(self, surface: str) -> None:
         self.surface = surface
-        self.base_form = surface.lower() if surface else "*"
+        self.base_form = f"stem:{surface}" if surface else "*"
 
 
 class _FakeJanomeTokenizer:
+    last_inputs: list[str] = []
+
     def tokenize(self, text: str) -> Iterable[_FakeJanomeToken]:
+        type(self).last_inputs.append(text)
         if not text:
             return []
         return [_FakeJanomeToken(text)]
@@ -195,6 +199,35 @@ def test_load_ruleset_fallback_preserves_folded_block_with_indented_lines(
     assert rule["description"] == "Summary:\n  - detail\n"
 
 
+def test_sentencepiece_tokenizer_prefers_sentencepiece_processor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    fallback_called = False
+
+    def _fail_fallback() -> Callable[[str], list[str]]:
+        nonlocal fallback_called
+        fallback_called = True
+        return lambda text: ["fallback"]
+
+    monkeypatch.setattr(module, "_fallback_surface_tokenizer", _fail_fallback)
+
+    model_path = tmp_path / "sp.model"
+    model_path.write_text("dummy", encoding="utf-8")
+
+    tokenizer = module._build_surface_tokenizer(model_path)
+
+    assert callable(tokenizer)
+    tokens = tokenizer("テスト")
+
+    assert fallback_called is False
+    assert _FakeSentencePieceProcessor.last_loaded == model_path
+    assert _FakeSentencePieceProcessor.last_encoded[-1] == "テスト"
+    assert tokens == ["stem:テスト"]
+    assert _FakeJanomeTokenizer.last_inputs[-1] == "テスト"
+
+
 @pytest.fixture(autouse=True)
 def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     bert_score_module = ModuleType("bert_score")
@@ -211,10 +244,10 @@ def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "rouge_score", rouge_score_module)
     monkeypatch.setitem(sys.modules, "rouge_score.rouge_scorer", rouge_scorer_module)
 
-    tokenizers_module = ModuleType("tokenizers")
-    tokenizers_module.SentencePieceTokenizer = _FakeSentencePieceTokenizer
-    tokenizers_module.__spec__ = spec_from_loader("tokenizers", loader=None)
-    monkeypatch.setitem(sys.modules, "tokenizers", tokenizers_module)
+    sentencepiece_module = ModuleType("sentencepiece")
+    sentencepiece_module.SentencePieceProcessor = _FakeSentencePieceProcessor
+    sentencepiece_module.__spec__ = spec_from_loader("sentencepiece", loader=None)
+    monkeypatch.setitem(sys.modules, "sentencepiece", sentencepiece_module)
 
     janome_tokenizer_module = ModuleType("janome.tokenizer")
     janome_tokenizer_module.Tokenizer = lambda: _FakeJanomeTokenizer()
@@ -224,6 +257,10 @@ def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     janome_module.__spec__ = spec_from_loader("janome", loader=None)
     monkeypatch.setitem(sys.modules, "janome", janome_module)
     monkeypatch.setitem(sys.modules, "janome.tokenizer", janome_tokenizer_module)
+
+    _FakeSentencePieceProcessor.last_loaded = None
+    _FakeSentencePieceProcessor.last_encoded = []
+    _FakeJanomeTokenizer.last_inputs = []
 
 
 def _make_items(
@@ -456,10 +493,10 @@ def test_evaluate_surface_uses_sentencepiece_tokenizer(tmp_path: Path) -> None:
     metrics = module._evaluate_surface(["こんにちは"], ["世界"], sentencepiece_model=model_path)
 
     assert metrics == {"rouge1": 0.78, "rougeL": 0.72}
-    assert _FakeSentencePieceTokenizer.last_model == model_path
+    assert _FakeSentencePieceProcessor.last_loaded == model_path
     tokenizer = _FakeRougeScorer.last_tokenizer
     assert tokenizer is not None
-    assert tokenizer("MixedCase") == ["mixedcase"]
+    assert tokenizer("MixedCase") == ["stem:mixedcase"]
 
 
 def test_evaluate_surface_without_sentencepiece_model_uses_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -472,7 +509,7 @@ def test_evaluate_surface_without_sentencepiece_model_uses_fallback(monkeypatch:
     assert metrics == {"rouge1": 0.78, "rougeL": 0.72}
     tokenizer = _FakeRougeScorer.last_tokenizer
     assert tokenizer is not None
-    assert tokenizer("UpperCase") == ["uppercase"]
+    assert tokenizer("UpperCase") == ["stem:uppercase"]
 
 
 def test_normalize_yaml_scalar_decodes_single_quote_escape() -> None:

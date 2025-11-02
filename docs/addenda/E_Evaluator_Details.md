@@ -45,7 +45,7 @@ Guardrails ルールは `when.metadata` を利用してメタ情報に基づく�
 
 ## CLI パラメータ
 - `--bert-model` / `--bert-batch-size`: Appendix E 既定値（`bert-base-multilingual-cased`, `16`）を踏襲。GPU 台数に応じて上書き可能。
-- `--sentencepiece-model`: SentencePiece `.model` パス。未指定時は `DAY8_SENTENCEPIECE_MODEL` 環境変数、もしくはリポジトリ同梱モデルを探索する。トークン化後は Janome で基本形へ正規化し、Juman++ stemmer と同等の表層一致性を確保する。
+- `--sentencepiece-model`: SentencePiece `.model` パス。未指定時は `DAY8_SENTENCEPIECE_MODEL` 環境変数、もしくはリポジトリ同梱モデルを探索する。SentencePieceProcessor でモデルを読み込み（`tokenizers.Tokenizer.from_file` は例外時フォールバック）、トークン化後は Janome で基本形へ正規化し、Juman++ stemmer と同等の表層一致性を確保する。
 - `--generated-at`: `metrics.json` の `generated_at` を外部リビジョン番号や Birdseye index のタイムスタンプで上書きする。未指定時は UTC 現在時刻が自動採番される。
 
 ## 入力と前処理
