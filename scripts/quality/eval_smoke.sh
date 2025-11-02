@@ -60,8 +60,31 @@ python -m quality.pipeline.normalize --input "${INPUT_PATH}" --output "${NORMALI
 
 INPUTS_PATH="${WORK_DIR}/inputs.jsonl"
 EXPECTED_PATH="${WORK_DIR}/expected.jsonl"
-printf '%s\n' '{"id": "smoke", "output": "normalized"}' >"${INPUTS_PATH}"
-printf '%s\n' '{"id": "smoke", "expected": "normalized"}' >"${EXPECTED_PATH}"
+python - <<'PY' "${NORMALIZED_PATH}" "${INPUTS_PATH}" "${EXPECTED_PATH}"
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+
+def main() -> None:
+    normalized_path = Path(sys.argv[1])
+    inputs_path = Path(sys.argv[2])
+    expected_path = Path(sys.argv[3])
+
+    normalized_text = normalized_path.read_text(encoding="utf-8")
+
+    inputs_record = {"id": "smoke", "output": normalized_text}
+    expected_record = {"id": "smoke", "expected": normalized_text}
+
+    inputs_path.write_text(json.dumps(inputs_record) + "\n", encoding="utf-8")
+    expected_path.write_text(json.dumps(expected_record) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()
+PY
 
 DEFAULT_METRICS_PATH="${PROJECT_ROOT}/scripts/quality/metrics.json"
 METRICS_PATH="${EVAL_SMOKE_METRICS_PATH:-${DEFAULT_METRICS_PATH}}"
