@@ -59,6 +59,10 @@ class _FakeRougeScorer:
 class _FakeSentencePieceProcessor:
     last_loaded: Path | None = None
     last_encoded: list[str] = []
+    last_encode_kwargs: list[dict[str, Any]] = []
+    encode_as_pieces_inputs: list[str] = []
+    require_out_type: bool = True
+    allow_out_type: bool = True
 
     def __init__(self, *, model_file: str | None = None) -> None:
         if model_file:
@@ -68,12 +72,31 @@ class _FakeSentencePieceProcessor:
         type(self).last_loaded = Path(model_path)
         return True
 
-    def encode(self, text: str) -> list[str]:
-        type(self).last_encoded.append(text)
+    @staticmethod
+    def _to_pieces(text: str) -> list[str]:
         normalized = text.replace(" ", "")
         if not normalized:
             return ["▁"]
         return [f"▁{normalized}"]
+
+    def encode(self, text: Any, **kwargs: Any) -> list[str]:
+        type(self).last_encoded.append(text)
+        type(self).last_encode_kwargs.append(dict(kwargs))
+        if not isinstance(text, str):
+            raise TypeError("encode() expects text as str")
+        if type(self).require_out_type:
+            out_type = kwargs.get("out_type")
+            if out_type is not str:
+                raise AssertionError("encode() must be called with out_type=str")
+        if not type(self).allow_out_type and "out_type" in kwargs:
+            raise TypeError("encode() got an unexpected keyword argument 'out_type'")
+        return self._to_pieces(text)
+
+    def encode_as_pieces(self, text: Any) -> list[str]:
+        type(self).encode_as_pieces_inputs.append(text)
+        if not isinstance(text, str):
+            raise TypeError("encode_as_pieces() expects text as str")
+        return self._to_pieces(text)
 
 
 class _FakeJanomeToken:
@@ -236,8 +259,42 @@ def test_sentencepiece_tokenizer_prefers_sentencepiece_processor(
     assert fallback_called is False
     assert _FakeSentencePieceProcessor.last_loaded == model_path
     assert _FakeSentencePieceProcessor.last_encoded[-1] == "テスト"
+    assert _FakeSentencePieceProcessor.last_encode_kwargs[-1] == {"out_type": str}
+    assert not _FakeSentencePieceProcessor.encode_as_pieces_inputs
     assert tokens == ["stem:テスト"]
     assert _FakeJanomeTokenizer.last_inputs[-1] == "テスト"
+
+
+def test_sentencepiece_tokenizer_falls_back_to_encode_as_pieces(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    fallback_called = False
+
+    def _fail_fallback() -> Callable[[str], list[str]]:
+        nonlocal fallback_called
+        fallback_called = True
+        return lambda text: ["fallback"]
+
+    monkeypatch.setattr(module, "_fallback_surface_tokenizer", _fail_fallback)
+
+    _FakeSentencePieceProcessor.allow_out_type = False
+
+    model_path = tmp_path / "sp.model"
+    model_path.write_text("dummy", encoding="utf-8")
+
+    tokenizer = module._build_surface_tokenizer(model_path)
+
+    tokens = tokenizer("サンプル")
+
+    assert fallback_called is False
+    assert _FakeSentencePieceProcessor.last_loaded == model_path
+    assert _FakeSentencePieceProcessor.last_encoded[-1] == "サンプル"
+    assert _FakeSentencePieceProcessor.last_encode_kwargs[-1] == {"out_type": str}
+    assert _FakeSentencePieceProcessor.encode_as_pieces_inputs[-1] == "サンプル"
+    assert tokens == ["stem:サンプル"]
+    assert _FakeJanomeTokenizer.last_inputs[-1] == "サンプル"
 
 
 @pytest.fixture(autouse=True)
@@ -272,6 +329,10 @@ def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
 
     _FakeSentencePieceProcessor.last_loaded = None
     _FakeSentencePieceProcessor.last_encoded = []
+    _FakeSentencePieceProcessor.last_encode_kwargs = []
+    _FakeSentencePieceProcessor.encode_as_pieces_inputs = []
+    _FakeSentencePieceProcessor.require_out_type = True
+    _FakeSentencePieceProcessor.allow_out_type = True
     _FakeJanomeTokenizer.last_inputs = []
 
 
@@ -431,7 +492,8 @@ def test_evaluate_surface_prefers_sentencepiece_tokenizer(monkeypatch: pytest.Mo
     metrics = module._evaluate_surface(["alpha"], ["alpha"], sentencepiece_model=sentencepiece_model)
 
     assert metrics == {"rouge1": 0.78, "rougeL": 0.72}
-    assert _FakeSentencePieceTokenizer.last_model == sentencepiece_model
+    assert _FakeSentencePieceProcessor.last_encode_kwargs[-1] == {"out_type": str}
+    assert not _FakeSentencePieceProcessor.encode_as_pieces_inputs
 
 def test_collect_pairs_skips_duplicate_identifiers(tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
