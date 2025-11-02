@@ -236,8 +236,21 @@ def test_eval_smoke_pipeline_invokes_stubs(
     )
     inputs_payload = json.loads(inputs_payload_line.split("=", 1)[1])
     expected_payload = json.loads(expected_payload_line.split("=", 1)[1])
-    assert inputs_payload == [{"id": "smoke", "output": normalized_text}]
-    assert expected_payload == [{"id": "smoke", "expected": normalized_text}]
+    expected_metadata = {"task_type": "smoke"}
+    assert inputs_payload == [
+        {
+            "id": "smoke",
+            "metadata": expected_metadata,
+            "output": normalized_text,
+        }
+    ]
+    assert expected_payload == [
+        {
+            "expected": normalized_text,
+            "id": "smoke",
+            "metadata": expected_metadata,
+        }
+    ]
 
     inputs_path = Path(inputs_line.split("=", 1)[1])
     expected_path = Path(expected_line.split("=", 1)[1])
@@ -254,8 +267,20 @@ def test_eval_smoke_pipeline_invokes_stubs(
         for line in expected_path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    assert inputs_records == [{"id": "smoke", "output": normalized_text}]
-    assert expected_records == [{"id": "smoke", "expected": normalized_text}]
+    assert inputs_records == [
+        {
+            "id": "smoke",
+            "metadata": expected_metadata,
+            "output": normalized_text,
+        }
+    ]
+    assert expected_records == [
+        {
+            "expected": normalized_text,
+            "id": "smoke",
+            "metadata": expected_metadata,
+        }
+    ]
 
     shutil.rmtree(inputs_path.parent, ignore_errors=True)
     assert "bert_score" in lines
