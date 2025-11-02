@@ -63,7 +63,8 @@ python -m quality.pipeline.normalize --input "${INPUT_PATH}" --output "${NORMALI
 
 INPUTS_PATH="${WORK_DIR}/inputs.jsonl"
 EXPECTED_PATH="${WORK_DIR}/expected.jsonl"
-python - <<'PY' "${NORMALIZED_PATH}" "${INPUTS_PATH}" "${EXPECTED_PATH}"
+TASK_TYPE="${EVAL_SMOKE_TASK_TYPE:-smoke}"
+python - <<'PY' "${NORMALIZED_PATH}" "${INPUTS_PATH}" "${EXPECTED_PATH}" "${TASK_TYPE}"
 from __future__ import annotations
 
 import json
@@ -75,11 +76,21 @@ def main() -> None:
     normalized_path = Path(sys.argv[1])
     inputs_path = Path(sys.argv[2])
     expected_path = Path(sys.argv[3])
+    task_type = sys.argv[4]
 
     normalized_text = normalized_path.read_text(encoding="utf-8")
 
-    inputs_record = {"id": "smoke", "output": normalized_text}
-    expected_record = {"id": "smoke", "expected": normalized_text}
+    metadata = {"task_type": task_type}
+    inputs_record = {
+        "id": "smoke",
+        "metadata": metadata,
+        "output": normalized_text,
+    }
+    expected_record = {
+        "id": "smoke",
+        "expected": normalized_text,
+        "metadata": metadata,
+    }
 
     inputs_path.write_text(
         json.dumps(inputs_record, ensure_ascii=False) + "\n", encoding="utf-8"
