@@ -116,6 +116,18 @@ def test_parse_args_supports_model_configuration() -> None:
     assert args.sentencepiece_model == "sp.model"
 
 
+def test_resolve_sentencepiece_model_path_defaults_to_bundled(monkeypatch: pytest.MonkeyPatch) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    monkeypatch.delenv(module._SENTENCEPIECE_ENV_VAR, raising=False)
+
+    resolved = module._resolve_sentencepiece_model_path(None, None)
+
+    expected = Path(module.__file__).with_name("sentencepiece.model")
+    assert resolved == expected
+    assert resolved is not None and resolved.exists()
+
+
 def test_parse_rules_yaml_block_scalar_chomp_indicators() -> None:
     module = import_module("quality.evaluator.cli")
 
@@ -368,6 +380,21 @@ def test_collect_pairs_preserves_comma_separated_strings(tmp_path: Path) -> None
 
     assert [item.output for item in items] == ["alpha, beta"]
     assert [item.reference for item in items] == ["gamma, delta"]
+
+
+def test_evaluate_surface_prefers_sentencepiece_tokenizer(monkeypatch: pytest.MonkeyPatch) -> None:
+    module = import_module("quality.evaluator.cli")
+
+    monkeypatch.delenv(module._SENTENCEPIECE_ENV_VAR, raising=False)
+
+    sentencepiece_model = module._resolve_sentencepiece_model_path(None, None)
+
+    assert sentencepiece_model is not None and sentencepiece_model.exists()
+
+    metrics = module._evaluate_surface(["alpha"], ["alpha"], sentencepiece_model=sentencepiece_model)
+
+    assert metrics == {"rouge1": 0.78, "rougeL": 0.72}
+    assert _FakeSentencePieceTokenizer.last_model == sentencepiece_model
 
 def test_collect_pairs_skips_duplicate_identifiers(tmp_path: Path) -> None:
     module = import_module("quality.evaluator.cli")
