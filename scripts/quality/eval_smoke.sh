@@ -68,8 +68,21 @@ python - <<'PY' "${NORMALIZED_PATH}" "${INPUTS_PATH}" "${EXPECTED_PATH}" "${TASK
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
+from typing import Any
+
+
+def _load_metadata(task_type: str) -> dict[str, Any]:
+    metadata_override = os.environ.get("EVAL_SMOKE_METADATA_JSON")
+    if metadata_override:
+        parsed_metadata: dict[str, Any] = json.loads(metadata_override)
+        if not isinstance(parsed_metadata, dict):  # pragma: no cover - defensive
+            raise ValueError("EVAL_SMOKE_METADATA_JSON must be a JSON object")
+        parsed_metadata.setdefault("task_type", task_type)
+        return parsed_metadata
+    return {"task_type": task_type}
 
 
 def main() -> None:
@@ -80,7 +93,7 @@ def main() -> None:
 
     normalized_text = normalized_path.read_text(encoding="utf-8")
 
-    metadata = {"task_type": task_type}
+    metadata = _load_metadata(task_type)
     inputs_record = {
         "id": "smoke",
         "metadata": metadata,
