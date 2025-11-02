@@ -42,6 +42,7 @@ Guardrails ルールは `when.metadata` を利用してメタ情報に基づく�
 ## セットアップ
 - Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch・SentencePiece・Janome・tokenizers・BeautifulSoup（bs4）を含む評価専用依存を導入する。
 - CI は `requirements-eval.txt` をインストールしないため、ローカル検証や品質 WG のバッチ計測時のみ追加セットアップが必要になる。
+- ROUGE の SentencePiece トークナイザは `quality/evaluator/sentencepiece.model` にリポジトリ同梱している。CLI では `--sentencepiece-model` / `DAY8_SENTENCEPIECE_MODEL` を省略するとこのモデルを自動検出するため、ローカル実行前に追加ダウンロードは不要。
 
 ## CLI パラメータ
 - `--bert-model` / `--bert-batch-size`: Appendix E 既定値（`bert-base-multilingual-cased`, `16`）を踏襲。GPU 台数に応じて上書き可能。
@@ -80,4 +81,5 @@ Guardrails ルールは `when.metadata` を利用してメタ情報に基づく�
 ## 改訂ガイド
 - 閾値やモデルを更新したら、BERTScore/ROUGE の設定値とルール判定ロジックを本付録に反映し、Birdseye index/caps/hot の `generated_at` を揃える。
 - ルールセットの破壊的変更は Day8 Governance WG の承認ログと共に記録し、`docs/day8/quality/06_quality.md` の手順・チェックリストへ反映する。
+- SentencePiece モデルを再学習する場合は `sentencepiece` パッケージでコーパスを学習し、生成された `.model` を `quality/evaluator/sentencepiece.model` へ差し替えてコミットする（LFS トラッキングを維持）。差し替え後は Appendix E / 06_quality.md / Birdseye index・caps の `generated_at` を同一コミットで更新し、`tests/quality/evaluator/test_cli.py` のデフォルト検出テストが通ることを確認する。
 

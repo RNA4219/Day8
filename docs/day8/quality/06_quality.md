@@ -16,6 +16,7 @@
 評価器をローカルで動かす場合は、事前に Day8 ルートで `pip install -r requirements-eval.txt` を実行し、BERTScore・ROUGE・PyTorch など評価用依存を導入しておく（HTML 解析で利用する BeautifulSoup/bs4 も同ファイルへ統合済み）。
 1. ケース定義を [`workflow-cookbook/EVALUATION.md`](../../../workflow-cookbook/EVALUATION.md) と同期し、入力 YAML の `prompt`/`expected`/`metadata` を整備する。
 2. 推論ログを `quality/pipeline/normalize.py` で前処理したうえで、[付録E: 評価器構成](../../addenda/E_Evaluator_Details.md) に従い BERTScore・ROUGE・ルール判定を実行する。
+   - ROUGE は `quality/evaluator/sentencepiece.model` を既定の SentencePiece モデルとして参照する。CLI で `--sentencepiece-model` を省略した場合や `DAY8_SENTENCEPIECE_MODEL` を未設定でも自動検出されるため、リポジトリ同梱版をそのまま利用できる。
 3. 生成された `metrics.json` をレビューし、`overall_pass`/`needs_review` を評価ログへ記録する。ルール違反が `critical` の場合は即時にガバナンスへエスカレーションする。
    - Birdseye など既存レポートのリビジョン番号を引き継ぐ場合は、`python -m quality.evaluator.cli --generated-at <revision>` を指定し、`docs/birdseye/index.json` の `generated_at` などと揃える。
 
