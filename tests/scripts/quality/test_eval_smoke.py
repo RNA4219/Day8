@@ -56,6 +56,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--inputs")
     parser.add_argument("--expected")
     parser.add_argument("--output")
+    parser.add_argument("--generated-at")
     parser.add_argument("extras", nargs="*")
     return parser.parse_args(list(argv) if argv is not None else None)
 
@@ -82,6 +83,25 @@ def main(argv: Iterable[str] | None = None) -> int:
     if args.output is None:
         raise AssertionError("--output must be provided")
 
+    with Path(args.inputs).open("r", encoding="utf-8") as stream:
+        inputs_records = [json.loads(line) for line in stream if line.strip()]
+    with Path(args.expected).open("r", encoding="utf-8") as stream:
+        expected_records = [json.loads(line) for line in stream if line.strip()]
+
+    if not inputs_records:
+        raise AssertionError("inputs.jsonl must contain at least one record")
+    if not expected_records:
+        raise AssertionError("expected.jsonl must contain at least one record")
+
+    input_metadata = inputs_records[0].get("metadata")
+    expected_metadata = expected_records[0].get("metadata")
+    if input_metadata is None:
+        raise AssertionError("inputs metadata must be provided")
+    if expected_metadata is None:
+        raise AssertionError("expected metadata must be provided")
+    if input_metadata != expected_metadata:
+        raise AssertionError("inputs and expected metadata must match")
+
     record_path = Path(os.environ["EVAL_SMOKE_RECORD_PATH"])
     record_path.parent.mkdir(parents=True, exist_ok=True)
     with record_path.open("a", encoding="utf-8") as stream:
@@ -89,6 +109,8 @@ def main(argv: Iterable[str] | None = None) -> int:
         stream.write("severities=" + ",".join(severities) + "\\n")
         stream.write(f"inputs={args.inputs}\\n")
         stream.write(f"expected={args.expected}\\n")
+        stream.write("inputs_metadata=" + json.dumps(input_metadata, sort_keys=True) + "\\n")
+        stream.write("expected_metadata=" + json.dumps(expected_metadata, sort_keys=True) + "\\n")
         stream.write("bert_score\\n")
         stream.write("rouge\\n")
 
@@ -209,11 +231,22 @@ def test_eval_smoke_pipeline_invokes_stubs(
     lines = record_path.read_text(encoding="utf-8").splitlines()
     assert lines[0] == "normalize"
     severity_line = next(line for line in lines if line.startswith("severities="))
-    assert severity_line == "severities=minor,major,critical"
+    severities = severity_line.split("=", 1)[1].split(",")
+    assert {"minor", "major", "critical"}.issubset(severities)
     inputs_line = next(line for line in lines if line.startswith("inputs="))
     expected_line = next(line for line in lines if line.startswith("expected="))
+    inputs_metadata_line = next(
+        line for line in lines if line.startswith("inputs_metadata=")
+    )
+    expected_metadata_line = next(
+        line for line in lines if line.startswith("expected_metadata=")
+    )
     assert inputs_line.endswith("inputs.jsonl")
     assert expected_line.endswith("expected.jsonl")
+    inputs_metadata = json.loads(inputs_metadata_line.split("=", 1)[1])
+    expected_metadata = json.loads(expected_metadata_line.split("=", 1)[1])
+    assert inputs_metadata == {"task_type": "smoke"}
+    assert expected_metadata == inputs_metadata
     assert "bert_score" in lines
     assert "rouge" in lines
 

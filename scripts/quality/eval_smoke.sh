@@ -60,8 +60,35 @@ python -m quality.pipeline.normalize --input "${INPUT_PATH}" --output "${NORMALI
 
 INPUTS_PATH="${WORK_DIR}/inputs.jsonl"
 EXPECTED_PATH="${WORK_DIR}/expected.jsonl"
-printf '%s\n' '{"id": "smoke", "output": "normalized"}' >"${INPUTS_PATH}"
-printf '%s\n' '{"id": "smoke", "expected": "normalized"}' >"${EXPECTED_PATH}"
+python - <<'PY' "${INPUTS_PATH}" "${EXPECTED_PATH}"
+import json
+import os
+import sys
+
+inputs_path = sys.argv[1]
+expected_path = sys.argv[2]
+
+metadata_raw = os.environ.get("EVAL_SMOKE_METADATA")
+if metadata_raw:
+    try:
+        metadata = json.loads(metadata_raw)
+    except json.JSONDecodeError as exc:  # pragma: no cover - defensive guard
+        raise SystemExit(f"Invalid EVAL_SMOKE_METADATA: {exc}")
+else:
+    metadata = {"task_type": "smoke"}
+
+if not isinstance(metadata, dict):
+    raise SystemExit("EVAL_SMOKE_METADATA must decode to a JSON object")
+
+inputs_record = {"id": "smoke", "output": "normalized", "metadata": metadata}
+expected_record = {"id": "smoke", "expected": "normalized", "metadata": metadata}
+
+with open(inputs_path, "w", encoding="utf-8") as stream:
+    stream.write(json.dumps(inputs_record, sort_keys=True) + "\n")
+
+with open(expected_path, "w", encoding="utf-8") as stream:
+    stream.write(json.dumps(expected_record, sort_keys=True) + "\n")
+PY
 
 DEFAULT_METRICS_PATH="${PROJECT_ROOT}/scripts/quality/metrics.json"
 METRICS_PATH="${EVAL_SMOKE_METRICS_PATH:-${DEFAULT_METRICS_PATH}}"
