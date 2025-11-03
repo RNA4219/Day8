@@ -319,7 +319,7 @@ def _stub_third_party(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "sentencepiece", sentencepiece_module)
 
     janome_tokenizer_module = ModuleType("janome.tokenizer")
-    janome_tokenizer_module.Tokenizer = lambda: _FakeJanomeTokenizer()
+    janome_tokenizer_module.Tokenizer = _FakeJanomeTokenizer
     janome_tokenizer_module.__spec__ = spec_from_loader("janome.tokenizer", loader=None)
     janome_module = ModuleType("janome")
     janome_module.tokenizer = janome_tokenizer_module
