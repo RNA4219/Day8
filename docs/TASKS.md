@@ -22,6 +22,18 @@
    - ファイル名は `TASK.<slug>-YYYY-MM-DD.md`。`<slug>` は英小文字ハイフン区切りで要約を表す。
    - Seed はドラフトからアクティブまでの状態を `status` で管理し、完了時は関連 PR/コミットリンクを追記する。
 
+## HUB 出力キーとの対応表（固定）
+
+| HUB 出力キー | Task Seed 転記先（`docs/TASKS.md` 須項目） | 転記ルール |
+| --- | --- | --- |
+| `task_id` | 識別情報 `task_id` | 日付ベース連番をそのまま記載 |
+| `source` | Notes（出典） | `orchestration/...#Phase...` 形式の参照を原文維持で記録 |
+| `objective` | Objective | 1文で転記（意図は変えない） |
+| `requirements` | Requirements | `behavior` / `constraints` / 受入基準へ展開 |
+| `commands` | Local Commands / Commands | 検証コマンドを順序維持で列挙 |
+| `dependencies` | Plan（着手条件） | 依存 Task ID を着手前提として明記 |
+| `status` | メタデータ `status` | `draft|active|...|done` の許容値に正規化 |
+
 ## 検証ログ
 - Seed 作成・更新時は以下を確認し、検証結果を Notes/Tests セクションへ残す。
   - メタデータがテンプレート順で埋まっているか。
