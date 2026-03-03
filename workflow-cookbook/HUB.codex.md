@@ -137,7 +137,7 @@ planned → active → in_progress → reviewing → done
 in_progress → blocked → in_progress（解除後に戻す）
 ```
 
-## 5. 出力例（擬似）
+## 5. 出力例（YAML）
 
 ```yaml
 - task_id: 20240401-01
@@ -153,9 +153,14 @@ in_progress → blocked → in_progress（解除後に戻す）
       - 既存API破壊禁止
   commands:
     - terraform plan -target=module.api_gateway
+    - terraform apply -target=module.api_gateway
   dependencies:
     - 20240331-ops-01
+  status: planned
 ```
+
+- `source` は `orchestration/<path>.md#Phase...` / `#Stage...` 形式で固定し、抽出元セクションへ追跡可能にする。
+- `status` は `Task Status & Blockers` の許容値のみ使用する。
 
 ## 6. 運用メモ
 
